@@ -1,0 +1,485 @@
+﻿@model IEnumerable<IdcardGreadData>
+@using GTERP.ViewModels
+@{
+    ViewData["Title"] = "Id Card Print";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var emplist = ViewBag.EmpList;
+
+}
+
+
+
+<style>
+    #datatableDiv {
+        display: none;
+    }
+
+    .dataTables_scrollBody {
+        border-bottom: none !important;
+    }
+
+    table tr td:hover {
+        cursor: pointer;
+    }
+
+    fieldset {
+        border-radius: .2em;
+        border: 1px solid #cccccc;
+        padding: .5em;
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+
+
+        fieldset:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+    /*    button {
+        width: 110px;
+        margin: .5em 0 .5em 0;
+        cursor: pointer !important;
+    }*/
+
+    input[type="text"] {
+        cursor: auto !important;
+    }
+
+    #modalMessage {
+        font-family: tahoma;
+        font-size: 15px;
+        color: #4169e1;
+        text-align: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+
+    .divforfull {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+    }
+
+    .myMessage {
+        position: fixed;
+        bottom: 2%;
+        right: 2%;
+        width: 30%;
+        display: none;
+        z-index: 99999999999999999999999999999999999999999;
+    }
+
+    .editable {
+        color: black;
+        border: white;
+        width: 100%;
+    }
+
+
+
+
+    .clicked {
+        background-color: #c6b99f;
+        /*border: .25px solid #6767fd;*/
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 0;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="card" style="font-size: 12px; ">
+    <div class="form-header btn-success">
+        <i class="fa fa-id-card-o" aria-hidden="true"></i> ID CARD PRINT
+        <!--Loading-->
+        <div id="loading" style="display: none;padding-left: 185px;margin-top: -25px;">
+            <div id="loadingGif" style="display:inline;">
+                <img src="~/Files/loading.gif" style="height:16px;display:inline;" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+        <!--Main field-->
+        <div class="row">
+            <!--Left option-->
+            <div class="col-md-5 col-12">
+                <fieldset id="firstOpt" class="boxStyle mb-3">
+                    <h4 class="bg-gray white-color" style="padding: 10px" id="styletext">
+                        Joining Date Range
+                    </h4>
+                    <div id="firstOptForm" class="p-3">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    FromDate
+                                </span>
+                            </div>
+                            <input type="text" value="@ViewBag.Dt" id="FromDate" name="FromDate" class="form-control" />
+                        </div>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    ToDate
+                                </span>
+                            </div>
+                            <input type="text" value="@ViewBag.Dt" id="ToDate" name="ToDate" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4 offset-md-4 p-1">
+                        <button type="submit" id="okBtn" class="btn btn-success btn-block rounded-0">
+                            <span class="glyphicon glyphicon-ok-sign"> </span> Load
+                        </button>
+                    </div>
+                </fieldset>
+
+                @using (Html.BeginForm("IdcardList", "HR", FormMethod.Post))
+                {
+                    <!--preview-->
+                    <fieldset class="boxStyle p-3 mb-2">
+                        <div class="p-2">
+                            <div id="viewReportAsTd" class="col-sm-7">
+                                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div id="viewReportCat" class="col-sm-7">
+                                <label class="pr-2"><input type="radio" name="RptTypeB" value="Bangla" checked="checked" /> Bangla  </label>
+                                <label class="pr-2"><input type="radio" name="RptTypeB" value="English" /> English  </label>
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <div id="viewReportType" class="col-sm-7">
+                                <label class="pr-2"><input type="radio" name="RptTypeC" value="BackSide" /> Back Side Print </label>
+                            </div>
+                        </div>
+                        @*@Html.HiddenFor(m => m.EmployeeIdString)*@
+                        <!--Buttons -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div id="allCheckedDiv">
+                                    @*<label class="control-label col-sm-5 col-xs-6">SelectAll</label>*@
+                                    <div class="col-md-12 col-12">
+                                        @*<button type="button" id="selectall" name="selectall" class="btn btn-success rounded-0 btn-block">Select All</button>*@
+                                        <input type="button" id="selectall" name="selectall" value="Select All" class="btn btn-success rounded-0 btn-block">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="previewBtn" class="btn btn-primary btn-block rounded-0" formtarget="_blank" style="margin-right: 5px;">
+                                    <span class="glyphicon glyphicon-eye-open"> </span> Preview
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="reset" id="resetBtn" class="btn btn-warning btn-block rounded-0">
+                                    <span class="glyphicon glyphicon-refresh"> </span> Reset
+                                </button>
+                            </div>
+
+                        </div>
+                    </fieldset>
+                }
+            </div>
+            <fieldset class="col-md-7 col-12 boxStyle p-2 mCustomScrollbar" id="datatableDiv" data-mcs-theme="minimal-dark" style="height: 480px;">
+                <table id="datatable" class="table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="d-none"></th>
+                            <th>Emp  Code</th>
+                            <th>Emp Name</th>
+                            <th>Department</th>
+                            <th>Section</th>
+                            <th>Designation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var aCard in Model)
+                        {
+                            <tr>
+                                <td class="d-none">@aCard.EmpId</td>
+                                <td>[-@aCard.EmpCode]</td>
+                                <td>@aCard.EmpName</td>
+                                <td>@aCard.DeptName</td>
+                                <td>@aCard.SectName</td>
+                                <td>@aCard.DesigName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+            <!--Datatable-->
+            @*<fieldset class="col-md-7 col-12 boxStyle p-2 mCustomScrollbar" id="datatableDiv" data-mcs-theme="minimal-dark" style="height: 480px;">
+                    @if (emplist != null)
+                    {
+                        <table id="datatable" class="table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="d-none"></th>
+                                    <th>Emp  Code</th>
+                                    <th>Emp Name</th>
+                                    <th>Department</th>
+                                    <th>Section</th>
+                                    <th>Designation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var aCard in emplist)
+                                {
+                                <tr>
+                                    <td class="d-none">@aCard.EmpId</td>
+                                    <td>@aCard.EmpCode</td>
+                                    <td>@aCard.EmpName</td>
+                                    <td>@aCard.DeptName</td>
+                                    <td>@aCard.SectName</td>
+                                    <td>@aCard.DesigName</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <center> No data to show</center>
+                    }
+
+                </fieldset>*@
+
+        </div><!--Main field end-->
+    </div><!--panel body end-->
+</div><!--Panel end-->
+@*<script src="~/Content/js/plugins/jquery/jquery-3.1.1.min.js"></script>
+    <script src="~/Content/js/jquery.ui.core.min.js"></script>
+    <script src="~/Content/js/jquery.ui.datepicker.min.js"></script>
+    <script src="~/Content/js/plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="~/Content/js/plugins/datatables/datatables.min.js"></script>*@
+
+
+@section Scripts{
+    <script>
+
+
+    //--------------------------------------FUNCTIONS---------------------------------------//
+        var idcardempdata;
+        function manipulateDataTable() {
+
+            idcardempdata = $('#datatable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                select: true,
+                select: 'multi',
+                'aoColumns': [
+                    { 'sClass': 'EmpId','visible':false},
+                    { 'sClass': 'EmpCode','visible':true},
+                    { 'sClass': 'EmpName','visible':true},
+                    { 'sClass': 'DeptName', 'visible': true },
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'DesigName','visible':true}
+                ],
+            language: { search: "",searchPlaceholder: "Search..." },
+            "scrollY": "true",
+            //"scrollX": "100%",
+            //"scrollCollapse": true,
+            "paging": false,
+            "lengthChange": false,
+            "responsive": true,
+                "info": true,
+                "ordering": true,
+            initComplete: function () {
+                $('.dataTables_filter input[type="search"]').css({ 'width': '100%', 'display': 'inline-block', 'padding-left': '10px', 'margin-right': '-3px' });
+            }
+        });
+    }
+
+    function clearAll() {
+        $("#FromDate").val("");
+        $("#ToDate").val("");
+        uncheckAllCheckBox();
+        $("#datatableDiv tbody tr").removeClass("clicked");
+        $("#datatableDiv tbody tr").children("td").removeClass("clicked");
+    }
+
+
+
+
+    //---------------------------------------- DOCUMENT READY----------------------------------//
+        $(document).ready(function () {
+
+            $("#FromDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                dateFormat: 'dd-M-yy'
+            });
+            $("#ToDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                dateFormat: 'dd-M-yy'
+            });
+
+            //$("#FromDate").val('01-Jan-1980');
+            //var da = new Date();
+            //$("#ToDate").val(da.getMonth()+1 + "/" + da.getDate() + "/" + da.getFullYear());
+
+            $("#datatableDiv").show();
+            manipulateDataTable();
+
+            //loading during data start
+            $("#loading").show();
+            $(document).ajaxStop(function () {
+                $("#loading").hide();
+            });
+        });
+    //---------------------------------- OK BUTTON----------------------------------//
+        $("#okBtn").click(function () {
+        allEmpChecked = false;
+            var fromDate = $("#FromDate").val();
+            var toDate = $("#ToDate").val();
+
+        //if (allEmpChecked === true) {
+        //    fromDate = '1990-01-01';
+        //}
+
+            idcardempdata.clear().draw();
+        var json = {
+            FromDate: fromDate,
+            ToDate: toDate
+        };
+        if (fromDate !== "" && toDate !== ""){
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EmployeeDataByDate", "HR")',
+                data: {FromDate:fromDate,ToDate:toDate},
+                success: function (data) {
+                    console.log(data);
+                    if (data != 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            $('#datatable').dataTable().fnAddData([
+                                data[i].EmpId,
+                                data[i].EmpCode,
+                                data[i].EmpName,
+                                data[i].DeptName,
+                                data[i].SectName,
+                                data[i].DesigName
+                            ])
+                        }
+                    }
+                }
+            });
+        } else {
+            alert("Please select date or check the box");
+            }
+        });
+
+
+
+        $('#selectall').click(function () {
+            var btn = $('#selectall').val();
+            if (btn == 'Select All') {
+                $('#datatable tbody tr').each(function () {
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    };
+                    $(this).addClass('selected');
+                });
+                $('#selectall').val('DeSelect All');
+            } else {
+                $('#datatable tbody tr').each(function () {
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    };
+                });
+                $('#selectall').val('Select All');
+            };
+        });
+
+        $('#previewBtn').click(function () {
+            IdCardPrint()
+        })
+
+        function IdCardPrint() {
+
+            var fromDate = $("#FromDate").val();
+            var toDate = $("#ToDate").val();
+            var employess = [];
+
+            if (fromDate == "") {
+                $("#FromDate").focus();
+                return false;
+            }
+
+            if (toDate == "") {
+                $("#ToDate").focus();
+                return false;
+            }
+
+            var data = idcardempdata.rows('.selected').data().toArray();
+            console.log(data);
+            for (var i = 0; i < data.length; i++) {
+                employess.push(data[i][0]);
+            }
+
+            if (employess.length < 1) {
+                toastr.warning("Please select employee!");
+                return false;
+            }
+            var viewReportAs = $("input[name=RptType]:checked").val();
+            var viewReportCat = $("input[name=RptTypeB]:checked").val();
+            var viewReportType = $("input[name=RptTypeC]:checked").val();
+
+
+            var idcard = {
+                FromDate: fromDate,
+                ToDate: toDate,
+                ViewReportAs: viewReportAs,
+                Employess: employess,
+                viewReportCat: viewReportCat,
+                viewReportType: viewReportType,
+            }
+
+            console.log(idcard);
+            @*$.ajax({
+                type: 'POST',
+                url: '@Url.Action("Index","IDCard")',
+                dataType: 'json',
+                data: { idCard: idcard,}
+            })*@
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("IdcardList","HR")',
+                dataType: 'json',
+                data: { idCard: idcard },
+                success: function (data) {
+                    fDate = $("#FromDate").val();
+                    tDate = $("#ToDate").val();
+                    view = $("input[name='ViewReportAs']:checked").val() || "";
+                    var url = '@Url.Action("IdcardViewReport", "HR")?fromDate=' + fDate + '&toDate=' + tDate + '&viewReportAs=' + viewReportAs + '&viewReportCat=' + viewReportCat + '&viewReportType=' + viewReportType;
+                    var tab = window.open(url, '_blank');
+                    tab.focus();
+
+                },
+                error: function (ex) {
+                    toastr.error("Sorry, an error occured . . . .");
+                }
+            });
+
+        }
+
+    </script>
+
+}

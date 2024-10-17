@@ -1,0 +1,697 @@
+﻿<style>
+    /*Here We will add some css for style our treeviewz*/
+    /*.collapsez {
+        width: 35px;
+        height: 35px;
+        /*background-image: url('../Images/gplus.png');
+        background-image: url('../../image/plus.png');
+        background-repeat: no-repeat;
+        background-position: -36px -17px;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+
+    .expandz {
+        width: 35px;
+        height: 35px;
+        background-image: url('../Images/gplus.png');
+        background-image: url('../../image/minus.png');
+        background-repeat: no-repeat;
+        background-position: -50px -17px;
+        display: inline-block;
+        cursor: pointer;
+    }*/
+
+    /*.treeviewz ul {
+        font: 14px;
+        margin: 0px;
+        padding-left: 20px;
+        list-style: none;
+    }
+
+    .treeviewz > li > a {
+        font-weight: bold;
+    }
+
+    .treeviewz li {
+    }
+
+        .treeviewz li a {
+            padding: 4px;
+            font-size: 12px;
+            display: inline-block;
+            text-decoration: none;
+            width: auto;
+        }*/
+    .tree, .tree ul {
+        margin: 0;
+        padding: 0;
+        list-style: none
+    }
+
+        .tree ul {
+            margin-left: 1em;
+            position: relative
+        }
+
+            .tree ul ul {
+                margin-left: .5em
+            }
+
+            .tree ul:before {
+                content: "";
+                display: block;
+                width: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                border-left: 1px solid
+            }
+
+        .tree li {
+            margin: 0px;
+            padding: 0px 2.5em;
+            line-height: 2.0em;
+            /*color: #369;*/
+            /*color: #17a2b8;*/
+            font-weight: 600;
+            position: relative;
+        }
+
+            .tree li ul li {
+                /*color: #369;*/
+            }
+
+        .tree ul li:before {
+            content: "";
+            display: block;
+            width: 22px;
+            height: 0;
+            border-top: 1px solid;
+            margin-top: -1px;
+            position: absolute;
+            top: 1em;
+            left: 0
+        }
+
+        .tree ul li:last-child:before {
+            background: #f7f7f7;
+            height: auto;
+            top: 1em;
+            bottom: 0
+        }
+
+    .indicator {
+        margin-right: 5px;
+    }
+
+    .tree li a {
+        text-decoration: none;
+        color: #369;
+    }
+
+    .tree li button, .tree li button:active, .tree li button:focus {
+        text-decoration: none;
+        color: #369;
+        border: none;
+        background: transparent;
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+        outline: 0;
+    }
+
+    i.indicator.glyphicon.mdi {
+        font-size: 20px;
+    }
+</style>
+
+<style type="text/css" media="all">
+    /*body {
+         color: #000;
+    }
+     #wrapper {
+         max-width: 480px;
+         margin: 0 auto;
+         padding-top: 20px;
+    }
+     .btn {
+         border-radius: 0;
+         margin-bottom: 5px;
+    }
+     .bootbox .modal-footer {
+         border-top: 0;
+         text-align: center;
+    }
+     h3 {
+         margin: 5px 0;
+    }
+     .order_barcodes img {
+         float: none !important;
+         margin-top: 5px;
+    }
+     @@media print {
+         .no-print {
+             display: none;
+        }
+         #wrapper {
+             max-width: 480px;
+             width: 100%;
+             min-width: 250px;
+             margin: 0 auto;
+        }
+         .no-border {
+             border: none !important;
+        }
+         .border-bottom {
+             border-bottom: 1px solid #ddd !important;
+        }
+         table tfoot {
+             display: table-row-group;
+        }
+
+
+    }*/
+</style>
+
+
+@model List<GTERP.Models.Acc_ChartOfAccount>
+@{
+    /**/
+
+    ViewBag.Title = "Simple";
+}
+
+<div class="row mb-3">
+    <div class="col-md-8 col-12 offset-md-2">
+        <div class="row">
+            <div class="col-md-3 col-12 px-1">
+                <button class="btn btn-primary btn-lg btn-block rounded-0 " type="button" onclick="Reload()">Refresh Before Expand</button>
+            </div>
+            <div class="col-md-3 col-12 px-1">
+                <button class="btn btn-success btn-lg btn-block rounded-0" type="button" onclick="ExpandAll()">Expand All</button>
+            </div>
+            <div class="col-md-3 col-12 px-1">
+                <button class="btn btn-warning btn-lg btn-block rounded-0" type="button" onclick="printDiv()">Print Expand Data</button>
+            </div>
+            <div class="col-md-3 col-12 px-1">
+                <button class="btn btn-info btn-lg btn-block rounded-0" type="button" onclick="exportHTML()">Word Export</button>
+            </div>
+        </div>
+        @*<input type='button' id='btn' value='Print' onclick='printDiv();'>*@
+        @* <button class="btn btn-success btn-lg btn-block" type="button" onclick="CollapseAll()">Collapse All</button>*@
+    </div>
+</div>
+<div class="card p-3">
+    <div id='DivIdToPrint'>
+        @*<header class="text-center">
+            <h5> DAP Fertilizer Company Limited. </h5>
+            <h6> Rangadia,Chattogram-4000 </h6>
+            <p> Chart of Accounts Tree View</p>
+        </header>*@
+        <br />
+        <br />
+        <br />
+        <br />
+
+
+        @*<html xmlns:o='urn:schemas-microsoft-com:office:office'
+        xmlns:w='urn:schemas-microsoft-com:office:word'
+        xmlns='http://www.w3.org/TR/REC-html40'>
+          <head>
+              <title>
+                  <h2> DAP Fertilizer Company Limited. </h2>
+              </title>
+          </head>
+          </html>*@
+
+
+        <div class="treeviewz card-header">
+
+            @if (Model != null && Model.Count() > 0)
+            {
+
+                <ul class="" id="tree1">
+                    @*@GetTreeView(Model, Model.FirstOrDefault().ParentID)*@
+                    @{ GetTreeView(Model, Model.FirstOrDefault().ParentID); }
+                </ul>
+            }
+        </div>
+    </div>
+
+</div>
+@*@{ Template(Model, Model.FirstOrDefault().ParentID); }*@
+
+@{
+    void GetTreeView(List<GTERP.Models.Acc_ChartOfAccount> siteMenu, int? parentID)
+    {
+        foreach (var i in siteMenu.OrderBy(x => x.AccCode).Where(a => a.ParentID.Equals(parentID)))
+        {
+            <li>
+                @{var submenu = siteMenu.Where(a => a.ParentID.Equals(i.AccId)).Count();}
+                @if (submenu > 0)
+                {
+                    if (i.AccType == "L")
+                    {
+                        <span class="collapsez collapsible" style="background-color:green;">&nbsp;</span>
+                        <span class="text-primary">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType - @i.Remarks - @i.OpDebit - @i.OpCredit
+
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="collapsez collapsible" style="width:14px; background-color:green;">&nbsp;</span>
+                        <span class="text-primary">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                }
+                else
+                {
+                    if (i.AccType == "L")
+                    {
+            <span class="text-success">
+                @*<a href="@i.AccCode">@i.AccName</a>*@
+                @i.AccCode - @i.AccName - @i.AccType - @i.Remarks - @i.OpDebit - @i.OpCredit
+
+            </span>
+                    }
+                    else
+                    {
+                        <span style="width:14px; background-color:red;">&nbsp;</span>
+                        <span class="text-success">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                }
+                @*<span class="text-danger">
+                        @i.AccCode - @i.AccName
+
+                    </span>*@
+                @if (submenu > 0)
+                {
+                    <ul class="text-success">
+                        @{ GetTreeView(siteMenu, i.AccId); }
+
+                        @* Recursive  Call for Populate Sub items here*@
+                    </ul>
+                }
+            </li>
+        }
+    }
+}
+
+@*@{
+        Func<IEnumerable<Acc_ChartOfAccount>, IHtmlContent> ShowTree = @<text>@{
+        var foos = item;
+        <ul>
+            @foreach (var foo in foos)
+            {
+                <li>
+                    @foo.Title
+                    @if (foo.Children.Any())
+                    {
+                        @ShowTree(foo.Children)
+                    }
+                </li>
+            }
+        </ul>
+    }</text>;
+    }
+
+    @ShowTree(new List<Acc_ChartOfAccount> {
+
+
+        Console.WriteLine("test")
+
+
+    });*@
+
+
+@section Scripts{
+    <script>
+
+
+
+        //$(document).ready(function () {
+        //    $(".treeviewz li>ul").css('display', 'none'); // Hide all 2-level ul
+        //    $(".collapsible").click(function (e) {
+        //        e.preventDefault();
+        //        $(this).toggleClass("collapsez expandz");
+        //        $(this).closest('li').children('ul').slideToggle();
+        //    });
+        //});
+        $.fn.extend({
+            treed: function (o) {
+
+                var openedClass = 'mdi mdi-chevron-down';
+                var closedClass = 'mdi mdi-chevron-right';
+
+                if (typeof o != 'undefined') {
+                    if (typeof o.openedClass != 'undefined') {
+                        openedClass = o.openedClass;
+                    }
+                    if (typeof o.closedClass != 'undefined') {
+                        closedClass = o.closedClass;
+                    }
+                };
+
+                //initialize each of the top levels
+                var tree = $(this);
+                tree.addClass("tree");
+                tree.find('li').has("ul").each(function () {
+                    var branch = $(this); //li with children ul
+                    branch.prepend("<i class='indicator glyphicon " + closedClass + "'></i>");
+                    branch.addClass('branch');
+                    branch.on('click', function (e) {
+                        if (this == e.target) {
+                            var icon = $(this).children('i:first');
+                            icon.toggleClass(openedClass + " " + closedClass);
+                            $(this).children().children().toggle();
+                        }
+                    })
+                    branch.children().children().toggle();
+                });
+                //fire event from the dynamically added icon
+                tree.find('.branch .indicator').each(function () {
+                    $(this).on('click', function () {
+                        $(this).closest('li').click();
+                    });
+                });
+                //fire event to open branch if the li contains an anchor instead of text
+                tree.find('.branch>a').each(function () {
+                    $(this).on('click', function (e) {
+                        $(this).closest('li').click();
+                        e.preventDefault();
+                    });
+                });
+                //fire event to open branch if the li contains a button instead of text
+                tree.find('.branch>button').each(function () {
+                    $(this).on('click', function (e) {
+                        $(this).closest('li').click();
+                        e.preventDefault();
+                    });
+                });
+            }
+        });
+
+        $('#tree1').treed();
+
+
+
+
+
+        function ExpandAll() {
+
+            var openedClass = 'mdi mdi-chevron-down';
+            var closedClass = 'mdi mdi-chevron-right';
+            var i = 0;
+            var tree = $('#tree1');
+
+            tree.find('li').children().each(function () {
+                i = i + 1;
+                console.log(i);
+                //var branch = $(this); //li with children ul
+                //branch.prepend("<i class='indicator glyphicon " + openedClass + "'></i>");
+                //branch.addClass('branch');
+                $(this).click();
+                //branch.on('click', function (e) {
+                //    if (this == e.target) {
+                //        var icon = $(this).children('i:first');
+                //        icon.toggleClass(closedClass + " " + openedClass);
+                //        $(this).children().children().toggle();
+                //    }
+                //})
+                //branch.children().children().toggle();
+            });
+        }
+
+
+        function ExpandAll() {
+
+            var openedClass = 'mdi mdi-chevron-down';
+            var closedClass = 'mdi mdi-chevron-right';
+            var i = 0;
+            var tree = $('#tree1');
+
+            tree.find('li').children().each(function () {
+                i = i + 1;
+                console.log(i);
+                //var branch = $(this); //li with children ul
+                //branch.prepend("<i class='indicator glyphicon " + openedClass + "'></i>");
+                //branch.addClass('branch');
+                $(this).click();
+                //branch.on('click', function (e) {
+                //    if (this == e.target) {
+                //        var icon = $(this).children('i:first');
+                //        icon.toggleClass(closedClass + " " + openedClass);
+                //        $(this).children().children().toggle();
+                //    }
+                //})
+                //branch.children().children().toggle();
+
+
+            });
+
+            //$(document).ready(function () {
+            //    window.print();
+
+            //});
+        }
+
+        function Reload() {
+            location.reload(true);
+        };
+
+
+        function printDiv() {
+
+            var divToPrint = document.getElementById('DivIdToPrint');
+
+            var newWin = window.open('', 'Print-Window');
+
+            newWin.document.open();
+
+            newWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</body></html>');
+
+            newWin.document.write(`
+                                        <html>
+                                        <style>
+
+                                  .tree, .tree ul {
+                                margin: 0;
+                                padding: 0;
+                                list-style: none
+                            }
+
+                                .tree ul {
+                                    margin-left: 1em;
+                                    position: relative
+                                }
+
+                                    .tree ul ul {
+                                        margin-left: .5em
+                                    }
+
+                                    .tree ul:before {
+                                        content: "";
+                                        display: block;
+                                        width: 0;
+                                        position: absolute;
+                                        top: 0;
+                                        bottom: 0;
+                                        left: 0;
+                                        border-left: 1px solid
+                                    }
+
+                                .tree li {
+                                    margin: 0px;
+                                    padding: 0px 2.5em;
+                                    line-height: 2.0em;
+                                    /*color: #369;*/
+                                    /*color: #17a2b8;*/
+                                    font-weight: 300;
+                                    position: relative;
+                                    font-size: 10px;
+
+                                }
+
+                                    .tree li ul li {
+                                        /*color: #369;*/
+                                    }
+
+                                .tree ul li:before {
+                                    content: "";
+                                    display: block;
+                                    width: 22px;
+                                    height: 0;
+                                    border-top: 1px solid;
+                                    margin-top: -1px;
+                                    position: absolute;
+                                    top: 1em;
+                                    left: 0
+                                }
+
+                                .tree ul li:last-child:before {
+                                    background: #f7f7f7;
+                                    height: auto;
+                                    top: 1em;
+                                    bottom: 0
+                                }
+
+                            .indicator {
+                                margin-right: 5px;
+                            }
+
+                            .tree li a {
+                                text-decoration: none;
+                                color: #369;
+                            }
+
+                            .tree li button, .tree li button:active, .tree li button:focus {
+                                text-decoration: none;
+                                color: #369;
+                                border: none;
+                                background: transparent;
+                                margin: 0px 0px 0px 0px;
+                                padding: 0px 0px 0px 0px;
+                                outline: 0;
+                            }
+
+                            i.indicator.glyphicon.mdi {
+                                font-size: 20px;
+                            }
+
+</style>
+                                        <body onload="window.print()">${divToPrint.innerHTML}</body>
+
+                                        </html>
+                                        `);
+
+
+            newWin.document.close();
+
+            setTimeout(function () { newWin.close(); }, 10);
+
+        }
+
+
+
+        function exportHTML() {
+            var header = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
+                                            xmlns:w='urn:schemas-microsoft-com:office:word'
+                                            xmlns='http://www.w3.org/TR/REC-html40'>
+
+<head><title>Fahad </title></head>
+
+                                            <style>
+
+                                                .tree, .tree ul {
+                                                    margin: 0;
+                                        padding: 0;
+                                        list - style: none
+                                    }
+
+                                    .tree ul {
+                                        margin - left: 1em;
+                                        position: relative
+                                    }
+
+                                    .tree ul ul {
+                                        margin - left: .5em
+                                    }
+
+                                    .tree ul: before {
+                                        content: "";
+                                        display: block;
+                                        width: 0;
+                                        position: absolute;
+                                        top: 0;
+                                        bottom: 0;
+                                        left: 0;
+                                        border - left: 1px solid
+                                    }
+
+                                    .tree li {
+                                        margin: 0px;
+                                        padding: 0px 2.5em;
+                                        line - height: 2.0em;
+                                        /*color: #369;*/
+                                        /*color: #17a2b8;*/
+                                        font - weight: 300;
+                                        position: relative;
+                                        font - size: 10px;
+
+                                    }
+
+                                    .tree li ul li {
+                                        /*color: #369;*/
+                                    }
+
+                                    .tree ul li: before {
+                                        content: "";
+                                        display: block;
+                                        width: 22px;
+                                        height: 0;
+                                        border - top: 1px solid;
+                                        margin - top: -1px;
+                                        position: absolute;
+                                        top: 1em;
+                                        left: 0
+                                    }
+
+                                    .tree ul li: last - child: before {
+                                        background: #f7f7f7;
+                                        height: auto;
+                                        top: 1em;
+                                        bottom: 0
+                                    }
+
+                                    .indicator {
+                                        margin - right: 5px;
+                                    }
+
+                                    .tree li a {
+                                        text - decoration: none;
+                                        color: #369;
+                                    }
+
+                                    .tree li button, .tree li button: active, .tree li button: focus {
+                                        text - decoration: none;
+                                        color: #369;
+                                        border: none;
+                                        background: transparent;
+                                        margin: 0px 0px 0px 0px;
+                                        padding: 0px 0px 0px 0px;
+                                        outline: 0;
+                                    }
+
+                                    i.indicator.glyphicon.mdi {
+                                        font - size: 20px;
+                                    }
+
+                                    </style > <head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>`;
+
+
+
+            var footer = "</body></html>";
+            var sourceHTML = header + document.getElementById("DivIdToPrint").innerHTML + footer;
+
+            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            var fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'document.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+
+    </script>
+}

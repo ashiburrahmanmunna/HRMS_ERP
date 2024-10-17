@@ -1,0 +1,645 @@
+﻿@model GTERP.Models.ShowVoucherViewModel
+@{
+    ViewBag.Title = "Show Voucher";
+}
+<style type="">
+    /*table tbody td {
+        padding: 0px 0px;
+        vertical-align: middle;
+        font-size: 11pt;
+        vertical-align:middle;
+    }*/
+    .disabledbutton {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    #tblFY tbody tr td {
+        padding: 4px;
+        vertical-align: middle;
+    }
+
+    .checked {
+        background-color: #ff0000;
+    }
+
+    .hideAll {
+        visibility: hidden;
+    }
+
+    .well {
+        min-height: 20px;
+        padding: 10px;
+        padding-bottom: 19px;
+        margin-bottom: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #e3e3e3;
+        /*border-radius: 4px;*/
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+</style>
+@using (Html.BeginForm())
+{  
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="card hideAll" id="tabs">
+            <div class="card-header bg-success text-white">
+                <div class="row">
+                    <div class="col-md-6 col-12">Show Voucher Reports</div>
+                    <div class="col-md-6 col-12 text-right clsRptFormat">
+                        @Html.RadioButton("rptFormat", "PDF", true) PDF
+                        @Html.RadioButton("rptFormat", "EXCEL", false) Excel
+                        @Html.RadioButton("rptFormat", "WORD", false) Word
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body py-2">
+            <div class="row">
+                <div id="divRadiobutton" class="col-md-2 col-12 px-1">
+                    <div class="well" style="height: 120px;">
+                        <label><input type="radio" name="FY" checked="checked" value="date" /> Voucher Date </label><br />
+                        <label><input type="radio" name="FY" value="no" /> Voucher No </label><br />
+                        <label><input type="radio" name="FY" value="fy" /> Fiscal Year</label>
+                    </div>
+                </div>
+                <div class="col-md-5 col-12 px-1" id="divVoucherDate">
+                    <div class="well" style="height: 120px;">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    @Html.LabelFor(model => model.dtFrom, new { @class = "control-label btn-block" })
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(model => model.dtFrom, new { @Value = ViewBag.date, @name = "dtFrom", @id = "dtFrom", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.dtFrom)
+                            @Html.HiddenFor(model => model.dtFrom)
+                        </div>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    @Html.LabelFor(model => model.dtTo, new { @class = "control-label btn-block" })
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(model => model.dtTo, new { @Value = ViewBag.date1, @name = "dtTo", @id = "dtTo", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.dtTo)
+                            @Html.HiddenFor(model => model.dtTo)
+                        </div>                      
+                    </div>
+
+
+                </div>
+                <div class="col-md-5 col-12 px-1" id="divVoucherNo">
+                    <div class="well" style="height: 120px;">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    @Html.LabelFor(model => model.VoucherFrom, new { @class = "control-label btn-block" })
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(model => model.VoucherFrom, new { @name = "VoucherFrom", @id = "VoucherFrom", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.VoucherFrom)
+                            @Html.HiddenFor(model => model.VoucherFrom)
+                        </div>                    
+                        <div class="form-group" style="margin-bottom: 5px;">
+                            <div class="row">
+                                <div class="col-md-5 text-right">
+                                    @Html.LabelFor(model => model.VoucherTo, new { @class = "control-label btn-block" })
+                                </div>
+                                <div class="col-md-7">
+                                    @Html.TextBoxFor(model => model.VoucherTo, new { @name = "VoucherTo", @id = "VoucherTo", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VoucherTo)
+                                    @Html.HiddenFor(model => model.VoucherTo)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="divCurrency" class="col-md-5 col-12 px-1">
+                    <div class="well" style="height: 120px;">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    @Html.LabelFor(model => model.CountryId, new { @class = "control-label btn-block" })
+                                </span>
+                            </div>
+                            @Html.DropDownList("CountryId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CountryId)
+                        </div>
+                        <div class="input-group mb-2">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <label class="control-label">
+                                        @Html.CheckBoxFor(model => model.isPosted) Post Voucher &nbsp;
+                                    </label>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    @* <label class="control-label"><input type="checkbox" id="chkBox" name="chkAll"/>&nbsp;Other Voucher</label>*@
+
+                                    <label class="control-label">
+                                        @Html.CheckBoxFor(model => model.isOther) Other Voucher &nbsp;
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>                     
+                    </div>
+                </div>
+                <div id="divAccountsHead" class="col-md-7 col-12 px-1">
+                    <div class="well" style="height: 120px; margin-bottom: 5px; padding-bottom: 5px;">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    Voucher Type
+                                </span>
+                            </div>
+                            @Html.DropDownList("VoucherTypeId", null, htmlAttributes: new { @class = "form-control" })
+                            @*@Html.DropDownListFor(model => model.VoucherTypeId, new SelectList(ViewBag.VoucherTypeId, "VoucherTypeId", "VoucherTypeName"), new { @class = "form-control" })*@
+                        </div>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    Account Name
+                                </span>
+                            </div>
+                            @*@Html.DropDownListFor(model => model.AccId, new SelectList(ViewBag.AccId, "AccId", "AccName"), new { @class = "form-control" })*@
+                            @Html.DropDownList("AccId", null, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div id="divPrdUnitGroup" class="col-md-5 col-12 px-1">
+                    <div class="well the-fieldset" style="height: 120px;">
+                        <div class="input-group mb-2 pt-3" id="divPrdUnit">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    @Html.LabelFor(model => model.PrdUnitId, new { @class = "control-label btn-block" })
+                                </span>
+                            </div>
+                            @Html.DropDownList("PrdUnitId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PrdUnitId)
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tblFYdiv" class="col-md-12 col-12 px-1">                  
+                                               
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover" id="tblFY" width="100%">
+                                            <thead>
+                                                <tr style="background: gainsboro">
+                                                    <th>
+                                                        Markpu
+                                                    </th>
+                                                    <th>
+                                                        Fiscal Year
+                                                    </th>
+                                                    <th>
+                                                        Opening Date
+                                                    </th>
+                                                    <th>
+                                                        Close Date
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < Model.FiscalYs.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(model => model.FiscalYs[i].FYId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(model => model.FiscalYs[i].FYName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(model => model.FiscalYs[i].OpDate)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(model => model.FiscalYs[i].ClDate)
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    </div>                            
+                
+                   
+                </div>
+
+
+
+
+            </div>
+            </div>
+            <div class="card-footer clearfix">
+                <div class="form-group">
+                    <div class="row well the-fieldset">
+
+                        <div class="col-md-4 col-12">
+
+                        </div>
+                        <div class="col-md-4 col-12">
+
+                            <input type="button" id="btnSave" class="btn btn-success btn-block rounded-0" value="Show" onclick="ReportPrint() " />
+
+                        </div>
+
+                        <div class="col-md-4 col-12 text-right">
+                            @Html.RadioButton("rpttype", "iv", true) Individual
+                            &nbsp;
+                            @Html.RadioButton("rpttype", "lov", false) List
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+}
+@section Scripts{
+
+    <script language="javascript" type="text/javascript">
+
+    var tblFY = $('#tblFY').DataTable({
+        select: true,
+        select: 'single',
+        'columnDefs': [
+            {
+                'targets': 0,
+                'visible': false,
+                'className': 'chkAllPostFY'
+
+            }
+        ],
+        'paging': false, 'info': false,
+        'searching': false
+
+    });
+
+    var table = $('#tblFY').DataTable();
+
+    $(document).ready(function () {
+
+        $('#tblFY tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+
+        });
+
+        var tablefy = $('#tblFY').DataTable();
+        var oTableFY = $('#tblFY').dataTable();
+        tablefy.$('tr').click(function () {
+            var selectedRow = oTableFY.fnGetData(this);
+            $(this).toggleClass('row_selected');
+            console.log(selectedRow[0]);
+            //alert('tblfy');
+            //fncFilterdata(selectedRow[0]);
+
+        });
+
+        $("#dtFrom").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtFrom").datepicker("option", "dateFormat");
+                //setter
+                $("#dtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#dtTo").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+                //setter
+                $("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $('input[name=FY]').click(function () {
+
+            var a = $("input[name=FY]:checked").val();
+            if (a == "fy") {
+                $("#tblFYdiv").find("*").removeAttr("disabled");
+                $("#tblFYdiv").removeClass("disabledbutton");
+                table.$('tr.selected').removeClass('selected');
+                $("#divVoucherNo").show();
+                $("#divVoucherDate").hide();
+                $("#divVoucherNo").addClass("disabledbutton");
+
+
+
+
+            }
+            else if (a == "no") {
+                $("#divVoucherNo").show();
+                $("#divVoucherDate").hide();
+                $("#divVoucherNo").removeClass("disabledbutton");
+
+
+                $("#tblFYdiv").find("*").attr("disabled", "disabled");
+                $("#tblFYdiv").addClass("disabledbutton");
+                table.$('tr.selected').removeClass('selected');
+            }
+            else if (a == "date") {
+                $("#divVoucherDate").show();
+                $("#divVoucherNo").addClass("disabledbutton");
+                $("#divVoucherNo").hide();
+
+                $("#tblFYdiv").find("*").attr("disabled", "disabled");
+                $("#tblFYdiv").addClass("disabledbutton");
+                table.$('tr.selected').removeClass('selected');
+
+            }
+
+        });
+
+    });
+
+    $(window).on("load", function () {
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+
+        $('#tabs').fadeOut(1);
+        $('#tabs').removeClass('hideAll');
+        $('#tabs').fadeIn(2000);
+
+
+    });
+
+    $('input[name=RptType]').click(function () {
+        var a = $("input[name=RptType]:checked").val();
+        $("#islocal").show();
+        $("#isMatrial").show();
+        if (a == "NoteRpt") {
+            $("#islocal").hide();
+        } else {
+            $("#isMatrial").hide();
+        }
+    });
+
+    $(document).ready(function () {
+
+        $("#datepicker").datepicker({ dateFormat: 'dd-M-yy' });
+        $("#datepicker1").datepicker({ dateFormat: 'dd-M-yy' });
+        $("#tblFYdiv").find("*").attr("disabled", "disabled");
+        $("#tblFYdiv").addClass("disabledbutton");
+
+        $("#divVoucherNo").hide();
+    });
+
+
+    $('.cw2').change(function () {
+        if ($('input.cw2').filter(':checked').length >= 1) {
+            $('input.cw2').not(this).prop('checked', false);
+        }
+        else {
+        }
+    });
+
+          $("#dtFrom").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtFrom").datepicker("option", "dateFormat");
+                //setter
+                $("#dtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#dtTo").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+                //setter
+                $("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+
+            CurrentDate();
+
+            $("#dtFrom").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+            $("#dtTo").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+
+            function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                 if ($("#dtFrom").val() == '') {
+                    $("#dtFrom").val(val);
+                }
+                if ($("#dtTo").val() == '') {
+                    $("#dtTo").val(val);
+                }
+
+            }
+
+
+        function ReportPrint(btnvalue) {
+
+            //var criteria = $("input[name='criteria']:checked").val();
+
+            var criteria = $("input[name='FY']:checked").val();
+            var rptFormat = $("input[name='rptFormat']:checked").val();
+            var rpttype = $("input[name='rpttype']:checked").val();
+            var PrdUnitId = $('#PrdUnitId').val();
+
+            var dtFrom = $('#dtFrom').val();
+            var dtTo = $('#dtTo').val();
+
+           // alert(dtFrom);
+
+            var VoucherFrom = $('#VoucherFrom').val();
+            var VoucherTo = $('#VoucherTo').val();
+
+            var Currency = $('#CountryId').val();
+            var isPosted = 0;
+            var isOther = 0;
+            if ($("#isPosted").prop('checked') == true) {
+                isPosted = 1;
+
+            }
+            if ($("#isOther").prop('checked') == true) {
+                isOther = 1;
+
+            }
+
+            //alert(Currency, isPosted, isOther);
+
+
+
+            var VoucherTypeId = $('#VoucherTypeId').val();
+            var AccId = $('#AccId').val();
+
+            if (VoucherTypeId == '') {
+                toastr.error('Please Select Voucher Type');
+                return;
+            }
+            if (AccId == '') {
+                toastr.error('Please Select Account Head');
+                return;
+            }
+
+
+            //alert('ok');
+
+            //alert(table.rows('.selected').data().length + ' row(s) selected');
+            var FYId = 0;
+            var rows = table.rows('.selected').data();
+            if (rows.length > 0) {
+                console.log(rows[0][0]);
+                var FYId = rows[0][0];
+            }
+
+            if (criteria == "no") {
+                if (VoucherFrom == '' || VoucherTo == '') {
+                    toastr.error('Please Type Voucher No');
+                    return;
+                }
+            }
+            else if (criteria == "date") {
+                if (dtFrom == '' || dtTo == '') {
+                    toastr.error('Please Select Voucher Date');
+                    return;
+                }
+
+            }
+            else if (criteria == "fy") {
+                if (rows.length == 0) {
+                    toastr.error('Please Select Fiscal Year');
+                    return;
+                }
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SetSession", "Accounts")',
+                dataType: 'json',
+                async: true,
+                data: {
+                    criteria: criteria, rptFormat: rptFormat, rpttype: rpttype, dtFrom: dtFrom, dtTo: dtTo, VoucherFrom: VoucherFrom, VoucherTo: VoucherTo, Currency: Currency, isPosted: isPosted, isOther: isOther, FYId: FYId, VoucherTypeId: VoucherTypeId, Accid: AccId, PrdUnitId: PrdUnitId
+                },
+                success: function (url) {
+                    //  window.location.href = response.Url;
+                    //alert(response);
+                    //location.href = url;  
+                    //window.open(url); 
+                    window.open(url, '_blank');
+
+                    //var win = window.open('about:blank');
+                    //  with (win.document) {
+                    //      open();
+                    //      write(data);
+                    //      close();
+                    //  }
+
+
+
+                    // window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+        }
+
+        function CurrentDate() {
+            //alert('hit');
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        };
+
+            $("#dtFrom").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtFrom").datepicker("option", "dateFormat");
+                //setter
+                $("#dtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+            });
+
+            $("#dtTo").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+             $("#dtFrom").val(CurrentDate());
+        
+            $("#dtTo").val(CurrentDate());
+
+            $("#dtFrom").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+            $("#dtTo").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+    
+
+    </script>
+    }

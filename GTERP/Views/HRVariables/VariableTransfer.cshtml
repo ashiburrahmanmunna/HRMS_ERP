@@ -1,0 +1,205 @@
+﻿@model List<GTERP.Models.TransferVariable>
+@{
+    ViewData["Title"] = "VariableTransfer";
+}
+<div>
+    <button class="rounded-0 btn btn-sm" id="btnDownloadSample" onclick="downloadSample()" style="background-color: #28a745; color: #fff;">Download Sample Format</button>
+
+</div>
+<form id="myform" method="post" enctype="multipart/form-data" asp-action="VariableTransfer" asp-controller="HRVariables">
+    <div class="card">
+        <div style="margin-bottom: 20px">
+            <div class="form-header btn-light d-flex">
+                <i class="far fa-file-alt" style="font-size:30px"></i>&nbsp;
+                <h4>Variable Transfer</h4>
+            </div>
+        </div>
+
+ @*        <h4 id="styletext" style="text-align:center">Data Import</h4> *@
+
+        <div class="card-body">
+            <div class="input-group input-group w-50" style="margin:05px auto;">
+                <span class="input-group-btn input-group-prepend">
+                    <span class="btn btn-primary rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                    <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                </span>
+                <span class="form-control border border-primary" style="background: #f2f2f2e6;"></span>
+                <input class="rounded-0 btn btn-primary btn-sm" type="submit" id="btnUpload" value="Upload Files" />
+              
+                
+            </div>
+        </div>
+         
+</div>
+
+</form>
+<div class="card-body">
+<div class="row">
+    <div class="col-md-3 col-12">
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    From Date
+                </span>
+            </div>
+            <input type="date" id="FromDate" name="FromDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+    <div class="col-md-3 col-12">
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    To Date
+                </span>
+            </div>
+            <input type="date" id="ToDate" name="ToDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+    <div class="col-md-3 col-12">
+        <button class="btn btn-primary" onclick="loadData()">Load Data</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <div class="scrollable-table">
+        <table class="table table-bordered table-striped">
+            <thead class="fixed-header">
+                <tr>
+                    <th>Effective Date</th>
+                    <th>Emp Code</th>
+                    <th>Name</th>
+                    <th>Vendor Name</th>
+                    <th>Present Department</th>
+                    <th>Proposed Department</th>
+                    <th>Present Designation</th>
+                    <th>Proposed Designation</th>
+                    <th>Present Role</th>
+                    <th>Proposed Role</th>
+                    <th>Present Cost Head</th>
+                    <th>Proposed Cost Head</th>
+                    <th>Present Altitude Code</th>
+                    <th>Proposed Altitude Code</th>
+                    <th>Present Worker Classification</th>
+                    <th>Proposed Classification</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.EffectiveDate</td>
+                            <td>@item.EmpCode</td>
+                            <td>@item.Name</td>
+                            <td>@item.VandorName</td>
+                            <td>@item.PresentDepartment</td>
+                            <td>@item.ProposedDepartment</td>
+                            <td>@item.PresentDesignation</td>
+                            <td>@item.ProposedDesignation</td>
+                            <td>@item.PresentRole</td>
+                            <td>@item.ProposedRole</td>
+                            <td>@item.PresentCostHead</td>
+                            <td>@item.ProposedCostHead</td>
+                            <td>@item.PresentAltitudeCode</td>
+                            <td>@item.ProposedAltitudeCode</td>
+                            <td>@item.PresentWorkerClassification</td>
+                            <td>@item.ProposedClassification</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<style>
+    .scrollable-table {
+        overflow-y: auto;
+        max-height: 500px; /* Adjust the maximum height as needed */
+    }
+
+    /* Optional: Set max-width to prevent table name overflow */
+    .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .fixed-header {
+        position: sticky;
+        top: 0;
+        background-color: white;
+    }
+</style>
+<script>
+    function downloadSample() {
+        
+        var url = '@Url.Action("DownloadExcel", "HRVariables")';
+
+        
+        var form = document.createElement('form');
+        form.method = 'GET'; 
+        form.action = url;
+
+       
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = '';
+        hiddenInput.value = '';
+        form.appendChild(hiddenInput);
+
+       
+        form.addEventListener('submit', function () {
+            
+            setTimeout(function () {
+                location.reload();
+            }, 1000); 
+        });
+
+       
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function loadData() {
+        var fromDate = document.getElementById('FromDate').value;
+        var toDate = document.getElementById('ToDate').value;
+
+        var url = '@Url.Action("GetTransferDataHistory", "HRVariables")' + '?fromDate=' + fromDate + '&toDate=' + toDate;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing table rows
+                document.querySelector('.table tbody').innerHTML = '';
+
+                // Append new rows based on the returned data
+                data.forEach(item => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${item.EffectiveDate}</td>
+                                         <td>${item.EmpCode}</td>
+                                         <td>${item.Name}</td>
+                                         <td>${item.VandorName}</td>
+                                         <td>${item.PresentDepartment}</td>
+                                         <td>${item.ProposedDepartment}</td>
+                                         <td>${item.PresentDesignation}</td>
+                                         <td>${item.ProposedDesignation}</td>
+                                         <td>${item.PresentRole}</td>
+                                         <td>${item.ProposedRole}</td>
+                                         <td>${item.PresentCostHead}</td>
+                                         <td>${item.ProposedCostHead}</td>
+                                         <td>${item.PresentAltitudeCode}</td>
+                                         <td>${item.ProposedAltitudeCode}</td>
+                                         <td>${item.PresentWorkerClassification}</td>
+                                         <td>${item.ProposedClassification}</td>`;
+                    document.querySelector('.table tbody').appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+</script>
+

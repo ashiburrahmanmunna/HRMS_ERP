@@ -1,0 +1,423 @@
+﻿
+@model IEnumerable<GTERP.ViewModels.VendorInfoVM>
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-2 col-2">
+                @Html.ActionLink("Vendor Creation", "CreateVendorInfo", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+           
+                @*Upload Excel File Start*@
+                <div class="col-md-8 col-8">
+                <form method="post" enctype="multipart/form-data" asp-action="RateUploadFileUBL">                       
+                    <div class="input-group input-group w-50" style="margin:0 auto;">
+                        <span class="input-group-btn input-group-prepend">
+                            <span class="btn btn-info rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                            <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                        </span>
+                        <span class="form-control border border-info" style="background: #f2f2f2e6;"></span>
+                        <button class="rounded-0 btn btn-info btn-sm" type="submit" id="btnUpload">Upload</button>
+                        <div style="padding-left:5px;">
+                            <a href="~/HR/DownloadShiftFile?file=Vendor_uploads.xlsx" title="Download Sample Format"
+                               class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i>Vendor Info Sample</a>
+                            
+                        </div>
+                    </div>
+                    </form>
+                    <span>
+                        <div style="padding-bottom:10px"></div>
+                    </span>
+                <form method="post" enctype="multipart/form-data" asp-action="BankDataUpload">
+                    <div class="input-group input-group w-50" style="margin:0 auto;">
+                        <span class="input-group-btn input-group-prepend">
+                            <span class="btn btn-info rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                            <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                        </span>
+                        <span class="form-control border border-info" style="background: #f2f2f2e6;"></span>
+                        <button class="rounded-0 btn btn-info btn-sm" type="submit" id="btnUpload">Upload</button>
+                        <div style="padding-left:5px;">
+                            <a href="~/HR/DownloadShiftFile?file=Bank_Info_Excel.xlsx" title="Download Bank Info Sample"
+                               class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i>  Bank Info Sample</a>
+                           
+                        </div>
+                    </div>
+                
+                </form> 
+                </div>
+                @*Upload Excel File End*@
+            
+                
+                <div class="col-md-2 col-2">
+                
+            </div>
+        </div>
+    </div>
+
+
+    
+           
+
+    <form class="card p-2">
+        <div class="table-responsive text-nowrap">
+        <table id="tbllist" class="table table-hover table-bordered tbllist  table-hover" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                            <td>EmpCode</td>
+                            <td>EmpName</td>
+                            <td>Vendor Name</td>
+                            <td>Vendor Type</td>
+                            <td>Deptartment</td>
+                            <td>Role/Job Nature</td>
+                            <td>Designation</td>                           
+                            <td>AltitudeData</td>
+                            <td>Classification</td>
+                            <td>Type</td>
+                            <td>District</td>
+                            <td>Present Address</td>
+                            <td>Permanent Address</td>
+                            <td>Father's Name</td>
+                            <td>Mother's Name</td>
+                            <td>Marital Status</td>
+                            <td>Spouse Name</td>
+                            <td>Gender</td>
+                            <td>DOB</td>
+                            <td>Age</td>
+                            <td>Service period</td>
+                            <td>Nid</td>
+                            <td>RFID</td>
+                            <td>DOJ</td>
+                            <td>Cell Number</td>
+                            <td>Emergency Contract</td>
+                            <td>Religion</td>
+                            <td>Blood Group</td>
+                            <td>Employee Status</td>
+                            <td>Vaccinated</td>
+                            <td>Rate</td>
+                            <td>Offday</td>
+                        <!-- New columns -->
+                        <td>Gross Salary</td>
+                        <td>Skill</td>
+                        <td>Relay</td>
+                        <td>2nd WeekDay</td>
+                        <td>Category</td>
+                        @* <td>Father's Name</td>
+                        <td>Mother's Name</td> *@
+                        <td>Bank Name</td>
+                        <td>Branch Name</td>
+                        <td>Routing Number</td>
+                        <td>Account Number</td>
+                        <td>Account Name</td>
+                        <td>Account Type</td>
+                            <td>  </td>
+                       
+                            
+                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                        if (e.IsApprove == false)
+                        {
+                            <tr style="background-color:rgb(249 207 181)">
+                                <td>@e.EmpCode</td>
+                                <td>@e.EmpName</td>
+                                <td>@e.UnitName</td>
+                                <td>@e.VendorType</td>
+                                <td>@e.DeptName</td>
+                                <td>@e.DesigName</td>
+                                <td>@e.JobNatureType</td>                              
+                                <td>@e.AltitudeData</td>
+                                <td>@e.SectName</td>
+                                <td>@e.EmpTypeName</td>
+                                <td>@e.DisName</td>
+                                <td>@e.PresentAddress</td>
+                                <td>@e.PermanentAddress</td>
+                                <td>@e.EmpFather</td>
+                                <td>@e.EmpMother</td>                               
+                                   @if (e.MaritalStatus == false)
+                                {
+                                    <td>Single</td>
+                                }
+                                else
+                                {
+                                  <td>Married</td>  
+
+                                }
+                                <td>@e.EmpSpouse</td>
+                                <td>@e.GenderName</td>
+                                <td>@e.DtBirth.Date</td>
+                                <td>@e.Age</td>
+                                <td>@e.ServiceLentgh</td>
+                                <td>@e.NID</td>
+                                <td>@e.FingerId</td>
+                                <td>@e.DtJoin.ToString("dd-MMM-yyyy")</td>
+                                <td>@e.EmpPhone1</td>
+                                <td>@e.EmpPhone2</td>
+                                <td>@e.ReligionName</td>
+                                <td>@e.BloodName</td>
+                                @if (e.IsInactive == false)
+                                {
+                                    <td>Active</td>
+                                }
+                                else
+                                {
+                                  <td>Inactive</td>  
+
+                                }
+
+                                 <td>@e.Vaccinated</td>
+                                 <td>@e.rate</td>
+                                <td>@e.Offday</td>
+                                <!-- New data cells -->
+                                <td>@e.GrossSalary</td>
+                                <td>@e.Skill</td>
+                                <td>@e.Relay</td>
+                                <td>@e.SecondWeekDay</td>
+                                <td>@e.Category</td>
+                               @*  <td>@e.FatherName</td>
+                                <td>@e.MotherName</td> *@
+                                <td>@e.BankName</td>
+                                <td>@e.BranchName</td>
+                                <td>@e.RoutingNumber</td>
+                                <td>@e.AccountNumber</td>
+                                <td>@e.AccountName</td>
+                                <td>@e.AccountType</td>
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "EditVendorInfo", new { id = e.EmpId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Delete!">
+                                        @Html.ActionLink(" ", "DeleteVendorInfo", new { id = e.EmpId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                    </span>
+
+
+                                </td>
+                                <td>ke</td>
+                                <td>1</td>
+                                <td>3</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                  <td>@e.EmpCode</td>
+                                <td>@e.EmpName</td>
+                                <td>@e.UnitName</td>
+                                <td>@e.VendorType</td>
+                                <td>@e.DeptName</td>
+                                <td>@e.DesigName</td>
+                                <td>@e.JobNatureType</td>
+                                <td>@e.AltitudeData</td>
+                                <td>@e.SectName</td>
+                                <td>@e.EmpTypeName</td>
+                                <td>@e.DisName</td>
+                                <td>@e.PresentAddress</td>
+                                <td>@e.PermanentAddress</td>
+                                <td>@e.EmpFather</td>
+                                <td>@e.EmpMother</td>
+                                @if (e.MaritalStatus == false)
+                                {
+                                    <td>Single</td>
+                                }
+                                else
+                                {
+                                  <td>Married</td>  
+
+                                }
+                                <td>@e.EmpSpouse</td>
+                                <td>@e.GenderName</td>
+                                <td>@e.DtBirth.ToString("dd-MMM-yyyy")</td>
+                                <td>@e.Age</td>
+                                <td>@e.ServiceLentgh</td>
+                                <td>@e.NID</td>
+                                <td>@e.FingerId</td>
+                                <td>@e.DtJoin.ToString("dd-MMM-yyyy")</td>
+                                <td>@e.EmpPhone1</td>
+                                <td>@e.EmpPhone2</td>
+                                <td>@e.ReligionName</td>
+                                <td>@e.BloodName</td>
+                                   @if (e.IsInactive == false)
+                                {
+                                    <td>Active</td>
+                                }
+                                else
+                                {
+                                  <td>Inactive</td>  
+
+                                }
+                                  <td>@e.Vaccinated</td>
+                                  <td>@e.rate</td>
+                                  <td>@e.Offday</td>
+                                <!-- New data cells -->
+                                <td>@e.GrossSalary</td>
+                                <td>@e.Skill</td>
+                                <td>@e.Relay</td>
+                                <td>@e.SecondWeekDay</td>
+                                <td>@e.Category</td>
+                                @* <td>@e.FatherName</td>
+                                <td>@e.MotherName</td> *@
+                                <td>@e.BankName</td>
+                                <td>@e.BranchName</td>
+                                <td>@e.RoutingNumber</td>
+                                <td>@e.AccountNumber</td>
+                                <td>@e.AccountName</td>
+                                <td>@e.AccountType</td>
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "EditVendorInfo", new { id = e.EmpId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Delete!">
+                                        @Html.ActionLink(" ", "DeleteVendorInfo", new { id = e.EmpId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                    </span>
+                                </td>
+                               
+                            </tr>
+                        }
+                    }
+            </tbody>
+        </table>
+        </div>
+        <br />
+    </form>
+</div>
+
+
+@section Scripts{
+
+   
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "searching": true,
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                //"lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                //responsive: true,
+                // fixedColumns: {
+                //    leftColumns: 2,
+                //    rightColumns: 1
+                //},
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+                ////"fixedColumns": {
+                ////    "leftColumns": 2,
+
+                ////},
+                //"sScrollXInner": "100%",
+                //dom: 'Blfrtip',
+                ////,"fixedHeader": true
+            });
+        });
+
+    </script>
+
+}
+
+
+
+

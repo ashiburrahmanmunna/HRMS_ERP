@@ -1,0 +1,706 @@
+﻿@model IEnumerable<GTERP.Models.DocumentList>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+@{
+    UserPermission permission = HttpContextAccessor.HttpContext.Session.GetObject<UserPermission>("userpermission");
+}
+<style>
+    /* Apply 'display: none' to hide the label */
+    #hideMeLabel {
+        display: none;
+    }
+
+</style>
+
+@using (Html.BeginForm())
+{
+    <form>
+        @Html.AntiForgeryToken()
+        <div class="container-fluid">
+            <div class="card p-2 my-2">
+                <div class="row">
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">From Date</span>
+                            </div>
+                            @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">To Date</span>
+                            </div>
+                            @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                        </div>
+                    </div>
+
+                    @if (ViewBag.Isleave)
+                    {
+                        <div class="col-md-3 col-12 d-none">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Document Type
+                                    </span>
+                                </div>
+                                @Html.DropDownList("DocType", null, "--Select--", htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+                        @*<div class="col-md-3 col-12 " id="dept">
+                <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                <span class="input-group-text">
+                Department
+                </span>
+                </div>
+                @Html.DropDownList("DeptId", null, null, htmlAttributes: new { @class = "form-control" })
+                </div>
+                </div>*@
+                    }
+                    else
+                    {
+                        <div class="col-md-3 col-12 ">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Document Type
+                                    </span>
+                                </div>
+                                @Html.DropDownList("DocType", null, "--Select--", htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12 d-none" id="dept">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Department
+                                    </span>
+                                </div>
+                                @Html.DropDownList("DeptId", null, null, htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" for="prdunit">Prd. Unit</span>
+                                </div>
+                                @Html.DropDownList("PrdUnitId", null, "--Select--", htmlAttributes: new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    }
+
+                    @if (ViewBag.Isleave)
+                    {
+                        @*<div class="col-md-3 col-12">
+                <h2 id="styletext">Leave Approval List</h2>
+                </div>*@
+                        <div class="col-md-1 col-12">
+                            <fieldset class="well">
+                                <label id="hideMeLabel"><input type="radio" name="criteria" checked="checked" value="All" style="margin-left: 10px" /> All</label>
+                                <label id="hideMeLabel"><input type="radio" name="criteria" value="Pending" style="margin-left: 20px" /> Pending </label>
+                                <label id="hideMeLabel"><input type="radio" name="criteria" value="Approved" style="margin-left: 20px" /> Approved</label>
+                                <label id="hideMeLabel"><input type="radio" name="criteria" value="DisApproved" style="margin-left: 20px" /> DisApproved</label>
+                            </fieldset>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 col-12">
+                            <h2 id="styletext">Document List</h2>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <fieldset>
+                                <label><input type="radio" name="criteria" checked="checked" value="All" style="margin-left: 10px" /> All</label>
+                                <label><input type="radio" name="criteria" value="Post" style="margin-left: 20px" /> Post </label>
+                                <label><input type="radio" name="criteria" value="UnPost" style="margin-left: 20px" /> UnPost</label>
+                            </fieldset>
+                        </div>
+                    }
+                    <div class="col-md-2 col-12">
+                        <input type="submit" value="Load" class="btn btn-success btn-block rounded-0" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive card p-2">
+                <table id="tbllist" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+                    <thead class="text-nowrap">
+                        @if (ViewBag.Isleave)
+                        {
+                            <tr>
+                                <th>
+                                    Employee Info
+                                </th>
+                                <th>
+                                    Id
+                                </th>
+                                <th>
+                                    Leave Days
+                                </th>
+                                <th>
+                                    Leave Type
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Remarks
+                                </th>
+                                <th>
+                                    Leave Balance
+                                </th>
+                                <th>
+                                    Attachement
+                                </th>
+                                <th>
+                                    Report
+                                </th>
+                            </tr>
+                        }
+
+                    <thead>
+                    <tbody>
+
+                                @foreach (var item in Model)
+                                {
+                            <tr>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentNo)
+                                </td>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentId)
+                                </td>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentDate)
+                                </td>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentType)
+
+                                </td>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.DocumentStatus)
+                                </td>
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.Remark)
+                                </td>
+
+                                <td>
+                                            @Html.DisplayFor(modelItem => item.LeaveBalance)
+                                </td>
+
+                                        @* <td>
+                        @Html.DisplayFor(modelItem => item.Attachment)
+
+                        </td> *@
+
+                                <td>
+
+
+                                    <a href="~/HR/DownloadFileForLeave?filename=@item.Attachment">@item.Attachment </a>
+
+
+
+                                </td>
+
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Print!">
+                                                @Html.ActionLink(" ", "Print", new { Id = item.DocumentId, type = "pdf", docname = item.DocumentType }, new { @target = "_blank", @class = "far fa-file-pdf btn btn-success btn-xs" })
+                                    </span>
+
+
+                                </td>
+                            </tr>
+                                }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </form>
+
+}
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        //if ($("#DocType").val() == "Leave") {
+        //    $("#dept").removeClass("d-none");
+        //}
+
+        //$("#DocType").change(function () {
+        //    if ($(this).val() == "Leave") {
+        //        $("#dept").removeClass("d-none");
+        //    }
+        //});
+
+        var antiForgeryToken;
+
+        let isLeave = "@ViewBag.Isleave";
+
+        $(document).on('click', 'a', function () {
+            if ($(this).attr('href').indexOf('@Url.Action("DownloadFileForLeave", "HR")') !== -1) {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000); // Wait for 1 second before refreshing
+            }
+        });
+
+        $(document).ready(function () {
+
+            //$(".table-responsive").attr("disabled", "disabled");
+
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+            var tbllist = $('#tbllist').DataTable({
+                'columnDefs': [
+                    {
+                        'targets': 1,
+                        'visible': false,
+                        'className': 'chkAllPost',
+                        'searchable': false
+                    }
+                    // },
+                    // {
+                    //     orderable: false,
+                    //     className: 'select-checkbox',
+                    //     targets: 0
+                    // }
+
+                ],
+                'paging': true,
+                'searching': true,
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                dom: 'Blfrtip',
+                buttons: [
+                    //'selected',
+                    //'selectedSingle',
+                    'selectAll',
+                    'selectNone',
+                    {
+                        attr: {
+                            title: 'Post',
+                            id: "btnPost",
+                        },
+                        text: 'Post',
+                        className: "btn-success btnpost spinnerclass rounded-0",
+                        action: function (e, dt, node, config) {
+                            //alert('Button activated');
+
+                            if (isLeave == "True") {
+                                ConfirmDialog("Approve");
+                            } else {
+                                ConfirmDialog("Post");
+                            }
+
+                        }
+                    },
+                    {
+                        attr: {
+                            title: 'Un Post',
+                            id: "btnUnPost",
+                        },
+
+                        text: 'UnPost',
+                        className: "btn-warning btnunpost spinnerclass",
+                        action: function (e, dt, node, config) {
+                            //alert('Button activated');
+                            if (isLeave == "True") {
+                                ConfirmDialog("DisApprove");
+                            } else {
+                                ConfirmDialog("UnPost");
+                            }
+
+                        }
+                    }
+                    //'selectRows',
+                    //'selectColumns',
+                    //'selectCells'
+                ],
+                'info': true,
+                "language": {
+                    sLengthMenu: " _MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+
+            }
+            );
+
+            // $('#tbllist tbody td').off('click');
+
+            $(".btnpost, .btnunpost").append('<span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+
+            var viewbagtitle = "@ViewBag.Title";
+
+
+            if (viewbagtitle == "Post") {
+                $(".btnunpost").show();
+                $(".btnpost").hide();
+            }
+            else if (viewbagtitle == "UnPost") {
+                $(".btnunpost").hide();
+                $(".btnpost").show();
+            } else if (viewbagtitle != "") {
+                $(".btnunpost").text("DisApprove");
+                $(".btnpost").text("Approve");
+                if (viewbagtitle == "Pending") {
+                    $(".btnunpost").show();
+                    $(".btnpost").show();
+                }
+                else if (viewbagtitle == "Approved") {
+                    $(".btnunpost").show();
+                    $(".btnpost").hide();
+                }
+                else if (viewbagtitle == "DisApproved") {
+                    $(".btnunpost").hide();
+                    $(".btnpost").show();
+                }
+            }
+            else {
+
+                $(".btnunpost").hide();
+                $(".btnpost").hide();
+            };
+
+            //$("input[name=criteria][value='Post']").prop("checked",true);
+            $("input[name=criteria]").val([viewbagtitle]);
+
+
+            var table = $('#tbllist').DataTable();
+
+
+            $('#tbllist tbody').on('click', 'tr', function () {
+                $(this).toggleClass('selected');
+            });
+
+            $("form").submit(function () {
+                if (isLeave == "True") {
+                    $("#DocType").val("Leave");
+                }
+            });
+
+
+            function fncSubmitPost() {
+
+                //alert(table.rows('.selected').data().length + ' row(s) selected');
+                var table = $('#tbllist').DataTable();
+                var rows = table.rows('.selected').data();
+
+
+                //var rows = table.rows('.selected').data();
+
+                //console.log(rows);
+
+                if (rows.length < 1) {
+                    return false;
+                }
+
+                if ($('.btnpost').children('span').eq(1).hasClass('d-none')) {
+                    $('.btnpost').children('span').eq(1).removeClass('d-none');
+                    $('.btn').addClass('disabled');
+                    //$('.table').addClass('disabled');
+                    $(".table *").prop('disabled', true);
+                }
+
+
+
+                var docid = [];
+                var doctype = [];
+
+                //var doctype = [];
+                //var criteria = $("input[name='criteria']:checked").val();
+                var criteria = "Post";
+
+
+                for (var i = 0; i < rows.length; i++) {
+
+                    var rowData = rows[i];
+                    //var doctypedata = rows[i];
+                    //alert(rowData[3]);
+                    //var doctypedata = rows[i];
+                    //alert(rowData[0]);
+                    //console.log(rowData);
+                    docid.push(rowData[1]);
+                    if (isLeave == "True") {
+                        doctype.push("Leave");
+                    } else {
+                        doctype.push(rowData[3]);
+                    }
+
+
+
+                }
+
+                //console.log(docid);
+
+                $.ajax({
+                    type: 'POST',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    url: '@Url.Action("SetProcess", "PostDocument")',
+                    dataType: 'json',
+                    async: true,
+                    data: { docid: docid, criteria: criteria, doctype: doctype },
+                    success: function (response) {
+                        if (response.Success == "1") {
+                            var selectedRows = table.rows(".selected");
+                            selectedRows.remove().draw();
+                            toastr.success(response.ex);
+                        }
+                        else if (response.Success == "2") {
+                            toastr.warning(response.ex);
+                        }
+                        else if (response.Success == "3") {
+                            toastr.error(response.ex);
+                        }
+                        else {
+                            toastr.error(response.ex);
+                        }
+
+                        if (!$('.btnpost').children('span').eq(1).hasClass('d-none')) {
+
+                            $('.btnpost').children('span').eq(1).addClass('d-none');
+                            $('.btn').removeClass('disabled');
+                            $(".table *").prop('disabled', false);
+                        }
+
+
+
+                        //  window.location.href = response.Url;
+
+                        //window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                        if (!$('.btnpost').children('span').eq(1).hasClass('d-none')) {
+                            $('.btnpost').children('span').eq(1).addClass('d-none');
+                            $('.btn').removeClass('disabled');
+                            $(".table *").prop('disabled', false);
+                        }
+                    }
+
+                });
+
+                //alert('Post Successfull');
+
+            };
+            function fncSubmitUnPost() {
+
+                //alert(table.rows('.selected').data().length + ' row(s) selected');
+
+                var rows = table.rows('.selected').data();
+                if (rows.length < 1) {
+                    return false;
+                }
+
+
+                //console.log(rows);
+
+                if ($('.btnunpost').children('span').eq(1).hasClass('d-none')) {
+                    $('.btnunpost').children('span').eq(1).removeClass('d-none');
+                    $('.btn').addClass('disabled');
+                    $(".table *").prop('disabled', true);
+                }
+
+
+
+
+                var docid = [];
+                var doctype = [];
+                //var criteria = $("input[name='criteria']:checked").val();
+                var criteria = "UnPost";
+
+
+                for (var i = 0; i < rows.length; i++) {
+
+                    var rowData = rows[i];
+                    //alert(rowData[0]);
+                    //console.log(rowData);
+                    docid.push(rowData[1]);
+                    if (isLeave == "True") {
+                        doctype.push("Leave");
+                    } else {
+                        doctype.push(rowData[3]);
+                    }
+                }
+
+
+                $.ajax({
+                    type: 'POST',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    url: '@Url.Action("SetProcess", "PostDocument")',
+                    dataType: 'json',
+                    async: true,
+                    data: { docid: docid, criteria: criteria, doctype: doctype },
+                    //success: function (response) {
+                    //  //  window.location.href = response.Url;
+                    //var selectedRows = table.rows(".selected");
+                    //selectedRows.remove().draw();
+                    //    //window.open(response.Url, '_blank')
+                    //},
+
+
+                    success: function (response) {
+                        if (response.Success == "1") {
+                            var selectedRows = table.rows(".selected");
+                            selectedRows.remove().draw();
+                            toastr.success(response.ex);
+                        }
+                        else if (response.Success == "2") {
+                            toastr.warning(response.ex);
+                        }
+                        else if (response.Success == "3") {
+                            toastr.error(response.ex);
+                        }
+                        else {
+                            toastr.error(response.ex);
+                        }
+
+                        if (!$('.btnunpost').children('span').eq(1).hasClass('d-none')) {
+                            $('.btnunpost').children('span').eq(1).addClass('d-none');
+                            $('.btn').removeClass('disabled');
+                            $(".table *").prop('disabled', false);
+                        }
+
+                        //  window.location.href = response.Url;
+
+                        //window.open(response.Url, '_blank')
+                    },
+
+
+
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+
+                        if (!$('.btnunpost').children('span').eq(1).hasClass('d-none')) {
+                            $('.btnunpost').children('span').eq(1).addClass('d-none');
+                            //$('.btnunpost').prop("disabled", false);
+                            $('.btn').removeClass('disabled');
+                            $(".table *").prop('disabled', false);
+                        }
+                    }
+
+                });
+
+                //alert('Unpost Successfull');
+
+            };
+
+            CurrentDate();
+
+            $(".FromDate").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+            $(".ToDate").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+
+            //function CurrentDate() {
+            //    var date = new Date();
+            //    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+            //        "Aug", "Sep", "Oct", "Nov", "Dec"];
+            //    var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            //    if ($(".FromDate").val() == '') {
+            //        $(".FromDate").val(val);
+            //    }
+            //    if ($(".ToDate").val() == '') {
+            //        $(".ToDate").val(val);
+            //    }
+
+
+            //}
+            function CurrentDate() {
+                var date = new Date();
+                var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+                var formattedFirstDay = formatDate(firstDay);
+                var formattedLastDay = formatDate(lastDay);
+
+                if ($(".FromDate").val() == '') {
+                    $(".FromDate").val(formattedFirstDay);
+                }
+                if ($(".ToDate").val() == '') {
+                    $(".ToDate").val(formattedLastDay);
+                }
+            }
+
+            function formatDate(date) {
+                var day = date.getDate();
+                var monthIndex = date.getMonth();
+                var year = date.getFullYear();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var month = months[monthIndex];
+                return day + "-" + month + "-" + year;
+            }
+
+
+            function ConfirmDialog(message) {
+                $('<div></div>').appendTo('body')
+                    .html('<div><h6>' + message + '?</h6></div>')
+                    .dialog({
+                        modal: true,
+                        title: 'Confirmation message',
+                        zIndex: 10000,
+                        autoOpen: true,
+                        width: 'auto',
+                        resizable: false,
+                        buttons: {
+                            Yes: function () {
+
+                                // $(obj).removeAttr('onclick');
+                                // $(obj).parents('.Parent').remove();
+
+                                //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                                $(this).dialog("close");
+
+                                if (message == "Post" || message == "Approve") {
+                                    fncSubmitPost();
+
+                                }
+                                else if (message == "UnPost" || message == "DisApprove") {
+                                    fncSubmitUnPost();
+                                }
+
+
+                            },
+                            No: function () {
+                                //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        close: function (event, ui) {
+                            $(this).remove();
+                        }
+                    });
+            };
+        });
+    </script>
+
+}
+
+

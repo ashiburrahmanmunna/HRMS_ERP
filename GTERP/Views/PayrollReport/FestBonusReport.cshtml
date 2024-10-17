@@ -1,0 +1,892 @@
+﻿@using GTERP.Models;
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@model GTERP.Models.Payroll.FestivalBonus
+
+
+@{
+    ViewBag.Title = "Festival Bonus Report";
+    List<Cat_Variable> EmpStatusList = ViewBag.EmpStatusList;
+    List<Cat_Variable> FestivalTypeList = ViewBag.FestivalTypeList;
+    List<Cat_Emp_Type> EmpTypeList = ViewBag.EmpTypeList;
+    List<Cat_Unit> UnitList = ViewBag.UnitList;
+    List<Cat_PayMode> PayModeList = ViewBag.PayModeList;
+    List<string> ProcessTypeList = ViewBag.ProcessTypeList;
+    List<Cat_Department> DepartmentList = ViewBag.DepartmentList;
+    List<Cat_Designation> DesignaitonList = ViewBag.DesignationList;
+    List<Cat_Section> SectionList = ViewBag.SectionList;
+    List<Cat_SubSection> SubSectList = ViewBag.SubSectList;
+    List<HR_Emp_Info> EmpList = ViewBag.EmpList;
+    List<Cat_Location> LocationList = ViewBag.LocationList;
+    List<Cat_Floor> FloorList = ViewBag.FloorList;
+    List<Cat_Line> LineList = ViewBag.LineList;
+    List<HR_ReportType> ReportList = ViewBag.ReportName;
+    List<Cat_Bank> BankList = ViewBag.BankList;
+
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .dataTables_filter input[type=search] {
+        width: 100%;
+        padding: 7px 15px;
+        background-color: transparent;
+        transition: transform 250ms ease-in-out;
+        font-size: 11px;
+        line-height: 18px;
+        color: #575756;
+        background-color: transparent;
+        background-image: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' w…5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E); background-repeat: no-repeat; background-size: 18px 18px; background-position: 95% center; border-radius: 50px; border: 1px soLId #575756; transition: all 250ms ease-in-out; backface-visibility: hidden; transform-style: preserve-3d; margin-bottom: 0px;
+    }
+
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    /*.table th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }*/
+
+    /*.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }*/
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /*#datatableDiv {
+        display: none;
+    }
+
+    .dataTables_scrollBody {
+        border-bottom: none !important;
+    }
+
+    table tr td:hover {
+        cursor: pointer;
+    }
+
+    .clicked {
+        background-color: #c6b99f;
+    }
+
+    fieldset {
+        border-radius: .2em;
+        border: 1px soLId #cccccc;
+        padding: 5px 2px;
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+
+        fieldset:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+    button {
+        width: 110px;
+        margin: .5em 0 .5em 0;
+        cursor: pointer !important;
+    }
+
+    input[type="text"] {
+        cursor: auto !important;
+    }
+
+    #modalMessage {
+        font-family: tahoma;
+        font-size: 15px;
+        color: #4169e1;
+        text-align: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    #loadingGif {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 999999999;
+    }
+
+    .divforfull {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+    }
+
+    .myMessage {
+        position: fixed;
+        bottom: 2%;
+        right: 2%;
+        width: 30%;
+        display: none;
+        z-index: 99999999999999999999999999999999999999999;
+    }
+
+
+    .editable {
+        color: black;
+        border: white;
+        width: 100%;
+    }
+
+    .panel-body {
+        padding-top: 5px;
+    }
+
+    hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px soLId #ccc;
+        margin: 1px 0;
+        padding: 0;
+    }*/
+    /*changes by sb
+    .panel {
+        margin-bottom: 0;
+    }
+    smaller size filter text box
+    #pdSearch .dataTables_filter > label > input {
+        width: 222px !important;
+        margin-right: -7px!important;
+    }
+
+    #sdSearch .dataTables_filter > label > input {
+        width: 235px !important;
+    }
+
+    #edSearch .dataTables_filter > label > input {
+        width: 305px !important;
+        margin-right: 4px !important;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-bottom: 0;
+    }
+
+    .content {
+        padding-top: 75px;
+        margin-bottom: 10px;
+        padding-bottom: 30px;
+    }
+
+    .mCustomScrollbar {
+        height: 450px;
+    }
+
+    #line .mCustomScrollbar {
+        height: 317px;
+    }
+
+    @@media (min-width: 320px) and (max-width: 519px) {
+        #pdSearch .dataTables_filter > label > input {
+            width: 200px !important;
+        }
+
+        #sdSearch .dataTables_filter > label > input {
+            width: 219px !important;
+        }
+
+        #edSearch .dataTables_filter > label > input {
+            width: 198px !important;
+            margin-right: 5px !important;
+        }
+    }*/
+
+</style>
+@using (Html.BeginForm("FestBonusReport", "PayrollReport", FormMethod.Post))
+{
+    <div class="card">
+        @*<h4 class="form-header btn-info">
+                <i class="fas fa-dollar-sign"></i>  Festival Bonus Report
+            </h4>*@
+
+        <h4 class="form-header btn-info">
+            <div class="row">
+                <div class="col-md-6 col-12">
+                    <i class="fas fa-dollar-sign"></i>   Festival Bonus Report
+                    <div id="loading" style="display: inLine;">
+                    </div>
+                </div>
+                <div class="col-md-6 col-12 text-right">
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="PDF" name="ReportFormat" type="radio" class="custom-control-input" value="PDF" checked required>
+                        <label class="custom-control-label" for="PDF">PDF</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Word" name="ReportFormat" type="radio" class="custom-control-input" value="Word" required>
+                        <label class="custom-control-label" for="Word">Word</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Excel" name="ReportFormat" type="radio" class="custom-control-input" value="Excel" required>
+                        <label class="custom-control-label" for="Excel">Excel</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <button type="submit" id="previewBtn" class="btn btn-primary" formtarget="_blank">
+                            <span class="fas fa-eye"> </span> Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </h4>
+
+        <!--Loading-->
+        @*<div id="loading">
+                <div class="divforfull">&nbsp;</div>
+                <div id="loadingGif" style="height: 50px; width: 50px;">
+                    <img src="~/Files/loading.gif" />
+                </div>
+            </div>*@
+
+        <div class="card-body">
+            <!--Selection fields-->
+            <div class="row">
+                <div class="col-md-12 col-12 mb-2">
+                    <fieldset class="boxStyle pt-2">
+                        <div class="row">
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Unit
+                                        </span>
+                                    </div>
+                                    <select id="Unit" name="Unit" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in UnitList)
+                                        {
+                                            <option value="@dtOp.UnitId">@dtOp.UnitName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            EmpStatus
+                                        </span>
+                                    </div>
+                                    <select id="EmpStatus" name="EmpStatus" class="form-control selectpicker" data-size="5">
+                                        <option value="=All=">=ALL=</option>
+                                        @foreach (var dtOp in EmpStatusList)
+                                        {
+                                            <option value="@dtOp.VarId">@dtOp.VarName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            EmpType
+                                        </span>
+                                    </div>
+                                    <select id="EmpType" name="EmpType" class="form-control selectpicker" data-size="5">
+                                        @if (ViewBag.allp == 1)
+                                        {
+
+                                            <option value="0">=ALL=</option>
+
+                                        }
+                                        @foreach (var dtOp in EmpTypeList)
+                                        {
+                                            <option value="@dtOp.EmpTypeId">@dtOp.EmpTypeName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.Paymode)
+                                        </span>
+                                    </div>
+                                    <select id="PayMode" name="PayMode" class="form-control selectpicker" data-size="5">
+                                        <option value="=All=">=ALL=</option>
+                                        @foreach (var dtOp in PayModeList)
+                                        {
+                                            <option value="@dtOp">@dtOp.PayModeName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Line
+                                        </span>
+                                    </div>
+                                    <select id="Line" name="Line" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in LineList)
+                                        {
+                                            <option value="@dtOp.LineId">@dtOp.LineName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Floor
+                                        </span>
+                                    </div>
+                                    <select id="Floor" name="Floor" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in FloorList)
+                                        {
+                                            <option value="@dtOp.FloorId">@dtOp.FloorName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-2 col-12 px-3">
+                    <div class="row">
+                        <!--Departments-->
+                        <div class="col-md-12 col-12 mb-2">
+                            <fieldset class="boxStyle  mCustomScrollbar py-3" data-mcs-theme="minimal-dark" style="height:315px">
+                                <table id="pdSearch" class="dataTable ProssTable table table-sm table-hover table-bordered table-striped trow" cellspacing="0">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th class="hidden">prosstypeid</th>
+                                            @*<th class="hidden"></th>*@
+                                            <th>Process Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (string ProcessTypes in ProcessTypeList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">0</td>
+                                                <td>@ProcessTypes</td>
+                                                @* <td> @FestivalType - (@ProcessTypes) </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                        <!--Selction-->
+                        <div class="col-md-12 col-12">
+                            <fieldset class="boxStyle  mCustomScrollbar py-3" data-mcs-theme="minimal-dark" style="height:315px">
+                                <table id="BankTable" class="dataTable BankTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">BankId</th>
+                                            <th>Bank Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Bank Bank in BankList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@Bank.BankId</td>
+                                                <td>@Bank.BankName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+@*                         <div class="col-md-12 col-12">
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">
+                                <table id="BankTable" class="dataTable BankTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">BankId</th>
+                                            <th>Bank Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Bank Bank in BankList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@Bank.BankId</td>
+                                                <td>@Bank.BankName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div> *@
+
+                    </div>
+                    @*for Bank name*@
+                    
+                        
+                    
+                </div>
+
+                <!--Departments-->
+                <div class="col-md-2 col-12 px-0">
+                    <div class="row">
+                        <div class="col-md-12 col-12">
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">
+                                <table id="DeptTable" class="dataTable DeptTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">DeptId</th>
+                                            <th>Department</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Department Departments in DepartmentList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@Departments.DeptId</td>
+                                                <td>@Departments.DeptName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                        @* for designation table *@
+                        <div class="col-md-12 col-12 pt-2">
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:313px">
+                                <table id="DesigTable" class="dataTable DesigTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">DesigId</th>
+                                            <th>Designation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Designation desig in DesignaitonList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@desig.DesigId</td>
+                                                <td>@desig.DesigName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!--Employee-->
+                <div class="col-md-4 col-12">
+                    <fieldset class="boxStyle mCustomScrollbar pt-2" data-mcs-theme="minimal-dark" id="edSearch" style="height:635px">
+                        <table id="EmpTable" class="EmpTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="hidden"></th>
+                                    <th>Code</th>
+                                    <th>Employee Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="hidden">0</td>
+                                    <td></td>
+                                    <td>=ALL=</td>
+
+                                </tr>
+                                @foreach (HR_Emp_Info employees in EmpList)
+                                {
+                                    <tr>
+                                        <td class="hidden">@employees.EmpId</td>
+                                        <td>-@employees.EmpCode</td>
+                                        <td>
+                                            @employees.EmpName - ( @employees.Cat_Designation.DesigName )
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </div>
+
+                <!--Section-->
+                <div class="col-md-2 col-12 pl-0">
+                    <div class="row">
+                        <div class="col-md-12 col-12">
+                            <!--Selction-->
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">
+                                <table id="SectTable" class="dataTable SectTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">SectId</th>
+                                            <th>Section</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Section Sections in SectionList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@Sections.SectId</td>
+                                                <td>@Sections.SectName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+
+                        <!--Sub Section-->
+                        <div class="col-md-12 col-12 my-2">
+                            <!--Selction-->
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:313px">
+                                <table id="SubSectTable" class="dataTable SubSectTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">SubSectId</th>
+                                            <th>Sub Section</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_SubSection SubSect in SubSectList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@SubSect.SubSectId</td>
+                                                <td>@SubSect.SubSectName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Report Type-->
+                <div class="col-md-2 col-12 px-0">
+                    <div class="row">
+                    <div class="col-md-12 col-12">
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">
+                                <table id="RptTypeTable" class="dataTable DeptTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="hidden">ReportId</th>
+                                    <th>Report</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (HR_ReportType Reports in ReportList)
+                                {
+                                    <tr>
+                                        <td class="d-none">@Reports.ReportId</td>
+                                        <td>@Reports.ReportName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </div>
+                <div class="col-md-12 col-12">
+                    <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">                      
+                                <table id="FestTable" class="dataTable FestTable table table-hover table-bordered table-striped trow" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">FestId</th>
+                                            <th>Allowances Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Variable fest in FestivalTypeList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@fest.VarId</td>
+                                                <td>@fest.VarName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                    </fieldset>
+                </div>
+
+                </div>
+                </div>
+
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.EmpId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.EmpStatus)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.ProssType)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.EmpName)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.FestivalType)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.Unit)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.EmpTypeId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.Paymode)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.ReportType)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.DeptId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.DesigId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.SectId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.SubSectId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.LineId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.FloorId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.LId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.BankId)
+                @Html.HiddenFor(m => m.FestivalBonusPropGrid.ReportFormat)
+
+            </div><!--panel body end-->
+                    </div><!--Panel end-->
+                </div><!--Panel end-->
+                }
+                @section Scripts{
+                    <script>
+                        //***************************************DOCUMENT READY****************************//
+                        $(document).ready(function () {
+                            //------------ funciton for remove "Search" text----------//
+                            $.fn.removeText = function () {
+                                this.each(function () {
+                                    var $cont = $(this).contents();
+                                    $cont.each(function () {
+                                        var $this = $(this);
+                                        if (this.nodeType === 3) {
+                                            $this.remove();
+                                        } else if (this.nodeType === 1) {
+                                            $this.removeText();
+                                        }
+                                    });
+                                });
+                            }//----end------//
+
+
+
+
+                            //$('.dataTable').DataTable({
+                            //    language: {
+                            //        searchPlaceholder: "Search"
+                            //    },
+                            //    'select': true,
+
+                            //    //'columnDefs': [
+                            //    //    {
+                            //    //        'targets': 0,
+                            //    //        'visible': false,
+                            //    //        'className': 'prsstype'
+
+                            //    //    }
+                            //    //],
+                            //    //"scrollY": "350px",
+                            //    //"scrollX": "100%",
+                            //    //"scrollCollapse": true,
+                            //    "paging": false,
+                            //    "lengthChange": false,
+                            //    "info": false,
+                            //    "ordering": false,
+                            //    "searching": true,
+                            //    "initComplete": function () {
+                            //        $(".dataTables_filter").removeText();
+                            //        $('.dataTables_filter input[type="search"]').addClass("w-100 col-12");
+
+
+                            //    }
+                            //    //, "fnSelect": function (nButton, oConfig, nRow) {
+                            //    //    if ($(nRow).hasClass('selected')) {
+                            //    //        // Do something with the newly selected row.
+                            //    //        //alert($(nRow).html());
+                            //    //    }
+                            //    //    else {
+                            //    //        // Do something with the previously selected row.
+                            //    //        //alert($(nRow).html());
+                            //    //    }
+                            //    //}
+                            //    //"fnInitComplete": function (oSettings, json) { $('.dataTable tbody tr:eq(0)').click(); }
+                            //    //rowCallback: function (row, data, ) {
+                            //    //    //console.log(row._DT_RowIndex == 0);
+                            //    //    if (row._DT_RowIndex == 0) {
+                            //    //        //alert('found');
+                            //    //        //$(row).trigger('click');
+                            //    //        $(row).addClass('selected');
+
+                            //    //    };
+
+                            //    //}
+                            //});
+                        });     // document ready End
+                        var salarySheet = {
+                            Id: 0,
+                            EmpStatus: "",
+                            FestivalType: "",
+                            Paymode: "",
+                            Unit: "",
+                            EmpType: "",
+                            ProssType: "",
+                            DeptId: 0,
+                            DeptName: "",
+                            SectId: 0,
+                            SectName: "",
+                            EmpCode: "",
+                            EmpId: 0,
+                            EmpName: "",
+                            BankId: 0,
+                            ReportType: "",
+                            Line: 0,
+                            Floor: 0,
+                            Desig: "",
+                            SubSect: ""
+
+
+                        };
+
+                        $('#pdSearch').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#EmpTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#DeptTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#SectTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#LocationTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#FestTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#SubSectTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#DesigTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+                        $('#BankTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+
+                        $('#RptTypeTable').DataTable({ 'select': true, "info": false, "ordering": false, "searching": true, language: { search: '', searchPlaceholder: "Search..." }, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+
+                        //$('#pdSearch,#EmpTable,#DeptTable,#SectTable,#LocationTable,#RptTypeTable').DataTable({
+                        //    language: { search: '', searchPlaceholder: "Search..." },
+                        //});
+                        $('.dataTables_wrapper .col-md-6').addClass('col-md-12'); // <-- add this line
+                        //************************************** PREVIEW BUTTON ****************************//
+                        $("#previewBtn").click(function (event) {
+
+                            //var FestivalType = $("#FestivalType option:selected").text();
+                            var empType = $("#EmpType option:selected").val();
+                            var empStatus = $("#EmpStatus option:selected").text();
+                            var unit = $("#Unit option:selected").val();
+                            var payMode = $("#PayMode option:selected").text();
+                            var Floor = $("#Floor option:selected").val();
+                            var Line = $("#Line option:selected").val();
+                            var empType = $("#EmpType option:selected").val();
+                            var pross = $("#pdSearch tbody tr.selected td:nth-child(2)").text();
+                            var empId = $("#EmpTable  tbody tr.selected td:first-child").text();
+                            var Dept = $("#DeptTable tbody tr.selected td:first-child").text();
+                            var Sect = $("#SectTable tbody tr.selected td:first-child").text();
+                            var Desig = $("#DesigTable tbody tr.selected td:first-child").text();
+                            var SubSect = $("#SubSectTable tbody tr.selected td:first-child").text();
+                            //var location = $("#LocationTable tbody tr.selected td:first-child").text();
+                            var FestivalType = $("#FestTable  tbody tr.selected td:first-child").text();
+                            var rptType = $("#RptTypeTable tbody tr.selected td:nth-child(2)").text();
+                            var Bank = $("#BankTable tbody tr.selected td:first-child").text();
+
+                            var ReportFormat = $("input[name=ReportFormat]:checked").val();
+
+
+                            //var strfy = JSON.stringify({ salarySheet });
+
+                            //var formData = new FormData($('form').get(0));
+                            //var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+                            //formData.append("salarySheet", strfy);
+                            //var options = {};
+
+                            //options.url = "/SalarySheets/Index";
+                            //options.type = "POST";
+                            //options.data = formData;
+                            //options.dataType = 'jsonp';
+                            //options.headers = { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken };
+                            //options.processData = false;
+                            //options.contentType = false;
+                            ////{ DtFrom: dtfrom, DtTo: dtto, criteria: criteria };
+                            //options.success = function (data) {
+                            //    if (data.Success == 1) {
+
+                            //        alert(data.message);
+                            //    }
+
+                            //};
+                            //options.error = function () {
+                            //    alert("error occured from DailyEmpFixedAttandanceData()");
+                            //};
+                            //$.ajax(options);
+                            //pross = '1';
+                            //alert(pross);
+                            //alert(empId);
+                            //alert(Dept);
+                            //alert(location);
+                            //alert(rptType);
+
+
+                            //alert('preview button hit');
+                            if (pross !== "" && empId !== "" && Dept !== "" && Sect !== "" && rptType !== "") {
+                                //alert('enter');
+                                $("#FestivalBonusPropGrid_FestivalType").val(FestivalType);
+                                $("#FestivalBonusPropGrid_EmpTypeId").val(empType);
+                                $("#FestivalBonusPropGrid_EmpStatus").val(empStatus);
+                                $("#FestivalBonusPropGrid_Unit").val(unit);
+                                $("#FestivalBonusPropGrid_Paymode").val(payMode);
+                                $("#FestivalBonusPropGrid_EmpId").val(empId);
+                                $("#FestivalBonusPropGrid_ProssType").val(pross);
+                                $("#FestivalBonusPropGrid_DeptId").val(Dept);
+                                $("#FestivalBonusPropGrid_SectId").val(Sect);
+                                $("#FestivalBonusPropGrid_DesigId").val(Desig);
+                                $("#FestivalBonusPropGrid_FloorId").val(Floor);
+                                $("#FestivalBonusPropGrid_LineId").val(Line);
+                                $("#FestivalBonusPropGrid_SubSectId").val(SubSect);
+                                $("#FestivalBonusPropGrid_ReportType").val(rptType);
+                                $("#FestivalBonusPropGrid_LId").val(location);
+                                $("#FestivalBonusPropGrid_ReportFormat").val(ReportFormat);
+                                $("#FestivalBonusPropGrid_BankId").val(Bank);
+
+                            } else {
+                                event.preventDefault();
+                                alert("Please select data first!");
+                            }
+                        });
+
+
+
+
+                    </script>
+                }

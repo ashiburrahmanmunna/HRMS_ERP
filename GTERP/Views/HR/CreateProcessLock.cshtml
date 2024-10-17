@@ -1,0 +1,319 @@
+﻿@model GTERP.Models.HR_ProcessLock
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+@using (Html.BeginForm("CreateProcessLock", "HR", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 col-12">
+                @if (Model != null)
+                {
+                <input type="hidden" id="ProcessId" name="ProcessId" value="@Model.ProcessId" />
+                }
+                else
+                {
+                <input type="hidden" asp-for="ProcessId" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">ProcessLock Entry - @ViewBag.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                <input type="hidden" asp-for="ComId" />
+                                <input type="hidden" asp-for="UserId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.LockType)
+                                                    </span>
+                                                </div>
+                                                @if (ViewBag.Title == "Edit")
+                                                {
+                                                    @Html.DropDownList("LockType", ViewBag.LockType,null, htmlAttributes: new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.LockType, "", new { @class = "text-danger" })
+
+                                                }
+                                                else
+                                                {
+                                                    @Html.DropDownList("LockType", ViewBag.LockType, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.LockType, "", new { @class = "text-danger" })
+                                                }
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.DtDate)
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="DtDate" class="form-control" />
+                                                @Html.ValidationMessageFor(model => model.DtDate, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-9 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.DtToDate)
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="DtToDate" class="form-control" />
+                                                @Html.ValidationMessageFor(model => model.DtToDate, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.IsLock)
+                                                    </span>
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        @Html.CheckBoxFor(model => model.IsLock, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.IsLock, "", new { @class = "text-danger" })
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.FiscalYearId)
+                                                    </span>
+                                                </div>
+                                                <select asp-for="FiscalYearId" asp-items="ViewBag.FiscalYearId" class="form-control">
+                                                </select>
+                                                @Html.ValidationMessageFor(model => model.FiscalYearId, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.FiscalMonthId)
+                                                    </span>
+                                                </div>
+                                                <select asp-for="FiscalMonthId" asp-items="ViewBag.FiscalMonthId" class="form-control">
+                                                </select>
+                                                @Html.ValidationMessageFor(model => model.FiscalMonthId, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="ProcessLock_delete()">Delete</button>
+                                    }
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "ProcessLockList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+        $("#FiscalYearId").select2();
+        $("#FiscalMonthId").select2();
+
+        $("#LockType").select2();
+        $("#DtDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtDate").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+         $("#DtToDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtToDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtToDate").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+         });
+
+
+         $("#FiscalYearId").change(function () {
+            GetMonthAndAcc();
+
+        });
+
+        function GetMonthAndAcc() {
+
+             $.ajax({
+                 url: '@Url.Action("GetFiscalMonth", "HR")',
+                 data: { FiscalYearId:  $("#FiscalYearId").val() }, //use id here
+                 type: 'GET',
+                 dataType: 'json',
+                 success: function (result) {
+                     $("#FiscalMonthId").empty();
+                     //$("#FiscalMonthId").append(`<option value="0"> Select Month </option>`);
+                     for (var i = 0; i < result.Month.length; i++) {
+                         $("#FiscalMonthId").append(`<option value="${result.Month[i].FiscalMonthId}">${result.Month[i].MonthName}</option>`)
+                     }
+
+                 }
+            });
+        }
+
+
+    function ProcessLock_delete() {
+
+        var ProcessId = $("#ProcessId").val();
+
+            $.ajax({
+                url: '@Url.Action("DeleteProcessLock", "HR")',
+                data: { id: ProcessId }, //use id here
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("ProcessLockList", "HR")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+
+
+@*@{
+        ViewData["Title"] = "Create";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h1>Create</h1>
+
+    <h4>HR_ProcessLock</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="ComId" class="control-label"></label>
+                    <input asp-for="ComId" class="form-control" />
+                    <span asp-validation-for="ComId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LockType" class="control-label"></label>
+                    <input asp-for="LockType" class="form-control" />
+                    <span asp-validation-for="LockType" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DtDate" class="control-label"></label>
+                    <input asp-for="DtDate" class="form-control" />
+                    <span asp-validation-for="DtDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsLock" class="control-label"></label>
+                    <input asp-for="IsLock" class="form-control" />
+                    <span asp-validation-for="IsLock" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PcName" class="control-label"></label>
+                    <input asp-for="PcName" class="form-control" />
+                    <span asp-validation-for="PcName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <input asp-for="UserId" class="form-control" />
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+

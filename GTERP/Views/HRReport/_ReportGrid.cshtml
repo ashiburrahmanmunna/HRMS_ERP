@@ -1,0 +1,84 @@
+﻿
+
+@using GTERP.Models.Common
+
+
+@{
+    List<HR_ReportType> ReportList = ViewBag.ReportList;
+}
+
+    <div class="mb-0">
+        <input type="text" class="reportSearch form-control" placeholder="Search . . ." />
+    </div>
+<div>
+    <table id="commonTable" class="commonTable table table-hover mb-0">
+
+        <thead>
+            <tr>
+                <th class="d-none">Report Id</th>
+                <th>Report Name</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 220px">
+
+    <table id="reportTable" class="reportTable table table-hover trow  table-striped table-light" width="100%">
+
+        <thead class="d-none">
+            <tr>
+                <th>Report Id</th>
+                <th>Report Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (ReportList.Count > 0)
+            {
+
+                foreach (HR_ReportType item in ReportList)
+                {
+                    <tr>
+                        <td class="d-none">
+                            @item.ReportId
+                        </td>
+
+                        <td>
+                            @item.ReportName
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".reportSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+                alert(searchText);
+                $('#reportTable tbody tr').each(function () {
+
+                    var reportId = $.trim($(this).children("td:eq(0)").html());
+                    var reportName = $.trim($(this).children("td:eq(1)").html());
+
+                    if (reportId.toLowerCase().indexOf(searchText) === -1 &&
+                        reportName.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+    }

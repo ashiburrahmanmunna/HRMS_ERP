@@ -1,0 +1,407 @@
+﻿@using GTERP.Controllers.HR
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.ViewModels.OTFC
+
+@{
+    var employees = ViewBag.EmployeeInfo;
+    List<Cat_Shift> shifts = ViewBag.Shift;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i> Total Night Entry
+            @*<div id="loading" style="display: inline;">
+                    <div id="loadingGif" style="display:inline;">
+                        <img src="~/Files/loading.gif" style="height:16px;display:inline;" />
+                    </div>
+                </div>*@
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Pross Type
+                                            </span>
+                                        </div>
+                                        <select asp-items="@ViewBag.ProssType" id="prossType">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-12">
+                                <button type="button" id="btnLoad" class="rounded-0 btn btn-warning btn-block mb-2">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load
+                                </button>
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                <button type="button" id="btnSave" class="rounded-0 btn btn-primary btn-block mb-2">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+                                </button>
+                            </div>
+                        </div>
+                        <hr />
+                        @*<input type="button" class="btn btn-warning float-right rounded-0" value="Select All" id="btn" />*@
+                        <table id="tblEmp" class="table table-hover table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>EmpId</th>
+                                    <th>Emp Name</th>
+                                    <th>Emp Code</th>
+                                    <th>Emp Type</th>
+                                    <th>Pross Type</th>
+                                    <th>Department</th>
+                                    <th>Section</th>
+                                    <th>Designation</th>
+                                    <th>BS</th>
+                                    <th>Total OT</th>
+                                    <th>Total Night</th>
+                                    <th>Total Shift Night</th>
+                                    <th>Total FC</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.OTFCList)
+                                {
+                                    <tr>
+                                        <td>@item.EmpId</td>
+                                        <td>@item.EmpName</td>
+                                        <td>@item.EmpCode</td>
+                                        <td>@item.EmpType</td>
+                                        <td>@item.ProssType</td>
+                                        <td>@item.DeptName</td>
+                                        <td>@item.SectName</td>
+                                        <td>@item.DesigName</td>
+                                        <td>@item.BS</td>
+                                        <td>@item.TtlOT</td>
+                                        <td>@item.TtlNight</td>
+                                        <td>@item.TtlShiftNight</td>
+                                        <td>@item.TtlFC</td>
+                                        <td>@item.Remarks</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"> <h4> Total Night :</h4></td>
+                                    <td></td>
+                                    <td> <h4><span class="totalnight"></span> </h4></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                            </tfoot>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+
+        $('#prossType').select2();
+
+
+
+        $(document).ready(function () {
+            var message = "Total Night";
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            visible: false
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            messageTop: message,
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 10, 13],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        if (column == 8) {
+                                            return $(data).val();
+                                        } else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+
+
+
+                    ]
+                },
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'ProssType', 'visible': true },
+                    { 'sClass': 'EmpType', 'visible': true },
+                    { 'sClass': 'DeptName', 'visible': true },
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'DesigName', 'visible': true },
+                    { 'sClass': 'BS', 'visible': true },
+                    { 'sClass': 'TtlOT', 'visible': false },
+                    { 'sClass': 'TtlNight', 'visible': true },
+                    { 'sClass': 'TtlShiftNight', 'visible': false },
+                    { 'sClass': 'TtlFC', 'visible': false },
+                    { 'sClass': 'Remarks', 'visible': true }
+                ],
+                columnDefs: [
+                    {
+                        'targets': 9, 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    },
+                    {
+                        'targets': 10, 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    },
+                    {
+                        'targets': 11, 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    },
+                    {
+                        'targets': 12, 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    }
+                ],
+                'paging': false,
+                'info': true,
+                "scrollY": 455,
+                "scrollX": true,
+                "language": {
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                select: {
+                    style: 'Multi',
+                    selector: 'td:nth-child(1),td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(5),td:nth-child(6),td:nth-child(7),td:nth-child(8),td:nth-child(10)'
+                },
+
+
+            });
+
+            $('#tblEmp').change(function () {
+                TotalNightSum();
+            });
+
+            TotalNightSum();
+            function TotalNightSum() {
+                var totalnight = 0;
+                var rows = $("#tblEmp").dataTable().fnGetNodes();
+                for (var i = 0; i < rows.length; i++) {
+                    var ttlnightrow = rows[i].cells[8].children[0].value;//.replace(/[\$,]/g, '');
+                    totalnight += parseFloat(ttlnightrow);
+                }
+                $(".totalnight").text(totalnight.toLocaleString());
+            };
+
+            $("#btnLoad").click(function () {
+            DailyEmpFixedAttandanceData();
+        });
+
+        function initializeGrid(data) {
+            let arrays = [];
+            for (var i = 0; i < data.length; i++) {
+                arrays.push([
+                    data[i].EmpId,
+                    data[i].EmpCode,
+                    data[i].EmpName,
+                    data[i].ProssType,
+                    data[i].EmpType,
+                    data[i].DeptName,
+                    data[i].SectName,
+                    data[i].DesigName,
+                    data[i].BS,
+                    data[i].TtlOT,
+                    data[i].TtlNight,
+                    data[i].TtlShiftNight,
+                    data[i].TtlFC,
+                    data[i].Remarks
+                ]);
+            }
+
+            table.rows.add(arrays).draw(false);
+            TotalNightSum();
+        };
+
+
+        function DailyEmpFixedAttandanceData() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            let prossType = $("#prossType option:selected").val();
+            table.rows().remove().draw();
+
+             $.ajax({
+                  type: 'POST',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("SearchTotalNight", "HR")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: { prossType: prossType },
+                 success: function (data) {
+                     if (data.Success == "1") {
+                         if (data.result == null) {
+                             toastr.info("Data not found!!");
+                         }
+                         else {
+                             initializeGrid(data.result);
+                         }
+
+                     }
+                     else {
+                         toastr.error(result.ex);
+                     }
+                     StopSpinner("#btnLoad");
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                     StopSpinner('#btnLoad');
+                 }
+            });
+
+        };
+
+            $("#btnSave").click(function () {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                //var dtfrom = $('#DtFrom').val();
+                //var dtto = $('#DtTo').val();
+                //var criteria = $("#Criteria:checked").val();
+                var hR_OT_FCs = [];
+
+                var otfcList = table.rows('.selected').nodes();
+
+                var data = table.rows('.selected').data();
+
+                //alert('wait');
+                var hR_OT_FC = {
+                    OtFcId: "0", EmpId: "", ProssType: "", ttlOT: "", ttlFC: "", ttlNight: "", DtInput: CurrentDate(),
+                    ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: CurrentDate(), UpdateByUserId:CurrentDate(), DateUpdated: CurrentDate()
+                };
+
+                for (var i = 0; i < data.length; i++) {
+                    hR_OT_FC.EmpId = data[i][0];
+                    hR_OT_FC.ProssType = $("#prossType option:selected").val();
+                    //hR_OT_FC.ttlOT = otfcList[i].cells[8].children[0].value;
+                    hR_OT_FC.ttlOT = 0;
+                    //hR_OT_FC.ttlNight = otfcList[i].cells[9].children[0].value;
+                    hR_OT_FC.ttlNight = otfcList[i].cells[8].children[0].value || 0;
+                    //hR_OT_FC.ttlShiftNight = otfcList[i].cells[9].children[0].value;
+                    hR_OT_FC.ttlShiftNight = 0;
+                    //hR_OT_FC.ttlFC = otfcList[i].cells[11].children[0].value;
+                    hR_OT_FC.ttlFC = 0;
+
+                    hR_OT_FCs.push(hR_OT_FC);
+
+                    hR_OT_FC = {
+                        OtFcId: "0", EmpId: "", ProssType: "", ttlOT: "", ttlFC: "", ttlNight: "", DtInput: CurrentDate(),
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(), UpdateByUserId:CurrentDate(), DateUpdated: CurrentDate()
+                    };
+
+                };
+
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CreateTotalNight", "HR")',
+                     dataType: 'json',
+                     //headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                     data: { hR_OT_FCs:hR_OT_FCs},
+                     success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            table.clear().draw();
+                        }
+                        else
+                            toastr.error(result.ex);
+
+                        StopSpinner("#btnSave");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#btnSave");
+                    }
+                });
+            });
+        });
+
+
+
+
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+    </script>
+}

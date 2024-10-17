@@ -1,0 +1,901 @@
+﻿@inject IJsonHelper Json;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/Content/ProjectLibFile/css/dashboard/material-dashboard.css" rel="stylesheet" />
+
+    <style>
+        .nav-search.input-group > .form-control {
+            background-image: inherit;
+        }
+        /*        .input-group > .form-control {
+            border: 1px solid #ccc;
+        }*/
+
+        .form-control:focus {
+            border-color: inherit;
+            border-bottom: inherit;
+            border-left: inherit;
+        }
+
+        .mCustomScrollbar {
+            height: 245px;
+        }
+
+        #company.form-control {
+            background-image: inherit;
+            padding: inherit;
+        }
+
+        /*    .table > thead > tr > th{
+            padding: inherit;
+        }*/
+    </style>
+
+
+</head>
+<body>
+    @{
+        var data = ViewBag.DashboardData;
+        int rowcount = 1;
+
+        <div class="wrapper ">
+            <div class="main-panel">
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row score" data-index="0">
+                            @*data-index="7"*@
+                            <div class="card ">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <h4 class="text-center pt-2">Month Wise Statemant</h4>
+                                    </div>
+                                    <div class=" col-md-3 col-12" style="z-index:99">
+                                        <div class="form-group row">
+                                            <label for="formdate" class="col-sm-4 col-form-label pr-0 pl-0">Form date</label>
+                                            <div class="col-sm-8 pr-0 pl-0">
+                                                <input id="dtfromdateall" name="dtfromdate" style="background-color:white" type="text" class="form-control text-center" value="@ViewBag.FromDate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-3 col-12" style="z-index:99">
+                                        <div class="form-group row">
+                                            <label for="todate" class="col-sm-4  pr-0 pl-0 col-form-label">To date </label>
+                                            <div class="col-sm-8  pr-0 pl-0">
+                                                <input id="dttodateall" name="dttodate" style="background-color:white;" type="text" class="form-control text-center" value="@ViewBag.ToDate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-12">
+                                        <input id="btnloadall" type="button" class="btn btn-success btn-block rounded-0" value="Load">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row score" data-index="1">
+                            <div class="col">
+                                <div class="card card-stats">
+                                    <div class="card-header card-header-info card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="fa fa-calculator"></i>
+                                        </div>
+                                        <p class="card-category">@ViewBag.CountDistrictWiseBooking.Caption</p>
+                                        <h3 class="card-title">@ViewBag.CountDistrictWiseBooking.Count</h3>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats pb-4">
+                                            <i class="material-icons">info_outline</i>
+                                            <a id="btnbbci" href="../DistrictWiseBookings" target="_blank">@ViewBag.CountDistrictWiseBooking.ReportLinkCaption</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                @{
+                                    var l = (List<GTERP.Controllers.SalesDashboardController.Dashboard1>)ViewBag.BookingCount;
+                                    var totalFirstbooking = l.FirstOrDefault();
+                                    var ramainingLastbooking = l.LastOrDefault();
+                                    <div class="card card-stats">
+                                        <div class="card-header card-header-success card-header-icon">
+                                            <div class="card-icon">
+                                                <i class="material-icons">local_offer</i>
+                                            </div>
+                                            <p class="card-category">@ramainingLastbooking.Caption</p>
+                                            <h3 class="card-title">@ramainingLastbooking.Count @*<small>GB</small>*@</h3>
+                                        </div>
+
+                                        <div class="card-footer row">
+                                            <div class="stats col-md-12 col-12">
+                                                <i class="material-icons">local_offer</i>
+                                                <a id="btnmlc" href="../Booking" target="_blank"> @l.FirstOrDefault().ReportLinkCaption</a>
+                                            </div>
+                                            <div class="col-md-12 col-12">
+                                                <p class="card-category d-inline">@totalFirstbooking.Caption</p>
+                                                <h6 class="card-title d-inline pl-2">@totalFirstbooking.Count @*<small>GB</small>*@</h6>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                }
+                            </div>
+                            <div class="col">
+                                @{
+                                    var D = (List<GTERP.Controllers.SalesDashboardController.Dashboard1>)ViewBag.CountDeliveryOrder;
+                                    var totalFirstDO = D.FirstOrDefault();
+                                    var ramainingLastDO = D.LastOrDefault();
+
+                                    <div class="card card-stats">
+                                        <div class="card-header card-header-danger card-header-icon">
+                                            <div class="card-icon">
+                                                <i class="material-icons">local_offer</i>
+                                            </div>
+                                            <p class="card-category">@ramainingLastDO.Caption</p>
+                                            <h3 class="card-title">@ramainingLastDO.Count @*<small>GB</small>*@</h3>
+
+                                        </div>
+                                        <div class="card-footer row">
+                                            <div class="stats col-md-12 col-12">
+                                                <i class="material-icons">local_offer</i>
+                                                <a id="btnei" href="../DeliveryOrders" target="_blank"> @D.FirstOrDefault().ReportLinkCaption</a>
+                                            </div>
+                                            <div class="col-md-12 col-12">
+                                                <p class="card-category d-inline">@totalFirstDO.Caption</p>
+                                                <h6 class="card-title d-inline pl-2">@totalFirstDO.Count @*<small>GB</small>*@</h6>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col">
+                                @{
+
+                                    var DCR = (List<GTERP.Controllers.SalesDashboardController.Dashboard1>)ViewBag.CountDeliveryChallan;
+
+                                    var totalFirstDC = DCR.FirstOrDefault();
+                                    var ramainingLastDC = DCR.LastOrDefault();
+                                    <div class="card card-stats">
+                                        <div class="card-header card-header-warning card-header-icon">
+                                            <div class="card-icon">
+                                                <i class="fa fa-university"></i>
+                                            </div>
+                                            <p class="card-category">@ramainingLastDC.Caption</p>
+                                            <h3 class="card-title">@ramainingLastDC.Count @*<small>GB</small>*@</h3>
+
+
+                                        </div>
+                                        <div class="card-footer row">
+                                            <div class="stats col-md-12 col-12">
+                                                <i class="material-icons">local_offer</i>
+                                                <a id="btnei" href="../DeliveryChallan" target="_blank"> @DCR.FirstOrDefault().ReportLinkCaption</a>
+                                            </div>
+                                            <div class="col-md-12 col-12">
+                                                <p class="card-category d-inline">@totalFirstDC.Caption</p>
+                                                <h6 class="card-title d-inline pl-2">@totalFirstDC.Count @*<small>GB</small>*@</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col">
+                                @{
+                                    var ttlGatePass = (List<GTERP.Controllers.SalesDashboardController.Dashboard1>)ViewBag.CountGatePass;
+                                    var totalFirst = ttlGatePass.FirstOrDefault();
+                                    var ramainingLast = ttlGatePass.LastOrDefault();
+                                    <div class="card card-stats">
+                                        <div class="card-header card-header-info card-header-icon">
+                                            <div class="card-icon">
+                                                <i class="fa fa-calculator"></i>
+                                            </div>
+                                            <p class="card-category">@ramainingLast.Caption</p>
+                                            <h3 class="card-title">@ramainingLast.Count @*<small>GB</small>*@</h3>
+                                        </div>
+                                        <div class="card-footer row">
+                                            <div class="stats col-md-12 col-12">
+
+                                                <i class="material-icons">local_offer</i>
+                                                <a id="btnei" href="../GatePasses" target="_blank"> @ttlGatePass.FirstOrDefault().ReportLinkCaption</a>
+
+                                            </div>
+                                            <div class="col-md-12 col-12">
+                                                <p class="card-category d-inline">@totalFirst.Caption</p>
+                                                <h6 class="card-title d-inline pl-">@totalFirst.Count @*<small>GB</small>*@</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
+                        </div>
+                        <div class="row score" data-index="2">
+                            <div class="col-md-4 col-12">
+                                <div class="card card-chart">
+                                    <div class="card-header card-header-success">
+                                        @*  *@
+                                        <div class="chart-area">
+                                            <canvas id="chartLineGreen"></canvas>
+                                        </div>
+                                        <div class="ct-chart" id="dailySalesChart"></div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title">Booking</h4>
+                                        @*<p class="card-category">
+                                                <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.
+                                            </p>*@
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats">
+                                            <i class="material-icons">access_time</i> updated 4 minutes ago
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="card card-chart">
+                                    <div class="card-header card-header-danger">
+                                        <div class="chart-area">
+                                            <canvas id="chartLineRed"></canvas>
+                                        </div>
+                                        @*<div class="ct-chart" id="websiteViewsChart"></div>*@
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title">Delivery Order</h4>
+                                        @*<p class="card-category">Last Campaign Performance</p>*@
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats">
+                                            <i class="material-icons">access_time</i> campaign sent 2 days ago
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="card card-chart">
+                                    <div class="card-header card-header-info">
+                                        <div class="chart-area">
+                                            <canvas id="chartLinePurple"></canvas>
+                                            @*<canvas id="chartLineGreen"></canvas>*@
+                                        </div>
+                                        @*<div class="ct-chart" id="completedTasksChart"></div>*@
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title">GatePass</h4>
+                                        @*<p class="card-category">Last Campaign Performance</p>*@
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats">
+                                            <i class="material-icons">access_time</i> campaign sent 2 days ago
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row score" data-index="2">
+                            <div class="col-md-12 col-12">
+                                <div class="card card-chart">
+                                    <div class="card-header card-header-secondary">
+                                        <div class="row">
+                                            <div class="col-sm-6 text-left">
+                                                @*<h5 class="card-category">Total Shipments</h5>
+                                                    <h2 class="card-title">Performance</h2>*@
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                                                    <label class="btn btn-sm btn-primary btn-simple active" id="0fahad">
+                                                        <input type="radio" name="options" checked>
+                                                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Dist. Wise Allotment</span>
+                                                        <span class="d-block d-sm-none">
+                                                            <i class="tim-icons icon-single-02"></i>
+                                                        </span>
+                                                    </label>
+                                                    <label class="btn btn-sm btn-primary btn-simple" id="1fahad">
+                                                        <input type="radio" class="d-none d-sm-none" name="options">
+                                                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Booking </span>
+                                                        <span class="d-block d-sm-none">
+                                                            <i class="tim-icons icon-gift-2"></i>
+                                                        </span>
+                                                    </label>
+                                                    <label class="btn btn-sm btn-primary btn-simple" id="2fahad">
+                                                        <input type="radio" class="d-none" name="options">
+                                                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Delivery Order</span>
+                                                        <span class="d-block d-sm-none">
+                                                            <i class="tim-icons icon-tap-02"></i>
+                                                        </span>
+                                                    </label>
+                                                    <label class="btn btn-sm btn-primary btn-simple" id="3fahad">
+                                                        <input type="radio" class="d-none" name="options">
+                                                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Delivery Challan</span>
+                                                        <span class="d-block d-sm-none">
+                                                            <i class="tim-icons icon-tap-02"></i>
+                                                        </span>
+                                                    </label>
+                                                    <label class="btn btn-sm btn-primary btn-simple" id="4fahad">
+                                                        <input type="radio" class="d-none" name="options">
+                                                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Gate Pass</span>
+                                                        <span class="d-block d-sm-none">
+                                                            <i class="tim-icons icon-tap-02"></i>
+                                                        </span>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-area">
+                                            <canvas id="chartBig1"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        @*<h5 class="card-category">Total Shipments</h5>*@
+                                        <h4 class="card-title">Performance</h4>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats">
+                                            <i class="material-icons">access_time</i> updated 4 minutes ago
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row score" data-index="1">
+                            <div class="col-lg-6 col-md-12">
+                                <div class="card">
+                                    <div class="card-header card-header-tabs card-header-primary">
+                                        <div class="nav-tabs-navigation">
+                                            <div class="nav-tabs-wrapper">
+                                                <div class="pl-2 d-none">Last Transaction</div>
+                                                <ul class="nav nav-tabs" data-tabs="tabs">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#DWB" data-toggle="tab">
+                                                            @*<i class="material-icons">bug_report</i>*@ DWB
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#BK" data-toggle="tab">
+                                                            @*<i class="material-icons">bug_report</i>*@ BOOKING
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#DO" data-toggle="tab">
+                                                            @*<i class="material-icons">code</i>*@ DO
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#DC" data-toggle="tab">
+                                                            DC
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" href="#GP" data-toggle="tab">
+                                                            GATE PASS
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#LU" data-toggle="tab">
+                                                            Login User
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#DOC" data-toggle="tab">
+                                                            DO Count [User/Year]
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#TUT" data-toggle="tab">
+                                                            User Log
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="DWB">
+                                                <table id="tbl" class="table table-hover ">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{ var DWBCount = 1;}
+                                                        @foreach (var item in ViewBag.TopTransactionDWB)
+                                                        {
+                                                            <tr>
+                                                                <td>@DWBCount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            DWBCount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="BK">
+                                                <table id="tbl" class="table table-hover">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{ var BKCount = 1;}
+                                                        @foreach (var item in ViewBag.TopTransactionBooking)
+                                                        {
+                                                            <tr>
+                                                                <td>@BKCount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            BKCount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="DO">
+                                                <table id="tbl" class="table table-hover ">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{ var DOCount = 1;}
+                                                        @foreach (var item in ViewBag.TopTransactionDO)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@DOCount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            DOCount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="DC">
+                                                <table id="tbl" class="table table-hover">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{ var DCCount = 1;}
+                                                        @foreach (var item in ViewBag.TopTransactionDC)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@DCCount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            DCCount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane active table-responsive mCustomScrollbar" id="GP" data-mcs-theme="minimal-dark">
+                                                <table id="tbl" class="table table-hover ">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            var GPcount = 1;
+                                                        }
+                                                        @foreach (var item in ViewBag.TopTransactionGP)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@GPcount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            GPcount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane  table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="LU">
+                                                <table id="tbl" class="table table-hover">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Device</th>
+                                                            <th> Login Time</th>
+                                                            <th> Login IP</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            var logcount = 1;
+                                                        }
+                                                        @foreach (var item in ViewBag.TopLogin)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@logcount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.DeviceType</td>
+                                                                <td>@item.LoginTime</td>
+                                                                <td>@item.IPAddress</td>
+                                                            </tr>
+                                                            logcount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="DOC">
+                                                <table id="tbl" class="table table-hover">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Year</th>
+                                                            <th> Total DeliveryOrder</th>
+                                                            <th> Last Transaction</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            var eicount = 1;
+                                                        }
+                                                        @foreach (var item in ViewBag.DOUSERCOUNT)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@eicount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.YearInput</td>
+                                                                <td class="text-center" style="color:red">@item.TotalDeliveryOrderCount</td>
+                                                                <td>@item.LastTransactionDate</td>
+                                                            </tr>
+                                                            eicount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="TUT">
+                                                <table id="tbl" class="table table-hover ">
+                                                    <thead class="text-warning">
+                                                        <tr>
+                                                            <th> SL NO</th>
+                                                            <th> User Name</th>
+                                                            <th> Caption</th>
+                                                            <th> Work Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            var TUTcount = 1;
+                                                        }
+                                                        @foreach (var item in ViewBag.AllUserTransaction)
+                                                        {
+
+                                                            <tr>
+                                                                <td>@TUTcount</td>
+                                                                <td>@item.UserName</td>
+                                                                <td>@item.Caption</td>
+                                                                <td>@item.WorkDate</td>
+                                                            </tr>
+                                                            TUTcount++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="card">
+                                    <div class="card-header card-header-warning">
+                                        <h4 class="card-title">Transaction</h4>
+                                        @*<form class="row">
+                                            <div class=" col-md-5 col-12">
+                                                <div class="form-group row">
+                                                    <label for="formdate" class="text-white col-sm-4 col-form-label pr-0 pl-0">Form:</label>
+                                                    <div class="col-sm-8 pr-0 pl-0">
+                                                        <input id="dtfromdate" name="dtfromdate" style="background-color:white" type="text" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class=" col-md-5 col-12">
+                                                <div class="form-group row">
+                                                    <label for="todate" class="text-white col-sm-4  pr-0 pl-0 col-form-label">To date </label>
+                                                    <div class="col-sm-8  pr-0 pl-0">
+                                                        <input id="dttodate" name="dttodate" style="background-color:white;" type="text" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 col-12">
+                                                <input id="btnload" type="button" class="btn btn-primary" value="Load">
+                                            </div>
+                                            </form>*@
+                                        @*<p class="card-category">New employees on 15th September, 2016</p>*@
+
+                                    </div>
+                                    <div class="card-body table-responsive">
+                                        <table id="tblTransaction" class="table table-hover">
+                                            <thead class="text-warning">
+                                                <tr>
+                                                    <th> SL No</th>
+                                                    <th> Caption</th>
+                                                    <th> Total Document</th>
+                                                    <th> Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @foreach (var item in ViewBag.LastTransactions)
+                                                {
+
+                                                    <tr>
+                                                        <td>@rowcount</td>
+                                                        <td>@item.Caption</td>
+                                                        <td>@item.Total</td>
+                                                        <td>@item.Value</td>
+                                                    </tr>
+                                                    rowcount++;
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+
+                                </div>
+
+
+                                @*<div class="card">
+                                        <div class="card-header card-header-warning">
+                                            <h4 class="card-title">Monthly Top User Activity</h4>
+
+                                        </div>
+                                        <div class="card-body table-responsive">
+                                            <table id="tblTransaction" class="table table-hover">
+                                                <thead class="text-warning">
+                                                    <tr>
+                                                        <th> SL No</th>
+                                                        <th> Caption</th>
+                                                        <th> Total Document</th>
+                                                        <th> Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{var rowcountmonthly = 0;}
+                                                    @foreach (var item in ViewBag.LastTransactions)
+                                                    {
+
+                                                        <tr>
+                                                            <td>@rowcount</td>
+                                                            <td>@item.Caption</td>
+                                                            <td>@item.Total</td>
+                                                            <td>@item.Value</td>
+                                                        </tr>
+                                                        rowcountmonthly++;
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+
+                                    </div>*@
+                            </div>
+                        </div>
+
+
+
+                        <div class="row score" data-index="6">
+                            <div class="col-md-6 col-12">
+                                <div class="card card-chart">
+                                    <div class="card-header card-header-secondary">
+                                        <div class="chart-area">
+                                            <canvas id="chartLineWhite" height="285px"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title">Date Wise Count Gate Pass</h4>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="stats">
+                                            <i class="material-icons">access_time</i> Last 10 Days Gate Pass History
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+</body>
+</html>
+
+<!--   Core JS Files   -->
+@* dashboard Chartist*@
+
+
+@section Scripts{
+    <script src="~/Content/ProjectLibFile/js/dashboard/chartjs.min.js"></script>
+    <script src="~/Content/ProjectLibFile/js/dashboard/demo.js"></script>
+    <script type="text/javascript">
+                $('.sortable').each(function () {
+            var $this = $(this);
+            $this.append($this.find('.score').get().sort(function (a, b) {
+                return $(a).data('index') - $(b).data('index');
+            }));
+        });
+
+
+            ///////// Use form demo.js file //////////
+            var dashboardData =@Html.Raw(@Json.Serialize(ViewBag.DashboardData));
+
+
+            //alert("waiting");
+
+            $(document).ready(function () {
+                // Javascript method's body can be found in assets/js/demos.js
+                m.initDashboardPageCharts();
+
+                 $("#btnloadall").click(function () {
+                     var dtfromdateall = $('#dtfromdateall').val();
+                     var dttodateall = $('#dttodateall').val();
+                     window.location.href = `?FromDate=${dtfromdateall}&ToDate=${dttodateall}`
+                 });
+
+
+                //$('#btnmlc').click(function () {
+                //    window.location.href = `../COM_MasterLC`
+                //});
+
+                //$('#btnei').click(function () {
+                //    window.location.href = `../DeliveryOrder`
+                //});
+
+                //$('#btnpi').click(function () {
+                //    window.location.href = `../DeliveryChallan`
+                //});
+
+                //$('#btnGatePass').click(function () {
+                //    window.location.href = `../COM_GatePass_Master`
+                //});
+
+                //$('#btnci').click(function () {
+                //    window.location.href = `../COM_CommercialDeliveryOrder`
+                //});
+
+
+            function CurrentDate() {
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+                if ($("#dtfromdate").val() == '') {
+                    $("#dtfromdate").val(val);
+                }
+                if ($("#dttodate").val() == '') {
+                    $("#dttodate").val(val);
+                }
+
+
+            }
+            CurrentDate();
+
+
+           $("#dtfromdate,#dttodate,#dtfromdateall,#dttodateall").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+
+                //var dateFormat = $("#LCOpenDate").datepicker("option", "dateFormat");
+                ////setter
+                //$("#LCOpenDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+            ,
+            dateFormat: "dd-M-yy",
+            changeMonth: true,
+            changeYear: true
+            });
+
+                $("#btnload").click(function () {
+                    var dtfromdate = $('#dtfromdate').val();
+                    var dttodate = $('#dttodate').val();
+                    $.ajax({
+                        type: 'GET',
+                        url:'/Dashboard/LastTransactions',
+                       // dataType: 'json',
+                        data: { FromDate: dtfromdate, ToDate: dttodate },
+                        success: function (data) {
+                            $("#tblTransaction > tbody").html('');
+                            var count = 1;
+                            console.log(data);
+                            for (item of data) {
+                                $("#tblTransaction tbody").append(
+                                    `<tr>
+                                            <td>${count}</td>
+                                            <td>${item.Caption}</td>
+                                            <td>${item.Total}</td>
+                                            <td>${item.Value}</td>
+                                    </tr>`);
+                                count++;
+                            }
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                });
+            });
+
+
+
+
+    </script>
+
+
+
+
+
+
+}
+
+
+@* dashboard Chartist end*@

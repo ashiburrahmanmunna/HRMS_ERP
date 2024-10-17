@@ -1,0 +1,202 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.RepresentativeBooking>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+
+            <div class="col">
+                @Html.ActionLink("RepresentativeBooking", "Create", null, null, new { @class = "btn btn-outline-info btn-block", @id = "btnBack" })
+
+            </div>
+
+            <div class="col">
+                <h2 id="styletext">Booking / Year-Month Wise Allotment</h2>
+            </div>
+            <div class="col-lg-4">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="finalpanel" class="card p-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tblbufferlist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@*<table class="table">
+        <thead>
+            <tr>
+
+                <th>RepresentativeBookingId</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.YearName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MonthName)
+                </th>
+              
+                <th>
+                    @Html.DisplayNameFor(model => model.BufferList.BufferName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BufferRepresentative.RepresentativeCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BufferRepresentative.RepresentativeName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AllotmentQty)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.YearName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MonthName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BufferList.BufferName)
+                    </td>
+                    
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BufferRepresentative.RepresentativeCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BufferRepresentative.RepresentativeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AllotmentQty)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.RepresentativeBookingId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.RepresentativeBookingId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+@section Scripts{
+    <script>
+        //$('.table').DataTable();
+
+        var peopleList = $('#tblbufferlist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "RepresentativeBooking")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "RepresentativeBookingId", "data": "RepresentativeBookingId", "searchable": true, "visible": false },
+                    { "title": "Year", "data": "Year" },
+                    { "title": "Month", "data": "Month" },
+                    { "title": "Buffer", "data": "Buffer" },
+                    { "title": "Representative Code", "data": "RepresentativeCode", "searchable": true },
+                    { "title": "Representative Name", "data": "RepresentativeName", "searchable": true },
+                    { "title": "Allotment Qty", "data": "AllotmentQty", "searchable": true },
+                    { "title": "Remaining Qty", "data": "RemainingQty", "searchable": false },
+               
+                    {
+                        "title": "Action",
+                        "data": "RepresentativeBookingId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "RepresentativeBooking")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "RepresentativeBooking")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                      
+                     
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                "searching": true
+     });
+
+
+
+
+
+
+
+    </script>
+}

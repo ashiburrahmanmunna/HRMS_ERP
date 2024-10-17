@@ -1,0 +1,653 @@
+﻿@model IEnumerable<RawDataVM>
+@using GTERP.ViewModels
+@* IIUC-Asad *@
+@{
+    var role = ViewBag.Role;
+    var str = "";
+}
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    .jsgrid-pager-container {
+        display: block !important;
+    }
+
+    .jsgrid-grid-body {
+        height: 400px;
+    }
+
+    .custom-btn {
+        color: blue;
+    }
+
+</style>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+
+    <div class="col-md-12 col-12">
+
+        <div class="bringshadow boxStyle" style="height: 80px; padding-right: 5px; margin-bottom: 5px;padding:14px;border-radius:3px;border:solid 1px rgba(0,0,0,0.15);">
+
+
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <input type="text" id="Emp" class="form-control" placeholder="Select Employee then Enter" />
+                    </div>
+
+                </div>
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                From Date:
+                            </span>
+                        </div>
+
+                        <input type="text" value="" id="from" name="from" class="form-control" autocomplete="off" />
+
+
+                    </div>
+                </div>
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                To Date :
+                            </span>
+                        </div>
+
+                        <input type="text" value="" id="to" name="to" class="form-control" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="col-md-2 col-6">
+                    <button type="button" class="btn btn-warning custom-btn" onclick="loadData()" style="width: 130px">Load</button>
+                </div>
+
+            </div>
+        </div>
+        <div class="card p-3 table-responsive">
+            <div class="row" style="margin: 2px">
+                <div class="col-6">
+                </div>
+                <div class="col-6">
+                    <div style="display: flex; align-items: center;" class="float-right">
+                        @if(role != "User")
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="selectAll" style="box-sizing: 2000%">
+                                <label class="form-check-label" for="selectAll" style="font-weight:600;">Check All</label>
+                            </div>
+
+                            <button type="button" class="btn btn-outline-danger" onclick="deleteMultiple()" style="margin-right: 2px;margin-left: 4px;">Delete Selected</button>
+                            <button type="button" class="btn btn-outline-success" onclick="clearAllFilter()" style="margin-right: 2px;">Clear Filter</button>
+                        }
+                        <button type="button" class="btn btn-outline-primary" id="download-pdf" style="margin-right: 2px; ">PDF</button>
+                        <button id="download-csv" class="btn btn-outline-success">Excel</button>
+                        <button id="download-xlsx" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="tableContainer" class="mt-4" style="height: 300%; width: 100%; margin:auto">
+                <div id="Report_table"></div>
+            </div>
+            <br />
+        </div>
+    </div>
+</div>
+
+
+ @section Scripts {
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.3.0/js/tabulator.min.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap4.min.css" integrity="sha512-ht3CSPjgWsxdbLti7wtKNEk5hLoGtP2J8C40muB5/PCWwNw9M/NMJpyvHdeko7ADC60SEOiCenU5pg+kJiG9lg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+            integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        $(function () {
+            $("#from").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#to").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+        });
+    </script>
+    <script>
+        var dtfrom;
+        var dtto;
+        var empId;
+        var invoicelist;
+        var Columns = [];
+        var $select;
+        var NumberColumns = [];
+        var HiddenColumn = [];
+        var table;
+        var buttunshow = false;
+        var dataList = [];
+        var emText;
+        var PageSize = 10;
+        var PageIndex = 1;
+        var DeptName;
+        var DesigName;
+        var SectName ;
+        var EmpName ;
+        var EmpCode;
+        var From = $("#from").val();
+        var To = $("#to").val();
+        var DtPunchDate;
+        var DtPunchTime;
+        
+        $(document).ready(function () {
+            var $selctemp = $("select").select2();
+            $selctemp.select2("destroy");
+            dtfrom = $("#from").val();
+            dtto = $("#to").val();
+            if (dtfrom == null) {
+                dtfrom = new Date();
+            }
+            if (dtto == null) {
+                dtto = new Date();
+            }
+            setTimeout(function () {
+                TabulatorInitializer();
+            }, 1000);
+            
+            $("#selectAll").on("click", function (e) {
+                if ($(this).is(":checked")) {
+                    table.selectRow("active");
+                } else {
+                    table.deselectRow();
+                }
+            });
+
+            document.getElementById("download-csv").addEventListener("click", function () {
+                table.download("csv", "data.csv");
+            });
+            
+            document.getElementById("download-xlsx").addEventListener("click", function () {
+                table.download("xlsx", "data.xlsx", { sheetName: "My Data" });
+            });
+
+            
+            document.getElementById("download-pdf").addEventListener("click", function () {
+                table.download("pdf", "data.pdf", {
+                    orientation: "portrait", //set page orientation to portrait
+                    title: "Example Report", //add title to report
+                });
+            });
+        });
+
+       
+        function deleteMultiple() {
+            
+            dataList = table.getSelectedData();
+
+            if (!dataList || dataList.length === 0) {
+                alert("Please select a row to delete.");
+                return;
+            }
+
+            var confirmation = confirm("Are you sure you want to delete?");
+            if (confirmation) {
+                $.ajax({
+                    url: '@Url.Action("DeletePunchDataList", "RawDataView")',
+                    method: 'POST',
+                    data: JSON.stringify(dataList), 
+                    contentType: 'application/json', 
+                    success: function (response) {
+                        if (response) {
+                            TabulatorInitializer();
+                            console.log("Data deleted successfully");
+                        }
+                        else {
+                            console.error('Error deleting data:');
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error deleting data:', error);
+                    }
+                });
+            } else {
+                
+                console.log("Delete operation canceled.");
+            }
+        }
+        function loadData() {
+            var _from = $("#from").val();
+            var _to = $("#to").val();
+            if (_from == null || _from == "") {
+                _from = new Date().getDate(); 
+            }
+            if (_to == null || _to == "") {
+                _to = new Date().getDate(); 
+            }
+            var page = table.page;
+            var size = table.size;
+            var url = '@Url.Action("GetRawData", "RawDataView")';
+            url += '?From=' + _from + '&To=' + _to + '&emText=' + emText + '&DeptName=' + DeptName + '&DesigName=' + DesigName + '&SectName=' + SectName + '&EmpCode=' + EmpCode + '&EmpName=' + EmpName + '&DtPunchDate=' + DtPunchDate + '&DtPunchTime=' + DtPunchTime + '&page=' + page + '&size=' + size;
+            clearFilterObject();
+            table.clearFilter();
+            table.on("dataFiltering", GetTablefilter);
+            table.setData(url);
+
+        }
+
+        function TabulatorInitializer() {
+            
+            var flag = false;
+            
+            var role = '@ViewBag.Role';
+            if(role != "User")
+            {
+                flag = true;
+            }
+            From = $("#from").val();
+            To = $("#to").val();
+            if (From == null || From == "") {
+                From = new Date();
+                From = From.getDate();
+            }
+            if (To == null || To == "") {
+               To = new Date();
+                To = To.getDate();
+            }
+            table = new Tabulator("#Report_table", {
+                layout: "fitColumns",
+                movableColumns: true,
+                selectable: true,
+                pagination: true,
+                paginationMode: "remote",
+                paginationSize: 10,
+                paginationCounter: "rows",
+                ajaxURL: '@Url.Action("GetRawData", "RawDataView")',
+                ajaxParams: { emText, From, To, DeptName, DesigName, SectName, EmpName, EmpCode, DtPunchDate, DtPunchTime },
+                ajaxResponse: function (url, params, response) {
+                    table.setMaxPage(response.PageInfo.PageCount);
+                    table.data = response.EmployeeList;
+                    table.page = response.PageInfo.PageNo;
+                    table.size = response.PageInfo.PageSize;
+                    console.log(response);
+                    clearFilterObject();
+                    return {
+                        data: response.EmployeeList,
+                        last_page: response.PageInfo.PageCount,
+                        page: response.PageInfo.PageNo,
+                        size: response.PageInfo.PageSize, 
+                        
+                    };
+                },
+                columns: [
+                    {
+                        title: 'aId', field: 'aId', headerFilter: "input",
+                        headerFilterLiveFilter: false,
+                        hozAlign: "center",
+                        visible: false,
+                    },
+                    {
+                        title: 'EmpCode', field: 'EmpCode', headerFilter: "input",
+                        headerFilterLiveFilter: false, 
+                        hozAlign: "center",
+                    },
+                    {
+                        title: "EmpName", field: "EmpName", headerFilter: "input",
+                        headerFilterLiveFilter: false, 
+                        hozAlign: "center",
+                    },
+                    {
+                        title: 'Department', field: 'DeptName', headerFilter: "input",
+                        headerFilterLiveFilter: false, 
+                        hozAlign: "center",
+                    },
+                    {
+                        title: 'Designation', field: 'DesigName', headerFilter: "input",
+                        headerFilterLiveFilter: false,
+                        hozAlign: "center",
+                    },
+                    {
+                        title: 'Section', field: 'SectName', headerFilter: "input",
+                        headerFilterLiveFilter: false,
+                        hozAlign: "center",
+                    },
+                    {
+                        title: 'JoiningDate', field: 'DtJoin', hozAlign: "center",
+                        formatter: function (cell, formatterParams) {
+                            return formatDate(cell.getValue());
+                        }
+                    },
+                    {
+                        title: 'PunchDate',
+                        field: 'DtPunchDate',
+                        hozAlign: "center",
+                        formatter: function (cell, formatterParams) {
+                            return formatDate(cell.getValue());
+                        },
+                        headerFilter: "input",
+                        headerFilterLiveFilter: false, headerFilterPlaceholder: "Enter a valid date..",
+                        headerFilterFunc: function (headerValue, rowValue, rowData, filterParams) {
+                                
+                            var inputDate = new Date(headerValue);
+                                
+                            var rowDate = new Date(rowValue);
+
+                            inputDate.setHours(0, 0, 0, 0);
+                            rowDate.setHours(0, 0, 0, 0);
+                              
+                            return inputDate.getTime() === rowDate.getTime();
+                        }
+                    },
+
+                    {
+                        title: 'PunchTime', field: 'DtPunchTime', headerFilterPlaceholder: "Enter a valid Datetime..",
+                        hozAlign: "center",
+                        formatter: function (cell, formatterParams) {
+                            return formatTime(cell.getValue());
+                        },
+                        headerFilter: "input",
+                        headerFilterLiveFilter: false,
+
+                    },
+                    {
+                        title: "Actions",
+                        formatter: function (cell, formatterParams, onRendered) {
+                            var rowData = cell.getRow().getData();
+                           
+                            var actionContainer = document.createElement("div");
+                            actionContainer.className = "text-nowrap";
+
+                            // Edit Button
+                            var editSpan = document.createElement("span");
+                            editSpan.setAttribute("data-toggle", "tooltip");
+                            editSpan.setAttribute("title", "Edit!");
+
+                            var editButton = document.createElement("button");
+                            editButton.textContent = "";
+                            editButton.className = "fas fa-edit btn btn-warning btn-xs";
+                            editButton.onclick = function () {
+                                editRow(rowData.AId);
+                            };
+                            editSpan.appendChild(editButton);
+
+                            actionContainer.appendChild(editSpan);
+
+
+                            actionContainer.appendChild(document.createTextNode("\u00A0\u00A0")); 
+
+                            // Delete Button
+                            var deleteSpan = document.createElement("span");
+                            deleteSpan.setAttribute("data-toggle", "tooltip");
+                            deleteSpan.setAttribute("title", "Delete!");
+
+                            var deleteButton = document.createElement("button");
+                            deleteButton.textContent = "";
+                            deleteButton.className = "far fa-trash-alt btn btn-danger btn-xs";
+                            deleteButton.onclick = function () {
+                                deleteRow(rowData.AId); 
+                            };
+                            deleteSpan.appendChild(deleteButton);
+
+                            actionContainer.appendChild(deleteSpan);
+
+                            return actionContainer;
+                        },
+                        hozAlign: "center",
+                        width: 120,
+                        visible: flag,
+
+                    },
+                ],    
+            });
+            table.on("dataFiltering", GetTablefilter);
+        }
+        
+        function GetTablefilter(filters){
+
+            filters.forEach(item => {
+                if(item.value.length > 1 )
+                {
+                    if (item.field == "DeptName") {
+                        if (item.value.length > 0 && item.value != "undefined") {
+                            DeptName = item.value;
+                            // console.log("filter DeptName :", DeptName);
+                        }
+                    }
+                    if (item.field == "DesigName") {
+                        if (item.value.length > 0 && item.value != "undefined") {
+                            DesigName = item.value;
+                            // console.log("filter DesigName :", DesigName);
+                        }
+                    }
+                    if (item.field == "SectName") {
+                        if (item.value.length > 0 && item.value != "undefined") {
+                            SectName = item.value;
+                            // console.log("filter SectName :", SectName);
+                        }
+                    }
+                    if (item.field == "EmpName") {
+                        if (item.value.length > 0 && item.value != "undefined") {
+                            EmpName = item.value;
+                            // console.log("filter EmpName :", EmpName);
+                        }
+                    }
+                    if (item.field == "EmpCode") {
+                        if (item.value.length > 0 && item.value != "undefined") {
+                            EmpCode = item.value;
+                            // console.log("filter EmpCode :", EmpCode);
+                        } 
+                    }
+                    if (item.field == "DtPunchDate") { 
+                        DtPunchDate = item.value;
+                        // console.log("filter Date", DtPunchDate);
+                    }
+                    if (item.field == "DtPunchTime") {
+                        DtPunchTime = item.value;
+                        //console.log("filter time", DtPunchTime);
+                    }
+                }        
+            });
+
+        }
+        function clearAllFilter() {
+            DeptName = undefined;
+            SectName = undefined;
+            DesigName = undefined;
+            DtPunchDate = undefined;
+            DtPunchTime = undefined;
+            EmpCode = undefined;
+            EmpName = undefined;
+            table.clearFilter();
+            loadData();
+        }
+        function clearFilterObject() {
+            DeptName = undefined;
+            SectName = undefined;
+            DesigName = undefined;
+            DtPunchDate = undefined;
+            DtPunchTime = undefined;
+            EmpCode = undefined;
+            EmpName = undefined;
+        }
+        function GetColumns() {
+
+            Columns = invoicelist.length > 0 ? Object.keys(invoicelist[0]) : [];     
+            for (let i in invoicelist[0]) {
+
+                if (typeof invoicelist[0][i] == 'number') {
+
+                    NumberColumns.push(i);
+                }
+            }
+
+        }
+        function deleteRow(id) {
+            if (id) {
+                var confirmation = confirm("Are you sure you want to delete?");
+                if(confirmation)
+                {
+
+                    window.location.href = '@Url.Action("Delete", "RawDataView")/' + id;
+                    console.log('Delete clicked for row with ID:', id);
+                }
+
+            } else {
+                alert("Please select a row to delete.");
+            }
+        }
+
+        function editRow(id) {
+            window.location.href = '@Url.Action("Edit","RawDataView")/' + id;
+
+            console.log('Edit clicked for row with ID:', id);
+        }
+
+        function formatTime(datetime) {
+            var dateTime = new Date(datetime);
+
+            
+            var hours = dateTime.getHours();
+            var minutes = dateTime.getMinutes();
+            var seconds = dateTime.getSeconds();
+
+            
+            var meridiem = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+
+            
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            
+            var timeString = hours + ':' + minutes + ' ' + meridiem;
+
+            return timeString;
+        }
+
+    </script>
+   
+
+    <script>
+        $(function () {
+            $("#Emp").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("GetFilteredEmployee", "RawDataView")",
+                        dataType: "json",
+                        delay: 250,
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp").val(ui.item.label);
+                    data(ui.item.value);
+
+                    return false;
+                }
+            });
+
+            // Event handler for input change
+            $("#Emp").on('change', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    data(0);
+                    //console.log("Input field is blank");
+                } else {
+                   
+                    //console.log("Input field is not blank");
+                }
+            });
+        });
+        function data(empId) {
+            emText = Number(empId);
+            console.log(emText);
+        }
+    </script>
+    <script>
+        $(function () {
+            var currentDate = new Date();
+            var formattedDate = formatDate(currentDate);
+            $("#from").val(formattedDate);
+            $("#to").val(formattedDate);
+        });
+
+        function formatDate(date) {
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            if (date == "") {
+                date = new Date();
+            } else {
+                date = new Date(date)
+            }
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+
+            var formattedDate = day + "-" + months[monthIndex] + "-" + year;
+
+            return formattedDate;
+        }
+    </script>
+                        }

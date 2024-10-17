@@ -1,0 +1,427 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.BuffertWiseBooking>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid" style="max-width:1300px">
+    <div class="row card p-4">
+        <div class="col-md-12">
+
+            <div class="card-header">
+                <h4>
+                    Buffer Wise Booking   @ViewBag.Title
+
+                </h4>
+            </div>
+            <form asp-action="Create">
+
+
+
+                <div class="card-body">
+                    <div class="form-row p-4">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="input-group mb-3 col-md-6 col-12">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Year</span>
+                            </div>
+                            <select id="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYearId"></select>
+                        </div>
+
+                        <div class="input-group mb-3  col-md-6 col-12">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Month</span>
+                            </div>
+                            <select id="FiscalMonthId" class="form-control" asp-items="ViewBag.FiscalMonthId">
+                                <option>Please Select Month</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class=" col-12 p-2 table-responsive text-nowrap">
+
+                            <table id="tblBufferWiseBookindata" class="tblDistWiseBookindata table table-striped table-bordered table-sm responsive nowrap table-hover">
+                                <thead>
+                                    <tr>
+
+                                        <th>BufferWiseBooking Id</th>
+                                        <th>Buffer Id</th>
+                                        <th>Year Name Id</th>
+                                        <th>Month Name Id</th>
+
+                                        <th>Buffer Name</th>
+
+                                        <th>Year</th>
+                                        <th>Month</th>
+
+                                        <th>Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*@if (Model != null)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.DistWiseBookingId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.FiscalYearId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.FiscalMonthId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.DistId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.YearName.YearEng)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.MonthName.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.Cat_District.DistName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(m => item.Qty)
+                                            </td>
+                                        </tr>
+                                    }
+                                }*@
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="text-right" colspan="7">
+                                            <h4>
+                                                Total Value :
+                                            </h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="ttlBooking">0.00</h4>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div>
+                        @if (ViewBag.Title == "Create")
+                        {
+                            <div class="text-center">
+
+                                <span>
+                                    <input type="button" class="btn btn-warning" id="selectall" name="selectall" value="Select All" />
+                                </span>
+                                <span>
+                                    <button type="button" class="btn btn-primary" onclick="Booking_Save()">Save</button>
+                                </span>
+
+                                <span>
+                                    <a asp-action="Index" class="btn btn-info">Back</a>
+                                </span>
+                            </div>
+                        }
+                        else if (ViewBag.Title == "Edit")
+                        {
+                            <div class="text-center">
+                                <span>
+                                    <a asp-action="Index" class="btn btn-info">Load</a>
+                                </span>
+                                <span>
+                                    <button type="button" class="btn btn-primary" onclick="Booking_Save()">Update</button>
+                                </span>
+                                <span>
+                                    <a asp-action="Index" class="btn btn-info">Back</a>
+                                </span>
+                            </div>
+                        }
+                        else if (ViewBag.Title == "Delete")
+                        {
+                            <div class="text-center">
+                                <span>
+                                    <button type="button" class="btn btn-primary" onclick="Requisition_delete()">Delete</button>
+                                </span>
+                                <span>
+                                    <a asp-action="Index" class="btn btn-info">Back</a>
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        $('#FiscalYearId').select2();
+        $('#FiscalMonthId').select2();
+       
+
+
+        GetMonthByYears();
+
+
+        $('#FiscalYearId').change(function () {
+
+            GetMonthByYears();
+        })
+
+        function GetMonthByYears() {
+
+            var Year = $('#FiscalYearId option:selected').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetMonthByYear", "Booking")',
+                dataType: 'json',
+                data: { FYId: Year },
+                success: function (data) {
+                    //console.log(data)
+                    //alert(data);
+                    var html = '<option value="0">Select Month</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $('#FiscalMonthId').html(html);
+                    $('#FiscalMonthId').attr('disabled', false);
+                },
+                error: function (ex) {
+                    toastr.error('Faild' + ex);
+                }
+            });
+            return false;
+        }
+
+
+
+
+
+
+        var Booking = [];
+        var tblBufferWiseBookindata;
+        tblBufferWiseBookindata = $('#tblBufferWiseBookindata').DataTable({
+           
+            "aoColumns": [
+                { "sClass": "BufferWiseBookingId", "visible": false },
+                { "sClass": "BufferId", "visible": false },
+                { "sClass": "FiscalYearId", "visible": false },
+                { "sClass": "FiscalMonthId", "visible": false },
+               
+                { "sClass": "BufferName", "visible": true },
+                { "sClass": "Year", "visible": true },
+                { "sClass": "Month", "visible": true },
+              
+                { "sClass": "Qty", "visible": true }
+            ],
+            columnDefs: [
+                {
+                    'targets': 7,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm" id="Qty" name="AllotmentQty" type="text" data-val="true" value=' + data + '>'
+                    }
+                }
+
+            ],
+
+            "scrollY": "400px",
+            "scrollCollapse": true,
+            "paging": false,
+            select: true,
+            select: 'multi',
+
+            rowCallBack: function (row) {
+                $(row).addClass('txtdealer');
+            },
+        
+        });
+
+        $('#tblBufferWiseBookindata').keyup(function () {
+            bookingDataCalculation()
+        })
+
+        $('#FiscalMonthId').select2({})
+            .on('select2:select', function (e) {
+                if ($('#FiscalMonthId').val() > 0) {
+                    //tblDistWiseBookindata.clear().draw();
+                    DealerLoad();
+                } else {
+                    alert('Please Select Month Information First');
+                }
+            })
+
+
+
+        function DealerLoad() {
+            var Year = $('#FiscalYearId').val();
+            var Month = $('#FiscalMonthId').val();
+            
+
+
+
+            tblBufferWiseBookindata.clear().draw();
+            //alert('Hit Dealer Load');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetAllBuffer", "BufferWishBooking")',
+                dataType: 'json',
+                data: { Year: Year, Month: Month},
+                async: false,
+                success: function (data) {
+                    //console.log(data);
+                    if (data != 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            $('#tblBufferWiseBookindata').dataTable().fnAddData([
+                                data[i].BufferWiseBookingId,
+                                data[i].BufferListId,
+                                data[i].FiscalYearId,
+                                data[i].FiscalMonthId,
+                                
+                                data[i].BufferName,
+                                data[i].YearName,
+                                data[i].MonthName,
+                               
+                                data[i].Qty
+                            ])
+                        }
+
+                        bookingDataCalculation();
+                    }
+                    else {
+                        alert('No Record Pending');
+                    }
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            })
+        }
+        $('#selectall').click(function () {
+
+            var btn = $('#selectall').val();
+                if (btn == "Select All") {
+                    $('#tblBufferWiseBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+                    });
+                    $('#selectall').val('DeSelect All');
+                } else {
+                    $('#tblBufferWiseBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        };
+                    });
+                    $('#selectall').val('Select All');
+                }
+        })
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var date = new Date();
+        var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+
+        function bookingDataCalculation() {
+            $('.ttlBooking').text(0.00);
+
+            var totalbooking = 0.00
+           
+            var oTable = tblBufferWiseBookindata.rows().nodes();
+            var rows = tblBufferWiseBookindata.rows().data();
+
+            for (var i = 0; i < rows.length; i++) {
+                var $bookingqty = oTable[i].cells[3].children[0].value;
+
+                totalbooking += parseFloat($bookingqty);
+            }
+
+            $('.ttlBooking').val(totalbooking.toLocaleString());
+            $('.ttlBooking').text(totalbooking.toLocaleString());
+        }
+
+        function Booking_Save() {
+
+           
+            bufferWiseBookings = [];
+            var bufferWiseBooking = {
+                BufferWiseBookingId:0, FiscalYearId: 0, FiscalMonthId: 0, BufferID: 0, AllotmentType: "", DtInput: "", Qty: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated:""
+            }
+
+            var rows = tblBufferWiseBookindata.rows('.selected').nodes().toArray();
+            var BookingData = tblBufferWiseBookindata.rows('.selected').data().toArray();
+            console.log(rows);
+            console.log(BookingData);
+
+            for (var i = 0; i < BookingData.length; i++) {
+
+                console.log(rows[i].cells[3].children[0].value)
+
+                if ( rows[i].cells[3].children[0].value > 0) {
+
+                    bufferWiseBooking.BufferWiseBookingId = BookingData[i][0];
+                    bufferWiseBooking.BufferID = BookingData[i][1];
+                    bufferWiseBooking.FiscalYearId = BookingData[i][2];//$('#FiscalYearId option:selected').val();
+                    bufferWiseBooking.FiscalMonthId = BookingData[i][3];//$('#FiscalMonthId option:selected').val();
+                   
+
+                   
+
+
+
+                    bufferWiseBooking.Qty = rows[i].cells[3].children[0].value;
+                    bufferWiseBooking.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                    bufferWiseBooking.PcName = "";
+                    bufferWiseBooking.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    bufferWiseBooking.DateAdded = today;
+                    bufferWiseBooking.DtInput = today;
+                    bufferWiseBookings.push(bufferWiseBooking);
+
+                    var bufferWiseBooking = {
+                        BufferWiseBookingId: 0, FiscalYearId: 0, FiscalMonthId: 0, BufferID: 0, AllotmentType:"", DtInput: "", Qty: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: ""
+                    }
+                }
+            }
+
+            console.log(bufferWiseBookings);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Create", "BufferWishBooking")',
+                dataType: 'json',
+                async: false,
+                //dataType:'application/json',
+                data: { bufferWiseBooking: bufferWiseBookings },
+                success: function (data) {
+                    
+                    if (data.Success == "1") {
+                         window.location.href = '@Url.Action("Index", "BufferWishBooking")';
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                },
+                error: function (ex) {
+
+                }
+            });
+        }
+
+
+    </script>
+
+}

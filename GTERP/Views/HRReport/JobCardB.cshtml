@@ -1,0 +1,915 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@model GTERP.ViewModels.JobCardVM
+
+
+@{
+    ViewBag.Title = "Job Card**";
+
+    List<Cat_Shift> ShiftList = ViewBag.ShiftList;
+    List<Cat_Emp_Type> EmpTypes = ViewBag.EmpType;
+    List<Cat_Floor> Floor = ViewBag.FloorList;
+    List<Cat_SubSection> SubSection = ViewBag.SubSection;
+    List<Cat_Department> DepartmentList = ViewBag.Department;
+    List<Cat_Section> SectionList = ViewBag.Sections;
+    List<HR_Emp_Info> employee = ViewBag.Employee;
+    List<Cat_Designation> DesignationList = ViewBag.Designaiton;
+    List<HR_ReportType> ReportList = ViewBag.ReportList;
+    List<Cat_Line> Line = ViewBag.LineId;
+    List<Cat_Unit> Unit = ViewBag.UnitId;
+    Cat_SalaryMonth salary = ViewBag.salarymonth;
+}
+@*<link href="~/Content/css/malihu-style.css" rel="stylesheet" />*@
+@*<link href="~/css/customFormStyle.css" rel="stylesheet" />*@
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .dataTables_filter input[type=search] {
+        /* width: 100%;*/
+        /*padding: 5px 15px;*/
+        background-color: transparent;
+        transition: transform 250ms ease-in-out;
+        font-size: 11px;
+        line-height: 18px;
+        color: #575756;
+        background-color: transparent;
+        background-image: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' w…5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E); background-repeat: no-repeat; background-size: 18px 18px; background-position: 95% center; border-radius: 50px; border: 1px soLId #575756; transition: all 250ms ease-in-out; backface-visibility: hidden; transform-style: preserve-3d;
+    }
+
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+@using (Html.BeginForm("JobCardB", "HRReport", FormMethod.Post))
+{
+    <input type="hidden" value="@ViewBag.dayfrom" id="dayfrom" />
+    <input type="hidden" value="@ViewBag.dayto" id="dayto" />
+    <div class="card">
+        <div class="form-header btn-info">
+            <div class="row">
+
+                <div class="col-md-6 col-12">
+                    <i class="far fa-file-pdf" style="color:white;"></i>&nbsp; Job Card**
+                    <div id="loading" style="display: inLine;">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12 text-right">
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="PDF" name="ReportFormat" type="radio" class="custom-control-input" value="PDF" checked required>
+                        <label class="custom-control-label" for="PDF">PDF</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Word" name="ReportFormat" type="radio" class="custom-control-input" value="Word" required>
+                        <label class="custom-control-label" for="Word">Word</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Excel" name="ReportFormat" type="radio" class="custom-control-input" value="Excel" required>
+                        <label class="custom-control-label" for="Excel">Excel</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <button type="submit" id="previewBtn" class="btn btn-primary" formtarget="_blank">
+                            <span class="fas fa-eye"> </span> Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-2">
+            <!--Top Rows-->
+            <div class="row">
+                <div class="col-md-12 col-12 mb-2">
+                    <fieldset class="boxStyle pt-2">
+                        <div class="row justify-content-end">
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        Duration
+                                    </span>
+
+                                    <select asp-items="@ViewBag.period" name="period" id="select1" class="dropdown">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            From Date
+                                        </span>
+                                    </div>
+                                    @{ if (salary == null)
+                                        {
+                                            <input type="text" value="@ViewBag.DateFrom.ToString("dd-MMM-yyyy")" id="FromDate" name="FromDate" class="form-control" />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" value="@ViewBag.Start.ToString("dd-MMM-yyyy")" id="dtFirst1" name="FromDate" class="form-control pull-right datepicker" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            To Date
+                                        </span>
+                                    </div>
+                                    @{
+                                        if (salary == null)
+                                        {
+                                            <input type="text" value="@ViewBag.DateTo.ToString("dd-MMM-yyyy")" id="ToDate" name="ToDate" class="form-control" />
+                                        }
+                                        else
+
+                                        {
+                                            <input type="text" value="@ViewBag.End.ToString("dd-MMM-yyyy")" id="dtLast1" name="ToDate" class="form-control pull-right datepicker" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                        @{ if (salary != null)
+                            {
+                                <div class="row pb-3 justify-content-end">
+                                    <div class="col-md-3 col-12">
+
+                                        <input id="btnPrev" type="button" class="btn btn-sm btn-info float-left btn-block rounded-0" value="<< prev" />
+
+                                    </div>
+                                    <div class="col-md-3 col-12">
+
+                                        <input id="btnNext" type="button" class="btn btn-sm btn-info float-right btn-block rounded-0" value="next >>" />
+
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="row pb-3 justify-content-end">
+                                    <div class="col-md-3 col-12">
+
+                                        <input id="btnPrev1" type="button" class="btn btn-sm btn-info float-left btn-block rounded-0" value="<< prev" />
+
+                                    </div>
+                                    <div class="col-md-3 col-12">
+
+                                        <input id="btnNext1" type="button" class="btn btn-sm btn-info float-right btn-block rounded-0" value="next >>" />
+
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <div class="row">
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Employee Type
+                                        </span>
+                                    </div>
+                                    <select id="EmpType" name="EmptypeId" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in EmpTypes)
+                                        {
+                                            <option value="@dtOp.EmpTypeId">@dtOp.EmpTypeName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Unit
+                                        </span>
+                                    </div>
+                                    <select id="Unit" name="Unit" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in Unit)
+                                        {
+                                            <option value="@dtOp.UnitId">@dtOp.UnitName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Shift
+                                        </span>
+                                    </div>
+                                    <select id="Shift" name="ShiftName" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var dtOp in ShiftList)
+                                        {
+                                            <option value="@dtOp.ShiftId">@dtOp.ShiftName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Floor
+                                        </span>
+                                    </div>
+                                    <select id="Floor" name="Floor" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var floor in Floor)
+                                        {
+                                            <option value="@floor.FloorId">@floor.FloorName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Line
+                                        </span>
+                                    </div>
+                                    <select id="Line" name="Line" class="form-control selectpicker" data-size="5">
+                                        <option value="0">=ALL=</option>
+                                        @foreach (var line in Line)
+                                        {
+                                            <option value="@line.LineId">@line.LineName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <!--Department-->
+                <div class="col-md-2 col-12 mr-0 pr-0">
+
+                    <fieldset class="boxStyle  mCustomScrollbar py-3" data-mcs-theme="minimal-dark" style="height:635px;">
+                        <table id="DeptTable" class="dataTable DeptTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="hidden">DeptId</th>
+                                    <th>Department</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="hidden">0</td>
+                                    <td>=ALL=</td>
+                                </tr>
+                                @foreach (Cat_Department Departments in DepartmentList)
+                                {
+                                    <tr>
+                                        <td class="hidden">@Departments.DeptId</td>
+                                        <td>@Departments.DeptName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </div>
+
+                <!--Section-->
+                <div class="col-md-2 col-12">
+                    <div class="row">
+                        <div class="col-md-12 col-12">
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:313px">
+                                <table id="SectTable" class="dataTable SectTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">SectId</th>
+                                            <th>Section</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_Section Sections in SectionList)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@Sections.SectId</td>
+                                                <td>@Sections.SectName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+
+                        <!--Sub Selction-->
+                        <div class="col-md-12 col-12 my-2">
+
+                            <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:315px">
+                                <table id="SubSectTable" class="dataTable SubSectTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="hidden">SubSectId</th>
+                                            <th>Sub Section</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="hidden">0</td>
+                                            <td>=ALL=</td>
+                                        </tr>
+                                        @foreach (Cat_SubSection subsec in SubSection)
+                                        {
+                                            <tr>
+                                                <td class="hidden">@subsec.SubSectId</td>
+                                                <td>@subsec.SubSectName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--Designation-->
+                <div class="col-md-2 col-12 pl-0 mr-0 pr-0 text-center">
+                    <fieldset class="boxStyle mCustomScrollbar pt-3 " data-mcs-theme="minimal-dark" id="locationsearch" style="height:635px;">
+                        <table id="DesignationTable" class="dataTable DesignationTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="hidden"></th>
+                                    <th>Designation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="hidden">0</td>
+                                    <td>=ALL=</td>
+                                </tr>
+                                @foreach (Cat_Designation desig in DesignationList)
+                                {
+                                    <tr>
+                                        <td class="hidden">@desig.DesigId</td>
+                                        <td>@desig.DesigName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </div>
+
+                <!--Employee-->
+                <div class="col-md-6 col-12">
+                    <fieldset class="boxStyle mCustomScrollbar pt-2" data-mcs-theme="minimal-dark" id="edSearch" style="height:635px">
+                        <table id="EmpTable" class="EmpTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="hidden"></th>
+                                    <th>Code</th>
+                                    <th>Employee Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="hidden">0</td>
+                                    <td></td>
+                                    <td>=ALL=</td>
+
+                                </tr>
+                                @foreach (HR_Emp_Info employees in employee)
+                                {
+                                    <tr>
+                                        <td class="hidden">@employees.EmpId</td>
+                                        <td>-@employees.EmpCode</td>
+                                        <td>
+                                            @employees.EmpName - ( @employees.Cat_Designation.DesigName )
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </div>
+                <!--Report Type-->
+                @*<div class="col-md-2 col-12 pl-0 text-center">
+                        <fieldset class="boxStyle  pt-3 mCustomScrollbar" data-mcs-theme="minimal-dark" style="height:635px;">
+                            <table id="RptTypeTable" class="text-center dataTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="hidden">ReportId</th>
+                                        <th>Report</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (HR_ReportType Reports in ReportList)
+                                    {
+                                        <tr>
+                                            <td class="d-none">@Reports.ReportId</td>
+                                            <td>@Reports.ReportName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>*@
+
+
+                @Html.HiddenFor(m => m.JobCardGrid.EmpId)
+                @Html.HiddenFor(m => m.JobCardGrid.EmpName)
+                @Html.HiddenFor(m => m.JobCardGrid.ShiftId)
+                @Html.HiddenFor(m => m.JobCardGrid.EmpTypeId)
+                @Html.HiddenFor(m => m.JobCardGrid.FloorId)
+                @Html.HiddenFor(m => m.JobCardGrid.LineId)
+                @Html.HiddenFor(m => m.JobCardGrid.UnitId)
+                @Html.HiddenFor(m => m.JobCardGrid.FloorId)
+                @Html.HiddenFor(m => m.JobCardGrid.ReportType)
+                @Html.HiddenFor(m => m.JobCardGrid.ReportName)
+                @Html.HiddenFor(m => m.JobCardGrid.DeptId)
+                @Html.HiddenFor(m => m.JobCardGrid.SectId)
+                @Html.HiddenFor(m => m.JobCardGrid.DesigId)
+                @Html.HiddenFor(m => m.JobCardGrid.ReportFormat)
+                @Html.HiddenFor(x => x.JobCardGrid.SubSectionId)
+                @Html.HiddenFor(m => m.JobCardGrid.FromDate)
+                @Html.HiddenFor(x => x.JobCardGrid.ToDate)
+
+            </div><!--panel body end-->
+        </div><!--Panel end-->
+    </div><!--Panel end-->
+}
+@section Scripts{
+    <script>
+
+        $("#FromDate").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#ToDate").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#dtFirst1").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#dtLast1").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#dtFirst").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+        $("#dtLast").datepicker({
+            dateFormat: 'dd-M-yy'
+        });
+
+        var dayfrom = $('#dayfrom').val();
+        var dayto = $('#dayto').val();
+
+        var monthShortNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        function dateFormat2(d) {
+            var t = new Date(d);
+            return t.getDate() + '-' + monthShortNames[t.getMonth()] + '-' + t.getFullYear();
+        }
+
+        function CurrentDate(da) {
+            var now = new Date(da);
+            var today = now.getDate() + '-' + monthShortNames[now.getMonth()] + '-' + now.getFullYear();
+            return today;
+        }
+
+        CurrentDate();
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString();
+            //alert(val.toString());date.getFullYear().toString()
+
+            if ($("#FromDate").val() == '') {
+                $("#FromDate").val(val);
+            }
+            if ($("#ToDate").val() == '') {
+                $("#ToDate").val(val);
+            }
+
+        }
+        //***************************************DOCUMENT READY****************************//
+        $(document).ready(function () {
+
+            // next and previous button
+
+             $("#btnPrev1").click(function() {
+                let fDate;
+                let lDate;
+
+                if ($("#FromDate").val() == "" || $("#ToDate").val() == "") {
+                    fDate = new Date();
+                    lDate = new Date();
+                } else {
+                    fDate = new Date($("#FromDate").val());
+                    lDate = new Date($("#ToDate").val());
+                }
+
+                 let a = '';
+                let b = '';
+
+                if (fDate.getFullYear().toString().includes('-')) { a = new Date(fDate.getFullYear().toString().substring(1), fDate.getMonth() -1, 1) }
+                else { a = new Date(fDate.getFullYear(), fDate.getMonth() -1, 1) }
+
+
+                if (lDate.getFullYear().toString().includes('-')) { b = new Date(lDate.getFullYear().toString().substring(1), lDate.getMonth() , 0) }
+                else { b = new Date(lDate.getFullYear(), lDate.getMonth(), 0) }
+                
+
+                
+                /*$("#FromDate").val(CurrentDate(a));
+                $("#ToDate").val(CurrentDate(b));*/
+
+                var pr = new Date(a);
+                var prevD = pr.getDate() + '-' + monthShortNames[pr.getMonth()] + '-' + pr.getFullYear();
+
+
+                $("#FromDate").val(prevD);
+
+                var next = new Date(b);
+                var nextD = next.getDate() + '-' + monthShortNames[next.getMonth()] + '-' + next.getFullYear();
+
+                $("#ToDate").val(nextD);
+            })
+
+            //end
+            $("#btnNext1").click(function() {
+                let fDate;
+                let lDate;
+
+                if ($("#FromDate").val() == "" || $("#ToDate").val() == "") {
+                    fDate = new Date();
+                    lDate = new Date();
+                } else {
+                    fDate = new Date($("#FromDate").val());
+                    lDate = new Date($("#ToDate").val());
+                }
+                 let a = '';
+                let b = '';
+
+                if (fDate.getFullYear().toString().includes('-')) { a = new Date(fDate.getFullYear().toString().substring(1), fDate.getMonth() + 1, 1) }
+                else { a = new Date(fDate.getFullYear(), fDate.getMonth() + 1, 1) }
+
+
+                if (lDate.getFullYear().toString().includes('-')) { b = new Date(lDate.getFullYear().toString().substring(1), lDate.getMonth() + 2, 0) }
+                else { b = new Date(lDate.getFullYear(), lDate.getMonth() + 2, 0) }
+                
+                /*$("#FromDate").val(CurrentDate(a));
+                $("#ToDate").val(CurrentDate(b));*/
+
+                var pr = new Date(a);
+                var prevD = pr.getDate() + '-' + monthShortNames[pr.getMonth()] + '-' + pr.getFullYear();
+                $("#FromDate").val(prevD);
+
+                var next = new Date(b);
+                var nextD = next.getDate() + '-' + monthShortNames[next.getMonth()] + '-' + next.getFullYear();
+
+                $("#ToDate").val(nextD);
+
+                //alert($("#DtTo").val());
+            })
+             $("#btnNext").click(function() {
+                let fDate;
+                let lDate;
+                fDate = new Date($("#dtFirst1").val());
+                lDate = new Date($("#dtLast1").val());
+                let a = '';
+                let b = '';
+
+                if (fDate.getFullYear().toString().includes('-')) { a = new Date(fDate.getFullYear().toString().substring(1), fDate.getMonth() + 1, dayfrom) }
+                else { a = new Date(fDate.getFullYear(), fDate.getMonth() + 1, dayfrom) }
+
+
+                if (lDate.getFullYear().toString().includes('-')) { b = new Date(lDate.getFullYear().toString().substring(1), lDate.getMonth() + 1, dayto) }
+                else { b = new Date(lDate.getFullYear(), lDate.getMonth() + 1, dayto) }
+
+                $("#dtFirst1").val(dateFormat2(a));
+                $("#dtLast1").val(dateFormat2(b));
+            })
+
+            // for 25/26
+            $("#btnPrev").click(function() {
+                let fDate;
+                let lDate;
+                fDate = new Date($("#dtFirst1").val());
+                lDate = new Date($("#dtLast1").val());
+                let d = lDate.getMonth();
+                let a = '';
+                let b = '';
+
+                if (fDate.getFullYear().toString().includes('-')) { a = new Date(fDate.getFullYear().toString().substring(1), fDate.getMonth() - 1, dayfrom) }
+                else { a = new Date(fDate.getFullYear(), fDate.getMonth() - 1, dayfrom) };
+
+
+                if (lDate.getFullYear().toString().includes('-')) { b = new Date(lDate.getFullYear().toString().substring(1), lDate.getMonth() - 1, dayto) }
+                else { b = new Date(lDate.getFullYear(), lDate.getMonth() - 1, dayto) }
+
+
+
+                $("#dtFirst1").val(dateFormat2(a));
+                $("#dtLast1").val(dateFormat2(b));
+                //alert($("#DtFrom").val());
+            })
+            //------------ funciton for remove "Search" text----------//
+            $.fn.removeText = function () {
+                this.each(function () {
+                    var $cont = $(this).contents();
+                    $cont.each(function () {
+                        var $this = $(this);
+                        if (this.nodeType === 3) {
+                            $this.remove();
+                        } else if (this.nodeType === 1) {
+                            $this.removeText();
+                        }
+                    });
+                });
+            }//----end------//
+        });     // document ready End
+
+        var jobcard = {
+            Id: 0,
+            EmpTypeId: "",
+            DeptId: 0,
+            DeptName: "",
+            SectId: 0,
+            SectName: "",
+            EmpCode: "",
+            EmpId: 0,
+            EmpName: "",
+            ReportType: "",
+            FloorId: 0,
+            FloorName: "",
+            ShiftId: 0,
+            ShiftName: "",
+            DesigId: 0,
+            DesigName: "",
+            SubSectId: 0,
+            SubSectName: "",
+            FromDate: "",
+            ToDate: "",
+            UnitId: 0,
+            LineId: 0
+        };
+
+        $('#pdSearch').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#EmpTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#DeptTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#SectTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#SubSectTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#DesignationTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        //$('#RptTypeTable').DataTable({ 'select': true, "info": false, language: { search: '', searchPlaceholder: "Search..." }, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+        $('.dataTables_wrapper .col-md-6').addClass('col-md-12'); // <-- add this line
+        //$('*[type="search"][class="form-control input-sm"]')
+        //    .addClass('col-sm-12');
+        //************************************** PREVIEW BUTTON ****************************//
+        $("#previewBtn").click(function (event) {
+
+
+            //alert(Unit);
+            var empId = $("#EmpTable  tbody tr.selected td:first-child").text();
+            var Dept = $("#DeptTable tbody tr.selected td:first-child").text();
+            var Sect = $("#SectTable tbody tr.selected td:first-child").text();
+            var subSect = $("#SubSectTable tbody tr.selected td:first-child").text();
+            var Desig = $("#DesignationTable tbody tr.selected td:first-child").text();
+            var fromDate = $("#FromDate").val();
+            var toDate = $("#ToDate").val();
+            // for select list
+            var Floor = $("#Floor option:selected").val();
+            var Unit = $("#Unit option:selected").val();
+            var Line = $("#Line option:selected").val();
+            var Emptype = $("#EmpType option:selected").val();
+            var Shift = $("#Shift option:selected").val();
+
+            var rptType = $("#RptTypeTable tbody tr.selected td:nth-child(2)").text();
+            var ReportFormat = $("input[name=ReportFormat]:checked").val();
+
+            //alert(fromDate);
+            //alert(toDate);
+            //alert(subSect);
+            //alert(Shift);
+            //alert(Emptype);
+            //alert(Floor);
+            //alert(Desig);
+            //alert(rptType);
+            ////alert(ReportFormat);
+            //alert(Unit);
+            //alert(Line);
+
+            if (empId !== "") {
+                //alert('enter');
+
+                $("#JobCardGrid_EmpTypeId").val(Emptype);
+                $("#JobCardGrid_EmpId").val(empId);
+                $("#JobCardGrid_DeptId").val(Dept);
+                $("#JobCardGrid_DesigId").val(Desig);
+                $("#JobCardGrid_SectId").val(Sect);
+                $("#JobCardGrid_SubSectionId").val(subSect);
+                $("#JobCardGrid_ShiftId").val(Shift);
+                $("#JobCardGrid_FloorId").val(Floor);
+                $("#JobCardGrid_UnitId").val(Unit);
+                $("#JobCardGrid_LineId").val(Line);
+                $("#JobCardGrid_FromDate").val(fromDate);
+                $("#JobCardGrid_ToDate").val(toDate);
+                $("#JobCardGrid_ReportType").val(rptType);
+                $("#JobCardGrid_ReportFormat").val(ReportFormat);
+
+            } else {
+                event.preventDefault();
+                alert("Please select data first!");
+            }
+        });
+
+        //perrid wise date range
+        $('#select1').on('change', function () {
+            var period = $(this).val();
+            setDateRange(period);
+        });
+
+        function formatDate(date) {
+            var day = date.getDate();
+            var month = getMonthName(date.getMonth());
+            var year = date.getFullYear();
+
+            return day + "-" + month + "-" + year;
+        }
+        function getMonthName(monthIndex) {
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return months[monthIndex];
+        }
+
+        debugger
+        function setDateRange(period) {
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            if (period == "This Week") {
+                let d = new Date();
+                let d2 = new Date();
+                const daysToSaturday = 6 - d.getDay(); // days remaining until Saturday
+                d2.setDate(d2.getDate() + daysToSaturday - 7); // set to Saturday
+                d.setDate(d2.getDate() + 5); // set to Friday
+
+                let currentdate = d;
+                let today = d2;
+                let finaldateformat = currentdate.getDate() + "-" + months[currentdate.getMonth()] + "-" + currentdate.getFullYear();
+                let finaldateformat2 = today.getDate() + "-" + months[today.getMonth()] + "-" + today.getFullYear();
+
+                $("#FromDate").val(finaldateformat2);
+                $("#ToDate").val(finaldateformat);
+
+                $("#dtFirst1").val(finaldateformat2);
+                $("#dtLast1").val(finaldateformat);
+            }
+
+
+            else if (period == "This Month") {
+                let d = new Date(), y = d.getFullYear(), m = d.getMonth();
+                let firstDay = new Date(y, m, 1)
+                let lastDay = new Date(y, m + 1, 0);
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#FromDate").val(finaldateformat);
+                $("#ToDate").val(finaldateformat2);
+
+                $("#dtFirst1").val(finaldateformat);
+                $("#dtLast1").val(finaldateformat2);
+
+            }
+
+            else if (period == "This Year") {
+                let d = new Date(), y = d.getFullYear();
+                let firstDay = new Date(y, 0, 1);
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec-2023
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#FromDate").val(finaldateformat);
+                $("#ToDate").val(finaldateformat2);
+
+                $("#dtFirst1").val(finaldateformat);
+                $("#dtLast1").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Month") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth() - 1;
+                if (m < 0) {
+                    m = 11;
+                    y--;
+                }
+                let firstDay = new Date(y, m, 1);
+                let lastDay = new Date(y, m + 1, 0); // set previous to 1-mar to 31-mar
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#FromDate").val(finaldateformat);
+                $("#ToDate").val(finaldateformat2);
+
+                $("#dtFirst1").val(finaldateformat);
+                $("#dtLast1").val(finaldateformat2);
+
+
+
+            }
+
+            else if (period == "Prev Quarter") {
+
+                var dt = $("#FromDate").val();
+                if (dt != undefined) {
+
+                    let startDate = new Date($("#FromDate").val());
+                    let threeMonthsAgo = new Date(startDate.getFullYear(), startDate.getMonth() - 2, startDate.getDate());
+                    let firstDay = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth(), startDate.getDate());
+                    let lastDay = new Date($("#ToDate").val());
+
+                    let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                    let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+                    $("#FromDate").val(finaldateformat);
+                    $("#ToDate").val(finaldateformat2);
+                }
+                else {
+                    let startDate = new Date($("#dtFirst1").val());
+                    let threeMonthsAgo = new Date(startDate.getFullYear(), startDate.getMonth() - 2, startDate.getDate());
+                    let firstDay = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth(), startDate.getDate());
+                    let lastDay = new Date($("#dtLast1").val());
+
+                    let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                    let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+                    $("#dtFirst1").val(finaldateformat);
+                    $("#dtLast1").val(finaldateformat2);
+                }
+
+            }
+
+            else if (period == "Prev 6 Month") {
+
+
+                var currentDate = new Date(); // Get current date
+                var startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 5, 1); // Calculate start date
+
+                var firstDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1); // First day of the start month
+                var lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Last day of the current month
+
+                var finalDateFormat = formatDate(firstDay); // Format first day as desired
+                var finalDateFormat2 = formatDate(lastDay); // Format last day as desired
+
+                $("#FromDate").val(finalDateFormat);
+                $("#ToDate").val(finalDateFormat2);
+
+
+            }
+
+            else if (period == "Prev Year") {
+                let d = new Date();
+                let y = d.getFullYear() - 1; // subtract 1 from the current year to get the previous year
+                let firstDay = new Date(y, 0, 1); // set first day to 1-Jan of previous year
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec of previous year
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#FromDate").val(finaldateformat);
+                $("#ToDate").val(finaldateformat2);
+
+                $("#dtFirst1").val(finaldateformat);
+                $("#dtLast1").val(finaldateformat2);
+
+            }
+
+        }
+
+
+    </script>
+}

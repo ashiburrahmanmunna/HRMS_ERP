@@ -1,0 +1,1431 @@
+﻿@model GTERP.Controllers.HR.FixedAttController.AttFixGrid
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+
+
+@{
+    //ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var section = ViewBag.AllEmployee;
+}
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<style>
+</style>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <span class="fas fa-wrench"> </span> Fix Attendance
+        </h4>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-12 pl-0">
+                    <div class="leftDiv">
+                        <div class="card">
+                            <div class="border-bottom p-2">
+                                <div class="">
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtFrom, new { @class = "control-label" })
+                                                </span>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.DtFrom, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.DtFrom, "", new { @style = "color:red" })
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtTo, new { @class = "control-label" })
+                                                </span>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.DtTo, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.DtTo, "", new { @style = "color:red" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="totalShowLimit" id="totalShowLimit" />
+                                <div class="text-center">
+                                    <button type="button" id="refreshBtn" class="btn btn-warning">
+                                        <span class="fas fa-sync"> </span> Refresh List
+                                    </button>
+                                </div>
+
+                            </div>
+                            <fieldset class="">
+                                <div class="border-bottom p-2">
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="All" name="Criteria" type="radio" class="custom-control-input" value="All" checked required>
+                                            <label class="custom-control-label" for="All">All Employees</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="Employee" name="Criteria" type="radio" class="custom-control-input" value="EmpId" required>
+                                            <label class="custom-control-label" for="Employee">Employee Wise</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="Section" name="Criteria" type="radio" class="custom-control-input" value="Sec" required>
+                                            <label class="custom-control-label" for="Section">Section Wise</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="LineWise" name="Criteria" type="radio" class="custom-control-input" value="Line" required>
+                                            <label class="custom-control-label" for="LineWise">Line Wise</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="ShiftTime" name="Criteria" type="radio" class="custom-control-input" value="ShiftTime" required>
+                                            <label class="custom-control-label" for="ShiftTime">Shift Wise</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="Status" name="Criteria" type="radio" class="custom-control-input" value="Status" required>
+                                            <label class="custom-control-label" for="Status">Status</label>
+                                        </div>
+                                        <div class="form-check form-check-inline custom-radio pl-4">
+                                            <input id="Missing" name="Criteria" type="radio" class="custom-control-input" value="Missing" required>
+                                            <label class="custom-control-label" for="Missing">Missing Out Time</label>
+                                        </div>
+                                    </div>
+
+
+
+                                    @*<h4 class="font-weight-normal mb-0"><small>@Html.LabelFor(model => model.Criteria)</small></h4>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "All", new { @checked = "", @class = "form-check-input" })
+                                            <label class="form-check-label">All Employee</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "EmpID", new { @class = "form-check-input" })
+                                            <label class="form-check-label">Employee ID</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "Sec", new { @class = "form-check-input" })
+                                            <label class="form-check-label">Section</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "Line", new { @class = "form-check-input" })
+                                            <label class="form-check-label"> Line</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "ShiftTime", new { @class = "form-check-input" })
+                                            <label class="form-check-label">Shift Time</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "Status", new { @class = "form-check-input" })
+                                            <label class="form-check-label"> Status</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            @Html.RadioButtonFor(m => m.Criteria, "Missing", new { @class = "form-check-input" })
+                                            <label class="form-check-label">Missing Out Time</label>
+                                        </div>*@
+                                </div>
+                            </fieldset>
+
+                            <div class="p-2">
+                                <form>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label for="empIdSelect" class="control-label">Emp Id</label>
+                                                </span>
+                                            </div>
+                                            <select id="empIdSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.EmpId"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label for="sectSelect" class="control-label">Section</label>
+                                                </span>
+                                            </div>
+                                            <select id="sectSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.Sections"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label for="lineSelect" class="control-label">Line</label>
+                                                </span>
+                                            </div>
+                                            <select id="lineSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.Lines"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label for="shiftSelect" class="control-label">Shift</label>
+                                                </span>
+                                            </div>
+                                            <select id="shiftSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.ShiftId"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-1">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label for="statusSelect" class="control-label">Status</label>
+                                                </span>
+                                            </div>
+                                            <select id="statusSelect" data-val="false" class="form-control" name="statusSelect" disabled="disabled" asp-items="@ViewBag.StatusId"></select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+
+                    </div> @*Left option container end*@
+
+
+                    <div class="card p-2 mt-2">
+                        <div class="" id="leaveSetup">
+                            <div class="form-group mb-1">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label for="timeIn" class="control-label">Time In</label>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="editable inp form-control bootstrap-timepicker timepicker" id="timeIn" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <input type="checkbox" id="timInChk" name="timeInChk">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label for="timeOut" class="control-label">Time Out</label>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="editable inp form-control bootstrap-timepicker timepicker" id="timeOut" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <input type="checkbox" id="timOutChk" name="timeOutChk">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label for="otHour" class="control-label">OT Hour</label>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="editable inp form-control bootstrap-timepicker timepicker" id="otHour" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <input type="checkbox" id="otHourChk" name="otHourChk">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label for="statusSelectrt" class="control-label">Status</label>
+                                        </span>
+                                    </div>
+
+                                    @*<select id="statusSelectrt" data-val="false" class="form-control" name="statusType" asp-items="@ViewBag.StatusId">
+                                        </select>*@
+                                    @Html.DropDownList("statusSelectrt", ViewBag.StatusId ?? new List<SelectListItem>(), null, htmlAttributes: new { id = "StatusId", @class = "form-control" })
+
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <input type="checkbox" id="statusChk" name="statusChk">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                @Html.LabelFor(model => model.LTypeId, "Leave Type")
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("LTypeId", ViewBag.LTypeId ?? new List<SelectListItem>(), "--Please Select--", htmlAttributes: new { id = "LTypeId", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.LTypeId, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>*@
+
+
+                            <div id="allCheckedDiv" class="form-group">
+                                <div class="col-md-4 col-12"></div>
+                                <div class="col-md-8 col-12">
+                                    <input type="checkbox" id="allChecked" name="allChecked"> All checked<br>
+                                    @*<button id="checkbtn" class="btn" style="font-size: 12px; width:70%"><span class="glyphicon glyphicon-check"></span> Check All</button>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <center>
+                                <button type="button" id="fillDatabtn" class="btn btn-warning">
+                                    <span class="glyphicon glyphicon-retweet"> </span> Fill Data
+                                </button>
+                                <button type="button" id="updateBtn" name="updateBtn" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-check"> </span> Update
+                                </button>
+                            </center>
+                        </div>
+                    </div>
+
+
+                    @*Right option container end*@
+                </div>
+
+
+                <div class="col-md-9 col-12 card">
+                    <div id="fixAttGridDiv">
+                        @*<partial name="_FixAttendancGrid" />*@
+                        <div class="pt-2" id="scrollDiv">
+                            <div class="table-responsive" id="scrollXDiv">
+                                <table id="fixAttGridhd" class="text-nowrap table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th class="d-none">Emp Id</th>
+
+                                            <th>Emp Code</th>
+                                            <th>Employee Name</th>
+                                            <th class="d-none">ShiftId</th>
+                                            <th>Shift</th>
+                                            <th>Punch Date</th>
+                                            <th>Time In</th>
+                                            <th>Time Out</th>
+                                            <th>OT Hour</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+
+                                            <th>Sect Name</th>
+                                            <th class="d-none">Line</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody class="">
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>@*Grid container end*@
+
+
+            </div> @*Options Container end*@
+        </div> @*Panel Body end*@
+    </div> @*Panel end*@
+
+    @*Modal*@
+    <div class="myMessage">
+        <div id="msgDivWrapper" class="card">
+            <div id="msgDivHeader" class="card-header"><h4>Message</h4></div>
+            <div class="card-body ajaxMessage"></div>
+            <div id="msgDivFooter" class="card-footer">
+                <button id="okBtn" type="button" class="btn btn-default">
+                    <span class="fas fa-times"> </span> Close
+                </button>
+            </div>
+        </div>
+    </div>
+    @*Appears during ajax call*@
+    <div id="progress" class="modal">
+        <div class="center loading">
+            <img id="loadingImage" src="~/Content/img/loading.gif" />
+        </div>
+    </div>
+}
+@section Scripts {
+    @*  <script src="~/Content/jquery.timepicker.min.js"></script>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>*@
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+
+
+        $("#empIdSelect").select2();
+        $("#sectSelect").select2();
+        $("#shiftSelect").select2();
+        $("#statusSelect").select2();
+        $('#lineSelect').select2();
+
+        //function initDatePicker() {
+        //    $("#DtTo").datepicker({
+        //        format: 'd-M-y',
+        //        date: new Date(),
+        //        autoclose: true
+        //    }).datepicker("setDate", new Date());
+        //    $("#DtFrom").datepicker({
+        //        format: 'd-M-y',
+        //        date: new Date(),
+        //        autoclose: true
+        //    }).datepicker("setDate", new Date());
+        //}
+
+        var compare = function (filter, value, id) {
+            var sign = $("#" + id).val();
+            filter = TryParseInt(filter, filter);
+            value = TryParseInt(value, value);
+            if (sign === "=") {
+                return value === filter ? 0 : -1;
+            } else if (sign === ">") {
+                return value > filter ? 0 : -1;
+            } else if (sign === "<") {
+                return value < filter ? 0 : -1;
+            } else if (sign === ">=") {
+                return value >= filter ? 0 : -1;
+            } else if (sign === "<=") {
+                return value <= filter ? 0 : -1;
+            }
+            return value;
+        }
+
+        function initDynamicTimePickers() {
+
+            $("#searchTimeIn").timepicker({ showMeridian: false }).on('hide.timepicker', function (e) {
+                mySearchFunction(this, "TimeIn", compare);
+            });
+            $("#searchTimeout").timepicker({ showMeridian: false }).on('changeTime.timepicker', function (e) {
+                mySearchFunction(this, "TimeOut", compare);
+            });
+
+            $("input[id*='inpTimeOut']").timepicker({ showMeridian: false });
+            $("input[id*='inpTimeIn']").timepicker({ showMeridian: false });
+        }
+
+        function modal(message, type) {
+            if (type === "success") {
+                $("#msgDivWrapper").css("border-color", "rgb(76, 181, 81)");
+                $("#msgDivHeader").css("background-color", "#8fd045").css("border-color", "rgb(76, 181, 81)");
+                $("#msgDivFooter").css("border-color", "#efefef");
+            } else if (type === "error") {
+                $("#msgDivWrapper").css("border-color", "#ff4500");
+                $("#msgDivHeader").css("background-color", "rgb(241, 58, 36)").css("border-color", "#ff4500");
+                $("#msgDivFooter").css("border-color", "#f4f4f4");
+            } else {
+                $("#msgDivWrapper").css("border-color", "#337ab7");
+                $("#msgDivHeader").css("background-color", "#337ab7").css("border-color", "#337ab7");
+                $("#msgDivFooter").css("border-color", "#f5f5f5");
+            }
+            $(".myMessage").show();
+            $(".ajaxMessage").text(message);
+            $("#okBtn").focus();
+            $("#okBtn").on("click", function () {
+                $(".myMessage").fadeOut(500);
+            });
+            $(document).mouseup(function (e) {
+                var container = $(".myMessage");
+                // if the target of the click isn't the container nor a descendant of the container
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    container.fadeOut(500);
+                }
+            });
+        }
+
+        $("#refreshBtn").click(function () {
+            DailyEmpFixedAttandanceData();
+
+
+        });
+
+        function initializeGrid(data) {
+            for (var i = 0; i < data.length; i++) {
+                //if (data[i].Remarks.length > 1) {alert(data[i].Remarks) };
+
+                $('#fixAttGridhd').dataTable().fnAddData(
+                    [
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].ShiftId,
+                        data[i].ShiftName,
+                        data[i].dtPunchDate,
+                        data[i].TimeIn,
+                        data[i].TimeOut,
+                        data[i].OtHour,
+                        data[i].Status,
+                        data[i].Remarks,
+                        data[i].SectName,
+                        data[i].Line,
+
+
+
+                        //Employee code r pore employee name hobe tarpor shift hobe erpor date, time in, timeout, othour, remake.
+
+                    ]
+                );
+            }
+        };
+
+
+        function DailyEmpFixedAttandanceData() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+            var value = 0;
+
+            var dtfrom = $('#DtFrom').val();
+            var dtto = $('#DtTo').val();
+            //var criteria = $("#Criteria:checked").val();
+            var criteria = $("input[name='Criteria']:checked").val();
+            //alert(criteria);
+
+            if (criteria == "All") { value = 0; }
+            else if (criteria == "EmpId") { value = $('#empIdSelect').val(); }
+            else if (criteria == "Sec") { value = $('#sectSelect').val(); }
+            else if (criteria == "Line") { value = $('#lineSelect').val(); }
+            else if (criteria == "ShiftTime") { value = $('#shiftSelect').val(); }
+            else if (criteria == "Status") { value = $('#statusSelect option:selected').text(); }
+            else if (criteria == "Missing") { value = 0; }
+
+
+            //alert('hit fix att.');
+
+             $.ajax({
+                  type: 'POST',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("Index", "FixedAtt")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                  //async: true,
+                  data: {  DtFrom: dtfrom, DtTo: dtto, criteria: criteria , value: value},
+                 success: function (data) {
+                    if (data.Success == "1") {
+                        if (data.Result == null) {
+                            alert("Result is null")
+                        }
+                        initializeGrid(data.Result);
+                        //customFile('1', result.ex);
+
+                    }
+                     //else if (data.Success == "2") {
+                     //    //customFile('2', result.ex);
+                     //}
+                else {
+                    toastr.error(result.ex);
+                }
+            },
+                  error: function (ex) {
+                toastr.error("Sorry, an error occured . . . .");
+            }
+
+            });
+
+
+            @*$.ajax({
+            type: 'POST',
+            url: '@Url.Action("Index", "FixedAtt")',
+            dataType: 'json',
+
+            data: {  DtFrom: dtfrom, DtTo: dtto, criteria: criteria , value: value },
+            success: function (data) {
+                table.clear().draw();
+                if (data.Success == 1) {
+                    if (data.Result == null) {
+                        alert("Result is null")
+                    }
+                    initializeGrid(data.Result);
+                }
+            },
+                error: function (ex) {
+                       alert("error occured from DailyEmpFixedAttandanceData()");
+                }
+
+            });*@
+
+            //var options = {};
+
+            //options.url = "/FixedAtt/Index";
+            //options.type = "POST";
+            //options.dataType = "json";
+            //options.headers = { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken };
+            //options.async = 'false';
+            //options.data = { DtFrom: dtfrom, DtTo: dtto, criteria: criteria , value: value };
+            //options.success = function (data) {
+            //    table.clear().draw();
+            //    if (data.Success == 1) {
+            //        if (data.Result == null) {
+            //            alert("Result is null")
+            //        }
+
+            //        initializeGrid(data.Result);
+
+            //    }
+
+            //};
+            //options.error = function () {
+            //    alert("error occured from DailyEmpFixedAttandanceData()");
+            //};
+            //$.ajax(options);
+        };
+        /******************************************************/
+        /*----------------------------------------------------*/
+        /*Loading related codes start*/
+
+        var gtable; //new
+        var totalShowLimit = 30; //new
+        var empArr = [];
+        var empArrLen;
+        var prevFilter = "";
+        var resultShowLimit = 30;
+        var resultShowCount;
+        var resultArr = [];
+        var resultArrLen;
+        var isResult = false; //whether only results or all employees to show
+        var visible = 0;
+        var remain = 0;
+        var AllStatus;
+
+        function addRow(index) {     //into tbody
+            var isCheck, EmpId, EmpCode, EmpName, IsChecked, OtHour, Remarks, SectName, ShiftId, ShiftName, Status, TimeIn, TimeOut, dtPunch, Line;
+            if (isResult) {
+                IsChecked = resultArr[index].IsChecked;
+                EmpId = resultArr[index].EmpId;
+                EmpCode = resultArr[index].EmpCode;
+                EmpName = resultArr[index].EmpName;
+                OtHour = resultArr[index].OtHour;
+                Remarks = resultArr[index].Remarks;
+                SectName = resultArr[index].SectName;
+                ShiftId = resultArr[index].ShiftId;
+                ShiftName = resultArr[index].ShiftName;
+                Status = resultArr[index].Status;
+                TimeIn = resultArr[index].TimeIn;
+                TimeOut = resultArr[index].TimeOut;
+                dtPunch = resultArr[index].dtPunch;
+                Line = resultArr[index].Line;
+            }
+            else {
+                IsChecked = empArr[index].IsChecked;
+                EmpId = empArr[index].EmpId;
+                EmpCode = empArr[index].EmpCode;
+                EmpName = empArr[index].EmpName;
+                OtHour = empArr[index].OtHour;
+                Remarks = empArr[index].Remarks;
+                SectName = empArr[index].SectName;
+                ShiftId = empArr[index].ShiftId;
+                ShiftName = empArr[index].ShiftName;
+                Status = empArr[index].Status;
+                TimeIn = empArr[index].TimeIn;
+                TimeOut = empArr[index].TimeOut;
+                dtPunch = empArr[index].dtPunch;
+                Line = empArr[index].Line;
+            }
+            var checked = IsChecked ? "checked" : " ";
+            var select = '<select id="inpStatus_' + EmpId + '" data-val="false" style="width: 100%; text-align-last:center; text-align:center;" class="editable inp status">';
+            for (var j = 0; j < AllStatus.length; j++) {
+                if (AllStatus[j] === Status) {
+                    select += '<option value="' + AllStatus[j] + '" selected="selected">' + AllStatus[j] + '</option>';
+                } else {
+                    select += '<option value="' + AllStatus[j] + '">' + AllStatus[j] + '</option>';
+                }
+
+            }
+            select += '</select>';
+            //console.log(index);
+            //console.log(resultArr[index]);
+            $("#fixAttGridhd").children("tbody").append("<tr id='tr_" + EmpId + "'>" +
+                "<td><input id='myCheckBox_" + index + "' name='check_list' class='myCheckBox' type='checkbox' " + checked + "/></td>"
+                + "<td id='tblEmpId' style='display: none;'>" + EmpId + "</td>"
+                + "<td id='tbldtPunch'>" + dtPunch + "</td>"
+                + "<td id='tblEmpCode'>" + EmpCode + "</td>"
+
+                + "<td id='tblTimeIn'><div class='input-group bootstrap-timepicker timepicker' style='width: 100%;'>" +
+                "<input type='text' value='" + TimeIn + "' class='editable inp timeIn' id='inpTimeIn_" + index + "'/></div></td>"
+                + "<td id='tblTimeOut'><div class='input-group bootstrap-timepicker timepicker' style='width: 100%;'>" +
+                "<input type='text' value='" + TimeOut + "' class='editable inp timeOut' id='inpTimeOut_" + index + "'/></div></td>"
+                + "<td id='tblStatus'>" + select + "</td>"
+                + "<td id='tblOtHour'>" + OtHour + "</td>"
+                + "<td id='tblEmpName'>" + EmpName + "</td>"
+                + "<td id='tblSectName'>" + SectName + "</td>"
+                + "<td id='tblShiftId' style='display: none;'>" + ShiftId + "</td>"
+                + "<td id='tblShiftName'>" + ShiftName + "</td>"
+                + "<td id='tblLine'>" + Line + "</td>"
+                + "<td id='tblRemarks'><input type='text' value='" + Remarks + "' class='editable inp remarks' id='inpRemarks_" + EmpId + "'/></td>"
+                + "</tr>"
+            );
+        }
+
+        function updateArr(id, key, val) {
+            for (var i = 0; i < empArrLen; i++) {
+                if (empArr[i].EmpId.toString() === id.toString()) {
+                    empArr[i][key] = val;
+                    console.log(empArr[i][key] + ", Id : " + empArr[i].EmpId + ", Name: " + empArr[i].EmpName);
+                    break;
+                }
+            }
+        }
+
+        function updateFullArr(key, val) {
+            for (var i = 0; i < empArrLen; i++) {
+                empArr[i][key] = val;
+                //if(i<20)
+                console.log(key + " : " + empArr[i][key] + ", Id : " + empArr[i].EmpId + ", Name: " + empArr[i].EmpName);
+            }
+        }
+
+        function clearSearchFields(obj) {
+            var txt = $(obj).val();
+            //console.log(obj);
+            $("input[id^='search']").val("");
+            $(obj).val(txt);
+            if (obj.id === "searchStatus" || obj.id === "compareOtHour") {
+                $("#searchStatus").val(txt).one("click");
+            } else {
+                $("#searchStatus").val("").one("click");
+            }
+        }
+
+
+
+        $(document).on("change", ".myCheckBox", function () {
+
+            var txt = $(this).attr('id');
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            if (this.checked) {
+                updateArr(id, "IsChecked", true);
+            } else {
+                updateArr(id, "IsChecked", false);
+            }
+        });
+
+        $(document).on("change", ".timeIn", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "TimeIn", this.value);
+        });
+
+        $(document).on("change", ".timeOut", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "TimeOut", this.value);
+        });
+
+        $(document).on("change", ".status", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "Status", this.value);
+        });
+
+        $(document).on("change", ".remarks", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "Remarks", this.value);
+        });
+        //function parseTime(time) {
+        //    var hour = time.slice(0, 2),
+        //        pm = hour > 12,
+        //        hour12 = hour - (pm ? 12 : 0);
+
+        //    //Per the request of the OP, we keep them seperate:
+        //    var a = (hour12 < 10 ? "0" : "") + hour12 + time.slice(2, 5);
+        //    var b = (pm ? "PM" : "AM");
+
+        //    //var x = a + " " + b;
+        //    //console.log(x);
+
+        //    return [a,b];
+
+        //};
+
+
+
+        $(document).ready(function () {
+            //var formData = new FormData($('form').get(0));
+            //var myOpts = document.getElementById('statusSelectrt').options;
+            //console.log(myOpts[0].value);
+            //console.log(myOpts);
+
+            @*var statesAvailable = "@ViewBag.StatusId";
+            console.log(statesAvailable);*@
+
+            //var statuslist = $('#StatusId').children('option').map(function(i,e){
+            //   //return "value="+e.value + ':' + "text="+e.innerText;
+            //   return e.innerText;
+
+            //}).get();
+            //console.log(statuslist);
+
+
+            //var statuslistnotjson = new Array();
+
+            //$('#StatusId option').each(function () {
+            //    var a =`${$(this).val()} : ${$(this).text()}`;
+            //    statuslistnotjson.push(a);
+            ////statuslistnotjson.push(`"${$(this).val()}" : "${$(this).text()}"`);
+
+            //});
+            //console.log(statuslistnotjson);
+
+            //var statuslist =JSON.stringify(statuslistnotjson);
+            //console.log(statuslist);
+
+            var obj = {};
+            var arr = [];
+
+             $('#StatusId option').each(function () {
+                 var value = $(this).val(), text = $(this).text();
+                 obj[value] = text;
+
+                //statuslistnotjson.push(a);
+            //statuslistnotjson.push(`"${$(this).val()}" : "${$(this).text()}"`);
+
+             });
+            //arr.push(obj);
+            statuslist = obj;
+            console.log(statuslist);
+
+
+//var statuslistabc = {
+//"1": "P",
+//"2": "L",
+//"3": "A"
+
+//            };
+
+            //console.log(statuslistabc);
+
+            //var a = "k";
+            //var b = "4";
+
+            //var key = b;
+            //var obj = {};
+            //obj[key] = a;
+            //var arr = [];
+
+            //arr.push(obj);
+            //console.log(arr);
+
+
+
+
+            //"1": "P",
+
+            table = $('#fixAttGridhd').DataTable({
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'ShiftId', 'visible': false },
+                    { 'sClass': 'ShiftName', 'visible': true },
+                    { 'sClass': 'dtPunchDate', 'visible': true },
+                    { 'sClass': 'TimeInGrid', 'visible': true },
+                    { 'sClass': 'TimeOutGrid', 'visible': true },
+
+             //       {
+            	//"render": function(d,t,r){
+             //   	var $select = $("<select></select>", {
+             //       	"text": 1,
+             //           "value": d
+             //       });
+             //   	$.each(times, function(k,v){
+
+             //       	var $option = $("<option></option>", {
+             //           	"text": v,
+             //               "value": k
+             //           });
+             //           if(d === v){
+             //           	$option.attr("selected", "selected")
+             //           }
+             //       	$select.append($option);
+             //           });
+             //           return $select.prop("outerHTML");
+             //          }
+             //       },
+
+
+                    { 'sClass': 'OtHourGrid', 'visible': true },
+
+                    //{ 'sClass': 'Status', 'visible': true },
+                    {'sClass': 'StatusGrid', 'visible': true,
+                        "render": function (d, t, r) {
+                            var $select = $("<select></select>", {
+                                //"id": r[0] + "start",
+                                "class":"form-control StatusGridOption",
+                                "value": d
+                            });
+                            $.each(statuslist, function (k, v) {
+                                var $option = $("<option></option>", {
+                                    "text": v,
+                                    "value": k
+                                });
+                                if (d === v) {
+                                    $option.attr("selected", "selected")
+                                }
+                                $select.append($option);
+                            });
+                            return $select.prop("outerHTML");
+                        }
+                    },
+                           { 'sClass': 'Remarks', 'visible': true},
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'Line', 'visible': false },
+
+                    //Employee code r pore employee name hobe tarpor shift hobe erpor date, time in, timeout, othour, remake.
+                ],
+                columnDefs: [
+                    {
+                        targets: 5, render: function (data) {
+                            return moment(data).format('DD MMM YYYY');
+                        }
+                    },
+                    {
+                        'render': function (data, type, row) {
+
+                            return '<input class="form-control TimeInGrid" type="text" data-val="true" value=' + (data) + '>';
+                        },
+                        'targets': 6
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return '<input class="form-control TimeOutGrid" type="text" data-val="true" value=' + (data) + '>';
+                        },
+                        "targets": 7
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return '<input class="form-control OtHourGrid" type="text" data-val="true" value=' + (data) + '>';
+                        },
+                        "targets": 8
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            //if (data.length > 1) { alert(data) };
+                            //console.log(data);
+                            var x = JSON.stringify(data);
+                            return '<input class="form-control RemarksGrid" type="text" value='  + x + '>';
+
+                        },
+
+                            //"render": function(data, type, row) {
+                            //return $("<span></span>", {
+                            //"text": data,
+                            //"data-remarks": row["Remarks"]
+                            //})  .prop("outerHTML");
+                            //},
+                        //"render": $.fn.dataTable.render.text(),
+                        "targets": 10
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return '<input class="form-control StatusGrid"  data-val="true" value=' + data + '>';
+                        },
+                        'targets': 9
+                    }
+                ],
+                'paging': true,
+                'info': true,
+                "scrollY": 455,
+                "scrollX": true,
+                "fnDrawCallback": function () {
+                    $('.TimeInGrid,.TimeOutGrid,.OtHourGrid').timepicker({
+                    timeFormat: 'HH:mm',
+                    interval: 15,
+
+                    dynamic: true,
+                    dropdown: true,
+                    scrollbar: true
+                    });
+                },
+                select: {
+                    style: 'multi',
+                   // style: 'os',
+                    selector: 'td:first-child'
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    //'selected',
+                    //'selectedSingle',
+                    'selectAll',
+                    'selectNone'
+                    //,{
+                    //    text: 'Process',
+                    //    className: "btn-success",
+                    //    //action: function (e, dt, node, config) {
+                    //    //    //alert('Button activated');
+                    //    //    fncSubmit();
+                    //    //}
+                    //}
+                    //'selectRows',
+                    //'selectColumns',
+                    //'selectCells'
+                ]
+            });
+
+            //$('#fixAttGridhd tbody').on('click', 'tr', function () {
+            //    $(this).toggleClass('selected');
+
+
+            //});
+
+            //$('input[name="Criteria"]').on('ifClicked', function (event) { //radio button change code
+            //    var selectedValue = this.value;
+
+                   $("input[type='radio']").click(function () {
+                     var selectedValue = $("input[name='Criteria']:checked").val();
+                     //alert(selectedValue);
+
+
+                switch (selectedValue) {
+                        case 'All':
+                        case "Missing":
+                        $("#empIdSelect").prop('disabled', true);
+                        $("#sectSelect").prop('disabled', true);
+                        $("#shiftSelect").prop('disabled', true);
+                        $("#statusSelect").prop('disabled', true);
+                        $('#lineSelect').prop('disabled', true);
+                        break;
+                    case 'EmpId':
+                        $("#empIdSelect").prop('disabled', false);
+                        $("#sectSelect").prop('disabled', true);
+                        $("#shiftSelect").prop('disabled', true);
+                        $("#statusSelect").prop('disabled', true);
+                        $('#lineSelect').prop('disabled', true);
+                        break;
+                    case 'Sec':
+                        $("#empIdSelect").prop('disabled', true);
+                        $("#sectSelect").prop('disabled', false);
+                        $("#shiftSelect").prop('disabled', true);
+                        $("#statusSelect").prop('disabled', true);
+                        $('#lineSelect').prop('disabled', true);
+                        break;
+                    case 'ShiftTime':
+                        $("#empIdSelect").prop('disabled', true);
+                        $("#sectSelect").prop('disabled', true);
+                        $("#shiftSelect").prop('disabled', false);
+                        $("#statusSelect").prop('disabled', true);
+                        $('#lineSelect').prop('disabled', true);
+                        break;
+                    case 'Status':
+                        $("#empIdSelect").prop('disabled', true);
+                        $("#sectSelect").prop('disabled', true);
+                        $("#shiftSelect").prop('disabled', true);
+                        $("#statusSelect").prop('disabled', false);
+                        $('#lineSelect').prop('disabled', true);
+                        break;
+                    case 'Line':
+                        $("#empIdSelect").prop('disabled', true);
+                        $("#sectSelect").prop('disabled', true);
+                        $("#shiftSelect").prop('disabled', true);
+                        $("#statusSelect").prop('disabled', true);
+                        $('#lineSelect').prop('disabled', false);
+                        break;
+                    default:    // 'All' and 'Missing'
+                        $("#empIdSelect").prop('disabled', false);
+                        $("#sectSelect").prop('disabled', false);
+                        $("#shiftSelect").prop('disabled', false);
+                        $("#statusSelect").prop('disabled', false);
+                        $('#lineSelect').prop('disabled', false);
+                        break;
+                }
+            });
+            //initDatePicker();
+            $("#timeIn,#timeOut,#otHour").timepicker({
+
+                timeFormat: 'HH:mm',
+                interval: 15,
+
+                dynamic: true,
+                dropdown: true,
+                scrollbar: true
+
+            });
+
+
+            $("input:checkbox[name=allChecked]").on("ifChecked", function () {
+                updateFullArr("IsChecked", true);
+                $("input:checkbox[name=check_list]").prop('checked', true);
+            });
+            $("input:checkbox[name=allChecked]").on("ifUnchecked", function () {
+                updateFullArr("IsChecked", false);
+                $("input:checkbox[name=check_list]").prop('checked', false);
+            });
+
+            $("#updateBtn").click(function () {
+
+            //                $('#fixAttGridhd tbody tr').each(function () {
+
+
+
+
+            //if ($(this).hasClass("selected")) {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var dtfrom = $('#DtFrom').val();
+                var dtto = $('#DtTo').val();
+                var criteria = $("#Criteria:checked").val();
+                var GridDataList = [];
+
+                var rowleaveList = table.rows('.selected').nodes();
+                console.log(rowleaveList);
+                var data = table.rows('.selected').data();
+                console.log(data);
+                //alert('wait');
+
+                var GridData = {
+                    EmpId: "",
+                    dtPunchDate: "",
+                    EmpCode: "",
+                    TimeIn: "",
+                    TimeOut: "",
+                    StatusId: "",
+                    Status: "",
+                    OtHour: "",
+                    OTHourInTime: "",
+                    EmpName: "",
+                    SectName: "",
+                    ShiftId: "",
+                    Line: "",
+                    Remarks: ""
+                };
+
+                for (var i = 0; i < data.length; i++) {
+                    GridData.EmpId = data[i][0];
+                    GridData.dtPunchDate = data[i][5];
+                    //GridData.EmpCode = data[i][1];
+
+                    GridData.TimeIn = rowleaveList[i].cells[4].children[0].value;
+                    GridData.TimeOut = rowleaveList[i].cells[5].children[0].value;
+                    GridData.OtHour = "2.15";//rowleaveList[i].cells[6].children[0].value;
+                    GridData.OTHourInTime = rowleaveList[i].cells[6].children[0].value;
+
+                    GridData.StatusId = rowleaveList[i].cells[7].children[0].value;
+
+                    //console.log(rowleaveList[i].cells[8].children[0].find('option:selected').text());
+                    //alert('ok');
+
+                    //var x = $('option:selected', rowleaveList[i].cells[8].children[0]).text();
+                    //console.log(x);
+                    //alert(x);
+
+                    GridData.Status = $('option:selected', rowleaveList[i].cells[7].children[0]).text();  // $('#StatusId option:selected').text();
+
+                    GridData.Remarks = rowleaveList[i].cells[8].children[0].value;
+
+                    //GridData.EmpName = data[i][2];
+                    //GridData.SectName = data[i][11];
+                    GridData.ShiftId = 1;//data[i][3];
+
+                    //GridData.Line = data[i][12];
+                    //console.log(GridData);
+                    //alert('check the row data');
+
+                    GridDataList.push(GridData);
+
+                    GridData = {
+                    EmpId: "",
+                    dtPunchDate: "",
+                    EmpCode: "",
+                    TimeIn: "",
+                    TimeOut: "",
+                    StatusId: "",
+                    Status: "",
+                    OtHour: "",
+                    OTHourInTime: "",
+                    EmpName: "",
+                    SectName: "",
+                    ShiftId: "",
+                    Line: "",
+                    Remarks: ""
+                    };
+
+                };
+
+
+
+                if (GridDataList.length <= 0) {
+                    modal("Please select employees to update.", "error");
+                    return;
+                }
+
+                var json = { GridDataList: GridDataList };
+                console.log(json);
+
+                //$.post('/FixedAtt/UpdateSelectedData', { GridDataList: GridDataList, "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken }, function (data,  xhr) {
+                //    initializeGrid(data.Result);
+                //});
+
+                var strfy = JSON.stringify({ GridDataList });
+                 //var formData = new FormData($('form').get(0));
+
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("UpdateSelectedData", "FixedAtt")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                     dataType: 'json',
+                     headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                    data: { GridDataList:strfy},
+                        success: function (data) {
+                            if (data.Success == "1") {
+                                 if (data.Success == 1) {
+
+                                        alert(data.message);
+                                        table.clear().draw();
+                                    }
+                                //customFile('1', result.ex);
+
+                            }
+                             //else if (data.Success == "2") {
+                             //    //customFile('2', result.ex);
+                             //}
+                        else {
+                            toastr.error(result.ex);
+                        }
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+
+            });
+
+
+
+
+
+                //var formData = new FormData($('form').get(0));
+                //var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+                //formData.append("GridDataList", strfy);
+                //var options = {};
+
+                //options.url = "/FixedAtt/UpdateSelectedData";
+                //options.type = "POST";
+                //options.data = formData;
+                //options.headers = { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken };
+                //options.processData = false;
+                //options.contentType = false;
+                ////{ DtFrom: dtfrom, DtTo: dtto, criteria: criteria };
+                //options.success = function (data) {
+                //    if (data.Success == 1) {
+
+                //        alert(data.message);
+                //         table.clear().draw();
+                //    }
+
+                //};
+                //options.error = function () {
+                //    alert("error occured from DailyEmpFixedAttandanceData()");
+                //};
+                //$.ajax(options);
+
+
+
+            });
+
+        });
+
+            $("#fillDatabtn").click(function () {
+            var status = $("#StatusId").val();
+            //var statustext = $("#StatusId").text();
+            //var statustext = $('#StatusId option:selected').text();
+            //alert(status);
+            //alert(statustext);
+
+
+            var timeinvalue = $('#timeIn').val();
+            var timeoutvalue = $('#timeOut').val();
+            var othourvalue = $('#otHour').val();
+
+            $('#fixAttGridhd tbody tr').each(function () {
+
+
+
+
+                if ($(this).hasClass("selected")) {
+
+            if ($('input:checkbox[name=timeInChk]').is(':checked')) {
+                $(this).find('.TimeInGrid').val($.trim(timeinvalue));
+            }
+            if ($('input:checkbox[name=timeOutChk]').is(':checked')) {
+                $(this).find('.TimeOutGrid').val($.trim(timeoutvalue));
+                }
+            if ($('input:checkbox[name=otHourChk]').is(':checked')) {
+                $(this).find('.OtHourGrid').val($.trim(othourvalue));
+            }
+            if ($('input:checkbox[name=statusChk]').is(':checked')) { //// dynamically select option selected from datatable grid special code by fahad
+
+                $(this).find('.StatusGrid .StatusGridOption option:selected').removeAttr('selected');
+
+                $(this).find(".StatusGrid .StatusGridOption option").each(function () {
+
+                    if ($(this).val() == status) $(this).attr("selected", "selected");
+
+                    //alert('test');
+                    //if ($(this).val() == status) {
+                    //    $(this).attr("selected", "selected");
+                    //    return true;
+                    //}
+                });
+
+
+                //$(this).find('.StatusGridOption').
+                //    $(".StatusGrid select option").each(function () {
+                //    alert('hit');
+                //    if ($(this).val() == status)
+                //    $(this).attr("selected", "selected");
+                //});
+
+            }
+            }
+                })
+            });
+
+
+
+        $('#DtFrom').val(CurrentDate());
+        $('#DtTo').val(CurrentDate());
+
+
+            $("#DtFrom").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtFrom").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+
+                },
+
+            });
+                    $("#DtTo").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+
+                },
+
+            });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+//        var times = {
+//  "1": "12:00 am",
+//  "2": "12:11 am"
+//};
+
+
+
+
+
+
+
+
+//var $mySelect = $('#example');
+
+//$.each(times, function(key, value) {
+//  var $option = $("<option/>", {
+//    value: key,
+//    text: value
+//  });
+//  $mySelect.append($option);
+//});
+
+//$(function(){
+//	$("#example").DataTable({
+//    	"columns":[
+//        	null,
+//        	//{
+//         //   	"render": function(d,t,r){
+//         //       	var $select = $("<select></select>", {
+//         //           	"text": 1,
+//         //               "value": d
+//         //           });
+//         //       	$.each(times, function(k,v){
+
+//         //           	var $option = $("<option></option>", {
+//         //               	"text": v,
+//         //                   "value": k
+//         //               });
+//         //               if(d === v){
+//         //               	$option.attr("selected", "selected")
+//         //               }
+//         //           	$select.append($option);
+//         //           });
+//         //           return $select.prop("outerHTML");
+//         //       }
+//         //   },
+//         //   {
+//         //   	"render": function(d,t,r){
+//         //       	var $select = $("<select></select>", {
+//         //           	"id": r[0]+"start",
+//         //               "value": d
+//         //           });
+//         //       	$.each(times, function(k,v){
+//         //           	var $option = $("<option></option>", {
+//         //               	"text": v,
+//         //                   "value": v
+//         //               });
+//         //               if(d === v){
+//         //               	$option.attr("selected", "selected")
+//         //               }
+//         //           	$select.append($option);
+//         //           });
+//         //           return $select.prop("outerHTML");
+//         //       }
+//         //   }
+//        ]
+//    });
+//});
+
+      function StatusListFromMVC() {
+
+
+
+            $.ajax({
+                url: '@Url.Action("StatusListFromMVC", "FixedAtt")',
+                data: null, //use id here
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+
+                    console.log(result);
+
+                }
+        });
+        }
+
+
+    </script>
+}

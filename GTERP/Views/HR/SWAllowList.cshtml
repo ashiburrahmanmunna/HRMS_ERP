@@ -1,0 +1,461 @@
+﻿@model GTERP.Models.HR_SummerWinterAllowance
+
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    List<GTERP.ViewModels.SummerWinterAllowViewModel> recreations = ViewBag.Recreation;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i>  Summer Winter Allowance
+            @*<div id="loading" style="display: inline;">
+                    <div id="loadingGif" style="display:inline;">
+                        <img src="~/Files/loading.gif" style="height:16px;display:inline;" />
+                    </div>
+                </div>*@
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <div class="row">
+                            @*<div class="col-md-3 col-12 mb-3">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"> @Html.LabelFor(model => model.DtInput)</span>
+                                        </div>
+                                        <input type="text" asp-for="DtInput" class="form-control" autocomplete="off" />
+                                        @Html.ValidationMessageFor(model => model.DtInput, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
+
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.SWAllowanceId)</span>
+                                    </div>
+                                    <select asp-items="@ViewBag.ProssType" asp-for="SWAllowanceId" class="form-control">
+                                        <option value="0">--Select Month--</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.SWAllowanceId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.IsSummer)</span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            @Html.CheckBoxFor(model => model.IsSummer, new { htmlAttributes = new { @class = "form-control" } })
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.IsSummer, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.IsWinter)</span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            @Html.CheckBoxFor(model => model.IsWinter, new { htmlAttributes = new { @class = "form-control" } })
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.IsWinter, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.IsRaincoat)</span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            @Html.CheckBoxFor(model => model.IsRaincoat, new { htmlAttributes = new { @class = "form-control" } })
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.IsRaincoat, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-12 mb-3">
+                                <input type="button" value="Load" class="btn btn-warning btn-block rounded-0" id="btnLoad" />
+                            </div>
+                            <div class="col-md-1 col-12 mb-3">
+                                <input type="button" value="Save" class="btn btn-success btn-block rounded-0" id="btnSave" />
+                            </div>
+
+                    </div>
+                    <hr />
+                    <input type="button" class="btn btn-warning float-right rounded-0" value="Select All" id="btnSelect" />
+                    <table id="tblEmp" class="table table-hover table-striped text-nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>EmpId</th>
+                                <th>Emp Code</th>
+                                <th>Emp Name</th>
+                                <th>Emp Type</th>
+                                <th>Department</th>
+                                <th>Section</th>
+                                <th>Designation</th>
+                                <th>BS</th>
+                                <th>Input Date</th>
+                                <th>Is Summer</th>
+                                <th>Is Winter</th>
+                                <th>Is Rain Code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (recreations != null)
+                            {
+                                foreach (var item in recreations)
+                                {
+                                    <tr>
+                                        <td>@item.EmpId</td>
+                                        <td>@item.EmpCode</td>
+                                        <td>@item.EmpName</td>
+                                        <td>@item.EmpType</td>
+                                        <td>@item.DeptName</td>
+                                        <td>@item.SectName</td>
+                                        <td>@item.DesigName</td>
+                                        <td>@item.BS</td>
+                                        <td>
+                                            @String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(item.DtInput)).ToShortDateString())
+                                        </td>
+                                        <td>
+                                            @item.IsSummer
+                                        </td>
+                                        <td>
+                                            @item.IsWinter
+                                        </td>
+                                        <td>
+                                            @item.IsRainCoat
+                                        </td>
+
+
+
+
+                                    </tr>
+                                }
+                            }
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+@section Scripts {
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+
+        $("#SWAllowanceId").select2();
+
+        var da =@Html.Raw(Json.Serialize(ViewBag.SWAId));
+        if (da == null) {
+            $("#SWAllowanceId").val("0").change();
+        } else {
+            $("#SWAllowanceId").val(da).change();
+        }
+        $("#btnLoad").click(function () {
+            var month = $("#SWAllowanceId").val();
+            if (month == "0") {
+                toastr.info("Select Month");
+                return false;
+            }
+            window.location.href = '@Url.Action("SWAllowList","HR")?SWAId=' + month;
+            //DailyEmpFixedAttandanceData();
+        });
+
+        function initializeGrid(data) {
+            $('#tblEmp').DataTable().clear().draw();
+            console.log(data);
+            for (var i = 0; i < data.length; i++) {
+                //if (data[i].Remarks.length > 1) {alert(data[i].Remarks) };
+
+
+                $('#tblEmp').dataTable().fnAddData(
+                    [
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].EmpType,
+                        data[i].DeptName,
+                        data[i].SectName,
+                        data[i].DesigName,
+                        data[i].BS,
+                        data[i].DtInput,
+                        data[i].IsSummer,
+                        data[i].IsWinter,
+                        data[i].IsRainCoat
+                    ]
+                );
+            }
+        };
+
+
+        function DailyEmpFixedAttandanceData() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            let date = $("#DtInput").val();
+
+             $.ajax({
+                  type: 'GET',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("GetData", "HR")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: { date: date },
+                 success: function (data) {
+                     initializeGrid(data);
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                 }
+            });
+
+        };
+
+        $(document).ready(function () {
+
+            $("#DtInput").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtInput").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtInput").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+            // row select
+            $("#btnSelect").click(function () {
+
+                if ($("#btnSelect").val() == "Select All") {
+                    $('#tblEmp tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+
+                    });
+                    $("#btnSelect").val("De Select");
+                } else {
+                    $('#tblEmp tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                    });
+                    $("#btnSelect").val("Select All");
+                }
+            });
+
+
+
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'EmpType', 'visible': true },
+                    { 'sClass': 'DeptName', 'visible': true },
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'DesigName', 'visible': true },
+                    { 'sClass': 'BS', 'visible': true },
+                    { 'sClass': 'DtInput', 'visible': true },
+                    { 'sClass': 'IsSummer', 'visible': true },
+                    { 'sClass': 'IsWinter', 'visible': true },
+                    { 'sClass': 'IsRainCoat', 'visible': true }
+                ],
+                'columnDefs': [
+                    {
+                        'targets': 9,
+                        'searchable': false,
+                        'orderable': false,
+                        'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True") {
+                                return '<input type="checkbox" name="id[summer]" checked value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            } else {
+                                return '<input type="checkbox" name="id[summer]" value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            }
+
+                        }
+                    },
+                    {
+                        'targets': 10,
+                        'searchable': false,
+                        'orderable': false,
+                        'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True") {
+                                return '<input type="checkbox" name="id[winter]" checked value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            } else {
+                                return '<input type="checkbox" name="id[winter]" value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            }
+
+                        }
+                    },
+                    {
+                        'targets': 11,
+                        'searchable': false,
+                        'orderable': false,
+                        'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True") {
+                                return '<input type="checkbox" name="id[raincoat]" checked value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            } else {
+                                return '<input type="checkbox" name="id[raincoat]" value="'
+                                    + $('<div/>').text(data).html() + '">';
+                            }
+
+                        }
+                    }
+                ],
+
+                //"order": [[4, "asc"]],
+                select: {
+                    style: 'multi',
+                    selector: 'tr>td:nth-child(1),tr>td:nth-child(2),tr>td:nth-child(3),tr>td:nth-child(4),tr>td:nth-child(5),tr>td:nth-child(6),tr>td:nth-child(7),tr>td:nth-child(8)'
+
+                },
+                'paging': false,
+                'info': false,
+                "scrollY": 455,
+                "scrollX": true,
+                "language": {
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+            });
+
+            $('#IsSummer').on('click', function () {
+                // Check/uncheck all checkboxes in the table
+                var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+                $('input[name="id[summer]"]', rows).prop('checked', this.checked);
+            });
+            $('#IsWinter').on('click', function () {
+                // Check/uncheck all checkboxes in the table
+                var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+                $('input[name="id[winter]"]', rows).prop('checked', this.checked);
+            });
+            $('#IsRaincoat').on('click', function () {
+                // Check/uncheck all checkboxes in the table
+                var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+                $('input[name="id[raincoat]"]', rows).prop('checked', this.checked);
+            });
+
+            //name = 'bla[]'
+            //name = "id[summer]"
+            $("#btnSave").click(function () {
+
+                var aId = $('#SWAllowanceId').val();
+
+                if (aId == "0") {
+                    toastr.warning("Please Select Month");
+                    return false;
+                }
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var summerWinterAllows =[];
+
+                var data = table.rows('.selected').data();
+                var rows = table.rows('.selected').nodes();
+
+                for (var i = 0; i < data.length; i++) {
+                     var HR_SummerWinterAllowance = {
+                         EmpId: '', DtInput: "", SWAllowanceId: "", IsSummer: false, IsWinter: false,
+                         SummerAllow: 0, WinterAllow: 0, RainCoatAndGumbootAllow:0,
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(new Date()), UpdateByUserId:'@HttpContextAccessor.HttpContext.Session.GetString("userid")', DateUpdated: CurrentDate(new Date())
+                        }
+
+                    HR_SummerWinterAllowance.EmpId = data[i][0];
+                    HR_SummerWinterAllowance.DtInput = CurrentDate(new Date);
+                    HR_SummerWinterAllowance.SWAllowanceId = $('#SWAllowanceId').val();
+
+                    console.log(rows[i].cells[10].children[0]);
+
+
+                    if ($('input[name="id[summer]"]', rows[i]).is(':checked')) {
+                        HR_SummerWinterAllowance.IsSummer = true;
+                    }
+                    if ($('input[name="id[winter]"]', rows[i]).is(':checked')) {
+                        HR_SummerWinterAllowance.IsWinter = true;
+                    }
+                    if ($('input[name="id[raincoat]"]', rows[i]).is(':checked')) {
+                        HR_SummerWinterAllowance.IsRainCoat = true;
+                    }
+
+
+                    summerWinterAllows.push(HR_SummerWinterAllowance);
+
+
+                };
+
+
+                if (summerWinterAllows.length < 1) {
+                    toastr.warning("Select Employee");
+                    return false;
+                }
+
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CreateSWAllow", "SummerWinterAllow")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                     dataType: 'json',
+                     headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                     data: { summerWinterAllows: summerWinterAllows},
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            window.location.href='@Url.Action("SWAllowList", "HR")'
+                        } else if (data.Success == "2") {
+                            customFile('2', data.ex);
+                        }
+                        else
+                            toastr.error(result.ex);
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+                });
+            });
+        });
+
+        function CurrentDate(date) {
+            var date = new Date(date);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+    </script>
+}

@@ -1,0 +1,952 @@
+﻿@model IEnumerable<GTERP.ViewModels.SalaryCheck>
+@{
+    //getting Approval List values
+    List<HR_Emp_Salary> ApproveEmpList = ViewBag.EmpApprovetype;
+    var ApproveEmpname = ViewBag.empType;
+    List<HR_Emp_Salary> AllApproveEmpList = ViewBag.AllEmpApprovetype;
+    var gs = ViewBag.GS;
+
+}
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    #loadingOverlay {
+        position: fixed;
+        top: 100;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.2); /* semi-transparent white */
+        display: none;
+        z-index: 9999; /* ensure it appears on top of everything */
+    }
+
+    #loadingText {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+    }
+
+</style>
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row mb-1">
+            <div class="col-md-9 col-12">
+                <div class="input-group mb-1">
+                    <select asp-items="ViewBag.ProssType" class="form-control" id="prossType"></select>
+                </div>
+            </div>
+            <div class="col-md-3 col-12">
+                <input type="button" id="btnLaod" onclick="LoadData()" value="Load" class="btn btn-warning btn-block rounded-0 mb-1" />
+            </div>
+
+        </div>
+
+    </div>
+    <form class="card p-2">
+        <div class="row" style="margin: 2px">
+            <div class="col-6">
+            </div>
+            <div class="col-6">
+                
+            </div>
+        </div>
+        <div class="card p-3 table-responsive">
+            <div class="row" style="margin: 2px">
+                <div class="col-6">
+                </div>
+                <div class="col-6">
+                    <div style="display: flex; align-items: center;" class="float-right">
+                        <div class="">
+                            <button type="button" class="btn btn-outline-success"
+                                    onclick="showoffcanvas('GroupDiv')">
+                                <i class="bi bi-bounding-box-circles"></i> Group By
+                            </button>
+                        </div>
+                        <div class="">
+                            <button type="button" class="btn btn-outline-success"
+                                    onclick="showoffcanvas('Filter')">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                        </div>
+                        <button id="download-csv" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                        <button id="download-xlsx" class="btn btn-danger" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                    </div>
+                    <div id="loadingOverlay">
+                        <div id="loadingText">Please wait...</div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="d-flex mt-4">
+                
+                <div id="tableContainer" class="mt-4" style="height: 300%; width: 100%; margin:auto">
+                    <div id="Report_table"></div>
+
+                </div>
+                <div class="SortingDiv mt-4" id="CustomCanvas" style="display: none;">
+                    <div id="GroupDiv" style="display: none;">
+                        <h4 style="align-items: center;">Grouping</h4>
+                        <p>Select your column for grouping</p>
+                        <select class="form-select groupColumn" multiple="multiple" onchange="GroupBy()">
+                        </select>
+                        <div id="datasetdiv">
+                           
+                        </div>
+                    </div>
+                    <div id="Filter" style="display: none;">
+                        <h4>Filter</h4>
+                        Select how you want to filter your data.
+                        <button id="filter-clear" style=" margin-inline-end: 10px;" class="btn btn-outline-success" onclick="ClearFirlter()">Clear Filter</button>
+                       
+                        <div id="filter-element">
+                           
+                        </div>
+
+
+                        <button type="button" style="margin-Top: 10px;" class="btn btn-outline-success" onclick="addFilter()"> add filter</button>
+                    </div>
+                   
+                </div>
+
+                <br />
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+
+
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.3.0/js/tabulator.min.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script src="~/js/shortable.js"></script>
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap4.min.css" integrity="sha512-ht3CSPjgWsxdbLti7wtKNEk5hLoGtP2J8C40muB5/PCWwNw9M/NMJpyvHdeko7ADC60SEOiCenU5pg+kJiG9lg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+            integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        var invoicelist = [];
+        var totalCount;
+        var Groupvalue = [];
+        var Columns = [];
+        var NumberColumns = [];
+        var FilterArray = [];
+        var chartData = [];
+        var $select;
+        var $NumberColumnsselect;
+        var previous;
+        var ColumnsVisibily;
+        var customReportData = {};
+        var previewchart;
+        var HiddenColumn = [];
+        var ColumnData = [];
+        var initialItemTexts = [];
+        $(document).ready(function () {
+
+            var $selctemp = $("select").select2();
+            $selctemp.select2("destroy");
+            $("#prossType").select2();
+
+            showLoadingMessage();
+            LoadData();
+            document.getElementById("download-csv").addEventListener("click", function () {
+                table.download("csv", "data.csv");
+            });
+
+            document.getElementById("download-xlsx").addEventListener("click", function () {
+                table.download("xlsx", "data.xlsx", { sheetName: "My Data" });
+            });
+
+        })
+        function generateRandomColors(context) {
+            const predefinedColors = [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 206, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(153, 102, 255)',
+                'rgb(255, 159, 64)',
+                'rgb(0, 128, 0)',
+                'rgb(255, 0, 255)',
+            ];
+            const randomIndex = Math.floor(Math.random() * predefinedColors.length);
+            return predefinedColors[context.index];
+        }
+
+        function LoadData()
+        {
+            var prossType = $("#prossType").val();
+
+            $.ajax({
+                url: '@Url.Action("SalaryCheck", "Payroll")',
+                method: 'GET',
+                data: {
+                    prossType,
+                },
+                success: function (data) {
+                    console.log("data", data);
+                    invoicelist = data.EmployeeList;
+                    totalCount = data.Total;
+                    console.log("invoice ", invoicelist);
+                    GetColumns();
+                    SetForGroupDropDown('select.groupColumn');
+                    TabulatorInitializer();
+                    GenerateNumberColumns('#calculationColumn');
+                    hideLoadingMessage();
+
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        }
+        // Function to show the "please wait" message
+        function showLoadingMessage() {
+            $('#loadingOverlay').show();
+        }
+
+        // Function to hide the "please wait" message
+        function hideLoadingMessage() {
+            $('#loadingOverlay').hide();
+        }
+
+        function TabulatorInitializer() {
+            if (table) {
+                table.destroy();
+            }
+
+            console.log("total", totalCount);
+            var count = totalCount;
+            console.log("count", count);
+
+            // Check if there are no columns or no data
+            if (Columns.length == 0 || invoicelist.length == 0) {
+                table = new Tabulator("#Report_table", {
+                    data: [], // Empty data array
+                    layout: "fitDataFill",
+                    columns: CustomColumn(),
+                    placeholder: "No Data Available", // Set placeholder message
+                });
+            } else {
+                // If there are columns and data, initialize the table with the actual data
+                table = new Tabulator("#Report_table", {
+                    data: invoicelist,
+                    layout: "fitDataFill",
+                    columns: CustomColumn(),
+                    movableColumns: true,
+                    pagination: true,
+                    paginationSize: 10,
+                    paginationSizeSelector: [5, 10, 15, 20],
+                    groupStartOpen: true,
+                    paginationCounter: "rows",
+                    groupClosedShowCalcs: true,
+                });
+            }
+        }
+
+
+        function applyFiltering() {
+            if (Object.keys(customReportData).length > 0) {
+                var control = $select[0].selectize;
+                control.setValue(customReportData.GroupbyValue);
+
+                table.setFilter(customReportData.FilterValue);
+                // var numbercontrol = $NumberColumnsselect[0].selectize;
+                // if (customReportData.chartData != undefined) {
+                //     numbercontrol.setValue(customReportData.chartData.calculationColumn);
+                // }
+                if (customReportData.FilterValue != undefined) {
+                    FilterArray = customReportData.FilterValue;
+                    RanderSaveFilter(customReportData.FilterValue);
+                }
+                if (customReportData.chartData != undefined) {
+                    chartData = customReportData.chartData;
+                    Renderdatasets(customReportData.chartData);
+                }
+            }
+
+        }
+        // function sendData() {
+            
+        //     var page = table.page;
+        //     var size = table.size;
+        //     var url = '@Url.Action("GetRawData", "RawDataView")';
+        //     url += '?From=' + _from + '&To=' + _to + '&emText=' + emText + '&DeptName=' + DeptName + '&DesigName=' + DesigName + '&SectName=' + SectName + '&EmpCode=' + EmpCode + '&EmpName=' + EmpName + '&DtPunchDate=' + DtPunchDate + '&DtPunchTime=' + DtPunchTime + '&page=' + page + '&size=' + size;
+        //     clearFilterObject();
+        //     table.clearFilter();
+        //     table.on("dataFiltering", GetTablefilter);
+        //     table.setData(url);
+        //     LoadData();
+
+        // }
+        
+        function CustomColumn() {
+
+
+            let columns = Columns.map(fieldName => {
+                if (HiddenColumn.includes(fieldName)) {
+                    return {
+                        title: fieldName,
+                        field: fieldName,
+                        visible: false
+                    };
+                }
+                if (NumberColumns.includes(fieldName)) {
+                    if (fieldName === "EmpId") {
+                        return {
+                            title: fieldName,
+                            field: fieldName,
+                            headerFilter: "input",
+                            headerFilterLiveFilter: true,
+                            hozAlign: "center",
+                            bottomCalc: function (values, data, calcParams) {
+                                // Calculate the sum
+                                var sum = 0;
+                                values.forEach(function (value) {
+                                    sum += value || 0;
+                                });
+                                // Round the sum to 2 decimal places
+                                return sum.toFixed(2);
+                            },
+                            visible: false
+                        };
+                    } else {
+                        return {
+                            title: fieldName,
+                            field: fieldName,
+                            headerFilter: "input",
+                            headerFilterLiveFilter: true,
+                            hozAlign: "center",
+                            bottomCalc: function (values, data, calcParams) {
+                                // Calculate the sum
+                                var sum = 0;
+                                values.forEach(function (value) {
+                                    sum += value || 0;
+                                });
+                                // Round the sum to 2 decimal places
+                                return sum.toFixed(2);
+                            },
+                        };
+                    }
+
+                }
+                if (fieldName === "DtJoin" || fieldName == "DtBirth" || fieldName == "DtIncrement" || fieldName == "DtReleased" || fieldName == "DtConfirm" || fieldName == "DtPf") {
+                    return {
+                        title: fieldName,
+                        field: fieldName,
+                        hozAlign: "center",
+                        formatter: function (cell, formatterParams) {
+                            return formatDate(cell.getValue());
+                        }
+                    };
+                }
+                if (fieldName == "ManageType") {
+                    return {
+                        title: fieldName,
+                        field: fieldName,
+                        headerFilter: "input",
+                        headerFilterLiveFilter: true,
+                        hozAlign: "center",
+                        visible: false
+                    };
+                }
+                if (fieldName === "PF" || fieldName === "IsAllowOT" || fieldName === "IsAllowPF" || fieldName === "IsInactive" || fieldName === "IsLunchAllow" || fieldName === "IsLunchDed" || fieldName === "IsTrnAllow" || fieldName === "IsTrnDed") {
+                    return {
+                        title: fieldName,
+                        field: fieldName,
+                        headerFilter: "input",
+                        headerFilterLiveFilter: true,
+                        hozAlign: "center",
+                        formatter: function (cell, formatterParams) {
+                            return cell.getValue() ? 'Yes' : 'No';
+                        },
+                        headerFilterFunc: function (headerValue, rowValue, rowData, filterParams) {
+                            // Custom filter logic for "Yes" and "No"
+                            return (headerValue.toLowerCase() === 'yes') ? rowValue : !rowValue;
+                        },
+                    };
+                }
+                return {
+                    title: fieldName,
+                    field: fieldName,
+                    headerFilter: "input",
+                    hozAlign: "center",
+                    headerFilterLiveFilter: true,
+                    visible: true
+                };
+            });
+            return columns;
+        }
+
+
+        function showoffcanvas(opento) {
+
+
+            if (opento == previous) {
+                Closecanvas();
+
+                previous = '';
+                $(`#${opento}`).hide();
+                return false;
+            }
+            if (opento != previous) {
+                if (previous != '' && previous != null) {
+                    $(`#${previous}`).hide();
+                }
+                previous = opento;
+                ShowCanvas();
+
+                $(`#${opento}`).show();
+            }
+
+        }
+        function ShowCanvas() {
+            let canvas = document.getElementById("CustomCanvas");
+            let tableContainer = document.getElementById("tableContainer");
+
+            canvas.style.width = '27%';
+            tableContainer.style.width = '70%';
+            canvas.style.display = 'block';
+        }
+        function Closecanvas() {
+            let canvas = document.getElementById("CustomCanvas");
+            let tableContainer = document.getElementById("tableContainer");
+            canvas.style.width = '0%';
+            tableContainer.style.width = '100%';
+            canvas.style.display = 'none';
+        }
+        function GetDateRangeByCriteria() {
+            var txt = $("#DateRangeDropdown option:selected").text();
+            return GetDateRange(txt)
+        }
+
+        function GetColumns() {
+
+            Columns = invoicelist.length > 0 ? Object.keys(invoicelist[0]) : [];
+            for (let i in invoicelist[0]) {
+
+                if (typeof invoicelist[0][i] == 'number') {
+
+                    NumberColumns.push(i);
+                    
+                }
+            }
+
+
+        }
+        function GenerateColumnList() {
+
+            let items = Columns.map(fieldName => {
+                if (HiddenColumn.includes(fieldName)) {
+                    return `
+                                        <li class="list-group-item text-bold my-1 p-2">
+                                                    <i class="bi bi-arrows-move my-handle cursor-pointer" aria-hidden="true"></i>   ${fieldName}
+                                                                      <i class="bi bi-eye-slash-fill  cursor-pointer" aria-hidden="true" id="${fieldName}" onclick="showHideColumn('${fieldName}',this)"></i>
+                                                    </li>
+                                           `
+                } else {
+                    return ` <li class="list-group-item text-bold my-1 p-2">
+                                       <i class="bi bi-arrows-move my-handle cursor-pointer" aria-hidden="true"></i>   ${fieldName}
+                                        <i class="bi bi-eye-fill  cursor-pointer" aria-hidden="true" id="${fieldName}" onclick="showHideColumn('${fieldName}',this)"></i>
+                                       </li>`
+                }
+
+            });
+            const listWithHandle = document.getElementById('TableColumnList');
+            listWithHandle.innerHTML = items.join('');
+        }
+        function SetForGroupDropDown(selector) {
+
+            var groupColumn = $(selector);
+            for (let i = 0; groupColumn.length > i; i++) {
+                var todestroy = groupColumn[i];
+                if (todestroy.selectize != undefined) {
+                    todestroy.selectize.destroy();
+                }
+
+            }
+
+            groupColumn.empty();
+            Columns.forEach(key => {
+                groupColumn.append(`<option value="${key}">${key}</option>`);
+            });
+            $select = $(selector).selectize(
+
+                {
+                    plugins: ["drag_drop", "clear_button", "remove_button"],
+                }
+            );
+
+        }
+        function GenerateNumberColumns(selector) {
+
+            let groupColumn = $(selector);
+            for (let i = 0; groupColumn.length > i; i++) {
+                var todestroy = groupColumn[i];
+                if (todestroy.selectize != undefined) {
+                    todestroy.selectize.destroy();
+                }
+
+            }
+
+            groupColumn.empty();
+            NumberColumns.forEach(key => {
+                groupColumn.append(`<option value="${key}">${key}</option>`);
+            });
+            $NumberColumnsselect = $(selector).selectize(
+
+                {
+                    plugins: ["drag_drop", "clear_button", "remove_button"],
+                }
+            );
+        }
+        function GroupBy() {
+            table.setGroupBy(false);
+            var selectize = $select[0].selectize;
+            Groupvalue = selectize.items;
+            table.setGroupBy(Groupvalue);
+       
+        }
+        function Filtering() {
+
+            var filterElements = document.querySelectorAll('.filter-child');
+
+            FilterArray = [];
+
+            filterElements.forEach(function (element) {
+                var field = element.querySelector('.filter-field').value;
+                var type = element.querySelector('.filter-type').value;
+                var value = element.querySelector('.filter-value').value;
+
+                // Check if all values are available before adding to the array
+                if (field && type && value) {
+                    var data = {
+                        field: field,
+                        type: type,
+                        value: value
+                    };
+                    FilterArray.push(data);
+                }
+            });
+            //console.log(dataArray);
+
+            table.setFilter(FilterArray);
+            //UpdateChart();
+        }
+        function showHideColumn(colName, element) {
+
+            element.classList.toggle('bi-eye-fill');
+            element.classList.toggle('bi-eye-slash-fill');
+            table.toggleColumn(colName);
+
+            if (!HiddenColumn.includes(colName)) {
+                HiddenColumn.push(colName);
+
+            } else {
+                const index = HiddenColumn.indexOf(colName);
+                HiddenColumn.splice(index, 1);
+            }
+            console.log(HiddenColumn);
+
+        }
+        function formatDate(date) {
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            if (date == "") {
+                date = new Date();
+            } else {
+                date = new Date(date)
+            }             // Convert date to Date object if it's not already
+            var formattedDate;
+            if (date instanceof Date) {
+                var day = date.getDate();
+                var monthIndex = date.getMonth();
+                var year = date.getFullYear();
+                formattedDate = day + "-" + months[monthIndex] + "-" + year;
+            } else {
+                formattedDate = "Invalid Date";
+            }
+
+            return formattedDate;
+        }
+
+        function Renderdatasets(data) {
+            for (let i = 0; data.length > i; i++) {
+                let filterContainer = document.getElementById('datasetdiv');
+                let childDiv = document.createElement("div");
+                childDiv.setAttribute("class", "d-lg-inline-flex justify-content-between mt-2");
+                var childelemrntid = i;
+                childDiv.setAttribute("Id", `datasetId-${childelemrntid}`);
+                //childDiv.setAttribute("onclick", `removeDatasets(${childelemrntid})`);
+                //selectDiv input
+                let selectDiv = document.createElement("div");
+                selectDiv.style.width = "100px";
+                selectDiv.setAttribute("class", "me-2");
+                selectDiv.innerHTML = `<select onchange="UpdateChart()" class="calculationType form-select" id="calculationType-${childelemrntid}">
+                                                <option value="sum"> sum </option>
+                                                    <option value = "count"> count </option>
+                                                         <option value = "average"> average </option>
+                                                             </select>`;
+                //dataset type input
+                let datasetDiv = document.createElement("div");
+                datasetDiv.style.width = "100px";
+                datasetDiv.setAttribute("class", "me-2");
+                datasetDiv.innerHTML = `<select onchange="UpdateChart()" class="bartype form-select" id="dataset-${childelemrntid}">
+                                                     <option value="bar"> bar </option>
+                                                      <option value="line"> line </option>
+                                                      </select>`;
+                //column div
+                let columnDiv = document.createElement("div");
+                columnDiv.style.width = "150px";
+                columnDiv.innerHTML = `<select onchange="UpdateChart()" id="calculationColumn-${childelemrntid}" class="calculationColumn" ></select>`;
+                childDiv.appendChild(selectDiv);
+                childDiv.appendChild(columnDiv);
+                childDiv.appendChild(datasetDiv);
+                childDiv.innerHTML += `<i class="bi bi-trash3 cursor-pointer text-danger" onclick="removeDatasets('datasetId-${childelemrntid}')"></i>`;
+                filterContainer.appendChild(childDiv);
+                GenerateNumberColumns(`#calculationColumn-${childelemrntid}`);
+                //$(`#calculationColumn-${childelemrntid}`).val(data[i].calculationColumn);
+                $(`#calculationType-${childelemrntid}`).val(data[i].calculationType);
+                $(`#dataset-${childelemrntid}`).val(data[i].type);
+
+                let datacalc = $(`#calculationColumn-${childelemrntid}`);
+                datacalc[0].selectize.setValue([data[i].calculationColumn]);
+            }
+        }
+        function removeDatasets(elementid) {
+            let toRemove = document.getElementById(elementid);
+            toRemove.remove();
+            Filtering();
+            UpdateChart();
+        }
+        function getProcess(prossType) {
+            // Split the string by "-"
+            const [monthName, year] = prossType.split("-");
+
+            // Create a date object for the specified month and year
+            const date = new Date(`${monthName} 1, ${year}`);
+
+            // Format the date to YYYY-MM-DD 00:00:00
+            const formattedDate = date.toISOString().split('T')[0] + ' 00:00:00';
+
+            return formattedDate;
+        }
+        function addFilter() {
+            //filter container
+            let filterContainer = document.getElementById('filter-element');
+            let childcount = filterContainer.children.length + 1;
+            var childDiv = document.createElement("div");
+            childDiv.setAttribute("class", "filter-child");
+            childDiv.setAttribute("id", `fileterelement-${childcount}`);
+            var childbodyDiv = document.createElement("div");
+            childbodyDiv.setAttribute("class", "d-lg-inline-flex justify-content-between mt-2");
+
+
+            //column div
+            let columnDiv = document.createElement("div");
+            //condition div
+            let ConditionDiv = document.createElement("div");
+            //condition input
+            let inputDiv = document.createElement("div");
+            columnDiv.style.width = "200px";
+            ConditionDiv.style.width = "100px";
+
+            columnDiv.appendChild(createColumn(`fileterColumnelement-${childcount}`));
+            ConditionDiv.appendChild(createSelectCondition());
+            inputDiv.appendChild(createInputElement());
+
+            childbodyDiv.appendChild(columnDiv);
+            childbodyDiv.appendChild(ConditionDiv);
+            childbodyDiv.appendChild(inputDiv);
+            childbodyDiv.innerHTML += `<i class="bi bi-trash3 cursor-pointer text-danger" onclick="removeDatasets('fileterelement-${childcount}')"></i>`;
+            childDiv.appendChild(childbodyDiv);
+
+            filterContainer.appendChild(childDiv);
+            SetForGroupDropDown(`#fileterColumnelement-${childcount}`);
+        }
+        function RanderSaveFilter(data) {
+            for (let i = 0; data.length > i; i++) {
+                //filter container
+                let filterContainer = document.getElementById('filter-element');
+                let childcount = i;
+                var childDiv = document.createElement("div");
+                childDiv.setAttribute("class", "filter-child");
+                childDiv.setAttribute("id", `fileterelement-${childcount}`);
+                var childbodyDiv = document.createElement("div");
+                childbodyDiv.setAttribute("class", "d-lg-inline-flex justify-content-between mt-2");
+
+
+                //column div
+                let columnDiv = document.createElement("div");
+                //condition div
+                let ConditionDiv = document.createElement("div");
+                //condition input
+                let inputDiv = document.createElement("div");
+                columnDiv.style.width = "200px";
+                ConditionDiv.style.width = "100px";
+
+                columnDiv.appendChild(createColumn(`fileterColumnelement-${childcount}`));
+                ConditionDiv.appendChild(createSelectCondition(`filetertypeelement-${childcount}`));
+                inputDiv.appendChild(createInputElement(`fileterValueelement-${childcount}`));
+
+                childbodyDiv.appendChild(columnDiv);
+                childbodyDiv.appendChild(ConditionDiv);
+                childbodyDiv.appendChild(inputDiv);
+                childbodyDiv.innerHTML += `<i class="bi bi-trash3 cursor-pointer text-danger" onclick="removeDatasets('fileterelement-${childcount}')"></i>`;
+                childDiv.appendChild(childbodyDiv);
+
+                filterContainer.appendChild(childDiv);
+                SetForGroupDropDown(`#fileterColumnelement-${childcount}`);
+
+                $(`#filetertypeelement-${childcount}`).val(data[i].type);
+                $(`#fileterValueelement-${childcount}`).val(data[i].value);
+
+                let fileterl = $(`#fileterColumnelement-${childcount}`);
+                fileterl[0].selectize.setValue([data[i].field]);
+
+            }
+
+        }
+
+        function downloadexcel() {
+            let fileName = '"EmployeeList"-@DateTime.Now.ToShortDateString()';
+            table.download("xlsx", "data.xlsx", { sheetName: "My Data" });
+        }
+
+        function createColumn(filtercolumnid) {
+
+            var selectElement = document.createElement("select");
+            selectElement.setAttribute("class", "form-select groupColumn filter-field");
+            //  selectElement.setAttribute("multiple", "multiple");
+            selectElement.setAttribute("id", filtercolumnid);
+            selectElement.setAttribute("onchange", "Filtering()");
+            return selectElement;
+        }
+        function createSelectCondition(elementid) {
+
+            var selectElement = document.createElement("select");
+            // selectElement.setAttribute("id", "filter-type");
+            selectElement.setAttribute("class", "form-select filter-type mt-1 h-75");
+            selectElement.setAttribute("onchange", "Filtering()");
+            selectElement.setAttribute("id", elementid);
+
+            selectElement.style.marginLeft = "9px";
+            // Define options for the select element
+            var options = [
+                { value: "=", text: "=" },
+                { value: "<", text: "<" },
+                { value: "<=", text: "<=" },
+                { value: ">", text: ">" },
+                { value: ">=", text: ">=" },
+                { value: "!=", text: "!=" },
+                { value: "like", text: "like" }
+            ];
+            options.forEach(function (optionData) {
+                var option = document.createElement("option");
+                option.setAttribute("value", optionData.value);
+                option.text = optionData.text;
+                selectElement.appendChild(option);
+            });
+
+            // Return the created select element
+            return selectElement;
+        }
+        function createInputElement(eleemntId) {
+            var inputElement = document.createElement("input");
+            inputElement.setAttribute("class", "filter-value form-control");
+            inputElement.style.width = "width:130px";
+            inputElement.setAttribute("type", "text");
+            inputElement.setAttribute("placeholder", "value to filter");
+            inputElement.setAttribute("oninput", "Filtering()");
+            inputElement.setAttribute("id", eleemntId);
+            //inputElement.value = value;
+            return inputElement;
+        }
+        function ClearFirlter() {
+            table.clearFilter();
+            let filterContainer = document.getElementById('filter-element');
+            filterContainer.innerHTML = '';
+           }
+
+    </script>
+    <script>
+        $('#select1').on('change', function () {
+            var period = $(this).val();
+            setDateRange(period);
+            sendData();
+        });
+
+        function setDateRange(period) {
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            if (period == "This Week") {
+                let d = new Date();
+                let d2 = new Date();
+                const daysToSaturday = 6 - d.getDay(); // days remaining until Saturday
+                d2.setDate(d2.getDate() + daysToSaturday - 7); // set to Saturday
+                d.setDate(d2.getDate() + 5); // set to Friday
+
+                let currentdate = d;
+                let today = d2;
+                let finaldateformat = currentdate.getDate() + "-" + months[currentdate.getMonth()] + "-" + currentdate.getFullYear();
+                let finaldateformat2 = today.getDate() + "-" + months[today.getMonth()] + "-" + today.getFullYear();
+
+                //$("#from").val(finaldateformat2);
+                //$("#to").val(finaldateformat);
+            }
+
+
+            else if (period == "This Month") {
+                let d = new Date(), y = d.getFullYear(), m = d.getMonth();
+                let firstDay = new Date(y, m, 1)
+                let lastDay = new Date(y, m + 1, 0);
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+            }
+
+            else if (period == "This Year") {
+                let d = new Date(),
+                    y = d.getFullYear();
+                let firstDay = new Date(y, 0, 1);
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec-2023
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Month") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth() - 1;
+                if (m < 0) {
+                    m = 11;
+                    y--;
+                }
+                let firstDay = new Date(y, m, 1);
+                let lastDay = new Date(y, m + 1, 0); // set previous to 1-mar to 31-mar
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+
+
+            }
+
+            else if (period == "Prev Quarter") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth();
+                let q = Math.floor(m / 3) - 1;
+                if (q < 0) {
+                    q = 3 + q;
+                    y--;
+                }
+                let firstDay = new Date(y, q * 3, 1);
+                let lastDay = new Date(y, q * 3 + 3, 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+            }
+
+            else if (period == "Prev 6 Month") {
+                let d = new Date();
+                let sixMonthsAgo = new Date(d.getFullYear(), d.getMonth() - 6, 1);
+                let firstDay = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), 1);
+                let lastDay = new Date(d.getFullYear(), d.getMonth(), 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Year") {
+                let d = new Date();
+                let y = d.getFullYear() - 1; // subtract 1 from the current year to get the previous year
+                let firstDay = new Date(y, 0, 1); // set first day to 1-Jan of previous year
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec of previous year
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                //$("#from").val(finaldateformat);
+                //$("#to").val(finaldateformat2);
+            }
+        }
+    </script>
+    <script>
+        var today = new Date();
+        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var year = today.getFullYear();
+        var month = today.getMonth();
+        var firstDay = '1-' + monthNames[month] + '-' + year;
+        //document.getElementById('from').value = firstDay;
+
+        var lastDay = new Date(year, month + 1, 0).getDate();
+        var formattedLastDay = lastDay + '-' + monthNames[month] + '-' + year;
+        //document.getElementById('to').value = formattedLastDay;
+    </script>
+}

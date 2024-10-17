@@ -1,0 +1,212 @@
+﻿@model IEnumerable<GTERP.Models.Tax_ClientTaxInfo>
+@inject GTRDBContext _context ;
+
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-3 col-12">
+                @Html.ActionLink("Client Tax Info Creation", "CreateClientTaxInfo", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">Client Tax Info List</h2>
+            </div>
+        </div>
+    </div>
+
+    <form class="card p-2">
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table table-hover table-bordered tbllist  table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Tax Year</th>
+                        <th>Client Code</th>
+                        <th>Client Name</th>
+                        <th>Submission Date</th>
+                        <th>Acknowledgement Slip receive</th>
+                        <th>Acknowledgement Slip receive Date</th>
+                        <th>Tax Certificate Receive</th>
+                        <th>Tax Certificate Receive Date</th>
+                        <th>Tax Extension</th>
+                        <th>Tax Extension Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr style="background-color:rgb(249 207 181)">
+
+                            <td>
+                                @{                                    
+                                    var FisacalName = _context.Acc_FiscalYears.Where(w => w.FiscalYearId == int.Parse(e.FiscalYearId)).Select(s => s.FYName).FirstOrDefault();
+                                    @FisacalName
+                                }
+                             
+                            </td>
+                            <td>
+                                @e.ClientCode
+                            </td>
+                            <td>@e.ClientName</td>
+                            <td>
+                                @{
+                                    //var date1 = e.DtSubmission.Day + "-" + e.DtSubmission.Month + "-" + e.DtSubmission.Year;
+                                    var date1 = e.DtSubmission.ToString("dd-MMM-yy");
+                                }
+                                @date1
+                            </td>
+                            <td>@e.IsAckSlipRcv</td>
+                            <td>
+                                @{
+                                    //var date2 = e.DtAckSlipReceive.Day + "-" + e.DtAckSlipReceive.Month + "-" + e.DtAckSlipReceive.Year;
+                                    var date2 = e.DtAckSlipReceive.ToString("dd-MMM-yy");
+                                }
+                                @date2
+                            </td>
+                            <td>@e.IsTaxCerRcv</td>
+                            <td>
+                                @{
+                                    //var date3 = e.DtTaxCerRcv.Day + "-" + e.DtTaxCerRcv.Month + "-" + e.DtTaxCerRcv.Year;
+                                    var date3 = e.DtTaxCerRcv.ToString("dd-MMM-yy");
+                                }
+                                @date3
+                            </td>
+                            <td>@e.IsTexExtension</td>
+                            <td>
+                                @{
+                                    //var date4 = e.DtTexExtension.Day + "-" + e.DtTexExtension.Month + "-" + e.DtTexExtension.Year;
+                                    var date4 = e.DtTexExtension.ToString("dd-MMM-yy");
+                                }
+                                @date4
+                            </td>
+                          
+                            @*                              <td>@e.JoinDate.ToString("dd-MMM-yyyy")</td>
+                        *@
+                            <td class="text-nowrap">
+                                <span data-toggle="tooltip" title="Edit!">
+                                    @Html.ActionLink(" ", "EditClientTaxInfo", new { id = e.ClientTaxInfoId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                </span>
+                                <span data-toggle="tooltip" title="Delete!">
+                                    @Html.ActionLink(" ", "DeleteClientTaxInfo", new { id = e.ClientTaxInfoId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                </span>
+
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <br />
+    </form>
+</div>
+
+
+@section Scripts{
+
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+
+                        },
+
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "searching": true,
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+            });
+        });
+
+    </script>
+   
+
+    
+
+
+
+}
+
+
+

@@ -1,0 +1,512 @@
+﻿@model GTERP.Models.HR_ProssType_WHDay
+@{
+    ViewBag.Title = "Holiday Setup";
+}
+
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .mCustomScrollbar {
+        height: 300px;
+        overflow: hidden;
+    }
+</style>
+
+@*@using (Html.BeginForm("Index", "HolidaySetup", FormMethod.Post))
+    {*@
+<div class="card">
+    <div class="form-header btn-info">
+        <i class="fas fa-plus-square"></i> Holiday Setup
+        <div id="loading" style="display: inline;">
+            <div id="loadingGif" style="display: inline;">
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8 col-12 card">
+                <div id="monthLoadDiv">
+                    <fieldset id="fieldsetDate" class="pt-2 border-bottom">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Date
+                                </span>
+                            </div>
+                            <input type="text" id="DtMonth" class="form-control formInput" />
+                            <div class="input-group-append">
+                                <button id="loadButton" type="button" class="btn btn-primary" style="margin-top: 0;">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load List
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="table-responsive my-2">
+                    <table id="holidaySetupTable" class="table table-sm table-striped trow table-hover text-nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>WHId</th>
+                                <th class="sorting-disabled">Date</th>
+                                <th>Type</th>
+                                <th>Remarks</th>
+                                <th>DayStsB</th>
+                                <th>PcName</th>
+                                <th>ComId</th>
+                                <th>UserId</th>
+                                <th>DateAdded</th>
+                                <th>UpdateByUserId</th>
+                                <th>DateUpdated</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @*</fieldset>
+            </div>
+            </div>*@
+            <div id="formDiv" class="col-md-4 col-12">
+                <fieldset id="fieldsetForm" class="card p-3">
+                    <div id="formTable">
+                        @Html.HiddenFor(m => m.WHId)
+                        @Html.HiddenFor(x=>x.ComId)
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Punch Date
+                                    </span>
+                                </div>
+                                <input type="text" asp-for="dtPunchDate" class="form-control formInput" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Status
+                                    </span>
+                                </div>
+                                <select asp-for="DaySts" class="form-control formInput">
+                                    <option value="W">W</option>
+                                    <option value="H">H</option>
+                                    <option value="R">R</option>
+                                </select>
+                            </div>
+                        </div>
+                      @*   <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.LabelFor(m => m.Remarks)
+                                    </span>
+                                </div>
+                                <textarea asp-for="Remarks" class="form-control formInput"></textarea>
+                            </div>
+                        </div> *@
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.LabelFor(m => m.Remarks)
+                                    </span>
+                                </div>
+                                <textarea asp-for="Remarks" class="form-control formInput" maxlength="40"></textarea>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div id="buttonDiv">
+                        <p class="text-center">
+                            <button id="saveButton" type="button" class="btn btn-primary rounded-0">
+                                <i class="fa fa-floppy-o"></i> Save
+                            </button>
+                            <button id="updateButton" type="button" class="btn btn-success rounded-0">
+                                <i class="fa fa-pencil-square"></i> Update
+                            </button>
+                            <button id="resetButton" type="button" class="btn btn-warning rounded-0">
+                                <i class="fa fa-refresh"></i> Reset
+                            </button>
+
+                            <button id="deleteButton" type="button" class="btn btn-danger rounded-0">
+                                <i class="fa fa-trash-o"></i> Delete
+                            </button>
+                        </p>
+
+                    </div>
+                </fieldset>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@*}*@
+
+@section Scripts{
+
+    <script>
+
+
+        var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function dateFormat(date) {
+            let aDate = new Date(date);
+            return `${aDate.getDate()}-${month[aDate.getMonth()]}-${aDate.getFullYear()}`;
+        }
+
+        var table;
+
+        $(document).ready(function () {
+
+            $("#dtPunchDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#dtPunchDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#dtPunchDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+                }
+            });
+
+            $("#DtMonth").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtMonth").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtMonth").datepicker("option", "dateFormat", "dd-M-yy");
+                }
+            });
+
+            $("#updateButton").prop("disabled", true);
+            $("#deleteButton").prop("disabled", true);
+
+
+
+            $("#EmpId").change(function () {
+                var selectedEmp = empInfos.find(serachEmp);
+                if (selectedEmp != null) {
+                    var dFormat = new Date(selectedEmp.DtJoin);
+                    $("#DtJoin").val(`${dFormat.getDate()}-${month[dFormat.getMonth()]}-${dFormat.getFullYear()}`);
+                    $("#EmpName").val(selectedEmp.EmpName);
+                }
+            });
+            $("#loading").css("display", "none");
+
+            table = $('#holidaySetupTable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                columns: [
+                    { 'sClass': 'WHId', 'visible': false },
+                    { 'sClass': 'dtPunchDate', 'visible': true, 'type': 'custom-date' },
+                    { 'sClass': 'DaySts', 'visible': true },
+                    { "sClass": "Remarks", 'visible': true },
+                    { 'sClass': 'DayStsB', 'visible': false },
+                    { 'sClass': 'PcName', 'visible': false },
+                    { 'sClass': 'ComId', 'visible': false },
+                    { 'sClass': 'UserId', 'visible': false },
+                    { 'sClass': 'DateAdded', 'visible': false },
+                    { 'sClass': 'UpdateByUserId', 'visible': false },
+                    { 'sClass': 'DateUpdated', 'visible': false }
+                ],
+                //'columnDefs': [
+                //    {
+                //        'targets': 3,
+                //        'visible': false,
+                //        'className': 'chkAllPostFY'
+                //    }
+                //],
+                select: true,
+                select: 'single',
+                'paging': false,
+                'info': true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+                //"scrollX": true,
+                //"scrollY": "60vh",
+                "scrollCollapse": true,
+            });
+
+            // Custom sorting plug-in for date sorting
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                'custom-date-pre': function (a) {
+                    const parts = a.split('-');
+                    const monthIndex = month.indexOf(parts[1]); // Get the index of the month abbreviation
+                    return parts[2] + (monthIndex + 1).toString().padStart(2, '0') + parts[0];
+                },
+
+                'custom-date-asc': function (a, b) {
+                    return a.localeCompare(b); // Default ascending sorting
+                },
+
+                'custom-date-desc': function (a, b) {
+                    return b.localeCompare(a); // Default descending sorting
+                }
+            });
+
+
+            //$("#holidaySetupTable").DataTable({
+            //    destroy: true
+            //})
+        });
+
+        // search employee
+        function serachEmp(empInfos) {
+            var empId = $("#EmpId option:selected").val();
+            if (empId == "")
+                return;
+            return empInfos.EmpId == empId;
+        }
+
+        //save button click function
+        $("#saveButton").click(function (e) {
+            e.preventDefault();
+            let HR_ProssType_WHDay = {
+                WHId: $("#WHId").val() || 0,
+                dtPunchDate: $("#dtPunchDate").val(),
+                DaySts: $("#DaySts").val(),
+                DayStsB: $("#DaySts").val(), // from ahsan bhai direction
+                Remarks: $("#Remarks").val(),
+                ComId: "",
+                PcName: "",
+                UserId: "",
+                UpdateByUserId: "",
+                DateAdded: "",
+                DateUpdated: ""
+            };
+
+            if (HR_ProssType_WHDay.dtPunchDate !== "" && HR_ProssType_WHDay.DaySts !== "") {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateHoliDaySetup", "HR")',
+                    dataType: 'json',
+                    data: { WHProssType: HR_ProssType_WHDay },
+                    success: function (result) {
+                        if (result.Success == "1")
+                            customFile('1', result.ex);
+                        else
+                            toastr.error(result.ex);
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+
+                });
+
+                ClearTextBoxes();
+            } else {
+
+                if (aHR_ProssType_WHDay.dtPunchDate === "") {
+                    $("#dtPunchDate").css("border-color", "red");
+                }
+
+
+                $(".messageBody").html("Please Provide all the required fields");
+                $(".divforfull").css("display", "block");
+                $(".myMessage").css("display", "block");
+                setTimeout(function () {
+                    $(".myMessage").fadeOut(500);
+                    $(".divforfull").fadeOut(500);
+
+                }, 2000);
+            }
+
+
+        });
+        //save button click function end
+
+        //update salary addition function ajax
+        $("#updateButton").click(function () {
+            let HR_ProssType_WHDay = {
+                WHId: $("#WHId").val() || 0,
+                dtPunchDate: $("#dtPunchDate").val(),
+                DaySts: $("#DaySts").val(),
+                DayStsB: $("#DaySts").val(), // from ahsan bhai direction
+                Remarks: $("#Remarks").val(),
+                ComId: "",
+                PcName: "",
+                UserId: "",
+                UpdateByUserId: "",
+                DateAdded: "",
+                DateUpdated: ""
+            };
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateHoliDaySetup", "HR")',
+                dataType: 'json',
+
+                data: { WHProssType: HR_ProssType_WHDay },
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('1', result.ex);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    }
+                    else
+                        toastr.error(result.ex);
+                },
+                error: function (ex) {
+                    toastr.error("Sorry, an error occured . . . .");
+                }
+
+            });
+
+
+            ClearTextBoxes();
+        });
+
+        //clear textboxes and reset buttons
+        function ClearTextBoxes() {
+            $("#WHId").val("");
+            $("#dtPunchDate").val("");
+            $("#Remarks").val("");
+
+
+
+            $("input").css("border-color", "");
+        }
+
+        //reset button click function
+        $("#resetButton").click(function (e) {
+
+            ClearTextBoxes();
+            var date = new Date();
+            $(".datepicker").val("");
+            //himu change
+            //$("#DtMonth").val(monthNames[date.getMonth()] + '-' + date.getFullYear());
+
+        });
+
+
+
+
+        //load salary addition information of a month
+        $("#loadButton").click(function () {
+            var text = $("#DtMonth").val();
+            table.rows().remove().draw();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("LoadWHProssTypePartial", "HR")',
+                dataType: 'json',
+                data: { date: text },
+                success: function (result) {
+                    initializeGrid(result);
+                    StopSpinner("#loadButton");
+                },
+                error: function (ex) {
+                    StopSpinner("#loadButton");
+                    alert("Sorry, an error occured . . . .");
+                }
+            });
+        });
+        function initializeGrid(data) {
+            var arrays = [];
+
+            for (var i = 0; i < data.length; i++) {
+                arrays.push([
+                    data[i].WHId,
+                    dateFormat(data[i].dtPunchDate),
+                    data[i].DaySts,
+                    data[i].Remarks,
+                    data[i].DayStsB,
+                    data[i].PcName,
+                    data[i].ComId,
+                    data[i].UserId,
+                    data[i].DateAdded,
+                    data[i].UpdateByUserId,
+                    data[i].DateUpdated
+                ]);
+            }
+            table.rows.add(arrays).draw(false);
+
+        };
+        //table row double click function
+        $(document).on("click", "#holidaySetupTable tr", function () {
+
+            let rowData = table.row(".selected").data();
+
+            $("#WHId").val(rowData[0]);
+            $("#dtPunchDate").val(dateFormat(rowData[1]));
+            $("#DaySts").val(rowData[2]);
+            $("#Remarks").val(rowData[3]);
+            $("#DayStsB").val(rowData[7]);
+            $("#PcName").val(rowData[6]);
+            $("#ComId").val(`${rowData[8]}`);
+            $("#UserId").val(`${rowData[8]}`);
+            $("#DateAdded").val(`${rowData[8]}`);
+            $("#UpdateByUserId").val(`${rowData[8]}`);
+            $("#DateUpdated").val(`${rowData[8]}`);
+
+
+            $("#updateButton").prop("disabled", false);
+            $("#deleteButton").prop("disabled", false);
+            $("#saveButton").prop("disabled", true);
+
+
+        });
+
+        //update salary addition ajax function end
+
+        //delete salary addition ajax function
+        $("#deleteButton").click(function () {
+
+            if ($("#WHId").val() == "") {
+                alert("Select Some entry");
+            }
+            else {
+                var r = confirm("Are you sure to delete holiday setup?");
+                if (!r) {
+                    event.preventDefault();
+                }
+                else {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("DeleteWHProssTypeAjax", "HR")',
+                        dataType: 'json',
+                        data: { addId: $("#WHId").val() },
+                        success: function (result) {
+                            if (result.Success == "1")
+                                customFile('1', result.ex);
+                            else
+                                customFile(result.Success, result.ex);
+                        },
+                        error: function (ex) {
+                            toastr.error("Sorry, an error occured . . . .");
+                        }
+
+                    });
+
+
+                    $("#holidaySetupTable tbody").html("");
+                    $("#holidaySetupTable").load('@Url.Action("LoadWHProssTypePartial", "HR")', function () { });
+                }
+            }
+            ClearTextBoxes();
+        });
+
+        //delete salary addition ajax function end
+        $(document).on("click", ".table tbody tr", function () {
+            $(this).addClass("clicked").siblings().removeClass("clicked");
+        });
+
+    </script>
+
+}

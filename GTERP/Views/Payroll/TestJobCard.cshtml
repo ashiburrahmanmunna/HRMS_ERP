@@ -1,0 +1,681 @@
+﻿@model IEnumerable<GTERP.ViewModels.EmpWiseSalaryLedger>
+
+@{
+    //getting Approval List values
+    List<HR_Emp_Salary> ApproveEmpList = ViewBag.EmpApprovetype;
+    var ApproveEmpname = ViewBag.empType;
+    List<HR_Emp_Salary> AllApproveEmpList = ViewBag.AllEmpApprovetype;
+    var gs = ViewBag.GS;
+}
+
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group mb-2">
+                    <input type="text" id="empID" class="form-control" placeholder="Select Employee then Enter" />
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">
+                                Duration
+                            </span>
+                            <select asp-items="@ViewBag.period" name="period" id="select1" class="dropdown" onchange="sendData()">
+                                @*<option value="" selected>--Please Select--</option>*@
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    From Date:
+                                </span>
+                            </div>
+                            <input type="text" value="" id="from" name="from" class="form-control" autocomplete="off" onblur="sendData()" />
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    To Date :
+                                </span>
+                            </div>
+                            <input type="text" value="" id="to" name="to" class="form-control" autocomplete="off" onblur="sendData()" />
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-12">
+                        <input type="button" id="btnLaod" onclick="sendData()" value="Load" class="btn btn-warning btn-block rounded-0 mb-1" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <form class="card p-2">
+        <div class="row" style="margin: 2px">
+            <div class="col-6">
+            </div>
+            <div class="col-6">
+                <div style="display: flex; align-items: center;" class="float-right">
+                    <button type="button" class="btn btn-outline-primary" onclick="downloadPDF()" style="margin-right: 2px;">PDF</button>
+                    <button id="download-btns" onclick="downloadExcel()" class="btn btn-outline-success">Export</button>
+                    <button id="download-btn" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                    <select id="page-size" style="width: 80px;">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                        <option value="5000">5000</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-12">
+            <div id="jsGrid" style="height: 300px"></div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#from").datepicker({
+                dateFormat: 'dd-MMM-yyyy'
+            });
+            $("#to").datepicker({
+                dateFormat: 'dd-MMM-yyyy'
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        var today = new Date();
+        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var year = today.getFullYear();
+        var month = today.getMonth();
+        var firstDay = '1-' + monthNames[month] + '-' + year;
+        console.log("firstDay:::", firstDay);
+        document.getElementById('from').value = firstDay;
+
+        //var lastDay = new Date(year, month + 1, 0).getDate();
+        var lastDay = '31-' + monthNames[month] + '-' + year;
+        console.log("lastDay:::", lastDay);
+        var formattedLastDay = lastDay + '-' + monthNames[month] + '-' + year;
+        //document.getElementById('to').value = formattedLastDay;
+        document.getElementById('to').value = lastDay;
+    </script>
+
+    <script>
+        var emText;
+        function data(empId) {
+            emText = Number(empId);
+        }
+        var pageSize = $("#page-size").val();
+        var prosstype = $("#prossType").val();
+        var url;
+        var search;
+        function initJsGrid() {
+            //var jsGridItemsDB = {
+            //    loadData: function (filter) {
+            //        pageSize: pageSize,
+            //            url = '@Url.Action("GETEmpWiseSalaryLedgerList", "Payroll")' + '?pageIndex=' + filter.pageIndex + '&pageSize=' + filter.pageSize;
+
+
+            //        url += '&prossType=' + $("#prossType").val();
+            //        url += '&searchquery=' + JSON.stringify(filter);
+            //        search = JSON.stringify(filter);
+            //        console.log(filter);
+            //        var d = $.Deferred();
+
+            var jsGridItemsDB = {
+                loadData: function (filter) {
+                    pageSize: pageSize,
+                        url = '@Url.Action("GETEmpWiseSalaryLedgerList", "Payroll")' + '?pageIndex=' + filter.pageIndex + '&pageSize=' + filter.pageSize;
+                    //if ($("#search-text").val() != "") {
+                    //    url += '&searchQuery=' + $("#search-text").val();
+                    //}
+                    if ($("#empID").val() != "") {
+                        url += '&EmpId=' + emText;
+                    }
+                    if ($("#from").val() != "" && $("#to").val() != "") {
+                        url += '&dtFrom=' + $("#from").val();
+                        url += '&dtTo=' + $("#to").val();
+                    }
+                    url += '&searchquery=' + JSON.stringify(filter);
+                    search = JSON.stringify(filter);
+                    console.log(filter);
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        //data: { searchquery: JSON.stringify(filter) },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    })
+                        .done(function (result) {
+
+
+                            console.log(result);
+                            d.resolve(result);
+                            //console.log(result.ProductList);
+
+                        });
+
+
+                    return d.promise().then(function (q) {
+
+                        //console.log(q);
+                        return {
+
+                            data: q.EmployeeList,
+                            itemsCount: parseInt(q.PageInfo.TotalRecordCount)
+                        }
+                    });
+                }
+
+            }
+
+
+
+            var child = [];
+            //alert(globalPageSize);
+            var serial = 0;
+
+            $("#jsGrid").jsGrid({
+
+                width: "100%",
+                //height: 400,
+                filtering: true,
+                //editing: true,
+                autoload: true,
+                pageSize: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                paging: true,
+                controller: jsGridItemsDB,
+                pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                pagePrevText: "<",
+                pageNextText: ">",
+                // selecting: true,
+
+                fields: [
+
+                    //{ name: "EmpId", type: "text", width: 150, title: "Emp Id" },
+                    { name: "EmpCode", type: "text", width: 150, title: "Emp Code" },
+                    { name: "DesigName", type: "text", width: 150, title: "Designation" },
+                    { name: "EmpType", type: "text", width: 150, title: "Emp Type" },
+                    { name: "ProssType", type: "text", width: 150, title: "Pross Type" },
+                    { name: "EmpName", type: "text", width: 150, title: "Emp Name" },
+                    { name: "DeptName", type: "text", width: 150, title: "Department" },
+                    { name: "SectName", type: "text", width: 150, title: "Section" },
+                    { name: "GS", type: "text", width: 150, title: "Gross Salary" },
+                    { name: "BS", type: "text", width: 150, title: "Basic Salary" },
+                    { name: "HR", type: "text", width: 150, title: "House Rent" },
+                    { name: "MA", type: "text", width: 150, title: "Medical ALlowance" },
+                    { name: "FA", type: "text", width: 150, title: "Food Allowance" },
+                    { name: "Trn", type: "text", width: 150, title: "Transport Allowance" },
+                    { name: "AttBonus", type: "text", width: 150, title: "AttBonus" },
+                    { name: "OtherAllow", type: "text", width: 150, title: "Other ALlowance" },
+                    { name: "Arrear", type: "text", width: 150, title: "Arrear" },
+                    { name: "OTHrTtl", type: "text", width: 150, title: "Total OT Hr" },
+                    { name: "ROT", type: "text", width: 150, title: "Regular OT Hr" },
+                    { name: "ExOTHr", type: "text", width: 150, title: "Extra OT Hr" },
+                    { name: "OTHrTtl", type: "text", width: 150, title: "Total OT Hr" },
+                    { name: "ROT", type: "text", width: 150, title: "Regular OT Hr" },
+                    { name: "ExOTHr", type: "text", width: 150, title: "Extra OT Hr" },
+                    { name: "OT", type: "text", width: 150, title: "OT Amt" },
+                    { name: "ROTAmount", type: "text", width: 150, title: "ROT Amt" },
+                    { name: "ExOTAmount", type: "text", width: 150, title: "EOT Amt" },
+                    { name: "OthersAddition", type: "text", width: 150, title: "Others Addition" },
+                    { name: "TotalPayable", type: "text", width: 150, title: "Total Payable" },
+                    { name: "TotalPayableB", type: "text", width: 150, title: "Total Payable Buyer" },
+                    { name: "PF", type: "text", width: 150, title: "PF" },
+                    { name: "AB", type: "text", width: 150, title: "AB" },
+                    { name: "ADV", type: "text", width: 150, title: "ADV" },
+                    { name: "Stamp", type: "text", width: 150, title: "Stamp" },
+                    { name: "Loan", type: "text", width: 150, title: "Loan" },
+                    { name: "IncomeTax", type: "text", width: 150, title: "IncomeTax" },
+                    { name: "OthersDeduction", type: "text", width: 150, title: "Others Deduction" },
+                    { name: "TotalDeduct", type: "text", width: 150, title: "Total Deduct" },
+                    { name: "TotalDeductB", type: "text", width: 150, title: "Total Deduct Buyer" },
+                    { name: "NetSalary", type: "text", width: 150, title: "Net Salary" },
+                    { name: "NetSalaryB", type: "text", width: 150, title: "Net Salary Buyer" },
+                    { name: "NetSalaryPayable", type: "text", width: 150, title: "Net Salary Payable Buyer" },
+                    { name: "NetSalaryBuyer", type: "text", width: 150, title: "Total Payable" },
+                    { name: "OthersAddition", type: "text", width: 150, title: "Others Addition" },
+                    { name: "TotalPayable", type: "text", width: 150, title: "Total Payable" },
+                    { name: "TotalPayableB", type: "text", width: 150, title: "Total Payable Buyer" },
+                    { name: "PF", type: "text", width: 150, title: "PF" },
+                    { name: "AB", type: "text", width: 150, title: "AB" },
+                    { name: "ADV", type: "text", width: 150, title: "ADV" },
+                    { name: "Stamp", type: "text", width: 150, title: "Stamp" },
+                    { name: "Loan", type: "text", width: 150, title: "Loan" },
+                    { name: "IncomeTax", type: "text", width: 150, title: "IncomeTax" },
+                    { name: "OthersDeduction", type: "text", width: 150, title: "Others Deduction" },
+                    { name: "TotalDeduct", type: "text", width: 150, title: "Total Deduct" },
+                    { name: "TotalDeductB", type: "text", width: 150, title: "Total Deduct Buyer" },
+                    { name: "NetSalary", type: "text", width: 150, title: "Net Salary" },
+                    { name: "NetSalaryB", type: "text", width: 150, title: "Net Salary Buyer" },
+                    { name: "NetSalaryPayable", type: "text", width: 150, title: "Net Salary Payable Buyer" },
+                    { name: "NetSalaryBuyer", type: "text", width: 150, title: "Total Payable" },
+
+
+
+
+
+                ],
+
+
+            });
+        }
+
+        $("#page-size").on("change", function () {
+            var newPageSize = $(this).val();
+            $("#jsGrid").jsGrid("option", "pageSize", newPageSize);
+            $("#jsGrid").jsGrid("loadData");
+        });
+
+        $("#prossType").on("change", function () {
+            var newprosstype = $(this).val();
+            $("#jsGrid").jsGrid("option", "prossType", newprosstype);
+            $("#jsGrid").jsGrid("loadData");
+        });
+
+        function filterItemTemplate() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+
+        function sendData() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+
+        function handleClick() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+
+        initJsGrid();
+
+        function downloadExcel() {
+            var url = '@Url.Action("GetEmployeesSalaryLedgerAll", "Payroll")' + '?';
+            if ($("#empID").val() != "") {
+                url += '&EmpId=' + emText;
+            }
+            if ($("#from").val() != "" && $("#to").val() != "") {
+                url += '&dtFrom=' + $("#from").val();
+                url += '&dtTo=' + $("#to").val();
+            }
+            url += '&searchquery=' + search;
+            $.ajax({
+                url: url,
+                method: 'GET',
+                async: false,
+                success: function (response) {
+                    console.log(response);
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+
+                        // Convert the data to an Excel file using a library like SheetJS
+                        const workbook = XLSX.utils.book_new();
+                        const sheet = XLSX.utils.json_to_sheet(data);
+                        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+                        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const url = window.URL.createObjectURL(blob);
+
+                        // Create a temporary link to download the file
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'data.xlsx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+
+        function downloadPDF() {
+            var url = '@Url.Action("GetEmployeesSalaryLedgerAll", "Payroll")' + '?';
+            if ($("#empID").val() != "") {
+                url += '&EmpId=' + emText;
+            }
+            if ($("#from").val() != "" && $("#to").val() != "") {
+                url += '&dtFrom=' + $("#from").val();
+                url += '&dtTo=' + $("#to").val();
+            }
+            url += '&searchquery=' + search;
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+
+                        // Define the PDF document structure
+                        var docDefinition = {
+                            content: [
+                                { text: 'Salary Data', style: 'header' },
+                                { text: '\n' },
+                                {
+                                    table: {
+                                        headerRows: 1,
+                                        widths: ['*', '*', '*', '*', '*'/*, '*', '*', '*', '*', '*', '*', '*'*/],
+                                        body: [
+                                            ['Employee Code', 'Employee Name', 'Join Date', 'Designation', 'Net Salary Payable'/*, 'Section', 'Department', 'Mobile', 'Punch Date', 'Punch Time', 'Latitude', 'Longitude'*/],
+                                            ...data.map(employee => [
+                                                employee.EmpCode,
+                                                employee.EmpName,
+                                                formatDate(employee.DtJoin),
+                                                employee.DesigName,
+                                                employee.NetSalaryPayable
+                                                //employee.SectName,
+                                                //employee.DeptName,
+                                                //employee.Mobile,
+                                                //formatDate(employee.DtPunchDate),
+                                                //formatTime(employee.DtPunchTime),
+                                                //employee.Latitude,
+                                                //employee.Longitude
+                                            ])
+                                        ]
+                                    }
+                                }
+                            ],
+                            styles: {
+                                header: {
+                                    fontSize: 18,
+                                    bold: true,
+                                    alignment: 'center',
+                                    margin: [0, 0, 0, 10]
+                                }
+                            }
+                        };
+
+                        // Format date in desired format
+                        function formatDate(date) {
+                            return moment(date).format('DD-MMM-YYYY');
+                        }
+
+                        // Format time in desired format
+                        function formatTime(time) {
+                            return moment(time).format('hh:mm:ss A');
+                        }
+
+                        // Generate the PDF
+                        var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+                        pdfDocGenerator.download('Salary_data.pdf');
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+
+
+    </script>
+
+    <script>
+        $(function () {
+            $("#empID").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployees", "Payroll")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#empID").val(ui.item.label);
+                    data(ui.item.value);
+                    return false;
+                }
+            });
+
+            $("#empID").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    data(0);
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+    </script>
+    <script>
+        //$(function () {
+        //    var currentDate = new Date();
+        //    var formattedDate = formatDate(currentDate);
+        //    $("#from").val(formattedDate);
+        //    $("#to").val(formattedDate);
+        //});
+
+        function formatDate(date) {
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+
+            var formattedDate = day + "-" + months[monthIndex] + "-" + year;
+
+            return formattedDate;
+        }
+    </script>
+    <script>
+        $('#select1').on('change', function () {
+            var period = $(this).val();
+            setDateRange(period);
+        });
+
+        function setDateRange(period) {
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            if (period == "This Week") {
+                let d = new Date();
+                let d2 = new Date();
+                const daysToSaturday = 6 - d.getDay(); // days remaining until Saturday
+                d2.setDate(d2.getDate() + daysToSaturday - 7); // set to Saturday
+                d.setDate(d2.getDate() + 5); // set to Friday
+
+                let currentdate = d;
+                let today = d2;
+                let finaldateformat = currentdate.getDate() + "-" + months[currentdate.getMonth()] + "-" + currentdate.getFullYear();
+                let finaldateformat2 = today.getDate() + "-" + months[today.getMonth()] + "-" + today.getFullYear();
+
+                $("#from").val(finaldateformat2);
+                $("#to").val(finaldateformat);
+            }
+
+
+            else if (period == "This Month") {
+                let d = new Date(), y = d.getFullYear(), m = d.getMonth();
+                let firstDay = new Date(y, m, 1)
+                let lastDay = new Date(y, m + 1, 0);
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+            }
+
+            else if (period == "This Year") {
+                let d = new Date(),
+                    y = d.getFullYear();
+                let firstDay = new Date(y, 0, 1);
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec-2023
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Month") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth() - 1;
+                if (m < 0) {
+                    m = 11;
+                    y--;
+                }
+                let firstDay = new Date(y, m, 1);
+                let lastDay = new Date(y, m + 1, 0); // set previous to 1-mar to 31-mar
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+
+            }
+
+            else if (period == "Prev Quarter") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth();
+                let q = Math.floor(m / 3) - 1;
+                if (q < 0) {
+                    q = 3 + q;
+                    y--;
+                }
+                let firstDay = new Date(y, q * 3, 1);
+                let lastDay = new Date(y, q * 3 + 3, 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+            }
+
+            else if (period == "Prev 6 Month") {
+                let d = new Date();
+                let sixMonthsAgo = new Date(d.getFullYear(), d.getMonth() - 6, 1);
+                let firstDay = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), 1);
+                let lastDay = new Date(d.getFullYear(), d.getMonth(), 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Year") {
+                let d = new Date();
+                let y = d.getFullYear() - 1; // subtract 1 from the current year to get the previous year
+                let firstDay = new Date(y, 0, 1); // set first day to 1-Jan of previous year
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec of previous year
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+
+            }
+        }
+    </script>
+    <script>
+        var downloadBtn = document.getElementById("download-btn");
+        downloadBtn.addEventListener("click", function () {
+            // Get table header
+            var tableHeader = [];
+            $('#jsGrid th').each(function (colIndex, col) {
+                tableHeader.push(col.textContent);
+            });
+
+            // Get table data
+            var tableData = [];
+            $('#jsGrid .jsgrid-grid-body tr').each(function (rowIndex, row) {
+                var rowData = [];
+                $(row).find('.jsgrid-cell').each(function (colIndex, col) {
+                    rowData.push(col.textContent);
+                });
+                tableData.push(rowData);
+            });
+
+            // Add header to table data
+            tableData.unshift(tableHeader);
+
+            // Create workbook and sheet
+            var workbook = XLSX.utils.book_new();
+            var worksheet = XLSX.utils.aoa_to_sheet(tableData);
+
+            // Add sheet to workbook and download file
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            XLSX.writeFile(workbook, "data.xlsx");
+        });
+
+    </script>
+}

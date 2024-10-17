@@ -1,0 +1,1129 @@
+﻿@model GTERP.Models.PurchaseOrderMain
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="container-fluid">
+        <div class="card">
+            <div class=" card-header bg-primary text-white">
+                Purchase Order @ViewBag.Title
+            </div>
+            <div class="card-body">
+                <input type="hidden" id="userid" name="userid" value="" />
+                <input type="hidden" name="" id="mode" value="@ViewBag.Title" />
+                @if (Model != null)
+                {
+                    <input type="hidden" id="PurOrderMainId" name="PurOrderMainId" value="@Model.PurOrderMainId" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="ComId" name="ComId" value="@Model.ComId" />
+                    <input type="hidden" id="DateAdded" name="DateAdded" value="@Model.DateAdded" />
+                    <input type="hidden" id="Status" name="Status" value="@Model.Status" />
+
+                }
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <form>
+                            <div class="p-2">
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="PONo" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="PONo" class="form-control" />
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="PODate" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="PODate" class="form-control" />
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="PORef" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="PORef" class="form-control" />
+
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Sub Unit</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("PrdUnitId", ViewBag.PrdUnitId as List<SelectListItem>, "--Select Unit--", new { id = "PrdUnitId", @class = "form-control form-control-sm" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Purchase Requisition</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("PurReqId", ViewBag.PurReqId as List<SelectListItem>, "--Select Requisition--", new { id = "PurReqId", @class = "form-control form-control-sm" })
+                                            <div class="input-group-append">
+                                                <span>
+                                                    &emsp;
+                                                </span>
+                                                <input type="button" onclick="PurchaseRequisitionInfo()" name="name" value="Add" class="btn btn-success" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Supplier</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("SupplierId", ViewBag.SupplierId as List<SelectListItem>, "--Select Supplier--", new { id = "SupplierId", @class = "form-control form-control-sm" })
+                                            @*<select class="form-control" id="SupplierId"></select>*@
+                                            <div type="button" class="btn btn-primary" data-toggle="modal" id="btnModal" data-target="#exampleModal"><i class="fa fa-plus fa-lg"></i></div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Payment Type</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("PaymentTypeId", ViewBag.PaymentTypeId as List<SelectListItem>, "--Select Payment Type--", new { id = "PaymentTypeId", @class = "form-control form-control-sm" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Currency</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("CurrencyId", ViewBag.CurrencyId as List<SelectListItem>, "--Select Currency--", new { id = "CurrencyId", @class = "form-control form-control-sm" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+
+                                                    <label asp-for="ConvertionRate" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="ConvertionRate" class="form-control" />
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="TotalPOValue" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="TotalPOValue" class="form-control disabled" />
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="Deduction" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="Deduction" class="form-control" />
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="NetPOValue" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="NetPOValue" class="form-control" />
+
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Department</label>
+                                                </span>
+                                            </div>
+                                            @*<input asp-for="DeptId" class="form-control disabled" />*@
+                                            @Html.DropDownList("DeptId", ViewBag.DeptId as List<SelectListItem>, "--Select Department--", new { id = "DeptId", @class = "form-control form-control-sm" })
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="LastDateOfDelivery" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="LastDateOfDelivery" class="form-control" />
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="ExpectedRecivedDate" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="ExpectedRecivedDate" class="form-control" />
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="TermsAndCondition" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="TermsAndCondition" class="form-control" />
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Section</label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("SectId", ViewBag.SectId as List<SelectListItem>, "--Select Section--", new { id = "SectId", @class = "form-control form-control-sm" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="Remarks" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="Remarks" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="divvouchersub" class="row">
+                    <div class="col-md-12 order-md-1 mb-2">
+                        <div class="card p-4">
+                            <br />
+                            @*<div class="table-responsive text-nowrap">
+                                <table id="tblpurchaseorder" class="tbl display responsive nowrap table-striped table-hover text-center">*@
+
+                            <div class="table-responsive text-nowrap">
+                                <table id="tblpurchaseorder" class="table-sm tbl display table-striped table-hover text-center" style="width:100%">
+
+
+                                    <thead>
+                                        <tr>
+                                            <th style="width:15%;">Pur Order Main Id</th>
+                                            <th style="width:15%;">Pur Order Sub Id</th>
+                                            <th style="width:15%;">PurReqSub Id</th>
+                                            <th style="width:15%;">Product Id</th>
+                                            <th style="width:15%;">Unit Id</th>
+                                            <th style="width:15%;">SL No</th>
+                                            <th style="width:15%;">Item Name</th>
+                                            <th style="width:15%;">UOM</th>
+                                            <th style="width:10%;">Req Qty</th>
+                                            <th style="width:10%;">Remain Req Qty</th>
+                                            <th style="width:15%;">Purchase Qty</th>
+                                            <th style="width:15%;">Rate</th>
+                                            <th style="width:15%;">Value</th>
+                                            <th style="width:15%;">Remarks</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model.PurchaseOrderSub)
+                                            {
+                                                <tr class="txtPurchaseOrder">
+                                                    <td>
+                                                        @item.PurOrderMainId
+                                                    </td>
+                                                    <td>
+                                                        @item.PurOrderSubId
+                                                    </td>
+                                                    <td>
+                                                        @item.PurReqSubId
+                                                    </td>
+                                                    <td>
+                                                        @item.ProductId
+                                                    </td>
+                                                    <td>
+                                                        @item.vProduct.UnitId
+                                                    </td>
+                                                    <td>
+                                                        @item.SLNo
+                                                    </td>
+                                                    <td>
+                                                        @item.vProduct.ProductName
+                                                    </td>
+                                                    <td>
+                                                        @item.vProduct.vProductUnit.UnitName
+                                                    </td>
+                                                    <td>
+                                                        @item.RequisitionQty
+                                                    </td>
+                                                    <td>
+                                                        @item.RemainingReqQty
+                                                    </td>
+                                                    <td>
+                                                        @item.PurchaseQty
+                                                    </td>
+                                                    <td>
+                                                        @item.Rate
+                                                    </td>
+                                                    <td>
+                                                        @item.TotalValue
+                                                    </td>
+                                                    <td>
+                                                        @item.Remarks
+                                                    </td>
+                                                    <td>
+                                                        <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5"></td>
+                                            <td class="text-right" colspan="2">
+                                            </td>
+                                            <td colspan="2">
+                                            </td>
+
+                                            <td colspan="1">
+                                                <h4>
+                                                    Total Qty & Value :
+                                                </h4>
+                                            </td>
+                                            <td colspan="1">
+                                                <h4 class="ttlpurchaseqty">0.00</h4>
+                                            </td>
+                                            <td colspan="1">
+                                                <h4 class="ttlrate">0.00</h4>
+                                            </td>
+                                            <td colspan="1">
+                                                <h4 class="ttlvalue">0.00</h4>
+                                            </td>
+                                            <td colspan="1"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <br />
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <div class="text-center">
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Requisition_Save()">Save</button>
+                                    </span>
+                                    @*<span>
+                                            <button type="button" class="btn btn-primary" onclick="clearData()">Clear</button>
+                                        </span>*@
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                            else if (ViewBag.Title == "Edit")
+                            {
+                                <div class="text-center">
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Requisition_Save()">Update</button>
+                                    </span>
+                                    @*<span>
+                                            <button type="button" class="btn btn-primary" onclick="clearData()">Clear</button>
+                                        </span>*@
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                            else if (ViewBag.Title == "Delete")
+                            {
+                                <div class="text-center">
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Requisition_delete()">Delete</button>
+                                    </span>
+                                    @*<span>
+                                            <button type="button" class="btn btn-primary" onclick="clearData()">Clear</button>
+                                        </span>*@
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div id="SubSectionList" class="row">
+                        <div class="col order-md-1">
+                            <div class="row">
+                                <br>
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Supplier Name
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="MSupplierName" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                District
+                                            </span>
+                                        </div>
+                                        <select class="form-control" id="MDistrictId" asp-items="ViewBag.DistrictId">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Police Station
+                                            </span>
+                                        </div>
+                                        <select class="form-control" id="MPStationId" asp-items="ViewBag.PStationId">
+                                            <option value="">--Select From List--</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Primary Address
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="MPrimaryAddress" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Secoundary Address
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="MSecoundaryAddress" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Phone
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="MPhoneNo" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Opening Balance
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" id="MOpeningBalance" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal">Close</button>
+                    <button type="button" id="MbtnSave" onclick="Supplier_save()" class="btn btn-success rounded-0">Save Supplier</button>
+                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+@section Scripts
+    {
+    <script>
+
+        $('#PrdUnitId').select2();
+        $('#PurReqId').select2();
+        $('#SupplierId').select2();
+        $('#PaymentTypeId').select2();
+        $('#CurrencyId').select2();
+        $('#SectId').select2();
+        $('#DeptId').select2();
+        $('#MDistrictId').select2();
+
+
+        $('#MDistrictId').change(function () {
+
+            if ($('#MDistrictId').val() > 0) {
+                //alert('enter');
+                CascadePoliceStation();
+            }
+            else {
+                alert('Please Select District Information First.')
+            }
+        });
+
+        function CascadePoliceStation() {
+
+                $("#MPStationId").empty();
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("getPoliceStation", "Customers")',
+                        dataType: 'json',
+                        async: false,
+                        data: { id: $("#MDistrictId").val() },
+                        success: function (data) {
+                            var s ='<option value="-1">Please Select Police Station</option>';
+                            //$.each(data, function (i, data) {
+                            //    $("#Product").append('<option value="'+ data.Value + '">'
+                            //        + data.Text + '</option>');
+                            //});
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#MPStationId").html(s);
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+
+                    });
+                return false;
+
+            };
+
+        function Supplier_save() {
+
+            if ($("#MSupplierName").val().length < 4) {
+                toastr.info("Name at least 4 charecter long");
+                return false;
+            }
+            if ($("#MPrimaryAddress").val().length < 4) {
+                toastr.info("Primary Address at least 4 charecter long");
+                return false;
+            }
+
+
+            var Supplier = {
+                "userid": "", "useridUpdate": "", "DateAdded": "", "DateUpdated": "", "comid": "0",
+                "SupplierId": "", "SupplierCode": "", "SupplierName": "", "EmailId": "test@email.com", "CountryId": "18",
+                "PrimaryAddress": "", "SecoundaryAddress": "", "PostalCode": "", "City": "", "PhoneNo": "+088", "IsInActive":false,
+                "OpBalance": "0","PStationId": ""
+            };
+
+            Supplier.useridUpdate = "";
+            Supplier.DateAdded = "";
+            Supplier.DateUpdated = "";
+
+            Supplier.SupplierId = 0;
+            Supplier.SupplierName = $("#MSupplierName").val();
+            Supplier.PrimaryAddress = $("#MPrimaryAddress").val();
+            Supplier.SecoundaryAddress = $("#MSecoundaryAddress").val();
+            Supplier.PStationId = $("#MPStationId").val();
+            Supplier.PhoneNo = $("#MPhoneNo").val()
+            Supplier.OpBalance = $("#MOpeningBalance").val()
+
+
+
+            $.ajax({
+                url: '@Url.Action("CreateSupplier", "PurchaseOrder")',
+                type: 'POST',
+                dataType:'JSON',
+                data: { supplier: Supplier},
+                success: function (result) {
+                    if (result.Success == "1") {
+                        $("#SupplierId").append(`<option value="${result.data.SupplierId}">${result.data.SupplierName}</option>`);
+                        customFile("1", result.ex);
+                        $("#MSupplierName").val("");
+                        $("#MPrimaryAddress").val("");
+                        $("#MSecoundaryAddress").val("");
+                        $("#MPStationId").val("");
+                        $("#MPhoneNo").val("")
+                        $("#MOpeningBalance").val("")
+                        $('#MDistrictId').val("");
+                    }
+                     else {
+                        customFile(result.Success, result.ex);
+                     }
+                },
+                error: function (ex) {
+                    toastr.error("Something wrong")
+                }
+            });
+        }
+
+
+        //clearData()
+        //$('#tblpurchaseorder').DataTable();
+        //$('#PODate').val(CurrentDate());
+        //$('#LastDateOfDelivery').val(CurrentDate());
+        //$('#ExpectedRecivedDate').val(CurrentDate());
+
+        $(document).ready(function () {
+            var mode = $("#mode").val();
+            if (mode == "Edit" || mode == "Delete") {
+                $("#divvouchersub").show();
+            }
+            else {
+                $("#divvouchersub").hide();
+
+            }
+
+            var totalvalue = 0;
+            var diduction = 0;
+
+            totalvalue = $('#TotalPOValue').val();
+            diduction = $('#Deduction').val();
+            var netvalue = totalvalue - diduction;
+            $('#NetPOValue').val(netvalue);
+        });
+
+        $('#Deduction').keyup(function () {
+            var $totalpovalue = $('#TotalPOValue').val();
+            var $diduction = $('#Deduction').val();
+            var $netpovalue = 0;
+            $netpovalue = $totalpovalue - $diduction
+            $('#NetPOValue').val($netpovalue)
+        });
+
+        $('#tblpurchaseorder').keyup(function () {
+            multInputsOrder()
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        //$("#PODate,#LastDateOfDelivery,#ExpectedRecivedDate").datepicker({
+        //    onSelect: function (date) {
+        //        // Your CSS changes, just in case you still need them
+        //        $('a.ui-state-default').removeClass('ui-state-highlight');
+        //        $(this).addClass('ui-state-highlight');
+        //        var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+        //        //setter
+        //        $("#ReqDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+        //    },
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear:true
+        //});
+
+        var tblpurrequisition;
+
+        tblpurrequisition = $('#tblpurchaseorder').DataTable({
+            "aoColumns": [
+                { "name": "PurOrderMainId", "sClass": "PurOrderMainId", "visible": false },
+                { "name": "PurOrderSubId", "sClass": "PurOrderSubId", "visible": false },
+                { "name": "PurReqSubId", "sClass": "PurReqSubId", "visible": false },
+                { "name": "productid", "sClass": "productid", "visible": false },
+                { "name": "unitid", "sClass": "unitid", "visible": false },
+                { "name": "slno", "sClass": "slno", "visible": true },
+                { "name": "productname", "sClass": "productname", "visible": true },
+                { "name": "unitname", "sClass": "unitname", "visible": true },
+                { "name": "RequisitionQty", "sClass": "RequisitionQty", "visible": true },
+                { "name": "RemainingReqQty", "sClass": "RemainingReqQty", "visible": true },
+                { "name": "purchaseqty", "sClass": "purchaseqty", "visible": true },
+                { "name": "rate", "sClass": "rate", "visible": true },
+                { "name": "value", "sClass": "value", "visible": true },
+                { "name": "remark", "sClass": "remark", "visible": true },
+                { "name": "action", "sClass": "action", "visible": true }
+            ],
+            columnDefs: [
+                {
+                    "render": function (data, type, row) {
+                        return '<input class ="form-control form-control-sm" id="RemainingReqQty" name="RemainingReqQty" type="text" data-val="true" value = ' + data + ' disabled>';
+                    },
+                    "targets": 9
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<input class="form-control form-control-sm" id="PurchaseQty" name="PurchaseQty" type="text" data-val="true" value=' + data + '>';
+                    },
+                    "targets":10
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<input class="form-control form-control-sm" id="Rate" name="Rate" type="text" data-val="true" value = ' + data + '>';
+                    },
+                    "targets":11
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<input class ="form-control form-control-sm" id="Value" name="Value" type="text" data-val="true" value = ' + data + ' disabled>';
+                    },
+                    "targets":12
+                },
+            ],
+            rowCallback: function (row) {
+                $(row).addClass('txtPurchaseOrder');
+            },
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+        });
+
+
+        $(document).ready(function () {
+            var requiredqty = $('.requiredqty').val();
+            var PurchaseQty = parseInt($('#PurchaseQty').val());
+            $('#CurrencyId').change(function () {
+                var CurrencyId = $('#CurrencyId option:selected').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCurrencyRate", "PurchaseOrder")',
+                    dataType: 'json',
+                    async: false,
+                    data: { id: CurrencyId },
+                    success: function (data) {
+                        // console.log(data);
+                        $('#ConvertionRate').val(data[0].Rate);
+                        $('#UnitId option:selected').text(data[0].UnitName);
+                    }
+                })
+            });
+        });
+
+
+        $('#PurReqId').change(function () {
+            GetDeptId()
+            //PurReqIdCheckExistOrNot()
+            //PurchaseRequisitionInfo()
+        })
+
+        function PurReqIdCheckExistOrNot() {
+            var PurReqId = 0;
+            PurReqId = $('#PurReqId').val();
+
+
+
+            @*var y = "@ViewBag.Title";
+            if (y == "Create") {
+                window.location.href = "Create?PurReqId=" + PurReqId;
+
+            }
+            else {
+                window.location.href = "?PurReqId=" + MasterLCId;
+            }*@
+
+        }
+
+        function PurchaseRequisitionInfo() {
+            $("#divvouchersub").show();
+            var reqid = $('#PurReqId').val();
+
+            var targetTable = $('#tblpurchaseorder').DataTable();
+            var rowCount = targetTable.column(0).data().length;
+            //var tblpurchaseorder = $('#tblpurchaseorder').DataTable();
+            //tblpurchaseorder.clear().draw();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetPurchaseRequisitionDataById","PurchaseOrder")',
+                dataType: 'json',
+                async: false,
+                data: { PurReqId: reqid },
+                success: function (data) {
+                   console.log(data);
+                    if (data != 0) {
+                        var x = 1;
+                        for (var i = 0; i < data.length; i++) {
+                            $('#tblpurchaseorder').dataTable().fnAddData([
+                                0,
+                                0,
+                                data[i].PurReqSubId,
+                                data[i].ProductId,
+                                0,
+                                //data[i].SLNo,
+                                i + 1,
+                                data[i].ProductName,
+                                data[i].UnitName,
+                                data[i].PurReqQty,
+                                data[i].RemainingReqQty,
+                                data[i].RemainingReqQty,
+                                0,
+                                0,
+                                data[i].Remarks,
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+                                0,
+                                0
+                            ]);
+                        };
+                    } else {
+                        alert('No Record Pending')
+                    }
+                },
+                error: function (ex) {
+
+                }
+            });
+        };
+
+
+        function GetDeptId() {
+            var reqid = $('#PurReqId option:selected').val();
+                $.ajax({
+                    type: 'POST',
+                url: '@Url.Action("GetDeptIdByPurReqId","PurchaseOrder")',
+                dataType: 'json',
+                async: false,
+                    data: { id: reqid },
+                    success: function (data) {
+
+                        console.log(data.DeptName);
+                        $('#DeptId').val(data.DeptName);
+                    }
+                })
+        }
+        multInputsOrder();
+        function multInputsOrder() {
+            $('.ttlpurchaseqty').text(0);
+            $('.ttlrate').text(0);
+            $('.ttlvalue').text(0);
+
+            var totalpurchaseqty = 0;
+            var totalrate = 0;
+            var totalvalue = 0;
+
+            var oTable = $('#tblpurchaseorder').dataTable().fnGetData();
+            var rows = $('#tblpurchaseorder').dataTable().fnGetNodes();
+            //console.log(oTable);
+            //console.log(rows);
+
+
+            for (var i = 0; i < rows.length; i++) {
+                //var $qty1 = ($(rows[i]).find('.rate').text().replace(/[\$,]/g, ''));
+                var $requestqty = oTable[i][8];
+                var $purchaseqty = rows[i].cells[5].children[0].value;
+
+                console.log($requestqty);
+                console.log($purchaseqty);
+
+
+
+                var remainigqty = $requestqty - $purchaseqty;
+                console.log(remainigqty);
+                rows[i].cells[4].children[0].value = remainigqty;
+
+                if (remainigqty < 0) {
+                    alert('Purchase Qty Should Less then Requestion Qty');
+                    rows[i].cells[5].children[0].focus();
+                }
+
+
+                //if ($purchaseqty > $requestqty) {
+                //    alert('Purchase Qty Less then Request Qty');
+                //}
+                var $rate = rows[i].cells[6].children[0].value;
+                var $value = 0;
+                $value = $purchaseqty * $rate;
+                rows[i].cells[7].children[0].value = $value;
+                var $oldvalue = 0;
+                var $newvalue = 0;
+                $oldvalue = $value;
+                $newvalue = $oldvalue + $value;
+                totalpurchaseqty += parseFloat($purchaseqty);
+                totalrate += parseFloat($rate);
+                totalvalue += parseFloat($value);
+                //totalvalue += parseFloat($newvalue);
+            }
+
+            $('.ttlpurchaseqty').val(totalpurchaseqty.toLocaleString());
+            $('.ttlpurchaseqty').text(totalpurchaseqty.toLocaleString());
+
+            $('.ttlrate').val(totalrate.toLocaleString());
+            $('.ttlrate').text(totalrate.toLocaleString());
+
+            $('.ttlvalue').val(totalvalue.toLocaleString());
+            $('.ttlvalue').text(totalvalue.toLocaleString());
+
+            $('#TotalPOValue').val(totalvalue);
+        };
+
+        function Requisition_Save() {
+            var purchaseOrderSub = {
+                "PurOrderSubId": "", "SLNo": "", "ProductId": "", "RequisitionQty": "", "PurchaseQty": "", "Rate": "", "TotalValue": "", "Remarks": "", "PurReqSubId": "", "PurOrderMainId": "", "ComId": "", "PcName": "", "UserId": "", "DateAdded": "", "UpdateByUserId": "", "DateUpdated": ""
+            };
+
+            var PurchaseOrderMain = {
+                "PurOrderMainId": "", "PONo": "", "PODate": "", "PORef": "", "DeptId": "", "PrdUnitId": "", "PurReqId": "",
+                "SupplierId": "", "PaymentTypeId": "", "CurrencyId": "", "ConvertionRate": "", "TotalPOValue": "", "Deduction": "", "NetPOValue": "", "SectId": "",
+                "LastDateOfDelivery": "", "ExpectedRecivedDate": "", "TermsAndCondition": "", "Remarks": "",
+                "ComId": "", "PcName": "", "UserId": "", "DateAdded": "", "UpdateByUserId": "", "DateUpdated": "", "Status": "",
+                "PurchaseOrderSub": []
+            };
+
+            PurchaseOrderMain.PurOrderMainId = $('#PurOrderMainId').val();
+            PurchaseOrderMain.PONo = $('#PONo').val();
+            PurchaseOrderMain.PODate = $('#PODate').val();
+            PurchaseOrderMain.PORef = $('#PORef').val();
+            PurchaseOrderMain.DeptId = $('#DeptId').val();
+            PurchaseOrderMain.PrdUnitId = $('#PrdUnitId').val();
+            PurchaseOrderMain.PurReqId = $('#PurReqId').val();
+            PurchaseOrderMain.SupplierId = $('#SupplierId').val();
+            PurchaseOrderMain.PaymentTypeId = $('#PaymentTypeId').val();
+            PurchaseOrderMain.CurrencyId = $('#CurrencyId').val();
+            PurchaseOrderMain.ConvertionRate = $('#ConvertionRate').val();
+            PurchaseOrderMain.TotalPOValue = $('#TotalPOValue').val();
+            PurchaseOrderMain.Deduction = $('#Deduction').val();
+            PurchaseOrderMain.NetPOValue = $('#NetPOValue').val();
+            PurchaseOrderMain.SectId = $('#SectId').val();
+            PurchaseOrderMain.LastDateOfDelivery = $('#LastDateOfDelivery').val();
+            PurchaseOrderMain.ExpectedRecivedDate = $('#ExpectedRecivedDate').val();
+            PurchaseOrderMain.TermsAndCondition = $('#TermsAndCondition').val();
+            PurchaseOrderMain.Remarks = $('#Remarks').val();
+            PurchaseOrderMain.ComId = $('#ComId').val();
+            PurchaseOrderMain.UserId = $('#UserId').val();
+
+
+            PurchaseOrderMain.Status = $('#Status').val();
+
+            var oTablepurchaseOrderSub = $('#tblpurchaseorder').dataTable().fnGetData();
+            var rows = $("#tblpurchaseorder").dataTable().fnGetNodes();
+            //console.log(rows);
+            console.log(oTablepurchaseOrderSub);
+            if (oTablepurchaseOrderSub.length == 0) {
+                alert('Please Fill Necessary Data.');
+                return true;
+            };
+            for (var i = 0; i < oTablepurchaseOrderSub.length; i++) {
+                purchaseOrderSub.PurOrderMainId = oTablepurchaseOrderSub[i][0];
+                purchaseOrderSub.PurOrderSubId = oTablepurchaseOrderSub[i][1];
+                purchaseOrderSub.PurReqSubId = oTablepurchaseOrderSub[i][2];
+                purchaseOrderSub.ProductId = oTablepurchaseOrderSub[i][3];
+                purchaseOrderSub.SLNo = oTablepurchaseOrderSub[i][5];
+                purchaseOrderSub.ProductName = oTablepurchaseOrderSub[i][6];
+                purchaseOrderSub.PurReqQty = oTablepurchaseOrderSub[i][8];
+                purchaseOrderSub.RequisitionQty = oTablepurchaseOrderSub[i][8];
+                purchaseOrderSub.RemainingReqQty = rows[i].cells[4].children[0].value.replace(/[\$,]/g, '');//oTablepurchaseOrderSub[i][9];
+                purchaseOrderSub.PurchaseQty = rows[i].cells[5].children[0].value.replace(/[\$,]/g, '');
+
+
+                //alert(rows[i].cells[5].children[0].value.replace(/[\$,]/g, ''));
+
+                //if (purchaseOrderSub.PurOrderMainId > 0) {
+                //    var oldpurchase = parseInt(purchaseOrderSub.RequisitionQty) - parseInt(purchaseOrderSub.RemainingReqQty);
+                //    purchaseOrderSub.PurchaseQty = parseInt(purchaseOrderSub.PurchaseQty) + oldpurchase;
+                //    purchaseOrderSub.RemainingReqQty = parseInt(purchaseOrderSub.RequisitionQty) - parseInt(purchaseOrderSub.PurchaseQty);
+                //} else {
+                //    purchaseOrderSub.RemainingReqQty = parseInt(purchaseOrderSub.RequisitionQty) - parseInt(purchaseOrderSub.PurchaseQty);
+                //}
+
+
+                purchaseOrderSub.Rate = rows[i].cells[6].children[0].value.replace(/[\$,]/g, '');
+                purchaseOrderSub.TotalValue = rows[i].cells[7].children[0].value.replace(/[\$,]/g, '');
+                purchaseOrderSub.Remarks = oTablepurchaseOrderSub[i][13];
+
+                PurchaseOrderMain.PurchaseOrderSub.push(purchaseOrderSub);
+
+                var purchaseOrderSub = {
+                    "PurOrderSubId": "", "SLNo": "", "ProductId": "", "RequisitionQty": "", "PurchaseQty": "", "Rate": "", "TotalValue": "", "Remarks": "", "PurReqSubId": "", "PurOrderMainId": "", "ComId": "", "PcName": "", "UserId": "", "DateAdded": "", "UpdateByUserId": "", "DateUpdated": ""
+                };
+            };
+
+            $.ajax({
+                url: '@Url.Action("Create", "PurchaseOrder")',
+                //data: JSON.stringify(PurchaseOrderMain),
+                data: { purchaseOrderMain: PurchaseOrderMain},
+                type: 'POST',
+                //contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                        //alert('Data Save Successfully');
+                        window.location.href = '@Url.Action("Index", "PurchaseOrder")';
+                    } else if (result.Success == "0") {
+                        toastr.error(result.ex);
+                    }
+                    else {
+                        //alert('Data Update Successfully');
+                        window.location.href = '@Url.Action("Index", "PurchaseOrder")';
+                    }
+                }
+            });
+        };
+
+        function clearData() {
+            $('#PONo').val();
+            $('#PODate').val(CurrentDate);
+            $('#PORef').val("");
+            $('#PrdUnitId').val("");
+            $('#PurReqId').val("");
+            $('#SupplierId').val("");
+            $('#PaymentTypeId').val("");
+            $('#CurrencyId').val("");
+            $('#ConvertionRate').val("");
+            $('#TotalPOValue').val("");
+            $('#Deduction').val("");
+            $('#NetPOValue').val("");
+            $('#DeptId').val("");
+            $('#LastDateOfDelivery').val(CurrentDate);
+            $('#ExpectedRecivedDate').val(CurrentDate);
+            $('#TermsAndCondition').val("");
+            $('#SectId').val("");
+            $('#Remarks').val("");
+
+            //PurchaseRequisitionInfo()
+        }
+
+
+        $('#tblpurchaseorder tbody').on('click', '.dlttrash', function () {
+            var table = $('#tblpurchaseorder').DataTable();
+            table.row($(this).parents('tr')).remove().draw();
+            var x = "500.00";
+            var y = $('#tblpurchaseorder').height();
+            var z = parseFloat(x) + parseFloat(y);
+            $('html, body').animate({ scrollTop: z }, 500);
+        });
+
+
+        function Requisition_delete() {
+        var PurReqId = 0;
+        PurReqId = $("#PurReqId").val();
+        //alert(SalesId);
+        $.ajax({
+            url: '@Url.Action("Delete", "PurchaseOrder")',
+            data: { id: PurReqId },
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                if (result == true) {
+                    toastr.error('Data Delete Successfully');
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '/PurchaseOrder/Index';
+                    }, 500);
+                }
+                else {
+                    if (!result) {
+                        for (var error in result.errors) {
+                            $('#errorMessages').append(error + '<br />');
+                        }
+                    }
+                }
+            },
+            error: function () {
+                toastr.error('Unable to Delete');
+            }
+        });
+}
+
+
+    </script>
+}

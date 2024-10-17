@@ -1,0 +1,210 @@
+﻿@model GTERP.Models.Acc_FiscalYear
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+@using (Html.BeginForm("EditFiscalYear", "Accounts", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 700px;">
+        <div class="card">
+            <div class="card-header">
+                <h4 id="styletext">Fiscal Year - @ViewBag.Title</h4>
+            </div>
+            <div class="card-body">
+                @*@if (Model != null)
+            {
+            <input type="hidden" id="BehaveId" name="BehaveId" value="@Model.ClientId" />
+            }*@
+                @if (Model != null)
+                {
+                    <input type="hidden" asp-for="FiscalYearId" name="FiscalYearId" value="@Model.FiscalYearId" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="FiscalYearId" value="0" />
+                }
+
+                <div id="modalbodyfahad" class="row">
+                    <div class="col-md-12 order-md-1">
+
+
+                        <form class="needs-validation card p-4" novalidate>
+                            <input type="hidden" asp-for="ComId" />
+                            <input type="hidden" asp-for="UserId" />
+                            <div class="container">
+                                <div class="row">
+                                 
+                               
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.OpDate)
+                                                </span>
+                                            </div>
+
+                                            <input type="text" asp-for="OpDate" class="form-control" />
+                                            @Html.ValidationMessageFor(model => model.OpDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ClDate)
+                                                </span>
+                                            </div>
+
+                                            <input type="text" asp-for="ClDate" class="form-control" />
+                                            @Html.ValidationMessageFor(model => model.ClDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                  
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-1"> Is Working</span>
+                                            </div>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text py-1">
+                                                    @Html.CheckBoxFor(model => model.isWorking, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.isWorking, "", new { @class = "text-danger" })
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-1"> Is Running</span>
+                                            </div>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text py-1">
+                                                    @Html.CheckBoxFor(model => model.isRunning, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.isRunning, "", new { @class = "text-danger" })
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row text-center my-2">
+                    <br />
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                        @if (ViewBag.Title == "Create")
+                        {
+                            <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                        }
+                        else if (ViewBag.Title == "Edit")
+                        {
+                            <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                        }
+                        else if (ViewBag.Title == "Delete")
+                        {
+                            <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Behavior_delete()">Delete</button>
+                        }
+                    </div>
+                    <div>
+                        @Html.ActionLink("Back", "FiscalYearList", "Accounts", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                    </div>
+                    <div class="col-md-2"></div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+        $("#ClDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                //$('a.ui-state-default').removeClass('ui-state-highlight');
+             $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#ClDate,#OpDate").datepicker("option", "dateFormat");
+                //setter
+                $("#ClDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+            }
+        });
+        $("#OpDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                //$('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#OpDate").datepicker("option", "dateFormat");
+                //setter
+                $("#OpDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+            }
+        });
+
+        function Behavior_delete() {
+
+            var BehaveId = $("#BehaveId").val();
+            // alert(DesigId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteFiscalYear", "Accounts")',
+                data: JSON.stringify({ id: BehaveId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("FiscalYearList", "Accounts")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,290 @@
+﻿@model GTERP.Models.Acc_BudgetRelease
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "BudgetRelease", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 700px;">
+        <div class="py-7 text-center">
+
+            <h1 id="styletext">Budget Release</h1>
+            <p class="lead"></p>
+        </div>
+
+        @if (Model != null)
+        {
+            <input type="hidden" asp-for="BudgetReleaseId" value="@Model.BudgetReleaseId" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="BudgetReleaseId" value="0" />
+        }
+        <div class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Budget Release @ViewBag.Title</h4>
+
+                <form class="needs-validation card p-4" novalidate>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label asp-for="FiscalYearId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYearId">
+                                        <option value=""> Select Year </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label asp-for="FiscalMonthId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="FiscalMonthId" class="form-control" asp-items="ViewBag.FiscalMonthId">
+                                        <option value=""> Select Month </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label asp-for="AccId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="AccId" class="form-control" asp-items="ViewBag.AccId">
+                                        <option value=""> Select Account </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.DebitAmount)
+                                        </span>
+                                    </div>
+                                    <input asp-for="DebitAmount" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.DebitAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12 d-none">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.CreditAmount)
+                                        </span>
+                                    </div>
+                                    <input asp-for="CreditAmount" value="0" class=" form-control" />
+                                    @Html.ValidationMessageFor(model => model.CreditAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.Balance)
+                                        </span>
+                                    </div>
+                                    <input asp-for="Balance" class="form-control" readonly />
+                                    @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label asp-for="EmpId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="EmpId" class="form-control" asp-items="ViewBag.EmpId">
+                                        <option value=""> Select Employee </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.Remarks)
+                                        </span>
+                                    </div>
+                                    <textarea asp-for="Remarks" class="form-control"></textarea>
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-12">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="target_delete()">Delete</button>
+                                }
+
+
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "Index", "BudgetRelease", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+        $("#EmpId").select2();
+        $("#FiscalYearId").select2();
+        $("#FiscalMonthId").select2();
+        $("#AccId").select2();
+        var balance = 0;
+
+        $("#DebitAmount").keyup(function () {
+            calcualtion();
+        });
+
+        function calcualtion() {
+            let dAmount = parseFloat($("#DebitAmount").val() || 0);
+            if ((balance - dAmount) < 0) {
+                toastr.warning("Debit amount must be less than Balance");
+            } else {
+                $("#Balance").val(balance - dAmount);
+                //balance = balance - dAmount;
+            }
+        }
+
+        $("#FiscalYearId").change(function () {
+            GetMonthAndAcc();
+            GetBalance();
+        });
+
+        function GetMonthAndAcc() {
+
+             $.ajax({
+                 url: '@Url.Action("GetFiscalMonth", "BudgetRelease")',
+                 data: { FiscalYearId:  $("#FiscalYearId").val() }, //use id here
+                 type: 'GET',
+                 dataType: 'json',
+                 success: function (result) {
+                     $("#FiscalMonthId").empty();
+                     $("#AccId").empty();
+
+                     $("#FiscalMonthId").append(`<option value="0"> Select Month </option>`);
+                     for (var i = 0; i < result.Month.length; i++) {
+                         $("#FiscalMonthId").append(`<option value="${result.Month[i].FiscalMonthId}">${result.Month[i].MonthName}</option>`)
+                     }
+                     $("#AccId").append(`<option value="0"> Select Account </option>`);
+                     for (var i = 0; i < result.AccHead.length; i++) {
+                         $("#AccId").append(`<option value="${result.AccHead[i].Value}">${result.AccHead[i].Text}</option>`)
+                     }
+                 }
+            });
+        }
+
+
+
+        $(document).ready(function () {
+            GetBalance();
+
+        });
+
+        $("#AccId").change(function () {
+            GetBalance();
+         });
+
+
+
+        function GetBalance() {
+            $.ajax({
+                url: '@Url.Action("GetBalance", "BudgetRelease")',
+                data: { AccId: $("#AccId").val(), FiscalYearId: $("#FiscalYearId").val(), BudgetReleaseId: $("#BudgetReleaseId").val(), }, //use id here
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    //alert(result);
+                    balance = result;
+                    $("#Balance").val(balance)
+                    calcualtion();
+                }
+            });
+        }
+
+    function target_delete() {
+
+        var PrdTargetSetId = $("#PrdTargetSetId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "ProductionTarget")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: PrdTargetSetId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "ProductionTarget")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

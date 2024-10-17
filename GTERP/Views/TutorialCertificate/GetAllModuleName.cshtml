@@ -1,0 +1,594 @@
+﻿
+
+<html>
+<head>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            $(".MenuName").hide();
+            $("#attentionForSelect").hide();
+        });
+    </script>
+    <style>
+        .body {
+            background-color: #cccccc;
+        }
+
+        .btn-link {
+            text-decoration: none;
+        }
+
+            .btn-link:link {
+                color: red;
+            }
+
+            /* visited link */
+            .btn-link:visited {
+                color: green;
+            }
+
+            /* mouse over link */
+            .btn-link:hover {
+                color: hotpink;
+            }
+
+            /* selected link */
+            .btn-link:active {
+                color: blue;
+            }
+        /*-------------CSS for Read more/less----------------------*/
+
+
+        #profile-description .show-more {
+            color: #777;
+            /*   width: 690px;
+                        position: relative;
+                        font-size: 12px;
+                        padding-top: 5px;
+                        height: 20px;
+                        text-align: center;
+                        background: #f1f1f1;
+                        cursor: pointer;*/
+        }
+
+            #profile-description .show-more:hover {
+                color: #1779dd;
+                /*            background: #f1f1f1;*/
+                cursor: pointer;
+            }
+
+        #profile-description .show-more-height {
+            height: 75px;
+            overflow: hidden;
+        }
+
+        /*--------------------End-------------------------*/
+    </style>
+</head>
+
+<body class="body">
+    @{
+        var email = ViewBag.UserId;
+        var CertificateId = ViewBag.CertificateId;
+        @if (ViewBag.msg == "" || ViewBag.msg == null)
+        {
+            //var moduleList = new List<Module>();
+            var moduleList = ViewBag.ModulList;
+            //var modulMenuList = new List<ModuleMenu>();
+            var modulMenuList = ViewBag.ModuleMenuList;
+            var moduleChildMenuList = ViewBag.ModuleChildMenuList;
+            var moduleName = ViewBag.moduleName;//------for cirtificate (not yet use)
+            var menuName = "";
+            menuName = ViewBag.menuName;
+            <div class="text-center">
+                <h2 class="text-success">Available Modules</h2> 
+                @if (email.Contains("gtr"))
+                {
+                    <a class="navbar-brand text-info" href="~/TutorialCertificate/ModuleRecordView">Create/Edit/Delete Module</a>
+
+                }
+            </div>
+                <div>@menuName</div>
+                <div class="row">
+                    <div class="col-md-4 offset-1">
+                        <div class="container">
+
+                            <div id="accordion">
+                                <div class="card">
+                                    @{
+                                    if (moduleList is not null)
+                                    {
+                                        foreach (var module in moduleList)
+                                        {
+                                                    <div class="card-header" id="headingOne">
+                                                        <h5 class="mb-0 d-inline">
+                                                            <button  class="btn btn-link moduleId" data-toggle="collapse" data-target="#collapse_@module.ModuleId" aria-expanded="true" aria-controls="collapseOne" id="@module.ModuleId">
+                                                                @module.ModuleName
+                                                            </button>
+                                                        </h5>
+                                                    </div>
+                                                    <div id="collapse_@module.ModuleId" class="collapse hidden" aria-labelledby="headingOne" data-parent="#accordion">
+                                                        <div class="card-body" id="child1">
+                                                            <div class="card">
+                                                                @*@foreach (var moduleMenuParent in modulMenuList.Where(a => a.ModuleId == module.ModuleId && a.isParent == 1 && a.isInactive == 0))*@
+                                                                @{
+                                                            var moduleMenuList2 = ((IEnumerable<dynamic>)modulMenuList).Where(x => x.ModuleId == module.ModuleId).ToList();
+                                                                }
+
+                                                                @foreach (var moduleMenuParent in moduleMenuList2)
+                                                        {
+
+
+                                                                    <div class="card-header">
+
+                                                                        <a href="#" data-toggle="collapse" data-target="#collapseOneA_@moduleMenuParent.ModuleMenuId" id="@moduleMenuParent.ModuleMenuId" class="moduleMenuId" style="color:black"><i>@moduleMenuParent.ModuleMenuCaption</i></a>
+                                                                    </div>
+                                                                    <div class="card-body collapse" data-parent="#child1" id="collapseOneA_@moduleMenuParent.ModuleMenuId">
+
+                                                                        @{
+                                                                    var moduleChildMenuList2 = ((IEnumerable<dynamic>)moduleChildMenuList).Where(a => a.ParentId == moduleMenuParent.ModuleMenuId.ToString()).ToList();
+                                                                        }
+
+                                                                        @foreach (var moduleMenuNotParent in moduleChildMenuList2)
+                                                                        {
+
+
+                                                                    @if (moduleMenuNotParent.IsComplete == "False" || moduleMenuNotParent.IsComplete == "")
+                                                                    {
+                                                                        <div class="accordion-body" id="@moduleMenuNotParent.ModuleMenuId">
+                                                                                <i class="fa fa-external-link" style="font-size:15px;color:red"></i><a href="#" style="color:red" id="@moduleMenuNotParent.ModuleMenuId" class="MenuLink">@moduleMenuNotParent.ModuleMenuCaption</a>
+                                                                            </div>
+                                                                    }
+                                                                    
+                                                                    else
+                                                                    {
+                                                                        <div class="accordion-body" id="@moduleMenuNotParent.ModuleMenuId">
+                                                                            <i class="fa fa-external-link" style="font-size:15px;color:red"></i><a href="#" style="color:green" id="@moduleMenuNotParent.ModuleMenuId" class="MenuLink">@moduleMenuNotParent.ModuleMenuCaption</a>
+                                                                        </div>
+                                                                    }
+
+                                                                }
+
+                                                                    </div>
+                                                        }
+                                                                <div  id="completeSimble_@module.ModuleId"><a asp-controller="TutorialCertificate" asp-action="QuizExamPage" asp-route-moduleId="@module.ModuleId">Start Quiz for Certification</a></div>
+
+                                                                <button id="showCertificate_@module.ModuleId" type="button" class="btn btn-outline-primary" onclick="checkcertificate()">Show Certificate</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        }
+                                    }
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                <h3><div id="card-header" style="color:darksalmon"></div></h3>
+                            </div>
+                            <div class="card-body">
+                                @*<h5 class="card-title">You are Welcome</h5>*@
+                                <div id="profile-description">
+                                    <p class="card-text text show-more-height" id="indivisualDescription"><b style="color:darkblue">You are Welcome</b><br />You are going to learn some feature of our product. Please be patient and <b>watch the tutorial</b> and also <b>read the text file</b> to get more information about our service <div class="show-more">(Show More)</div></p>
+                                    <h3 id="attentionForSelect">Select any menu link to have some idea about that function</h3>
+                                </div>
+                                <div id="linkGroup">
+                                    <a href="#" target="_blank" class="btn btn-primary" id="videoLink">Watch Tutorial</a>
+                                    @*<a href="#" target="fileFrame" class="btn btn-primary" id="fileLink">Attach File</a>*@
+                                    
+                                    <div id="fileUrls" style="color:green"></div>
+
+                                    <div class="form-group" id="IsCompleteDiv">
+                                        @*<input id="IsComplete" type="checkbox" value="" /><label style="color:red"><b> Complete</b></label>*@
+                                        <input type="button" class="btn btn-outline-dark" id="IsComplete2" value="Complete" />
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                            </div>
+                        </div>
+                        <iframe id="fileframeId" name="fileFrame" height="750px" width="750px"></iframe>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4"><input type="button" value="Get Certificate" id="certificateBtn" class="btn btn-primary" onclick="GoToCertificate()" /></div>
+                            <div class="col-md-4"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+
+
+                </div>
+        }
+        else
+        {
+                <div class="container">
+                <h3 class="text-danger">@ViewBag.msg </h3>
+                </div>
+        }
+
+    }
+</body>
+</html>
+@section Scripts{
+
+    <script>
+        //--------------------start------------------
+
+        let moduleCoursId = 0;
+        let certificateId = "";
+        $(document).ready(function() {
+
+            $("#fileframeId").hide();
+            $("#videoLink").hide();
+            //$("#indivisualDescription").hide();
+            $("#fileLink").hide();
+            $("#IsCompleteDiv").hide();
+            $("#certificateBtn").hide();
+            $(".show-more").hide();
+            //$(".fa-check-square-o").hide();
+            var isTrueOrFalse = '';
+            $(".moduleMenuId").click(function() {
+                $(".show-more").hide();
+                $(`#fileUrls`).hide();
+                $("#attentionForSelect").show();
+                $("#card-header").hide();
+                $("#IsCompleteDiv").hide();
+                $("#indivisualDescription").hide();
+                $("#videoLink").hide();
+                var id = $(this).attr("id");
+                var url = '@Url.Content("~")' + "/TutorialCertificate/GetLink";
+                $.ajax({
+                    type: "Post",
+                    url: url,
+                    data: {
+                        "moduleMenuId": id
+                    },
+                    success: function(response) {
+
+                        $.each(response.listOfTrue, function(index, value) {
+                            $(".MenuLink").each(function() {
+                                let menuId = $(this).attr("id");
+                                if (menuId == value.ModuleMenuChildId && value.IsComplete == true) {
+                                    console.log(value.ModuleMenuChildId);
+                                    $(`#${menuId}`).find("#completeSimble").addClass("fa fa-check-square-o");
+                                }
+                            })
+                        })
+
+                    },
+                    failure: function(response) {
+                        alert(response.responseText);
+                    },
+                    error: function(response) {
+                        alert(response.responseText);
+                    }
+                });
+                //if (isTrueOrFalse == true) {
+                //    $("#completeSimble").hide();
+                //}
+            });
+
+        });
+
+        $(".MenuLink").click(function() {
+            $("#attentionForSelect").hide();
+            $("#card-header").show();
+            $(`#fileUrls`).hide();
+            $("#IsCompleteDiv").show();
+            $("#fileframeId").hide();
+            $(".show-more").hide();
+            let id = $(this).attr('id');
+
+            var url = '@Url.Content("~")' + "/TutorialCertificate/GetLink";
+            $.ajax({
+                async: false,
+                type: "Post",
+                url: url,
+                data: {
+                    "menuId": id
+                },
+                success: function(response) {
+
+                    $("#card-header").html(response.menuName);
+                     $("#indivisualDescription").show();
+                    //console.log(response);
+                    if (response.menuLink != null) {
+                        moduleCoursId = response.menuLink.ModuleCourseId;
+                        isTrueOrFalse = response.isTrueOrFalse;
+                        $("#IsComplete2").show();
+                        if (isTrueOrFalse == true) {
+                            
+                            $("#IsComplete2").css("background-color", "limegreen");
+                            $("#IsComplete2").val("Completed");
+
+
+                        }
+                        else {
+                            /*$("#IsComplete").prop("checked", false);*/
+                            $("#IsComplete2").css("background-color", "tomato");
+                            $("#IsComplete2").val("Not Complete");
+                        }
+
+
+                        if (response.menuLink.VideoLink != null) {
+                            $("#videoLink").attr("href", response.menuLink.VideoLink);
+                            $("#videoLink").show();
+                        }
+                        else { $("#videoLink").hide(); }
+
+                        var descriptionData = response.menuLink.Description;
+                        $("#indivisualDescription").html(descriptionData);
+                        if (response.menuLink.Description == null || response.menuLink.Description == "") {
+                            $("#indivisualDescription").hide();
+                        }
+                        else {
+                            $("#indivisualDescription").show();
+                            /*  $(".show-more").show();*/
+                            $('.card-text').each(function() {
+                                var len = $(this).text().length;
+                                if (len > 200)
+                                {
+                                    $(".show-more").show();
+                                }
+                                else 
+                                {
+                                    $(".show-more").hide();
+                                }
+                            });
+
+                        };
+                        $(".show-more").click(function() 
+                        {
+                            if ($(".text").hasClass("show-more-height")) 
+                            {
+                                $(this).text("(Show Less)");
+                            } else 
+                            {
+                                $(this).text("(Show More)");
+                            }
+
+                            $(".text").toggleClass("show-more-height");
+                        });
+                        if (response.menuLink.FilePath != null)
+                        {
+                            $("#fileLink").click(function() { $("#fileframeId").show(); });
+                            let src = `/FilesForCertificate/${response.menuLink.FilePath}`;
+                            src = '@Url.Content("~")' + src;
+                            $("#fileLink").attr('href', src);
+                            $("#fileLink").show();
+                        }
+                        else
+                        {
+                            $("#fileLink").hide();
+                        }
+                    }
+
+                    else {
+                        $("#IsComplete2").hide();
+                        $("#fileLink").hide();
+                        $("#videoLink").hide();
+                        $("#indivisualDescription").html("There is nothing to learn in this course")
+                    }
+
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+
+            });
+
+
+
+        });
+
+        let moduleId = '';
+        let moduleMenuId = '';
+        $(".moduleId").click(function() {
+            $("#attentionForSelect").hide();
+            $(`#fileUrls`).hide();
+            moduleId = $(this).attr('id');
+
+        });
+        $(".moduleId").click(function() {
+
+            $("#fileframeId").hide();
+            $("#videoLink").hide();
+            $("#fileLink").hide();
+            $("#IsCompleteDiv").hide();
+            $(".show-more").hide();
+            $("#completeSimble").hide();
+           // $(`#showCertificate_${moduleId}`).hide();
+            //$("#indivisualDescription").hide();
+
+
+
+
+            var url3 = '@Url.Content("~")' + "/TutorialCertificate/GetAllModuleName";
+            $.ajax({
+                type: "GET",
+                url: url3,
+                data: {
+                    "moduleId": moduleId,
+                },
+                success: function(response) {
+
+                    certificateId = response.Certificateid;
+
+                    $(`#showCertificate_${moduleId}`).hide();
+
+                    if (response.Course == true && response.IsPassed == false) {
+                        $(`#completeSimble_${moduleId}`).show();
+                        $(`#showCertificate_${moduleId}`).addClass("d-none");
+                    }
+                    else {
+                        $(`#completeSimble_${moduleId}`).hide();
+                        $(`#showCertificate_${moduleId}`).hide();
+                    }
+                    if (response.IsPassed == true && response.Course == true) {
+
+                        $(`#showCertificate_${moduleId}`).show();
+                    }
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+
+
+        $("#IsComplete2").click(function() {
+            let value1 = '';
+            if ($("#IsComplete2").val() == "Completed") {
+                value1 = false;
+                $("#IsComplete2").css("background-color", "tomato");
+                $("#IsComplete2").val("Not Completed");
+            }
+            else {
+                value1 = true;
+                $("#IsComplete2").css("background-color", "limegreen");
+                $("#IsComplete2").val("Completed");
+            }
+            //if ($(this).is(":checked")) {
+            //    value1 = true;
+            //};
+            //if (value1 != true) {
+            //    if ($(this).prop("checked", false)) {
+            //        value1 = false;
+            //    };
+            //}
+            var url2 = '@Url.Content("~")' + "/TutorialCertificate/InsertLogInTrack";
+            $.ajax({
+                /* async:false,*/
+                type: "Post",
+                url: url2,
+                data: {
+                    "checkValue": value1,
+                    "moduleCourseId": moduleCoursId
+                },
+                success: function(response) {
+                    //if (response == true) {
+                    //    $("#IsComplete").prop("checked", true);
+                    //}
+                    //else {
+                    //    $("#IsComplete").prop("checked", false);
+                    //}
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            });
+
+
+
+        });
+
+        function GoToCertificate() {
+            var url3 = "./CertificateInfo";
+            let v = '@Url.Content("~")';
+
+            $.ajax({
+                type: "POST",
+                url: url3,
+                data: {
+                    model: {},
+                    moduleId: moduleId,
+                },
+                success: function(response) {
+
+                    var url4 = `./CertificateDemo?moduleName=${response.moduleName}&userEmail=${response.userEmail}&moduleID=${response.moduleID}`;
+                    location.href = (url4);
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+       function checkcertificate() {
+            var id = certificateId;
+            var url = '@Url.Content("~")' + '/TutorialCertificate/ShowCertificate?id=' + id;
+            window.location.href = url;
+        };
+    </script>
+    <script>
+        var fileUrl = "";
+
+
+        $(".MenuLink").click(function() {
+            var urlAllMenuName = '@Url.Content("~")' + "/TutorialCertificate/GetAllModuleName";
+            var id = $(this).attr("id");
+
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: urlAllMenuName,
+                data: {
+                    "moduleMenuChildId": id
+                },
+                success: function(response) {
+                    let html = '';
+                    $.each(response, function(index, value) {
+                        var port = location.protocol + '//' + location.host;
+                        html += `<a href="/TutorialCertificate/DownloadFile?filename=${value}" target="_blank" id="fileUrls" >${value}</a><br/>`;
+                    });
+                    $(`#fileUrls`).show();
+                    $(`#fileUrls`).html(html);
+                    //$(`#fileUrls`).attr("href", response);
+                    console.log(response);
+                    fileUrl = response;
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            });
+
+        
+        });
+
+    </script>
+    <script>
+        $('#fileUrls').click(function () {
+        var myValue = "hello"; // the value you want to pass
+    $.ajax({
+        url: '@Url.Action("DownloadFile", "TutorialCertificate")',
+        type: 'POST',
+        data: {
+              "moduleMenuChildId": id
+        },
+        success: function (response) {
+               console.log(response);
+        },
+        error: function() {
+            console.log("Error");
+        }
+    });
+});
+    </script>
+}

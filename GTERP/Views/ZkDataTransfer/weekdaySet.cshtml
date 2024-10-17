@@ -1,0 +1,585 @@
+﻿
+
+<div class="row">
+    <div id="success-alert" class="alert-danger">@ViewBag.msg</div>
+    <div class="col-sm-4 border border-info">
+        <div class="form-group my-1">
+           
+            <h5 class="header-color">IP Address</h5>
+            <div id="deviceData"></div>
+        </div>
+    </div>
+
+    <div class="col-sm-8 border border-primary">
+        <h4 class="header-color">Master Data</h4>
+        <div class="my-1 d-flex justify-content-md-between">
+           
+            <button type="button" id="showDataWithWeekday" class="btn btn-outline-success d-flex mx-1" onclick="startSpinnerWeek()">
+                <span class="spinner-border spinner-border-sm my-1 mx-1"
+                      role="status" aria-hidden="true" style="display:none;" id="spinnerShowWeek"></span> Load Data with weekday
+            </button>
+           @* <div class="d-flex bg-secondary">
+                <button class="btn btn-warning readExl d-flex" value="">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDltExcel"></span>delete by excel list
+                </button><span><input type="file" multiple id="folderExl" /> </span>
+            </div>*@
+        </div>
+        <section class="border border-warning my-1" style="background-color: blanchedalmond;">
+            <div class="d-flex justify-content-between">
+                <button type="button" id="Finger_FaceDb" style="display:none" class="btn btn-success" onclick="startSpinnerSend()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerSend"></span> Set To Device
+                </button>
+                <button type="button" id="deleteDevice" class="btn btn-danger col-xl-auto d-flex" onclick="startSpinnerDelete()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDelete"></span> Delete From Device
+                </button>
+                <button type="button" id="download-xlsx" style="display:none" class="btn btn-outline-info">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerExcel"></span> Master Data Download-Excel
+                </button>
+             @*   <button type="button" id="downloadImg" style="display:none" class="btn btn-primary" onclick="startSpinnerPicture()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerPicture"></span> Save Picture
+                </button>
+                <button type="button" id="DeleteFromDB" style="display:none" class="btn btn-outline-danger" onclick="startSpinnerDB()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDB"></span> Delete Master Data
+                </button>*@
+            </div>
+
+             @* <button class="btn btn-success" id="saveUserInfo"> Save To DataBase</button>*@
+  
+            Selected Data: <span id="select-stats" style="color:indigo"></span>
+            <div class="tabulator-table tabulator-row-handle-box" id="dataTable"></div>
+        </section>
+    </div>
+
+</div>
+<div>
+    <button id="getUserInfo">Get User data</button>
+    <button class="text-success btn btn-primary" id="saveUserInfo"> </button>
+    </div>
+
+
+@section Scripts{
+
+    <script defer>
+        
+        var SelectedCard = [];
+        var SelectedDevice;
+        var Selecteddata;
+        //function startSpinner() {
+        //    document.getElementById('spinner').style.display = 'block';
+        //}
+        //function stopSpinner() {
+        //    document.getElementById('spinner').style.display = 'none';
+        //}
+
+          function startSpinnerWeek() {
+            document.getElementById('spinnerShowWeek').style.display = 'block';
+        }
+        function stopSpinnerWeek() {
+            document.getElementById('spinnerShowWeek').style.display = 'none';
+        }
+
+         // for delete button
+        function startSpinnerDelete() {
+            document.getElementById('spinnerDelete').style.display = 'block';
+        }
+        function stopSpinnerDelete() {
+            document.getElementById('spinnerDelete').style.display = 'none';
+        }
+
+        // for Download in Excel button--startSpinnerExcel
+        function startSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'block';
+        }
+        function stopSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'none';
+        }
+
+        // for show data button
+        //function startSpinnerShowData() {
+        //    document.getElementById('spinnerShowData').style.display = 'block';
+        //}
+        //function stopSpinnerShowData() {
+        //    document.getElementById('spinnerShowData').style.display = 'none';
+        //}
+
+        // for send to device button
+        function startSpinnerSend() {
+            document.getElementById('spinnerSend').style.display = 'block';
+        }
+        function stopSpinnerSend() {
+            document.getElementById('spinnerSend').style.display = 'none';
+        }
+
+
+        // for img downloder
+        function startSpinnerPicture() {
+            document.getElementById('spinnerPicture').style.display = 'block';
+        }
+        function stopSpinnerPicture() {
+            document.getElementById('spinnerPicture').style.display = 'none';
+        }
+        // for img Delete from DB
+        //function startSpinnerDlt() {
+        //    document.getElementById('spinnerDlt').style.display = 'block';
+        //}
+        //function stopSpinnerDlt() {
+        //    document.getElementById('spinnerDlt').style.display = 'none';
+        //}
+        //function startSpinnerDB() {
+        //    document.getElementById('spinnerDB').style.display = 'block';
+        //}
+        //function stopSpinnerDB() {
+        //    document.getElementById('spinnerDB').style.display = 'none';
+        //}
+        //function startDltExcel() {
+        //    document.getElementById('spinnerDltExcel').style.display = 'block';
+        //}
+        //function stopDltExcel() {
+        //    document.getElementById('spinnerDltExcel').style.display = 'none';
+        //}
+
+         $(document).ready(function() {
+            //document.getElementById('Finger_FaceDb').style.display = 'none';
+            //document.getElementById('DeleteFromDB').style.display = 'none';
+
+            $.ajax({
+              url: '@Url.Action("deviceInfo", "ZkDataTransfer")',
+                method: "get",
+                dataType: 'Json',
+               
+                success: function(data) {
+                    var tabledata = data;
+                    var table = new Tabulator("#deviceData",
+                        {
+
+
+                            height: "400px",
+                            layout: "fitDataStretch",
+
+                            paginationSize: 10,
+                            paginationSizeSelector: [10, 20, 50, 100],
+                            selectable: true,
+                            data: tabledata, //assign data to table
+                            /* autoColumns: true,*/ //create columns from data field names
+                            columns: [
+                                {
+                                    formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+                                        cell.getRow().toggleSelect();
+                                    }
+                                },
+
+                                { title: "Ip Address", field: "IpAddress", hozAlign: "left", sorter: "number", headerFilter: "input", contextPopup: "Im a Popup" },
+                                { title: "Location", field: "Location", hozAlign: "center", sorter: "number", headerFilter: "input", tooltip: true },
+                                {  title: "HikPassword", field: "ZKtpassword", hozAlign: "center", sorter: "number", headerFilter: "input", }
+                            ]
+                        })
+                    table.on("rowSelectionChanged", function(data, rows) {
+                        SelectedDevice = data;
+                    })
+                }
+
+            })
+        });
+
+        //$('#connect').click(function() {
+        //    let ip = $('#ip').val();
+        //    let port = $('#port').val();
+        //    let pass = $('#pass').val();
+        //    $.ajax({
+        //        url: "@Url.Action("Connect_Click","UserInfoManagement")",
+        //        method: "post",
+        //        data: {
+        //            ip: ip, port: port, pass: pass
+        //        },
+        //        dataType: 'Json',
+        //        success: function(data) {
+        //            alert(data)
+        //        }
+        //    })
+        //});
+
+        $('#getUserInfo').click(function() {
+            startSpinner();
+            if (SelectedDevice != "") {
+                $.ajax({
+                    url: "@Url.Action("GetAllUserInfo","ZkDataTransfer")",
+                    method: "post",
+                    data: {Device: SelectedDevice},
+                    dataType: 'Json',
+                    success: function(data)
+                    {
+                        if (data == 'DisConnected') 
+                        {
+                            alert("Conection Couldn't built")
+                        }
+                        else
+                        {
+                            var tabledata = data;
+                            var table = new Tabulator("#dataTable",
+                                {
+
+
+                                    height: "auto",
+                                    /*printRowRange: "active",*/
+                                    layout: "fitDataTable",
+                                    paginationSize: 10,
+                                    paginationSizeSelector: [10, 20, 50, 100],
+                                    selectable: true,
+                                    data: tabledata, //assign data to table
+                                    /* autoColumns: true,*/ //create columns from data field names
+                                    columns: [
+                                        {
+                                            formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+                                                cell.getRow().toggleSelect();
+                                            }
+                                        },
+
+                                        { title: "EmpCode", field: "EmpCode", hozAlign: "left", sorter: "number", headerFilter: "input", contextPopup: "Im a Popup" },
+                                        { title: "EmpName", field: "EmpName", hozAlign: "center", sorter: "number", headerFilter: "input", tooltip: true },
+                                        { title: "CardNo", field: "CardNo", hozAlign: "center", sorter: "number", headerFilter: "input" },
+                                        { title: "indexNo", field: "indexNo", hozAlign: "center", sorter: "number", headerFilter: "input" },
+                                        { title: "finger_Data", field: "finger_Data", hozAlign: "center", sorter: "number", headerFilter: "input" },
+                                        { title: "emp_image", field: "emp_image", hozAlign: "center", sorter: "number", headerFilter: "input" },
+                                        { title: "group", field: "userGroup", hozAlign: "center", sorter: "number", headerFilter: "input", editor:true }
+                                    ]
+
+                                })
+                            table.on("rowSelectionChanged", function(data, rows) {
+                                Selecteddata = data;
+                            })
+                        }
+                        stopSpinner();
+                    }
+
+                   
+                }) 
+               
+            }
+             else {
+                alert("Select Device and Then Try!");
+               stopSpinner();
+            }
+            
+        });
+        $('#saveUserInfo').click(function() {
+            if (SelectedDevice != "") {
+                $.ajax({
+                    url: "@Url.Action("SaveAllUserInfo","ZkDataTransfer")",
+                    method: "post",
+                    data: {Device: SelectedDevice},
+                    dataType: 'Json',
+                    success: function(data) {
+                        alert(data)
+                    }
+
+                })
+            }
+            else 
+            {
+                alert("Select Device and Then Try!");
+              
+            }
+        });
+        $("#showDataWithWeekday").click(function() { 
+    startSpinnerWeek();
+      $.ajax({
+                url: '@Url.Action("EmpWeekday", "ZkDataTransfer")',
+                method: "get",
+                dataType: 'Json',
+                success: function(data) {
+                    console.log(data);
+                    var tabledata = data;
+                    var table = new Tabulator("#dataTable",
+                        {
+                            height: "400px",
+
+                            layout: "fitData",
+                            selectable: true,
+                            pagination: true,
+                            paginationSize: 10,
+                            paginationSizeSelector: [10, 20, 50, 100],
+                            data: tabledata, //assign data to table
+
+                            /* autoColumns: true,*/ //create columns from data field names
+                            columns: [
+                                {
+                                    formatter: "rowSelection", titleFormatter: "rowSelection", titleFormatterParams: {
+                                        rowRange: "active" // only toggle the values of the active filtered rows
+                                    }, hozAlign: "center", headerSort: false,
+                                    cellClick: function(e, cell) {
+                                        cell.getRow().toggleSelect();
+                                    }
+                                },
+
+                                { title: "EmpCode", field: "EmpCode", hozAlign: "right", sorter: "number", headerFilter: "input" },
+                                {
+                                    title: "Card No", field: "CardNo", hozAlign: "right", sorter: "number", headerFilter: "input",                                 
+                                },
+                                { title: "Name", field: "EmpName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Department", field: "DeptName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Section", field: "SectName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Designation", field: "desigName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Floor", field: "floor", hozAlign: "center", headerFilter: "input" },
+                                { title: "Line", field: "line", hozAlign: "center", headerFilter: "input" },
+                                { title: "Ip Address", field: "IpAddress", hozAlign: "center", headerFilter: "input" },
+                                { title: "Finger", field: "finger_Data", width: 200, headerFilter: "input", width: 80 },
+                                { title: "Image", field: "emp_image", width: 200, headerFilter: "input", width: 80 },
+                                 { title: "group", field: "userGroup", hozAlign: "center", sorter: "number", headerFilter: "input", editor:true },
+                            ]
+                        });
+                    //dsfds
+                    document.getElementById("download-xlsx").style.display = "block";
+
+                    document.getElementById("download-xlsx").addEventListener("click", function() {
+                        table.download("xlsx", "data.xlsx", { sheetName: "MyData" })
+                    });
+
+
+                    table.on("rowSelectionChanged", function(data, rows) {
+                        document.getElementById("select-stats").innerHTML = data.length;
+                        Selecteddata = data;
+                        SelectedCard = [];
+                        for (const { CardNo, EmpName,userGroup } of data) {
+
+                            SelectedCard.push({ CardNo, EmpName,userGroup });
+                        }
+
+                        //if (data.length > 0) {
+
+                        //    document.getElementById("Finger_FaceDb").style.display = "block";
+                        //    document.getElementById("DeleteFromDB").style.display = "block";
+                        //    document.getElementById("downloadImg").style.display = "block";
+
+                        //}
+                        //else {
+                        //    document.getElementById("Finger_FaceDb").style.display = "none";
+                        //    document.getElementById("DeleteFromDB").style.display = "none";
+                        //    document.getElementById("downloadImg").style.display = "none";
+
+                        //}
+                    })
+
+                    stopSpinnerWeek();
+                }
+            })
+})
+
+        $("#showData").click(function() { load(); });
+
+          function load() {
+            startSpinnerShowData();
+            $.ajax({
+                url: '@Url.Action("Empinfo", "ZkDataTransfer")',
+                method: "get",
+                dataType: 'Json',
+                success: function(data) {
+                    console.log(data);
+                    var tabledata = data;
+                    var table = new Tabulator("#dataTable",
+                        {
+                            height: "400px",
+
+                            layout: "fitData",
+                            selectable: true,
+                            pagination: true,
+                            paginationSize: 10,
+                            paginationSizeSelector: [10, 20, 50, 100],
+                            data: tabledata, //assign data to table
+
+                            /* autoColumns: true,*/ //create columns from data field names
+                            columns: [
+                                {
+                                    formatter: "rowSelection", titleFormatter: "rowSelection", titleFormatterParams: {
+                                        rowRange: "active" // only toggle the values of the active filtered rows
+                                    }, hozAlign: "center", headerSort: false,
+                                    cellClick: function(e, cell) {
+                                        cell.getRow().toggleSelect();
+                                    }
+                                },
+
+                                { title: "EmpCode", field: "EmpCode", hozAlign: "right", sorter: "number", headerFilter: "input" },
+                                {
+                                    title: "Card No", field: "CardNo", hozAlign: "right", sorter: "number", headerFilter: "input",
+                                    tooltip: function(e, cell, onRendered) {
+                                        //e - mouseover event
+                                        //cell - cell component
+                                        //onRendered - onRendered callback registration function
+                                        var el = document.createElement("div");
+                                        var img = document.createElement("img");
+
+                                        $.ajax({
+                                            url: "/dataTransfer/showImg/",
+                                            method: "post",
+                                            data: { cardNo: cell.getValue() },
+                                            dataType: 'Json',
+                                            success: function(data1) {
+
+                                                Pic = ""
+
+                                                img.src = "data:image/jpeg;base64," + data1;
+                                                img.width = '100';
+                                                img.height = '100';
+
+
+
+                                            }
+                                        })
+                                        el.style.backgroundColor = "orange";
+                                        el.appendChild(img);
+                                        return el;
+
+                                    },
+                                },
+                                { title: "Name", field: "EmpName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Department", field: "DeptName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Section", field: "SectName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Designation", field: "desigName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Floor", field: "floor", hozAlign: "center", headerFilter: "input" },
+                                { title: "Line", field: "line", hozAlign: "center", headerFilter: "input" },
+                                { title: "Ip Address", field: "IpAddress", hozAlign: "center", headerFilter: "input" },
+                                { title: "Finger", field: "finger_Data", width: 200, headerFilter: "input", width: 80 },
+                                { title: "Image", field: "emp_image", width: 200, headerFilter: "input", width: 80 },
+                                 //{ title: "group", field: "userGroup", hozAlign: "center", sorter: "number", headerFilter: "input", editor:true },
+                            ]
+                        });
+                    //dsfds
+                    document.getElementById("download-xlsx").style.display = "block";
+
+                    document.getElementById("download-xlsx").addEventListener("click", function() {
+                        table.download("xlsx", "data.xlsx", { sheetName: "MyData" })
+                    });
+
+
+                    table.on("rowSelectionChanged", function(data, rows) {
+                        document.getElementById("select-stats").innerHTML = data.length;
+                        Selecteddata = data;
+                        SelectedCard = [];
+                        for (const { CardNo, EmpName } of data) {
+
+                            SelectedCard.push({ CardNo, EmpName });
+                        }
+
+                        if (data.length > 0) {
+
+                            document.getElementById("Finger_FaceDb").style.display = "block";
+                            document.getElementById("DeleteFromDB").style.display = "block";
+                            document.getElementById("downloadImg").style.display = "block";
+
+                        }
+                        else {
+                            document.getElementById("Finger_FaceDb").style.display = "none";
+                            document.getElementById("DeleteFromDB").style.display = "none";
+                            document.getElementById("downloadImg").style.display = "none";
+
+                        }
+                    })
+
+                    stopSpinnerShowData();
+                }
+            })
+        };
+
+          $("#Finger_FaceDb").click(function() {
+            $("#Finger_FaceDb").css({ "display": "flex", "flex-direction": "row" });
+            startSpinnerSend();
+            if (SelectedDevice != "") {
+
+                $.ajax({
+                    url:'@Url.Action("SetFingerPrint","ZkDataTransfer")' ,
+                    type: "POST",
+                    data: {
+                        SelectedData: SelectedCard,
+                        Device: SelectedDevice
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(JSON.stringify(data));
+                        stopSpinnerSend();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerSend();
+                    }
+                })
+            }
+            else {
+                alert("Select Device and Then Try!");
+                stopSpinnerSend();
+            }
+        })
+        
+        $("#deleteDevice").click(function() {
+            if (Selecteddata != "" && SelectedDevice != "") {
+                $.ajax({
+                    url:'@Url.Action("DltUserInfo", "ZkDataTransfer")',
+                    type: "POST",
+                    dataType: 'json',
+
+                    data:
+                    {
+                        data: SelectedCard,
+                        Device: SelectedDevice
+                    },
+
+                    success: function(data) {
+                        alert("Device data deleted Successfully!");
+                        stopSpinnerDelete();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerDelete();
+                    }
+                })
+            }
+            else {
+                alert("select data and device");
+                stopSpinnerDelete();
+            }
+        });
+
+        $("#downloadImg").click(function() {
+            startSpinnerPicture();
+            if (Selecteddata != "") {
+                $.ajax({
+                    url: "/dataTransfer/downImg/",
+                    type: "POST",
+                    dataType: 'json',
+
+                    data:
+                    {
+                        data: SelectedCard,
+
+                    },
+
+                    success: function(data) {
+                        alert("Picture saved Successfully!");
+                        stopSpinnerPicture();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerPicture();
+                    }
+                })
+            }
+            else {
+                alert("select data");
+                stopSpinnerDown();
+            }
+        });
+
+    </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+
+}
+
+  
+
+  

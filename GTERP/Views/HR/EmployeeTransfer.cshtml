@@ -1,0 +1,1479 @@
+﻿@model GTERP.Models.HR_Emp_Increment
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    ViewBag.Title = "Transfer";
+    var ComId = ViewBag.comid;
+    List<HR_Emp_Increment> transfer = new List<HR_Emp_Increment>();
+    transfer = ViewBag.transfer;
+}
+
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+
+<div class="card">
+    <div class="container-fluid">
+        <div class="form-header btn-info">
+            <i class="fa fa-plus" aria-hidden="true"></i> Employee Transfer
+            <div id="loading" style="display: none;">
+                <div id="loadingGif" style="display:inline;">
+                    @*<img src="~/Files/loading.gif" style="height:16px;display:inline;" />*@
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-12 nopadding" id="mainDiv">
+                <span style="height:1px;display:block;"></span>
+                <fieldset class="incrementInputFieldSet table-responsive mt-2" style="border: solid 1px rgba(0, 0, 0, 0.3);border-radius: 2px; padding: 20px;border-top: 4px solid #518aa5; padding-bottom: 0; padding-top: 15px;">
+                    <div class="row">
+                        
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <label asp-for="EmpId" class="input-group-text">Employee ID</label>
+                                </div>
+                                <select asp-for="EmpId" class="EmpId form-select form-control">
+                                    <option value="">--Select Employee--</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.DtJoin)
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.DtJoin, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "readonly", id = "DtJoin" })
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.DtConfirm)
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.DtConfirm, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "readonly", id = "DtConfirm" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.EmpName)
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.EmpName, new { @class = "form-control", @readonly = "readonly", id = "EmpName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Designation
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_DesignationOld.DesigName, new { @class = "form-control", @readonly = "readonly", id = "DesigName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Section
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_SectionOld.SectName, new { @class = "form-control", @readonly = "readonly", id = "SectName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Shift
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_ShiftOld.ShiftName, new { @class = "form-control", @readonly = "readonly", id = "ShiftName" })
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Department
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_DepartmentOld.DeptName, new { @class = "form-control", @readonly = "readonly", id = "DeptName" })
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Unit
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_UnitOld.UnitName, new { @class = "form-control", @readonly = "readonly", id = "UnitName" })
+                            </div>
+                        </div>
+                         <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Line
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_LineOld.LineName, new { @class = "form-control", @readonly = "readonly", id = "LineName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Floor
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_FloorOld.FloorName, new { @class = "form-control", @readonly = "readonly", id = "FloorName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Employee Type
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_Emp_TypeOld.EmpTypeName, new { @class = "form-control", @readonly = "readonly", id = "EmpTypeName" })
+
+                            </div>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-6 col-12 nopadding" id="mainDiv">
+                <span style="height:1px;display:block;"></span>
+                <fieldset class="incrementInputFieldSet table-responsive mt-2" style="border: solid 1px rgba(0, 0, 0, 0.3);border-radius: 2px; padding: 20px;border-top: 4px solid #518aa5; padding-bottom: 0; padding-top: 15px;">
+                    <div class="row">
+                        
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Company
+                                    </lebel>
+                                </div>
+                                <select asp-for="CompanyCode" id="CompanyCode"  class="CompanyCode form-control" name="CompanyCode" data-val="true">
+                                    <option>Select Company</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Employee Code
+                                    </lebel>
+                                </div>
+                                <input asp-for="New_EmpCode" type="text" class="New_EmpCode form-control" id="New_EmpCode" name="New_EmpCode" placeholder="Employee Code">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Unit
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewUnitId" id="NewUnitId" class="NewUnitId form-control" name="Unit" data-val="true">
+                                    <option>Select Unit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Department
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewDeptId" id="NewDeptId" class="NewDeptId form-control" name="NewDeptId" data-val="true">
+                                    <option>Select Department</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text">
+                                        Designation
+                                    </label>
+                                </div>
+                                <select asp-for="NewDesigId" id="NewDesigId" class="NewDesigId form-control" name="NewDesigId" data-val="true">
+                                    <option>Select Designation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Section
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewSectId" id="NewSectId" class="NewSectId form-control" name="NewSectId" data-val="true">
+                                    <option>Select Section</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Shift
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewShiftId" id="NewShiftId" class="NewShiftId form-control" name="NewShiftId" data-val="true">
+                                    <option>Select Shift</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.FingerId)
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.FingerId, new { @class = "form-control", @readonly = "readonly", id = "FingerId" })
+
+                            </div>
+                        </div>
+                       
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Line
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewLineId" id="NewLineId" class="NewLineId form-control" name="NewLineId" data-val="true">
+                                    <option>Select Line</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Floor
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewFloorId" id="NewFloorId" class="NewFloorId form-control" name="NewFloorId" data-val="true">
+                                    <option>Select Floor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Employee Type
+                                    </lebel>
+                                </div>
+                                <select asp-for="NewEmpTypeId" id="NewEmpTypeId" class="NewEmpTypeId form-control" name="NewEmpTypeId" data-val="true">
+                                    <option>Select EmployeeType</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <lebel class="input-group-text">
+                                        Transfer Date
+                                    </lebel>
+                                </div>
+                                @Html.TextBoxFor(m => m.TransferDate, new { @class = "form-control", id = "TransferDate" })
+                            </div>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-12 col-12 text-center my-2">
+                <div id="buttonDiv">
+                    <button id="save" class="btn btn-primary rounded-0">
+                        <i class="glyphicon glyphicon-floppy-saved"></i>
+                        Save
+                    </button>
+                    <button id="clear" class="btn btn-warning rounded-0">
+                        <i class="glyphicon glyphicon-cloud-download"></i>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p></p>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Transfer Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="selectedNamesContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="confirmTransferBtn">Confirm Transfer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@section Scripts
+{
+ 
+    <script>
+        var companyId;
+        var employeeId;
+        var employeeName; 
+        var SelectedComName;
+        var deptName;
+        var desigName;
+
+        let EmpUnitName = "";
+        let EmpDepartment = "";
+        let EmpDesignation = "";
+        let EmpSection = "";
+        let EmpShift = "";
+        let Empline = "";
+        let EmpFloor = "";
+        let EmpTypeName = "";
+
+
+
+        $(document).ready(function () {
+            var $selctemp = $("select").select2();
+            $selctemp.select2("destroy");
+
+            $('#EmpId').select2({
+                minimumInputLength: 2, // Adjust this value based on your preference
+                ajax: {
+                    url: '@Url.Action("GetFilteredEmployee", "LetterReport")',
+                    dataType: 'json',
+                    delay: 200,
+                    data: function (params) {
+                        return {
+                            keyword: params.term // User's input
+                        };
+                    },
+                   
+                    processResults: function (data) {
+                        console.log('Data from employee:', data);
+                        // Map each item in the data array to the format expected by Select2
+                        var mappedData = data.map(function (item) {
+                            // var textParts = item.Text.split(' - '); // Assuming department is the fifth part
+                            // var department = textParts[4];
+                            //console.log(department);
+                         
+                           
+                            return {
+                                id: item.Value,
+                                text: item.Text
+                            };
+                        });
+                      
+                        return {
+                            results: mappedData
+                        };
+
+
+                    },
+                    cache: true
+                }
+            });
+
+            $('#EmpId').on('select2:select', function (e) {
+                var empId = e.params.data.id; // Get the selected employee ID
+                // Make AJAX request to fetch employee info
+                $.ajax({
+                    url: '/HR/GetEmployeeInfo',
+                    method: 'POST',
+                    data: { empid: empId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Employee info Object:', data);
+                        // Update variables and print them
+                        var empInfo = data.EmpInfo[0];
+                        // Update variables and print them
+                        EmpUnitName = empInfo.UnitName;
+                        EmpDepartment = empInfo.DeptName;
+                        EmpDesignation = empInfo.DesigName;
+                        EmpSection = empInfo.SectName;
+                        EmpShift = empInfo.ShiftName;
+                        Empline = empInfo.LineName;
+                        EmpFloor = empInfo.FloorName;
+                        EmpTypeName = empInfo.EmpTypeName;
+                        console.log('Employee Unit Name:', EmpUnitName);
+                        console.log('Employee Department:', EmpDepartment);
+                        console.log('Employee Designation:', EmpDesignation);
+                        console.log('Employee Section:', EmpSection);
+                        console.log('Employee Shift:', EmpShift);
+                        console.log('Employee Line:', Empline);
+                        console.log('Employee Floor:', EmpFloor);
+                        console.log('Employee Type Name:', EmpTypeName);
+                        // Optionally, you can perform additional actions here, such as updating UI elements with the retrieved data
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching employee info:', error);
+                    }
+                });
+            });
+
+
+
+
+            
+            // Initialize Select2 for the ComapanyCode select element
+            $('#CompanyCode').select2({
+                ajax: {
+                    url: 'https://www.gtrbd.net/Support/api/EasyHR/GetCompanyDetails/' + '@ViewBag.comid',
+                    method: 'GET',
+                    dataType: 'json',
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.CompanyId,
+                                text: item.CompanyName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            }).on('change', function (e) {
+                companyId = $(this).val(); // Get the selected company ID
+                SelectedComName = $(this).find('option:selected').text();
+                console.log('Selected Company ID:', companyId);
+
+
+                // Fetch employee department based on the selected company and set it as selected in the dropdown
+                fetchEmployeeInfo(companyId);
+            });
+
+            function fetchEmployeeInfo(companyId) {
+                console.log("Hello I am From Mr. Kamrul Islam Ajax..");
+               
+                
+                //dept value
+                $.ajax({
+                    url: '/HR/GetDepartment',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+
+                        console.log(data);
+
+                        if (data && data.length > 0) {
+                    
+
+                            //var employeeDepartment = data[0].DeptName;
+                            var employeeDepartment = data[0];
+                            console.log('Employee Department:', employeeDepartment);
+                            var dp = "SI";
+                            console.log("Employee Department Object:", employeeDepartment);
+                            for (var i = 0; i < data.length; i++) {
+                                var employeeDepartment = data[i];
+
+                                if (employeeDepartment.DeptName === EmpDepartment) {
+                                    console.log("Found SI department. Selecting in dropdown.");
+                                    // Clear existing options and add new option for SI department
+                                    $('#NewDeptId').empty().append($('<option></option>').attr('value', employeeDepartment.DeptId).text(employeeDepartment.DeptName));
+                                    // Set the value of NewDeptId to the department ID
+                                    $('#NewDeptId').val(employeeDepartment.DeptId);
+
+                                    console.log("Department ID:", employeeDepartment.DeptId);
+                                } else {
+                                    console.log("No SI department found.");
+                                }
+
+                            }
+       
+                        }
+
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching employee department:', error);
+                    }
+                });
+
+                //designation value
+
+                $.ajax({
+                    url: '/HR/GetDesignation',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+
+                        if (data && data.length > 0) {
+                            var ds = "Programmer"; // Desired designation name
+                            console.log('Employee Designation old:', EmpDesignation);
+
+                            // Loop through the data array to find the desired designation
+                            for (var i = 0; i < data.length; i++) {
+                                var employeeDesignation = data[i];
+                                console.log('Employee Designation:', employeeDesignation);
+
+                                // Check if the current designation matches the desired designation
+                                if (employeeDesignation.DesigName === EmpDesignation) {
+                                    console.log("Found the desired designation. Selecting in dropdown.");
+
+                                    // Clear existing options and add new option for the desired designation
+                                    $('#NewDesigId').empty().append($('<option></option>').attr('value', employeeDesignation.DesigId).text(employeeDesignation.DesigName));
+
+                                    // Set the value of NewDesigId to the designation
+                                    $('#NewDesigId').val(employeeDesignation.DesigId);
+                                    console.log("Designation:", employeeDesignation.DesigId);
+
+                                    // Exit the loop since the desired designation is found
+                                    break;
+                                }
+                            }
+
+                            // Check if the desired designation was not found
+                            if (i === data.length) {
+                                console.log("Desired designation not found.");
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching employee designations:', error);
+                    }
+                });
+
+                //unit
+                $.ajax({
+                    url: '/HR/GetUnit',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Unit data:', data);
+                        $('#NewUnitId').empty().append($('<option>Select Unit</option>'));
+
+                        data.forEach(function (unit) {
+                            $('#NewUnitId').append($('<option></option>').attr('value', unit.UnitId).text(unit.UnitName));
+
+                            // Check if EmpUnitName matches the current unit's name
+                            if (unit.UnitName === EmpUnitName) {
+                                $('#NewUnitId').val(unit.UnitId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching unit data:', error);
+                    }
+                });
+
+
+            //shift populate
+                $.ajax({
+                    url: '/HR/GetShift',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Shift data:', data);
+                        $('#NewShiftId').empty().append($('<option>Select Shift</option>'));
+
+                        data.forEach(function (shift) {
+                            $('#NewShiftId').append($('<option></option>').attr('value', shift.ShiftId).text(shift.ShiftName));
+
+                            // Check if EmpShift matches the current shift's name
+                            if (shift.ShiftName === EmpShift) {
+                                $('#NewShiftId').val(shift.ShiftId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching shift data:', error);
+                    }
+                });
+
+
+            //Line populate
+                $.ajax({
+                    url: '/HR/GetLine',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Line data:', data);
+                        $('#NewLineId').empty().append($('<option>Select Line</option>'));
+
+                        data.forEach(function (line) {
+                            $('#NewLineId').append($('<option></option>').attr('value', line.LineId).text(line.LineName));
+
+                            // Check if Empline matches the current line's name
+                            if (line.LineName === Empline) {
+                                $('#NewLineId').val(line.LineId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching line data:', error);
+                    }
+                });
+
+            //Floor populate
+                $.ajax({
+                    url: '/HR/GetFloor',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Floor data:', data);
+                        $('#NewFloorId').empty().append($('<option>Select Floor</option>'));
+
+                        data.forEach(function (floor) {
+                            $('#NewFloorId').append($('<option></option>').attr('value', floor.FloorId).text(floor.FloorName));
+
+                            // Check if EmpFloor matches the current floor's name
+                            if (floor.FloorName === EmpFloor) {
+                                $('#NewFloorId').val(floor.FloorId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching floor data:', error);
+                    }
+                });
+
+
+
+            //emp type populate
+                $.ajax({
+                    url: '/HR/GetEmpType',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Employee Type data:', data);
+                        $('#NewEmpTypeId').empty().append($('<option>Select Employee Type</option>'));
+
+                        data.forEach(function (empType) {
+                            $('#NewEmpTypeId').append($('<option></option>').attr('value', empType.EmpTypeId).text(empType.EmpTypeName));
+
+                            // Check if EmpTypeName matches the current employee type's name
+                            if (empType.EmpTypeName === EmpTypeName) {
+                                $('#NewEmpTypeId').val(empType.EmpTypeId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching employee type data:', error);
+                    }
+                });
+
+            
+
+            //Section Populate
+                $.ajax({
+                    url: '/HR/GetSection',
+                    method: 'GET',
+                    data: { companyId: companyId },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Section data:', data);
+                        $('#NewSectId').empty().append($('<option>Select Section</option>'));
+
+                        data.forEach(function (section) {
+                            $('#NewSectId').append($('<option></option>').attr('value', section.SectId).text(section.SectName));
+
+                            // Check if EmpSection matches the current section's name
+                            if (section.SectName === EmpSection) {
+                                $('#NewSectId').val(section.SectId); // Select the option if matched
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching section data:', error);
+                    }
+                });
+
+
+
+
+            }
+
+
+
+            // Initialize Select2 for the NewUnitId select element
+            $('#NewUnitId').select2({
+                ajax: {
+                    url: '@Url.Action("GetUnit", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.UnitId,
+                                text: item.UnitName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            // Initialize Select2 for the NewDeptId select element
+            $('#NewDeptId').select2({
+                ajax: {
+                    url: '@Url.Action("GetDepartment", "HR")',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.DeptId,
+                                text: item.DeptName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    }
+                }
+            });
+
+
+            // Initialize Select2 for the NewDesigId select element
+            $('#NewDesigId').select2({
+                ajax: {
+                    url: '@Url.Action("GetDesignation", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.DesigId,
+                                text: item.DesigName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            // Initialize Select2 for the NewSectId select element
+            $('#NewSectId').select2({
+                ajax: {
+                    url: '@Url.Action("GetSection", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.SectId,
+                                text: item.SectName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            // Initialize Select2 for the NewShiftId select element
+            $('#NewShiftId').select2({
+                  ajax: {
+                    url: '@Url.Action("GetShift", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.ShiftId,
+                                text: item.ShiftName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            $('#NewEmpTypeId').select2({
+                ajax: {
+                    url: '@Url.Action("GetEmpType", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.EmpTypeId,
+                                text: item.EmpTypeName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            $('#NewLineId').select2({
+                ajax: {
+                    url: '@Url.Action("GetLine", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.LineId,
+                                text: item.LineName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            $('#NewFloorId').select2({
+                ajax: {
+                    url: '@Url.Action("GetFloor", "HR")/',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            companyId: companyId // Assuming companyId is defined elsewhere
+                        };
+                    },
+                    processResults: function (data) {
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.FloorId,
+                                text: item.FloorName
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                }
+            });
+
+            $("#TransferDate").datepicker({
+                onSelect: function (data) {
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#TransferDate").datepicker("option", "dateFormat");
+                    $('#TransferDate').datepicker('option', 'dateFormat', 'dd-MM-yy');
+                },
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true
+            });
+           
+            var today = new Date();
+
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            var formattedDate = today.getDate() + '-' + monthNames[today.getMonth()] + '-' + today.getFullYear();
+
+            $("#TransferDate").val(formattedDate);
+
+            $('#update').hide();
+            var incrementTable = $('#incrementTable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+                    { 'sClass': 'IncId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'IncType', 'visible': true },
+                    { 'sClass': 'DtInput', 'visible': true },
+                    { 'sClass': 'DesigNameOld', 'visible': true },
+                    { 'sClass': 'DesigName', 'visible': true },
+                    { 'sClass': 'DeptNameOld', 'visible': true },
+                    { 'sClass': 'DeptName', 'visible': true },
+                    { 'sClass': 'SectNameOld', 'visible': true },
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'OldStatus', 'visible': true },
+                    { 'sClass': 'NewStatus', 'visible': true }
+
+
+                ],
+                buttons: [
+                    //'copy', 'csv', 'excel', 'pdf'
+                    //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                    {
+                        extend: 'colvis',
+                        "columns": ':not(:last-child)',
+                        text: '<i class="mdi mdi-view-column"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Show / hide columns',
+                        //collectionLayout: 'fixed two-column'
+
+                    },
+
+                    {
+                        extend: 'excel',
+                        text: '<i class="mdi mdi-file-excel"></i>',
+                        className: 'btn-success',
+                        titleAttr: 'Export to excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        text: '<i class="mdi mdi-file-pdf"></i>',
+                        className: 'btn-danger',
+                        titleAttr: 'Export to PDF',
+                        //exportOptions: {
+                        //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        //}
+
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="mdi mdi-printer"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Print Table'
+                    }
+
+                ],
+                select: true,
+                select: 'single',
+                'paging': false,
+                'info': false,
+                "scrollX": true
+
+            });
+
+            function CurrentDate() {
+                var date = new Date();
+                var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var currentdate = date.getDate() + '-' + month[date.getMonth()] + '-' + date.getFullYear();
+                return currentdate;
+            }
+
+
+            $("#EmpId").change(function () {
+                clearData();
+                incrementTable.clear().draw();
+                employeeId = parseInt($(this).val());
+                $("#loading").css("display", "inline");
+                console.log(employeeId);
+                //alert('wait');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetEmployeeInfo", "HR")',
+                    dataType: "json",
+                    data: { empid: employeeId },
+                    success: function (data) {
+                        console.log("data", data);
+                        $('#ComId').val(data.EmpInfo[0].ComId);
+                        $("#EmpName").val(data.EmpInfo[0].EmpName);
+                        $("#NewEmpName").val(data.EmpInfo[0].EmpName);
+                        $("#New_EmpCode").val(data.EmpInfo[0].EmpCode);
+                        $("#DtJoin").val(data.EmpInfo[0].DtJoin);
+                        $("#DtConfirm").val(data.EmpInfo[0].DtConfirm);
+                        $("#DesigName").val(data.EmpInfo[0].DesigName);
+                        //New add DeptName
+                        $("#DeptName").val(data.EmpInfo[0].DeptName);
+                        $("#SectName").val(data.EmpInfo[0].SectName);
+                        $("#ShiftName").val(data.EmpInfo[0].ShiftName);
+                        $("#UnitName").val(data.EmpInfo[0].UnitName);
+                        $("#EmpTypeName").val(data.EmpInfo[0].EmpTypeName);
+                        $("#FingerId").val(data.EmpInfo[0].FingerId);
+                        $("#LineName").val(data.EmpInfo[0].LineName);
+                        $("#FloorName").val(data.EmpInfo[0].FloorName);
+                        $('#save').show();
+                      
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+
+            function incrementData(employeeId) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LoadTransferGrid", "HR")',
+                    dataType: "json",
+                    data: { empid: employeeId },
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            $('#incrementTable').dataTable().fnAddData(
+                                [
+                                    data[i].IncrementId,
+                                    data[i].EmpCode,
+                                    data[i].EmpName,
+                                    data[i].IncrementType,
+                                    data[i].DtIncrement,
+                                    data[i].OldDesigId,
+                                    data[i].NewDesigId,
+                                    data[i].OldDeptId,
+                                    data[i].NewDeptId,
+                                    data[i].OldSectId,
+                                    data[i].NewSectId,
+                                    data[i].OldEmpTypeId,
+                                    data[i].NewEmpTypeId
+                                ]
+
+                            );
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            }
+
+
+
+            $('#increment').click(function () {
+
+            });
+
+            function clearData() {
+                $("#OldDesigId").val(null);
+                $("#OldDesigId").change();
+
+                $("#NewDesigId").val(null);
+                $("#NewDesigId").change();
+
+                $("#OldDeptId").val(null);
+                $("#OldDeptId").change();
+
+                $("#NewDeptId").val(null);
+                $("#NewDeptId").change();
+
+                $("#OldEmpCode").val("");
+                $("#NewEmpCode").val("");
+
+                $("#OldSectId").val(null);
+                $("#OldSectId").change();
+
+                $("#NewSectId").val(null);
+                $("#NewSectId").change();
+
+                $("#OldStatus").val(null);
+                $("#OldStatus").change();
+
+                $("#NewStatus").val(null);
+                $("#NewStatus").change();
+                //$('.incrementTable').empty();
+            }
+
+
+            
+            function checkData() {
+
+                var DtIncrement = $("#DtIncrement").val();
+                employeeId = $("#EmpId").val();
+
+                if (DtIncrement.length === 0 || employeeId.length === 0) {
+                    $(".messageDiv").html("Please provide all information");
+                    $('.myMessage').fadeIn('fast').delay(2200).fadeOut(400);
+                    return false;
+                }
+
+                if ($("#IncTypeId").val() == "0") {
+                    toastr.warning("Select Increment Type");
+                    return false;
+                }
+
+                //let NewBS = $.trim($("#NewBS").val());
+                //let NewSalary = $.trim($("#NewSalary").val());
+                //let NewHR = $.trim($("#NewHR").val());
+                //let NewTa = $.trim($("#NewTA").val());
+                //let NewFa = $.trim($("#NewFA").val());
+
+                //if ( NewTa == "" || NewFa == "") {
+                //    toastr.warning("Please provide update salary data");
+                //    return false;
+                //}
+
+                return true;
+            }
+
+            // $("#save").click(function (event) {
+            //     var empName = $("#EmpName").val(); // Corrected line
+                
+
+            //     var confirmationMessage = "Employee " + empName + " has been transferred to " + SelectedComName + ". Have you checked all data (Transfer)?";
+            //     //ConfirmDialog('Have you Checked all data (HR, HRExp, HRExpOther)?');
+            //     if (confirm(confirmationMessage)) {
+            //         saveTransferEmp();
+            //     }
+            // });
+
+            // $("#save").click(function (event) {
+            //     var empName = $("#EmpName").val(); // Corrected line
+
+            //     // Get all the selected names
+            //     var selectedNames = [];
+            //     selectedNames.push("Employee Name: " + empName);
+            //     selectedNames.push("Company Name: " + SelectedComName);
+            //     selectedNames.push("Unit: " + $("#NewUnitId option:selected").text());
+            //     selectedNames.push("Department: " + $("#NewDeptId option:selected").text());
+            //     selectedNames.push("Designation: " + $("#NewDesigId option:selected").text());
+            //     selectedNames.push("Section: " + $("#NewSectId option:selected").text());
+            //     selectedNames.push("Shift: " + $("#NewShiftId option:selected").text());
+            //     selectedNames.push("Employee Code: " + $("#New_EmpCode").val());
+            //     selectedNames.push("Line: " + $("#NewLineId option:selected").text());
+            //     selectedNames.push("Floor: " + $("#NewFloorId option:selected").text());
+            //     selectedNames.push("Employee Type: " + $("#NewEmpTypeId option:selected").text());
+            //     selectedNames.push("Transfer Date: " + $("#TransferDate").val());
+
+            //     // Construct the confirmation message
+            //     var confirmationMessage = "Employee " + empName + " has been transferred to " + SelectedComName + ".\n\n" +
+            //         "Transfer Details:\n" + selectedNames.join("\n");
+
+            //     // Show the confirmation dialog
+            //     if (confirm(confirmationMessage)) {
+            //         saveTransferEmp();
+            //     }
+
+            //     // Display selected names below the form
+            //     $("#selectedNamesContainer").empty(); // Clear previous selections
+            //     selectedNames.forEach(function (name) {
+            //         $("#selectedNamesContainer").append("<p>" + name + "</p>");
+            //     });
+            // });
+
+            $("#save").click(function (event) {
+                var empName = $("#EmpName").val(); // Corrected line
+
+                // Get all the selected names
+                var selectedNames = [];
+                selectedNames.push("Employee Code: " + $("#New_EmpCode").val());
+                selectedNames.push("Employee Name: " + empName);
+                selectedNames.push("Company Name: " + SelectedComName);
+                selectedNames.push("Unit: " + $("#NewUnitId option:selected").text());
+                selectedNames.push("Department: " + $("#NewDeptId option:selected").text());
+                selectedNames.push("Designation: " + $("#NewDesigId option:selected").text());
+                selectedNames.push("Section: " + $("#NewSectId option:selected").text());
+                selectedNames.push("Shift: " + $("#NewShiftId option:selected").text());
+                
+                selectedNames.push("Line: " + $("#NewLineId option:selected").text());
+                selectedNames.push("Floor: " + $("#NewFloorId option:selected").text());
+                selectedNames.push("Employee Type: " + $("#NewEmpTypeId option:selected").text());
+                selectedNames.push("Transfer Date: " + $("#TransferDate").val());
+
+                // Construct the confirmation message
+                var confirmationMessage = "Employee " + empName + " has been transferred to " + SelectedComName + ".\n\n" +
+                    "Transfer Details:\n" + selectedNames.join("\n");
+
+                // Show the confirmation modal with selected names
+                $("#selectedNamesContainer").empty(); // Clear previous selections
+                selectedNames.forEach(function (name) {
+                    $("#selectedNamesContainer").append("<p>" + name + "</p>");
+                });
+                $("#confirmationModal").modal("show");
+            });
+
+            // Handle confirm transfer button click
+            $("#confirmTransferBtn").click(function () {
+                // Perform transfer action here
+                saveTransferEmp();
+            });
+
+
+
+
+            function saveTransferEmp() {
+                var empDetails = {
+                    NewComId: $.trim($("#CompanyCode").val()), // corrected selector
+                    EmpId: parseInt($("#EmpId").val()),
+                    NewEmpCode: $.trim($("#New_EmpCode").val()), // corrected selector
+                    EmpName: $("#EmpName").val(),
+                    NewUnitId: $.trim($("#NewUnitId").val()), // corrected selector
+                    NewDeptId: $.trim($("#NewDeptId").val()),
+                    NewSectId: $.trim($("#NewSectId").val()),
+                    NewDesigId: $.trim($("#NewDesigId").val()), // corrected selector
+                    NewShiftId: $.trim($("#NewShiftId").val()),
+                    NewEmpTypeId: $.trim($("#NewEmpTypeId").val()),
+                    NewLineId: $.trim($("#NewLineId").val()),
+                    NewFloorId: $.trim($("#NewFloorId").val()),
+                    FingerId: $.trim($("#FingerId").val()),
+                    TransferDate: $("#TransferDate").val(),
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveEmpTransfer", "HR")/',
+                    dataType: "json",
+                    data: {
+                        empDetails: empDetails
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+                            alert('Employee Transferred Successfully');
+                            clearData();
+                            location.reload();
+                        }
+                        else {
+                            alert('Error occured. Please retry..');
+                        }
+                    }
+                });
+            }
+            
+            $('#clear').click(function () {
+                clearData();
+                location.reload();
+                $('#save').show();
+            });
+
+            var deletableIncrementId = 0;
+            var incrows;
+            var incid;
+
+            /////// Update Increment Record///////
+            $(document).on("click", "#incrementTable tbody tr", function (e) {
+
+
+                incrows = incrementTable.rows('.selected').data();
+                incid = incrows[0][0];
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetTransferInfo", "HR")',
+                    dataType: "json",
+                    data: { IncId: incid },
+                    success: function (data) {
+                        $("#IncId").val(data[0].IncId);
+                        $("#EmpCode").val(data[0].EmpCode);
+                        $("#EmpName").val(data[0].EmpName);
+                        $("#SectName").val(data[0].SectName);
+                        $("#DeptName").val(data[0].DeptName);
+                        $("#DesigName").val(data[0].DesigName);
+                        $("#OldStatus").val(data[0].OldEmpTypeId);
+                        $("#NewStatus").val(data[0].NewEmpTypeId);
+                        $("#DesigNameOld").val(data[0].DesigNameOld);
+                        $("#DeptNameOld").val(data[0].DeptNameOld);
+                        $("#SectNameOld").val(data[0].SectNameOld);
+                        $("#EmpTypeNameOld").val(data[0].EmpTypeNameOld);
+                        $("#IncType").val(data[0].IncType);
+                        /*$('#DtIncrement').val(CurrentDate());*/
+                        $("#DtIncrement").val(data[0].DtIncrement);
+                        $("#DtInput").val(data[0].DtInput);
+                        $("#IncTypeId").val(data[0].IncTypeId).change();
+                        $('#update').show();
+                        $('#delete').show();
+                        $('#save').hide();
+
+
+                        //$("#IncId").val(data[0].IncId);
+                        //$("#EmpCode").val(data[0].EmpCode);
+                        //$("#EmpName").val(data[0].EmpName);
+                        //$("#SectName").val(data[0].SectName);
+                        //$("#DeptName").val(data[0].DeptName);
+                        //$("#DesigName").val(data[0].DesigName);
+                        //$("#OldStatus").val(data[0].OldEmpTypeId);
+                        //$("#NewStatus").val(data[0].NewEmpTypeId);
+                        //$("#DesigNameOld").val(data[0].DesigNameOld);
+                        //$("#DeptNameOld").val(data[0].DeptNameOld);
+                        //$("#SectNameOld").val(data[0].SectNameOld);
+                        //$("#EmpTypeNameOld").val(data[0].EmpTypeNameOld);
+                        //$("#IncType").val(data[0].IncType);
+                        //$("#DtIncrement").val(data[0].DtIncrement);
+                        //$("#DtInput").val(data[0].DtInput);
+                        //$("#IncTypeId").val(data[0].IncTypeId);
+                        //$('#update').show();
+                        //$('#delete').show();
+                        //$('#save').hide();
+                        //console.log("Double Click Active" + data);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+            });
+
+            $('#update').click(function () {
+
+                if (!checkData()) {
+                    return false;
+                }
+
+                if (!confirm('Have you Checked all data (Transfer)?')) {
+                    return false;
+                }
+                if (incid < 1) {
+                    toastr.warning("Select increment data");
+                    return false;
+                }
+
+                var anIncrement = {
+
+                    ComId: $('#ComId').val(),
+                    DtInput: $.trim($("#DtInput").val()),
+                    EmpId: $.trim($("#EmpId").val()),
+                    IncTypeId: $.trim($("#IncTypeId").val()),
+                    OldDesigId: $.trim($("#OldDesigId").val()),
+                    NewDesigId: $.trim($("#NewDesigId").val()),
+                    OldDeptId: $.trim($("#OldDeptId").val()),
+                    NewDeptId: $.trim($("#NewDeptId").val()),
+                    OldEmpCode: $.trim($("#OldEmpCode").val()),
+                    NewEmpCode: $.trim($("#NewEmpCode").val()),
+                    OldSectId: $.trim($("#OldSectId").val()),
+                    NewSectId: $.trim($("#NewSectId").val()),
+                    OldType: $.trim($("#OldStatus").val()),
+                    NewType: $.trim($("#NewStatus").val()),
+                    DtIncrement: $('#DtIncrement').val(),
+                    IncId: incid
+
+                };
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveTransferInfo", "HR")',
+                    dataType: "json",
+                    data: { hR_Emp_Increment: anIncrement },
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile("1", data.ex);
+                            location.reload();
+
+                            $('#save').show();
+                            $('#delete').hide();
+                            $('#update').hide();
+                        }
+                        else {
+                            toastr.error(data.ex)
+                        }
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+            });
+
+            ///////Delete Increment Record ////////
+            $('#delete').click(function () {
+
+                var r = confirm("Are you sure to delete Transfer Information?");
+                if (!r) {
+                    return false;
+                }
+
+                if (incid < 1) {
+                    toastr.warning("Select Transfer data");
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteTransfer", "HR")',
+                    dataType: "json",
+                    data: { id: incid },
+                    success: function (data) {
+                        toastr.success(data.ex);
+                        location.reload();
+                        $('#save').show();
+                        $('#delete').hide();
+                        $('#update').hide();
+                    },
+                    error: function () {
+                        toastr.success("Something wrong");
+                    }
+                });
+
+            });
+        });
+    </script>
+}

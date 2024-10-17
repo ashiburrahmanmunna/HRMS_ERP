@@ -1,0 +1,89 @@
+﻿@model GTERP.Models.Survey
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<div class="row">
+    <div class="col">
+        <div id="surveyContainer"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://surveyjs.azureedge.net/1.5.8/survey.jquery.min.js"></script>
+    <script>
+        var surveyJSON = {
+            title: "Tell us, what technologies do you use?", questions: [
+                { type: "radiogroup", choices: ["Yes", "No"], isRequired: true, name: "frameworkUsing", title: "Do you use any front-end framework like Bootstrap?" },
+                { type: "checkbox", choices: ["Bootstrap", "Foundation"], hasOther: true, isRequired: true, name: "framework", title: "What front-end framework do you use?", visibleIf: "{frameworkUsing} = 'Yes'" },
+                { type: "radiogroup", choices: ["Yes", "No"], isRequired: true, name: "mvvmUsing", title: "Do you use any MVVM framework?" },
+                { type: "checkbox", choices: ["AngularJS", "KnockoutJS", "React"], hasOther: true, isRequired: true, name: "mvvm", title: "What MVVM framework do you use?", visibleIf: "{mvvmUsing} = 'Yes'" },
+                { type: "comment", name: "about", title: "Please tell us about your main requirements for Survey library" }
+            ]
+        };
+
+        Survey.StylesManager.applyTheme("bootstrap");
+        let survey = new Survey.Model(surveyJSON);
+
+
+        $("#surveyContainer").Survey({
+            model:survey,
+            //data: surveyResult,
+            onComplete:saveSurvey
+        });
+
+        //$("#surveyContainer").Survey({
+        //    model: survey,
+        //    data: surveyResult,
+        //    onComplete: saveSurvey
+        //});
+
+        function saveSurvey(survey) {
+            console.log(survey.data);
+
+            @*let result = JSON.stringify(survey.data)
+            $.ajax({
+               url: '@Url.Action("Create", "Survey")',
+
+                data: JSON.stringify({ SurveyResult: "asdfa" }),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                }
+            });*@
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            
+
+             $.ajax({
+                  type: 'POST',                  
+                  url: '@Url.Action("Create", "Survey")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 data: { SurveyResult: JSON.stringify(survey.data) },
+                 success: function (data) {
+                     console.log(data);
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                    
+                 }
+             });
+
+
+            @*$.ajax({
+                type: "POST",
+                 url: '@Url.Action("Create", "Survey")',
+                data: {
+                    data: { SurveyResult: "himuuu" }
+                }
+            })
+                .done(function (data) {
+                    //window.location.href = '@Url.Action("Index", "Survey")';
+                    console.log(data);
+                });*@
+        }
+    </script>
+}

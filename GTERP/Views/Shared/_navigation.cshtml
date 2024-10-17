@@ -1,0 +1,471 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+@{
+    var activemenuid = HttpContextAccessor.HttpContext.Session.GetInt32("activemenuid");
+    string menu = "ms";
+    string menutest = "ams";
+    <div class="horizontal-menu">
+        <nav class="navbar top-navbar">
+            <div class="navbar-menu-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+
+                        <div class="col-md-3 col-4">
+                            <ul class="navbar-nav">
+                                <li class="d-lg-flex">
+                                    @{
+                                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                        {
+
+                                            <sidebar>
+                                                <button class="app-menu__button" id="navbox-trigger">
+                                                    <div class="app-icon">
+                                                        <span class="app-icon__component bg-danger"></span>
+                                                        <span class="app-icon__component bg-primary"></span>
+                                                        <span class="app-icon__component bg-success"></span>
+                                                        <span class="app-icon__component bg-warning"></span>
+                                                        <span class="app-icon__component bg-info"></span>
+                                                        <span class="app-icon__component bg-danger"></span>
+                                                        <span class="app-icon__component bg-info"></span>
+                                                        <span class="app-icon__component bg-success"></span>
+                                                        <span class="app-icon__component bg-danger"></span>
+                                                    </div>
+                                                </button>
+                                            </sidebar>
+                                            @*
+                    </a>*@
+
+
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+                                </li>
+                                <li class="text-center navbar-brand-wrapper text-left">
+                                    @*@if (HttpContextAccessor.HttpContext.Session.GetString("activemodulename").ToUpper().ToString() != null)
+            {
+            <a class="navbar-brand" href="index.html">HRMS @HttpContextAccessor.HttpContext.Session.GetString("activemodulename").ToUpper().ToString()</a>
+            }
+            else
+            {
+            <a class="navbar-brand" href="index.html">HRMS </a>
+            }*@
+                                    <a class="navbar-brand" href="~/Home">HRMS</a>
+                                </li>
+                                <li class="d-lg-flex">
+                                    @{
+                                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                        {
+                                         @*<a class="btn btn-primary" style="border-radius:90%" href="~/TutorialCertificate/GetAllModuleName"><b>Certificate</b></a>*@
+                                    } }
+                                    </li>
+
+                                </ul>
+                        </div>
+                        <div class="col-md-4 d-none d-sm-block py-1">
+                            @{
+                                @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                {
+
+                                    <div class="input-group nav-search">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                        </div>
+                                        <input type="text" id="tags" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
+                                    </div>
+
+                                }
+                                else
+                                {
+
+                                }
+                            }
+
+                        </div>
+                        <div class="col-md-5 col-8 d-flex justify-content-end">
+                            <ul class="navbar-nav">
+                                <li class="nav-item pt-3">
+                                    @{
+                                        var companyName = HttpContextAccessor.HttpContext.Session.GetString("CompanyName");
+                                        if (companyName is not null)
+                                        {
+                                            <h6 style="color:dimgray">@companyName</h6>
+                                        }
+                                    }
+                                </li>
+                                @{
+                                    var exprireDays = HttpContextAccessor.HttpContext.Session.GetString("RemainingDay");
+                                    var exprireDate = HttpContextAccessor.HttpContext.Session.GetString("ExpireDate");
+
+                                    if (exprireDays is not null && exprireDate is not null)
+                                    {
+
+                                        <li class="nav-item nav-profile dropdown pt-1">
+                                            <a class="nav-link" href="#" data-toggle="collapse" data-target="#expireNotification">
+                                                <i class="far fa-bell fa-lg pl-1"><span class="badge badge-warning navbar-badge" style="font-size:10px">1</span></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="expireNotification" id="expireNotification" style="width:184px;">
+                                                                                <a class="dropdown-item text-wrap" style="text-indent: -1.2em; padding-left: 38px;"><i class="fas fa-exclamation-triangle fa-sm text-danger pl-1"></i> Your product license will be expired on<b> @exprireDate</b>.<br /><b>@exprireDays</b> days left.</a>
+                                            </div>
+                                        </li>
+
+                                    }
+                                }
+                                <li>
+                                    @{
+                                        var Companys = HttpContextAccessor.HttpContext.Session.GetObject<List<CompanyUser>>("UserCompanys");
+                                        var comid = HttpContextAccessor.HttpContext.Session.GetString("comid");
+
+
+
+                                        if (Companys != null)
+                                        {
+
+                                            @Html.DropDownList("company", new SelectList(Companys, "ComId", "CompanyName", comid), new { @class = "custom-select"@*, @disabled = "disabled"*@ })
+
+                                            @*<select id="company" class="custom-select">
+
+                                                    @foreach (var item in UserCompanys)
+                                                    {
+
+                                                        <option value="@item.ComId">@item.CompanyName</option>
+
+                                                    }
+
+                                                </select>*@
+
+
+                                        }
+                                    }
+                                </li>
+                                <li class="nav-item">
+                                    <partial name="_LoginPartial" />
+                                    @*@Html.Partial("_LoginPartial")*@
+                                </li>
+                                <li class="divHide d-none d-sm-block">
+                                    @{
+                                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                        {
+                                            //HttpContext.Session.GetInt32("ishidemenu");
+                                            var ishide = HttpContextAccessor.HttpContext.Session.GetInt32("ishidemenu");
+                                            if (ishide == 1)
+                                            {
+                                                <span class="mdi mdi-eye-off fa-2x"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="mdi mdi-eye fa-2x"></span>
+                                            }
+                                        }
+
+                                    }
+                                </li>
+                                <li>
+                                    @{
+                                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                        {
+                                            <button class="navbar-toggler navbar-toggler-right d-block d-sm-none d-flex" type="button" data-toggle="collapse" data-target="#mobMenu" aria-controls="mobMenu" aria-expanded="false" aria-label="Toggle navigation">
+                                                <span class="mdi mdi-menu"></span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+
+                                </li>
+
+                            </ul>
+
+                            @*<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="mdi mdi-menu"></span>
+                                </button>*@
+                        </div>
+                        @* mobile view *@
+                        <div class="col-12 d-block d-sm-none">
+                            @{
+                                @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+                                {
+                                    <div class="input-group nav-search">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                        </div>
+                                        <input type="text" id="tagsmob" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
+                                    </div>
+                                }
+                                else
+                                {
+
+                                }
+                            }
+
+                        </div>
+                        @* mobile view end*@
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <nav class="bottom-navbar navbar-expand-md">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse">
+                    @{
+                        //Commercial.Models.GTRDBContext db = new GTERP.Models.GTRDBContext();
+                        //var moduleMenus = db.ModuleMenus.Where(m => m.isInactive == 0).ToList();
+                        //GTERP.Models.Himu.TempMenu.tempMenus;// a = new GTERP.Models.Himu.TempMenu();
+
+                        if (activemenuid != null)
+                        {
+
+
+                            var AllMenu = HttpContextAccessor.HttpContext.Session.GetObject<List<UserMenuPermission>>("UserMenu");
+                            if (AllMenu != null)
+                            {
+                                var parentMenu = AllMenu.OrderBy(x => x.SLNo).Where(x => x.isParent == 1 && x.Visible == true).ToList();
+                                var SubMenu = new List<UserMenuPermission>();
+                                //HttpContextAccessor.HttpContext.Session.GetObject<List<UserMenuPermission>>("Menus");
+
+                                <div class="col-md-12 col-12">
+                                    <ul class="nav nav-tabs notika-menu-wrap">
+                                        @if (parentMenu != null)
+                                        {
+                                            foreach (var item in parentMenu)
+                                            {
+                                                if (item.Active)
+                                                {
+                                                    <li class="mt-1 active">
+                                                        <a class="tab active" data-toggle="tab" href="#@menu@item.ModuleMenuId" id="@menutest@item.ModuleMenuId">@item.ModuleMenuCaption</a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="mt-1 @item.ModuleMenuClass">
+                                                        <a class="tab" data-toggle="tab" href="#@menu@item.ModuleMenuId" id="@menutest@item.ModuleMenuId">@item.ModuleMenuCaption</a>
+                                                    </li>
+                                                }
+
+                                            }
+                                        }
+
+                                    </ul>
+                                    <div class="tab-content custom-menu-content mt-2">
+                                        @if (parentMenu != null)
+                                        {
+                                            foreach (var item in parentMenu.OrderBy(x => x.SLNo))
+                                            {
+                                                if (item.isParent == 1)
+                                                {
+                                                    if (item.Active == true)
+                                                    {
+                                                        <div id="@menu@item.ModuleMenuId" class="active tab-pane in notika-tab-menu-bg animated flipInX border-top-1" style="border-top: 1px solid #e2e2e2">
+                                                            <ul class="notika-main-menu-dropdown row p-0 m-0">
+
+                                                                @{
+                                                                    var newModuleMenus = AllMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                    foreach (var item1 in newModuleMenus.OrderBy(x => x.SLNo))
+                                                                    {
+
+                                                                        if (item1.Active == true && !item1.ModuleMenuCaption.ToUpper().Contains("Default".ToUpper()))
+                                                                        {
+
+                                                                            <title id="title">
+                                                                                GTERP + @item1.ModuleMenuCaption
+                                                                            </title>
+
+                                                                            <li class="col-md-2 col-6 p-0"><a id="@item1.ModuleMenuId" class="titlecaption dropdown-item clickeditem active showReadMore" href="~/@item1.ModuleMenuLink"><i class="mdi mdi-open-in-new"></i>@item1.ModuleMenuCaption</a></li>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <li class="col-md-2 col-6 p-0"><a id="@item1.ModuleMenuId" class="dropdown-item clickeditem @item1.ModuleMenuClass showReadMore" href="~/@item1.ModuleMenuLink"><i class="mdi mdi-open-in-new"></i>@item1.ModuleMenuCaption</a></li>
+
+                                                                        }
+                                                                    }
+
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <div id="@menu@item.ModuleMenuId" class="tab-pane in notika-tab-menu-bg animated flipInX border-top-1" style="border-top: 1px solid #e2e2e2">
+                                                            <ul class="notika-main-menu-dropdown row p-0 m-0">
+
+                                                                @{
+                                                                    var newModuleMenus = AllMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                    foreach (var item1 in newModuleMenus.OrderBy(x => x.SLNo))
+                                                                    {
+                                                                        <li class="col-md-2 col-6 p-0">
+                                                                            <a id="@item1.ModuleMenuId" class="dropdown-item clickeditem  @item1.ModuleMenuClass showReadMore" href="~/@item1.ModuleMenuLink">
+                                                                                <i class="mdi mdi-open-in-new"></i>
+                                                                                @item1.ModuleMenuCaption
+                                                                            </a>
+                                                                        </li>
+                                                                    }
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+
+                                            ////checked by fahad
+                                            @*foreach (var item in SubMenu)
+                                                {
+                                                    if (item.isParent == 0)
+                                                    {
+                                                        if (item.Active == true)
+                                                        {
+                                                            <div id="@menu@item.ModuleMenuId" class="active tab-pane in notika-tab-menu-bg animated flipInX border-top-1" style="border-top: 1px solid #e2e2e2">
+                                                                <ul class="notika-main-menu-dropdown row p-0 m-0">
+
+                                                                    @{
+                                                                        var newModuleMenus = SubMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                        foreach (var item1 in newModuleMenus)
+                                                                        {
+
+                                                                            if (item1.Active == true)
+                                                                            {
+                                                                                <li class="col-md-2 col-6 p-0"><a class="dropdown-item clickeditem active" href="~/@item1.ModuleMenuLink"><i class="mdi mdi-open-in-new"></i>@item1.ModuleMenuCaption</a></li>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <li class="col-md-2 col-6 p-0"><a class="dropdown-item clickeditem" href="~/@item1.ModuleMenuLink"><i class="mdi mdi-open-in-new"></i>@item1.ModuleMenuCaption</a></li>
+
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div id="@menu@item.ModuleMenuId" class="tab-pane in notika-tab-menu-bg animated flipInX border-top-1" style="border-top: 1px solid #e2e2e2">
+                                                                <ul class="notika-main-menu-dropdown row p-0 m-0">
+
+                                                                    @{
+                                                                        var newModuleMenus = SubMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                        foreach (var item1 in newModuleMenus)
+                                                                        {
+                                                                            <li class="col-md-2 col-6 p-0"><a class="dropdown-item clickeditem" href="~/@item1.ModuleMenuLink"><i class="mdi mdi-open-in-new"></i>@item1.ModuleMenuCaption</a></li>
+                                                                        }
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                        }
+                                                    }
+                                                }*@
+                                        }
+
+
+                                    </div>
+                                </div>
+                            }
+
+                        }
+                    }
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+
+}
+
+<!--toggle Menu start-->
+@{
+    var Modules = HttpContextAccessor.HttpContext.Session.GetObject<List<GTERP.Models.Module>>("Modules");
+    var ModuleMenuPrent = HttpContextAccessor.HttpContext.Session.GetObject<List<GTERP.Models.ModuleMenu>>("ModuleMenuPrent");
+
+    <div id="navigation-bar" class="navigation-bar">
+        <div class="navbox  container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-xs-12">
+                    <div class="navbox-tiles menu first nav-tabs">
+                        <ul class="p-0">
+
+                            @if (Modules != null)
+                            {
+                                foreach (var item in Modules)
+                                {
+                                    if (item.ModuleId.ToString() == activemenuid.ToString())
+                                    {
+                                        <li class="active">
+                                            <a data-toggle="tab" href="#m_@item.ModuleId" id="@item.ModuleId" class="@item.ModuleClassa active">
+                                                <div class="icon"><i class="@item.ModuleClassi"></i></div>
+                                                <span class="title">@item.ModuleName</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a data-toggle="tab" href="#m_@item.ModuleId" id="@item.ModuleId" class="@item.ModuleClassa">
+                                                <div class="icon"><i class="@item.ModuleClassi"></i></div>
+                                                <span class="title">@item.ModuleName</span>
+                                            </a>
+                                        </li>
+                                    }
+
+                                }
+                            }
+
+
+                        </ul>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-6 col-xs-12 second menu tab-content">
+                    @if (Modules != null)
+                    {
+
+                        foreach (var module in Modules)
+                        {
+                            <div id="m_@module.ModuleId" class="tab-pane fade in">
+                                <div class="navbox-tiles nav">
+
+                                    @if (ModuleMenuPrent != null)
+                                    {
+                                        var parentMenus = ModuleMenuPrent.Where(m => m.ModuleId == module.ModuleId).ToList();
+                                        foreach (var item in parentMenus)
+                                        {
+                                            <a href="#@menutest@item.ModuleMenuId" class="title">
+                                                <div class="icon"><i class="@item.ModuleMenuClassi"></i></div>
+                                                <span class="title">@item.ModuleMenuCaption</span>
+                                            </a>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+<!--toggle Menu end-->
+
+
+<div>
+    <p id="geolocation"></p>
+
+</div>
+
+
+
+

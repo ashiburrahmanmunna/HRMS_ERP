@@ -1,0 +1,717 @@
+﻿@model GTERP.Models.BudgetMain
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Total = "";
+}
+
+@if (Model != null)
+{
+
+    @Html.HiddenFor(model => model.BudgetMainId)
+    @Html.HiddenFor(model => model.UserId)
+    @Html.HiddenFor(model => model.ComId)
+    @Html.HiddenFor(model => model.DateAdded)
+    @Html.HiddenFor(model => model.DateUpdated)
+
+
+}
+else
+{
+    <input type="hidden" id="BudgetMainId" name="BudgetMainId" value="" />
+    <input type="hidden" id="UserId" name="UserId" value="" />
+    <input type="hidden" id="ComId" name="ComId" value="" />
+
+}
+
+
+<div class="container">
+<div id="divProformaInvoice" class="row">
+    <div class="col-md-12 order-md-1 mb-2">
+        <div class="table-responsive card p-5">
+            <div class="text-center">
+                <h2>Budget @ViewBag.Title</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2" id="divstyle">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                Year
+                            </span>
+                        </div>
+                        @Html.DropDownList("FiscalYearId", ViewBag.FiscalYearId as List<SelectListItem>, "Select Year", new { id = "FiscalYearId", @class = "form-control form-control-sm" })
+                        <input type="hidden" id="distqty" />
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2" id="divstyle">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                Month
+                            </span>
+                        </div>
+                        @Html.DropDownList("FiscalMonthId", ViewBag.FiscalMonthId as List<SelectListItem>, "Select Month", new { id = "FiscalMonthId", @class = "form-control form-control-sm" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2" id="divstyle">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                Account Group
+                            </span>
+                        </div>
+                        @Html.DropDownList("ParentId", ViewBag.ParentId as List<SelectListItem>, "Select Group Head", new { id = "ParentId", @class = "form-control form-control-sm" })
+                    </div>
+                </div>
+                <div class="col-md-5 col-12">
+                    <div class="input-group mb-2" id="divDistAllotment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                Total Debit
+                            </span>
+                        </div>
+                        @Html.TextBoxFor(Model => Model.TotalBudgetDebit, new { id = "TotalBudgetDebit", @class = "form-control", @readonly = "readonly" })
+                        @*@Html.TextBox("TotalBudgetDebit", "", new { id = "TotalBudgetDebit", @class = "form-control form-control-sm", @readonly = "readonly" })*@
+
+                    </div>
+                </div>
+                <div class="col-md-5 col-12">
+                    <div class="input-group mb-2" id="divAllotment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                Total Credit
+                            </span>
+                        </div>
+                        @Html.TextBoxFor(Model => Model.TotalBudgetCredit, new { id = "TotalBudgetCredit", @class = "form-control", @readonly = "readonly" })
+                        @*@Html.TextBox("TotalBudgetCredit", "", new { id = "TotalBudgetCredit", @class = "form-control form-control-sm", @readonly = "readonly" })*@
+                    </div>
+                </div>
+                <div class="col-md-2 col-12">
+                    <button type="button" onclick="btnloadfunction()" id="Load" class="btn btn-primary btn-block rounded-0">Load Data</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card p-3 my-3">
+            <div class="table-responsive text-nowrap">
+                <table id="tblBookindata" class="tblProform table table-striped table-bordered table-hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Budget Main Id</th>
+                            <th>Budget Details Id</th>
+                            <th>Fiscal Year Id</th>
+                            <th>Fiscal Month Id</th>
+                            <th>Fiscal Year</th>
+                            <th>Fiscal Month</th>
+                            <th>Parent Code</th>
+                            <th>ParentName Name</th>
+                            <th>AccId</th>
+                            <th>Account Code</th>
+                            <th>Account Name</th>
+                            <th>Budget Debit</th>
+                            <th>Budget Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            @if (Model.BudgetDetails != null)
+                            {
+                                foreach (var item in Model.BudgetDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BudgetMainId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BudgetDetailsId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => m.FiscalYearId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => m.FiscalMonthId)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => m.YearName.FYName)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => m.MonthName.MonthName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.Acc_ChartOfAccounts.ParentChartOfAccount.AccCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.Acc_ChartOfAccounts.ParentChartOfAccount.AccName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.AccId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.Acc_ChartOfAccounts.AccCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.Acc_ChartOfAccounts.AccName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BudgetDebit)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BudgetCredit)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+
+                        <tr>
+                            <td class="text-right" colspan="11">
+                                <h4>
+                                    Total 
+                                </h4>
+                            </td>
+                            <td colspan="1">
+                                <h4 class="ttlbudgetdebit">0.00</h4>
+                            </td>
+                            <td colspan="1">
+                                <h4 class="ttlbudgetcredit">0.00</h4>
+                            </td>
+                        </tr>
+
+                    </tfoot>
+
+
+
+
+                </table>
+                <div>
+                    @if (ViewBag.Title == "Create")
+                    {
+                        <div class="text-center">
+
+                            <span>
+                                <input type="submit" class="btn btn-warning rounded-0" id="selectall" name="selectall" value="Select All" />
+                            </span>
+                            <span>
+                                <button type="button" id="save" class="btn btn-primary rounded-0">Save</button>
+                            </span>
+
+                            <span>
+                                <a asp-action="BudgetList" class="btn btn-info rounded-0">Back to Budget List</a>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+        var prevdistqty = 0.00;
+
+        $('#FiscalMonthId').prop('disabled', true);
+
+        $('#FiscalYearId').select2();
+        $('#FiscalMonthId').select2();
+        $('#ParentId').select2();
+
+
+
+
+        var Budgetno = 0;
+        $('#BudgetNo').focus();
+        $("#BudgetNo").blur(function () {
+            var name = $('#BudgetNo').val();
+            if (name.length == 0) {
+                toastr.error("Budget No is Required")
+                $("#BudgetNo").focus();
+                return false;
+            }
+            else {
+                $('#BudgetNo').next(".red").remove(); // *** this line have been added ***
+                return true;
+            }
+        });
+        var Budget = [];
+        var tblBookindata;
+        tblBookindata = $('#tblBookindata').DataTable({
+            //select: true,
+            //select:'multi',
+            dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+            "aoColumns": [
+                { "sClass": "BudgetMainId", "visible": false },
+                { "sClass": "BudgetDetailsId", "visible": false },
+
+                { "sClass": "FiscalYearId", "visible": false },
+                { "sClass": "FiscalMonthId", "visible": false },
+                { "sClass": "Year", "visible": true },
+                { "sClass": "Month", "visible": true },
+
+                { "sClass": "ParentCode", "visible": true },
+                { "sClass": "ParentName", "visible": true },
+
+                { "sClass": "AccId", "visible": false },
+                { "sClass": "AccCode", "visible": true },
+                { "sClass": "AccName", "visible": true },
+                {
+                   "sClass": "BudgetDebit", "visible": true
+                },
+                {
+                    "sClass": "BudgetCredit", "visible": true
+                }
+            ],
+            columnDefs: [
+                {
+                    'targets': 11,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm txtBudgetDebit" id="BudgetDebit" name="BudgetDebit" type="text" onClick="this.select();" autocomplete="off" data-val="true" value=' + data + '>'
+                    }
+                },
+                {
+                    'targets': 12,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm txtBudgetCredit" id="BudgetCredit" name="BudgetCredit" type="text" onClick="this.select();" autocomplete="off"  data-val="true" value=' + data + '>'
+                    }
+                },
+
+
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child'
+            },
+            rowCallBack: function (row) {
+                $(row).addClass('txtBudgetDetails');
+            },
+            'bLengthChange':false,
+            //'bFilter':true,
+            'bSort':false,
+            'bInfo':true,
+            'paging': false,
+            'searching': true,
+            language: {
+                search: '',
+                searchPlaceholder: "Search..."
+            },
+        });
+
+
+        $('#DistId').change(function () {
+           // alert('ok');
+            var month = $('#FiscalMonthId option:selected').text();
+            if (month == '--Select Month--') {
+                alert('Please Select Month First');
+            }
+
+        });
+        var month = $('#FiscalMonthId option:selected').val();
+        //alert(month);
+
+
+
+        $('#tblBookindata').focusin(function () {
+
+            budgetDataCalculation();
+        })
+        $('#tblBookindata').focusout(function () {
+
+            budgetDataCalculation();
+        })
+
+
+        $('#FiscalYearId').change(function () {
+
+            GetMonthByYears();
+        })
+
+        function GetMonthByYears() {
+
+            var Year = $('#FiscalYearId option:selected').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetMonthByYear", "Accounts")',
+                dataType: 'json',
+                data: { FYId: Year },
+                success: function (data) {
+                    //console.log(data)
+                    //alert(data);
+                    var html = '<option value="0">Select Month</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $('#FiscalMonthId').html(html);
+                    $('#FiscalMonthId').attr('disabled', false);
+                },
+                error: function (ex) {
+                    toastr.error('Faild' + ex);
+                }
+            });
+            return false;
+        }
+
+        $('#FiscalMonthId').change(function () {
+
+        })
+
+
+
+        $('#ParentId').select2({})
+            .on('select2:select', function (e) {
+                if ($('#ParentId').val() > 0) {
+
+                    $('#save').prop('disabled', true);
+                    $('#selectall').prop('disabled', true);
+
+
+                    BudgetDataLoad();
+
+
+                    //tblBookindata.clear().draw();
+                    //BudgetDataLoad();
+                } else {
+
+                    BudgetDataLoad();
+
+                   // alert('Please Select PStation Information First');
+                }
+            })
+
+
+        function btnloadfunction() {
+
+            BudgetDataLoad();
+
+        }
+
+
+        function BudgetDataLoad() {
+
+
+            tblBookindata.clear().draw();
+
+            var Deler = {};
+            var Year = $('#FiscalYearId option:selected').val();
+            var Month = $('#FiscalMonthId option:selected').val();
+            var ParentId = $('#ParentId option:selected').val();
+
+            //var yearid = $('#FiscalYearId option:selected').val();
+            //var monthid = $('#FiscalMonthId option:selected').val();
+            //var ParentId = $('#ParentId option:selected').val();
+            //var BudgetMainId = $('#BudgetMainId').val();
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("BudgetDataLoadByParameter","Accounts")',
+                dataType: 'json',
+                data: { Yearid: Year, Monthid: Month, ParentId: ParentId},
+                async: false,
+                success: function (data) {
+                    if (data != 0) {
+
+                        //console.log(data);
+
+                        for (var i = 0; i < data.Acc_BudgetData.length; i++) {
+                            $('#tblBookindata').dataTable().fnAddData([
+                                data.Acc_BudgetData[i].BudgetMainId,
+                                data.Acc_BudgetData[i].BudgetDetailsId,
+
+                                data.Acc_BudgetData[i].FiscalYearId,
+                                data.Acc_BudgetData[i].FiscalMonthId,
+
+                                data.Acc_BudgetData[i].Year,
+                                data.Acc_BudgetData[i].Month,
+
+
+                                data.Acc_BudgetData[i].ParentCode,
+
+                                data.Acc_BudgetData[i].ParentName,
+
+
+                                data.Acc_BudgetData[i].AccId,
+                                //data.Acc_BudgetData[i].Year,
+                                //data.Acc_BudgetData[i].Month,
+                                data.Acc_BudgetData[i].AccCode,
+                                data.Acc_BudgetData[i].AccName,
+                                data.Acc_BudgetData[i].BudgetDebit,
+                                data.Acc_BudgetData[i].BudgetCredit
+
+                                //'<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >'
+                            ])
+                        }
+
+
+                        $('#save').prop('disabled', false);
+                        $('#selectall').prop('disabled', false);
+                        budgetDataCalculation();
+                    }
+                    else {
+                        toastr.error(data.ex);
+                    }
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            })
+        }
+
+
+
+        $('#selectall').click(function () {
+
+            var btn = $('#selectall').val();
+                if (btn == "Select All") {
+                    $('#tblBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+                    });
+                    $('#selectall').val('DeSelect All');
+                } else {
+                    $('#tblBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        };
+                    });
+                    $('#selectall').val('Select All');
+                }
+        })
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var date = new Date();
+        var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+
+        $('#save').click(function () {
+            $('input[type=search]').val('').change();
+            //if (Budget > 0) {
+            Budget_Save();
+
+
+        })
+
+
+
+
+
+        function budgetDataCalculation() {
+
+
+            $('.ttlBudget').text(0.00);
+
+            var totalDebitBudget = 0.00;
+            var totalCreditBudget = 0.00;
+
+
+            var oTable = tblBookindata.rows().nodes();
+            var rows = tblBookindata.rows().data();
+
+            for (var i = 0; i < rows.length; i++) {
+
+
+
+                var $BudgetDebit = oTable[i].cells[6].children[0].value;
+                var $BudgetCredit = oTable[i].cells[7].children[0].value;
+
+
+                if ($BudgetDebit > 0) {
+                    var numdebit = parseFloat($BudgetDebit);
+
+
+                    var cleanNumDebit = numdebit.toFixed(2);
+
+
+                    oTable[i].cells[6].children[0].value = cleanNumDebit;
+
+
+
+                    totalDebitBudget += parseFloat($BudgetDebit);
+
+
+                    oTable[i].cells[7].children[0].value = "0";
+
+                }
+                else if ($BudgetCredit > 0) {
+
+                    var numcredit = parseFloat($BudgetCredit);
+
+
+                    var cleanNumCredit = numcredit.toFixed(2);
+
+
+                    oTable[i].cells[7].children[0].value = cleanNumCredit;
+
+
+
+                    totalCreditBudget += parseFloat($BudgetCredit);
+
+
+                    oTable[i].cells[6].children[0].value = "0";
+                }
+
+
+
+
+            }
+
+            $('.ttlbudgetdebit').val(totalDebitBudget.toLocaleString());
+            $('.ttlbudgetdebit').text(totalDebitBudget.toLocaleString());
+
+            $('.ttlbudgetcredit').val(totalCreditBudget.toLocaleString());
+            $('.ttlbudgetcredit').text(totalCreditBudget.toLocaleString());
+
+
+        }
+
+
+
+        function Budget_Save() {
+
+            budgetDataCalculation();
+
+
+
+            var BudgetDetail = {
+                "BudgetMainId": "", "BudgetDetailsId": "", "AccId": "", "BudgetDebit": "", "BudgetCredit": "",  "UserId": "", "DateAdded": ""
+            };
+
+
+
+
+            // Creating Acc_VoucherMain Json Object
+            var BudgetMains = {
+                "BudgetMainId": "", "FiscalYearId": "", "FiscalMonthId": "", "TotalBudgetDebit": "", "TotalBudgetCredit": "", "DateAdded": "",
+
+                "BudgetDetails": []
+
+            };
+
+            BudgetMains.BudgetMainId = $('#BudgetMainId').val();
+            BudgetMains.FiscalYearId = $('#FiscalYearId').val();
+            BudgetMains.FiscalMonthId = $('#FiscalMonthId').val();
+            BudgetMains.TotalBudgetDebit = $('#TotalBudgetDebit').val();;
+            BudgetMains.TotalBudgetCredit = $('#TotalBudgetCredit').val();;
+            BudgetMains.DateAdded = today;
+
+
+
+
+            var rows = tblBookindata.rows('.selected').nodes().toArray();
+            // var BudgetData = tblBookindata.rows().data();
+            var BudgetData = tblBookindata.rows('.selected').data().toArray();
+
+
+
+            for (var i = 0; i < BudgetData.length; i++) {
+
+                var BudgetDebit = rows[i].cells[6].children[0].value || 0;
+                var BudgetCredit = rows[i].cells[7].children[0].value || 0;
+
+
+                if (parseFloat(BudgetDebit) + parseFloat(BudgetCredit)  > -1) {
+                    BudgetDetail.BudgetMainId = BudgetData[i][0];
+                    BudgetDetail.BudgetDetailsId = BudgetData[i][1];
+
+                    BudgetDetail.FiscalYearId = BudgetData[i][2];
+                    BudgetDetail.FiscalMonthId = BudgetData[i][3];
+
+                    BudgetDetail.AccId = BudgetData[i][8];
+
+
+                    BudgetDetail.BudgetDebit = rows[i].cells[6].children[0].value || 0;
+                    BudgetDetail.BudgetCredit = rows[i].cells[7].children[0].value || 0;
+
+                    //BudgetDetails.BudgetDebit = rows[i].cells[4].children[0].value || 0;
+                    //BudgetDetails.BudgetCredit = rows[i].cells[5].children[0].value || 0;
+
+                    BudgetDetail.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                    BudgetDetail.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+
+                    BudgetDetail.DateAdded = today;
+
+
+                    BudgetMains.BudgetDetails.push(BudgetDetail);
+
+                    BudgetDetail = {
+                        "BudgetMainId": "", "BudgetDetailsId": "", "AccId": "", "BudgetDebit": "", "BudgetCredit": "", "ComId": "", "UserId": ""
+                    };
+
+                }
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateBudget", "Accounts")',
+                dataType: 'json',
+                async: 'true',
+                data: { BudgetMains: BudgetMains },
+                success: function (data) {
+                    //console.log(data);
+                    if (data.Success == "1") {
+                        customFile('2', data.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            //alert('Enter');
+                            window.location.href = '@Url.Action("CreateBudget", "Accounts")';
+                        }, 500);
+                    }
+
+                    else {
+                        toastr.error(data.ex);
+                    }
+                },
+                error: function (ex) {
+
+                }
+            });
+
+        }
+
+
+
+
+
+                if ($('#FiscalMonthId').val() > 0)
+                {
+                    //$('#DistId').attr('disabled', false);
+                    //$('#FiscalMonthId').attr('disabled', false);
+
+                };
+
+                if ($('#FiscalMonthId').val() > 0) {
+                    //$('#DistAllotmentQty').attr('disabled', true);
+                    //$('#AllotmentQty').attr('disabled', false);
+                };
+
+                if ($('#FiscalYearId').val() > 0) {
+
+
+
+
+                } else {
+                    alert('Please Select District Information First');
+                };
+
+    </script>
+}

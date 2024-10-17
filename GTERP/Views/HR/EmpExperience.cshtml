@@ -1,0 +1,223 @@
+﻿@model GTERP.Models.HR_Emp_Info
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<h4 id="styletext">Experience Entry - @ViewBag.Title</h4>
+
+<form method="post" asp-action="EmpExperience" asp-controller="HR">
+    <input type="hidden" asp-for="EmpId" id="EmpId" />
+    <input type="hidden" asp-for="ComId" />
+    <input type="hidden" asp-for="UserId" />
+    <div id="Experience">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tblExperience">
+                <thead class="text-center">
+                    <tr>
+                        <th style="display:none">
+                            EmpExpId
+                        </th>
+                        <th>
+                            Compnay
+                        </th>
+                        <th>
+                            Designation
+                        </th>
+                        <th>
+                            Salary
+                        </th>
+                        <th>
+                            From
+                        </th>
+                        <th>
+                            To
+                        </th>
+                        <th>
+                            Experience Year
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                        <th>
+                            <input type="button" class="btn btn-sm btn-info btn-block" id="addExp" value="Add" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+
+                        foreach (var item in Model.HR_Emp_Experiences)
+                        {
+                            <tr>
+                                <td style="display:none">
+                                    @*@Html.EditorFor(modelItem => item.EmpExpId, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.EmpExpId" name="@item.EmpExpId" value="@item.EmpExpId" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.PrevCompany, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.PrevCompany" name="@item.PrevCompany" value="@item.PrevCompany" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.PrevDesignation, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.PrevDesignation" name="@item.PrevDesignation" value="@item.PrevDesignation" class="form-control" autocomplete="off" />
+                                </td>
+
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.PrevSalary, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.PrevSalary" name="@item.PrevSalary" value="@item.PrevSalary" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.DtFromJob, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.DtFromJob" name="@item.DtFromJob" value="@item.DtFromJob.Value.ToString("dd-MMM-yyyy")" class="form-control dt" autocomplete="off" id="jobFrom"/>
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.DtToJob, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.DtToJob" name="@item.DtToJob" value="@item.DtToJob.Value.ToString("dd-MMM-yyyy")" class="form-control dt" autocomplete="off" id="jobTo"/>
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.ExpYear, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.ExpYear" name="@item.ExpYear" value="@item.ExpYear" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.Remarks, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="@item.Remarks" name="@item.Remarks" value="@item.Remarks" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-sm btn-danger deleteExp" value="Remove" />
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row text-center">
+            <span class="col-md-3"></span>
+            <span class="col-md-3">
+                @if (ViewBag.Title == "Create")
+                {
+                    <input type="button" id="expSave" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                }
+                else if (ViewBag.Title == "Edit")
+                {
+                    <input type="button" id="expSave" value="Update" class="btn btn-warning btn-block rounded-0" />
+                }
+
+            </span>
+            <span class="col-md-3">
+                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+            </span>
+            <span class="col-md-3"></span>
+
+
+        </div>
+    </div>
+</form>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(() => {
+            $(document).on('focus', ".dt", function () {
+
+                $(this).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $(this).datepicker("option", "dateFormat");
+                        //setter
+                        $(this).datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+            });
+            
+        $("#addExp").click(function () {
+            if ($('#EmpId').val() > 0) {
+                $("#tblExperience tbody").append(`
+                        <tr>
+                                <td style="display:none"><input class="form-control" type="text" asp-for="EmpExpId" value="0" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevCompany" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevDesignation" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevSalary" value="" /></td>
+                                <td><input class="form-control dt"  type="text" asp-for="DtFromJob" value="" /></td>
+                                <td><input class="form-control dt" type="text" asp-for="DtToJob" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="ExpYear" value="" /></td>
+                                <td><input class="form-control" type="text-area" asp-for="Remarks" value="" /></td>
+                                <td><input class="btn btn-danger btn-sm deleteExp"  type="button"  value="Remove" /></td>
+                        </tr>
+                `);
+            } else {
+                alert("Please fill up neccesary field");
+                document.getElementById("defaultOpen").click();
+            }
+
+        });
+
+        // remove row from Experience
+        $("#tblExperience").on("click", ".deleteExp", function () {
+            $(this).closest("tr").remove();
+        });
+
+        var empExperience = {
+                    EmpId: 0, EmpExpId: 0, PrevCompany: "", PrevDesignation: "", PrevSalary: "", DtFromJob: "", DtToJob: "", ExpYear: "", Remarks: "",
+                    ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: ""
+        }
+
+        var HR_Emp_Experiences = [];
+        $("#expSave").click(function () {
+            HR_Emp_Experiences = [];
+            $("#tblExperience tbody tr").each(function (i, el) {
+                empExperience = {
+                    EmpId: $("#EmpId").val(),
+                    EmpExpId: $(this).find('td').eq(0).find('input[type=text]').val(),
+                    PrevCompany:$(this).find('td').eq(1).find('input[type=text]').val(),
+                    PrevDesignation:$(this).find('td').eq(2).find('input[type=text]').val(),
+                    PrevSalary:$(this).find('td').eq(3).find('input[type=text]').val(),
+                    DtFromJob:$(this).find('td').eq(4).find('input[type=text]').val(),
+                    DtToJob:$(this).find('td').eq(5).find('input[type=text]').val(),
+                    ExpYear: $(this).find('td').eq(6).find('input[type=text]').val(),
+                    Remarks: $(this).find('td').eq(7).find('input[type=text]').val(),
+                    ComId:'@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                    PcName: '',
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: new Date(),
+                    UpdateByUserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateUpdated:new Date()
+                }
+                HR_Emp_Experiences.push(empExperience);
+                empExperience = {EmpId: 0, EmpExpId: 0, PrevCompany: "", PrevDesignation: "", PrevSalary: "", DtFromJob: "", DtToJob: "", ExpYear: "", Remarks: "",
+                ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "" }
+            });
+
+            var strfy = JSON.stringify({ HR_Emp_Experiences });
+
+            var formData = new FormData($('form').get(0));
+
+            formData.append("HR_Emp_Experiences", strfy);
+
+            $.ajax({
+                url: '@Url.Action("EmpExperience", "HR")',
+                type: 'POST',
+                data: formData,
+                processData: false, // do not process data
+                contentType: false, // do not force content type
+                success: function (result)  {
+                    customFile('2', result.ex);
+                    window.location.href = '@Url.Action("EmpExperienceUpdate","HR")';
+                },
+                error: function (ex) {
+                    customFile('3', result.ex);
+                }
+            });
+        });
+
+    })
+
+    </script>
+}

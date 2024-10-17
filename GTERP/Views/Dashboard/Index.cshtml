@@ -1,0 +1,976 @@
+﻿@model GTERP.ViewModels.Dashboard
+@{
+    ViewBag.Title = "DASHBOARD";
+}
+
+<link href="~/Content/ProjectLibFile/css/dashboard/dashboard.css" rel="stylesheet" />
+
+<section class="card p-3">
+    @{
+        Html.RenderPartial("_DailyAttendance", Model.DailyAttendance);
+        Html.RenderPartial("_dailyPresentRatio");
+        Html.RenderPartial("_DailyAttendanceSum", Model.DailyAttendanceSum);
+        Html.RenderPartial("_MonthlyAttendance", Model.MonthlyAttendance);
+        Html.RenderPartial("Chart");
+        Html.RenderPartial("_EmployeeDetails", Model.EmployeeDetails);
+        Html.RenderPartial("_manPowerHistory");
+        //Html.RenderPartial("SalarySummaryDetails", Model.SalarySummeryDetails);
+        Html.RenderPartial("_SalaryDeatils", Model.SalaryDetails);
+        
+    }
+</section>
+@*<div class="card" style="margin-top:100px;">
+        <div class="box-header card card-header-style  pal-kyoo-gradient mb-3 mx-3">
+            <div class="row">
+                <div class="col-md-9 col-12">
+                    <h3 class="box-title">Monthly OT,Daily OT &amp; Monthly Join, Released Dashboard</h3>
+                </div>
+            </div>
+            <div class="form-group my-3" style="width: 350px;margin:10px auto;">
+                <div class="input-group justify-content-center">
+
+                    <input type="text" name="yearNow" id="filterYear" class="form-control" />
+                    <div class="input-group-append">
+                        <button id="load" class="btn btn-warning btn-flat" href="javascript:void(0)">Load</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <div class=" d-flex justify-content-center ">
+                <div>
+                    <div class="my-1" style="width:350px;height:200px;margin-right:20px;">
+                        <canvas class="card" id="mot" style="background-color: rgb(248 246 235);border-radius:5px; width: 350px"></canvas>
+                    </div>
+                </div>
+
+
+                <div>
+                    <div class="my-1 justify-content-center" style="width:350px;height:200px;">
+                        <canvas class="card" id="monthlyJoin" style="background-color: rgb(248 246 235); border-radius: 5px; width: 350px"></canvas>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="d-flex justify-content-center mb-3">
+                <div class="my-1 justify-content-center" style="width:720px;height:400px;">
+                    <canvas class="card" id="dot" style="background-color: rgb(248 246 235); border-radius: 5px; width: 720px"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>*@
+
+
+
+@section Scripts{
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.js" integrity="sha512-+D6VhUjj9axDtT88udGqgxLxX+4S55cV8Awkl5yBidFVOMlWBuWjSigU3E9JDXVbRndKgLavMD04nycTJbmo/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript">
+        @*var today = new Date().toLocaleDateString();
+        $.ajax({
+        contentType: 'application/json; charset=utf-8',
+        type: 'GET',
+        url: "/Dashboard/Index/?dtLoad="+today,
+
+        success: function (result) {
+        console.log(result);
+        //return window.location.href = '@Url.Action("LoadData", "Dashboard")?dtLoad=' + '02-Jan-2021';
+        },
+        error: function () {
+        alert("Error!")
+        }
+        });*@
+
+            $("#dtLoad").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function(date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#dtLoad").datepicker("option", "dateFormat");
+                    //setter
+                    $("#dtLoad").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+        $("#btnLoad").click(function() {
+            //alert($("#dtLoad").val());
+            window.location.href = '@Url.Action("LoadData", "Dashboard")?dtLoad=' + $("#dtLoad").val();
+        });
+
+
+        var totalEmp = @Model.DailyAttendance.TotalEmployee;
+        var present = @Model.DailyAttendance.Present;
+        var absent = @Model.DailyAttendance.Absent;
+        var leave = @Model.DailyAttendance.Leave;
+        var late = @Model.DailyAttendance.Late;
+        var offday = @Model.DailyAttendance.WHDay;
+
+        var pp = (present / totalEmp) * 100;
+        var ap = (absent / totalEmp) * 100;
+        var lap = (late / totalEmp) * 100;
+        var lep = (leave / totalEmp) * 100;
+        var offp = (offday / totalEmp) * 100;
+
+        var maleemployee = @Model.EmployeeDetails.MaleEmployee;
+        var femalemployee = @Model.EmployeeDetails.FemaleEmployee;
+
+
+        google.charts.load("current", {
+            'packages': ["corechart"]
+        });
+
+
+        // Donut Chart Start=
+        google.charts.setOnLoadCallback(drawDonutChart);
+
+        function drawDonutChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Daily Attendance', 'Per Day'],
+                //['TotalEmployee', totalEmp],
+                ['Present', pp],
+                ['Absent', ap],
+                ['Late', lap],
+                ['Leave', lep],
+                ['WHDay', offp]
+            ]);
+
+            var options = {
+                //title: 'My Daily Activities',
+                //is3D: true,
+                //isStacked: 'relative',
+                //isStacked: true,
+                'width': 300,
+                'height': 300,
+                pieHole: 0.5,
+                top: 5,
+                legend: {
+                    position: "right",
+                    alignment: "center"
+                },
+                chartArea: {
+                    alignment: "center",
+                    top: 30,
+                    //height: "auto",
+                    'width': '98%',
+
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+            chart.draw(data, options);
+
+        }
+        // Donut Chart End
+
+
+        // Pie Chart Start
+        google.charts.setOnLoadCallback(drawPieChart);
+
+        function drawPieChart() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Employee', 'Total'],
+                ['Female', femalemployee],
+                ['Male', maleemployee]
+            ]);
+
+            var options = {
+                // title: 'My Daily Activities'
+                // pieHole: 0.5,
+                'width': '100%',
+                'height': 300,
+                top: 5,
+                legend: {
+                    position: "top",
+                    alignment: "center"
+                },
+
+                chartArea: {
+                    top: 35,
+                    display: "block",
+                    alignment: "center",
+                    width: "98%"
+                    //height:"90%"
+
+                }
+            };
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+        }
+
+
+
+
+        google.charts.setOnLoadCallback(drawPieChart1);
+
+        function drawPieChart1() {
+            var date = $("#dtLoad").val().toString();
+            var RowData = [];
+            var AllRow = [];
+            var EmpType = $.ajax({
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                url: '@Url.Action("EmpTypeGrap", "Dashboard")?date=' + $("#dtLoad").val(),
+
+                async: false
+            }).responseJSON;
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Employee Type');
+            data.addColumn('number', 'TtlNumber');
+            for (let empt of EmpType) {
+                RowData.push(empt.EmpTypeName)
+                RowData.push(empt.TtlEmpTypeWise)
+                AllRow.push(RowData);
+                RowData = [];
+            }
+            console.log(AllRow)
+            data.addRows(AllRow);
+
+            var options = {
+                // title: 'My Daily Activities'
+                // pieHole: 0.5,
+                'width': '100%',
+                'height': 300,
+                colors: ['green', 'purple', 'orange', 'violet', 'yellow', 'gray'],
+                top: 5,
+                legend: {
+                    position: "top",
+                    alignment: "center"
+                },
+
+                chartArea: {
+                    top: 35,
+                    display: "block",
+                    alignment: "center",
+                    width: "98%"
+                    //height:"90%"
+
+                }
+            };
+            var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
+            chart.draw(data, options);
+        }
+
+
+        // Pie Chart End
+
+
+
+        //$(document).ready(function() {
+        //    //var date = $('#dtLoad').val();
+        //    //var json = { date: dat };
+        //    $.ajax({
+        //        type: "POST",
+        //        dataType: "json",
+        //        contentType: "application/json",
+        //        url: '@Url.Action("GetDailyAttSum", "Dashboard")',
+        //        //data: JSON.stringify(json),
+        //        success: function(result) {
+        //            window.google.charts.load('current', {
+        //                'packages': ['corechart']
+        //            });
+        //            window.google.charts.setOnLoadCallback(function() {
+        //                drawStuff(result);
+        //            });
+        //        }
+        //    });
+        //});
+
+
+        //Column Chart Start
+        google.charts.load('current', {
+            'packages': ['bar']
+        });
+        //google.charts.setOnLoadCallback(drawStuff);
+
+        //function drawStuff(result) {
+        //    var chartDiv = document.getElementById('dailyAttSumChart');
+        //    var data = window.google.visualization.arrayToDataTable([
+        //        ['Section', 'TotalEmployee', 'Present', 'Late', 'Absent', 'Leave'],
+        //        [result[0].SectionName, parseInt(result[0].totalEmp), parseInt(result[0].PresentPercent), parseInt(result[0].LatePercent), parseInt(result[0].AbsentPercent), parseInt(result[0].LeavePercent), parseInt(result[0].SalaryPerDay), parseInt(result[0].OTHour)],
+        //        [result[1].SectionName, parseInt(result[1].totalEmp), parseInt(result[1].PresentPercent), parseInt(result[1].LatePercent), parseInt(result[1].AbsentPercent), parseInt(result[1].LeavePercent), parseInt(result[1].SalaryPerDay), parseInt(result[1].OTHour)],
+        //        [result[2].SectionName, parseInt(result[2].totalEmp), parseInt(result[2].PresentPercent), parseInt(result[2].LatePercent), parseInt(result[2].AbsentPercent), parseInt(result[2].LeavePercent), parseInt(result[2].SalaryPerDay), parseInt(result[2].OTHour)],
+        //        [result[3].SectionName, parseInt(result[3].totalEmp), parseInt(result[3].PresentPercent), parseInt(result[3].LatePercent), parseInt(result[3].AbsentPercent), parseInt(result[3].LeavePercent), parseInt(result[3].SalaryPerDay), parseInt(result[3].OTHour)],
+        //        [result[4].SectionName, parseInt(result[4].totalEmp), parseInt(result[4].PresentPercent), parseInt(result[4].LatePercent), parseInt(result[4].AbsentPercent), parseInt(result[4].LeavePercent), parseInt(result[4].SalaryPerDay), parseInt(result[4].OTHour)]
+        //    ]);
+        //    var materialOptions = {
+        //        width: '90%'
+        //    };
+        //    var classicOptions = {
+        //        width: '90%',
+        //        series: {
+        //            0: {
+        //                targetAxisIndex: 0
+        //            },
+        //            1: {
+        //                targetAxisIndex: 1
+        //            }
+        //        }
+
+        //    };
+
+        //    function drawClassicChart() {
+        //        var classicChart = new window.google.visualization.ColumnChart(chartDiv);
+        //        classicChart.draw(data, classicOptions);
+
+        //    }
+
+        //    drawClassicChart();
+        //};
+        //Column Chart End
+
+
+    </script>
+
+
+    @*// Dashboard by reyad*@
+    <script>
+        $(function() {
+            DataRequest();
+            //for montly ot
+            var otlabel = [];
+            var otcount = [];
+            //for daily ot
+            var otDlabel = [];
+            var otDcount = [];
+
+            //for monthly join release
+            var mlabel = [];
+            var jcount = [];
+            var rcount = [];
+            function renderChart() {
+
+                var ctxmot = document.getElementById('mot');
+                if (window.ctxmot != undefined) {
+                    window.ctxmot.destroy();
+                }
+                window.ctxmot = new Chart(ctxmot, {
+                    type: 'bar',
+                    data: {
+                        labels: otlabel,
+                        datasets: [{
+                            label: 'Monthly Overtime',
+                            data: otcount,
+                            barThickness: 15,
+                            backgroundColor: [
+                                '#EAE8CC'
+                            ],
+                            borderColor: [
+
+                                '#EAE8CC'
+                            ],
+                            borderWidth: 1,
+                            datalabels: {
+                                color: '#EAE8CC',
+                                anchor: 'end',
+                                align: -90,
+                                display: true,
+                                textAlign: 'end',
+                                offset: 1
+                            }
+
+                        }]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+                        plugins: {
+                            legend: {
+                                align: 'end'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                ticks: { color: 'white' }
+                            }
+
+                        }
+                    }
+
+                });
+
+            }
+
+            //for daily ot
+            function renderChart2() {
+
+                var ctxdot = document.getElementById('dot');
+                if (window.ctxdot != undefined) {
+                    window.ctxdot.destroy();
+                }
+                window.ctxdot = new Chart(ctxdot, {
+                    type: 'line',
+                    data: {
+                        labels: otDlabel,
+                        datasets: [{
+                            label: 'Daily Overtime',
+                            data: otDcount,
+                            backgroundColor: [
+                                '#EAE8CC'
+                            ],
+                            borderColor: [
+                                '#EAE8CC'
+
+                            ],
+                            borderWidth: 1,
+                            datalabels: {
+                                color: 'black',
+                                anchor: 'end',
+                                align: -90,
+                                display: true,
+                                textAlign: 'end',
+                                offset: 1
+                            }
+                        },
+                        {
+                            label: 'Daily Present',
+                            data: DpreCount,
+                            backgroundColor: [
+                                '#ff6384'
+                            ],
+                            borderColor: [
+                                '#ff6384'
+
+                            ],
+                            borderWidth: 1,
+                            datalabels: {
+                                color: 'yellow',
+                                anchor: 'end',
+                                align: 90,
+                                display: true,
+                                textAlign: 'end',
+                                offset: 1
+                            }
+                        }
+                        ]
+
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+
+                        //animations: {
+                        //    tension: {
+                        //        duration: 1000,
+                        //        easing: 'linear',
+                        //        from: 1,
+                        //        to: 0,
+                        //        loop: true
+                        //    }
+                        //},
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'white'
+
+
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+
+                                }
+                            }
+                        }
+                    }
+
+                });
+
+            }
+            // for monthly join
+            function renderChart3() {
+                var ctxmj = document.getElementById('monthlyJoin');
+                if (window.ctxmj != undefined) {
+                    window.ctxmj.destroy();
+                }
+                window.ctxmj = new Chart(ctxmj, {
+                    type: 'bar',
+                    data: {
+                        labels: mlabel,
+                        datasets: [{
+                            label: 'Monthly Join Employee',
+                            data: jcount,
+                            barThickness: 15,
+                            backgroundColor: [
+                                '#EAE8CC'
+                            ],
+                            borderColor: [
+                                '#EAE8CC'
+                            ],
+                            borderWidth: 1,
+                            datalabels: {
+                                color: '#EAE8CC',
+                                anchor: 'end',
+                                align: -90,
+                                display: true,
+                                textAlign: 'end',
+                                offset: 1
+                            }
+                        },
+                        {
+                            label: 'Monthly Release Employee',
+                            data: rcount,
+                            barThickness: 15,
+                            backgroundColor: [
+                                '#EE3695'
+                            ],
+                            borderColor: [
+
+                                '#EE3695'
+                            ],
+                            borderWidth: 1,
+                            datalabels: {
+                                color: '#EE3695',
+                                anchor: 'end',
+                                align: -90,
+                                display: true,
+                                textAlign: 'end',
+                                offset: 1
+                            }
+                        }
+                        ]
+                    },
+                    plugins: [ChartDataLabels],
+                    options: {
+
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                gridLines: {
+                                    display: true
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+
+                });
+
+            }
+
+            //$('#btnLoad').click(function () {
+            //    DataRequest();
+            //});
+
+            function DataRequest() {
+
+                //for montly ot
+                otlabel = [];
+                otcount = [];
+                //for daily ot
+                otDlabel = [];
+                otDcount = [];
+                //for monthly join
+                mlabel = [];
+                jcount = [];
+                rcount = [];
+                //for Daily Present
+                DpreCount = [];
+
+                var year = $('#dtLoad').val();
+                console.log(year);
+
+                // monthly OT
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    type: 'Get',
+                    url: '@Url.Action("MonthlyOTChart","Dashboard")?Date=' + year,
+                    //"/Dashboard/MonthlyOTChart/?Date=" + year,
+                    //data: { yearNow: year },
+                    success: function(result) {
+                        console.log(result);
+                        for (var i = 0; i < result.length; i++) {
+                            otlabel.push(result[i].DtPunchDate);
+                            otcount.push(result[i].OtAmount);
+                        }
+                        renderChart();
+
+                        console.log(otlabel);
+                        console.log(otcount);
+                    },
+                    error: function() {
+                        alert("Error!")
+                    }
+                });
+
+                // Daily OT
+
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    type: 'Get',
+                    url: '@Url.Action("DailyOTChart", "Dashboard")?Date=' + year,
+                    //"/Dashboard/DailyOTChart/?Date=" + year,
+                    /*data: { yearNow: year },*/
+                    success: function(result) {
+                        console.log(result);
+                        for (var i = 0; i < result.length; i++) {
+                            otDlabel.push(result[i].date);
+                            otDcount.push(result[i].otAmount);
+                        }
+                        //Daily present
+                        $.ajax({
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'Get',
+                            url: '@Url.Action("DailyPresentChart", "Dashboard")?Date=' + year,
+
+                            success: function(result) {
+                                console.log(result);
+                                for (var i = 0; i < result.length; i++) {
+                                    DpreCount.push(result[i].TtlPresent);
+
+
+                                }
+
+                                renderChart2();
+
+                                console.log(otDlabel);
+                                console.log(otDcount);
+                            },
+                            error: function() {
+                                alert("Error!!!!")
+                            }
+                        })
+                    }
+                });
+
+                // Monthly released//
+
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    type: 'GET',
+                    url: '@Url.Action("MonthlyJReleasedEmp", "Dashboard")?Date=' + year,
+                    //"/Dashboard/MonthlyJReleasedEmp?Date=" + year,
+
+                    success: function(result) {
+                        console.log(result);
+                        for (var i = 0; i < result.length; i++) {
+                            mlabel.push(result[i].DtJoin);
+                            jcount.push(result[i].JoinCount);
+                            rcount.push(result[i].ReleaseCount);
+                        }
+                        renderChart3();
+
+                    },
+                    error: function() {
+                        alert("Error!")
+                    }
+                });
+                $('#filterYear').val("");
+
+
+            }
+        })
+
+        @*// ManPower History Dashboard by Rifatur *@
+            $(function () {
+                lineDataRequestValue();
+
+                //for monthly join release
+                var linelabel = [];
+                var lcount = [];
+                var dcount = [];
+                
+                function LineWiseRenderReport(){
+                    var Linedata = document.getElementById('ManPower');
+
+                    if (window.Linedata != undefined) {
+                        window.Linedata.destroy();
+                    }
+                    window.Linedata = new Chart(Linedata, {
+                        type: 'bar',
+                        data: {
+                            labels: linelabel,
+                            datasets: [{
+                                label: 'Line Wise Employee',
+                                data: lcount,
+                                barThickness: 15,
+                                backgroundColor: [
+                                    '#FFF2F2'
+                                ],
+                                borderColor: [
+                                    '#FFF2F2'
+                                ],
+                                borderWidth: 1,
+                                datalabels: {
+                                    color: '#FFF2F2',
+                                    anchor: 'end',
+                                    align: -90,
+                                    display: true,
+                                    textAlign: 'end',
+                                    offset: 1
+                                }
+                            },
+
+                            ]
+                        },
+                        plugins: [ChartDataLabels],
+                        options: {
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    gridLines: {
+                                        display: true
+                                    },
+                                    ticks: {
+                                        color: '#FFF2F2'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: '#FFF2F2'
+                                    }
+                                }
+                            }
+                        }
+
+                    });
+                } 
+                //
+                function lineDataRequestValue(){
+                
+                    var year = $('#dtLoad').val();
+
+                    $.ajax({
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'GET',
+                        url: '@Url.Action("ManPowerHistory", "Dashboard")?Date=' + year,
+                        //"/Dashboard/MonthlyJReleasedEmp?Date=" + year,
+
+                        success: function (result) {
+                            console.log(result);
+                            for (var i = 0; i < result.length; i++) {
+                                linelabel.push(result[i].linename);
+                                lcount.push(result[i].LineEmpCount);
+                                //dcount.push(result[i].ReleaseCount);
+                            }
+                           LineWiseRenderReport();
+
+                        },
+                        error: function () {
+                            alert("Error!")
+                        }
+                    });
+                    $('#filterYear').val("");
+                }
+
+            })
+//DepartMent Wise
+$(function(){
+
+                DepartmentRequestValue();
+
+                var deptlabel = [];
+                var deptcount = [];
+
+
+                function DepartmentReport(){
+                    var dept = document.getElementById('dept_WiseEmp');
+                    if (window.dept != undefined) {
+                        window.dept.destroy();
+                    }
+                    window.dept = new Chart(dept, {
+                        type: 'bar',
+                        data: {
+                            labels: deptlabel,
+                            datasets: [
+                            {
+                                label: 'Department Wise Employee',
+                                data: deptcount,
+                                barThickness: 15,
+                                backgroundColor: [
+                                    '#EE3695'
+                                ],
+                                borderColor: [
+
+                                    '#EE3695'
+                                ],
+                                borderWidth: 1,
+                                datalabels: {
+                                    color: '#EE3695',
+                                    anchor: 'end',
+                                    align: -90,
+                                    display: true,
+                                    textAlign: 'end',
+                                    offset: 1
+                                }
+                            }
+                            ]
+                        },
+                        plugins: [ChartDataLabels],
+                        options: {
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    gridLines: {
+                                        display: true
+                                    },
+                                    ticks: {
+                                        color: 'white'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: 'white'
+                                    }
+                                }
+                            }
+                        }
+
+                    });
+                }
+                function DepartmentRequestValue(){
+                //for monthly join release
+                    var year = $('#dtLoad').val();
+
+                    $.ajax({
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'GET',
+                        url: '@Url.Action("DeptWiseDashBoard", "Dashboard")?Date=' + year,
+                        //"/Dashboard/MonthlyJReleasedEmp?Date=" + year,
+
+                        success: function (result) {
+                            console.log(result);
+                            for (var i = 0; i < result.length; i++) {
+                                 deptlabel.push(result[i].DeptName);
+                                deptcount.push(result[i].DeptEmpCount);
+                                
+                            }
+                            DepartmentReport();
+
+                        },
+                        error: function () {
+                            alert("Error!")
+                        }
+                    });
+                    
+                }
+
+})//End Function
+
+
+
+        $(document).ready(function() {
+            //var date = $('#dtLoad').val();
+            //var json = { date: dat };
+            google.charts.load('current', { 'packages': ['corechart'] })
+            google.charts.setOnLoadCallback(drawComboChart);
+
+            function drawComboChart() {
+
+                var RowData = [];
+                var AllRow = [];
+                var EmpType = $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json",
+                    url: '@Url.Action("DailyPresentRatio", "Dashboard")?date=' + $("#dtLoad").val(),
+
+                    async: false
+                }).responseJSON;
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'date');
+                
+                data.addColumn('number', 'TotalEmployee');
+                data.addColumn({ type: 'number', role: 'annotation', color: 'purple' });
+                data.addColumn('number', 'TotalPresent');
+                data.addColumn({ type: 'number', role: 'annotation', color: 'slateblue' });
+                data.addColumn('number', 'TotalAbsent');
+                data.addColumn({ type: 'number', role: 'annotation', color: 'red' });
+                for (let empt of EmpType) {
+                    RowData.push(empt.date)
+                    RowData.push(empt.ttlemp)
+                    RowData.push(empt.ttlemp)
+                    RowData.push(empt.ttlpresent)
+                    RowData.push(empt.ttlpresent)
+                    RowData.push(empt.ttlAbsent)
+                    RowData.push(empt.ttlAbsent)
+
+                    AllRow.push(RowData);
+                    RowData = [];
+                }
+                console.log('combo', AllRow)
+                data.addRows(AllRow);
+                //            var view = new google.visualization.DataView(data);
+                //view.setColumns([0, 1,2,3, {
+                //  calc: "stringify",
+                //  sourceColumn: 1,
+                //  type: "string",
+                //  role: "annotation",
+                //}, ]);
+                var options = {
+                    // title: 'My Daily Activities'
+                    // pieHole: 0.5,
+                    'width': '100%',
+                    'height': 300,
+                    colors: ['purple', 'slateblue', 'red', , 'gray'],
+                    top: 5,
+                    legend: {
+                        position: "top",
+                        alignment: "center"
+                    },
+                    vAxis: { title: 'number' },
+                  
+                    annotations: {
+                        textStyle: {
+                            fontName: 'Arial',
+                            fontSize: 11,
+                            //bold: true,
+                            italic: true,
+                            // The color of the text.
+                            //color: '#871b47',
+                            // The color of the text outline.
+                            //auraColor: '#d799ae',
+                            // The transparency of the text.
+                            //opacity: 0.5
+                        },
+                        alwaysOutside: true,
+                        style: 'line',
+                    },
+                    bars: 'vertical',
+                    seriesType: 'bars',
+                    series: { 3: { type: 'line' } },
+                    backgroundColor: 'lightgrey',
+                    bar: {
+                        groupWidth: 30
+                    }
+                };
+                var chart = new google.visualization.ComboChart(document.getElementById('ratio'));
+                chart.draw(data, options);
+            }
+        });
+
+    </script>
+
+
+
+
+
+
+}

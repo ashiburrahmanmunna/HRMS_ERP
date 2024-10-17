@@ -1,0 +1,1487 @@
+﻿@model GTERP.Models.MenuPermission_Master
+
+<style>
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+</style>
+<body>
+
+    <h2 id="styletext" class="text-center">Menu Permission @ViewBag.Title</h2>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+    {
+
+<div class="needs-validation" novalidate>
+    @*@Html.AntiForgeryToken()*@
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+    @if (Model != null)
+    {
+
+        <input type="hidden" id="MenuPermissionId" name="MenuPermissionId" value="@Model.MenuPermissionId" />
+        <input type="hidden" id="ReportPermission_MasterId" name="ReportPermission_MasterId" value="@ViewBag.ReportPermission_MasterId" />
+        @*<input type="hidden" id="useridUpdate" name="useridUpdate" value="@Model.useridUpdate" />
+            <input type="hidden" id="DateUpdated" name="DateUpdated" value="@Model.DateUpdated" />*@
+
+        <input type="hidden" id="DateAdded" name="DateAdded" value="@Model.DateAdded" />
+        @*<input type="hidden" id="comid" name="comidd" value="@Model.comid" />*@
+        @*<input type="hidden" id="userid" name="userid" value="@Model.userid" />*@
+    }
+    else
+    {
+        @*<input type="hidden" id="comid" name="comidd" value="" />*@
+    }
+
+
+    @*style="min-width: 1300px;"*@
+    <div class="container-fluid">
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-12 order-md-1 mb-2">
+                <div class="card p-3">
+                    <div class="row">
+                        <div class="col-md-3 col-12" id="divSupplier">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Company
+                                    </span>
+                                </div>
+
+                                @Html.DropDownListFor(m => m.comid, ViewBag.comid as List<SelectListItem>, "--Select--", new { @class = "form-control form-control-sm" })
+                                @Html.ValidationMessageFor(model => model.comid)
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12" id="divItemGroup">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        User
+                                    </span>
+                                </div>
+                                @Html.DropDownListFor(m => m.useridPermission, ViewBag.useridPermission as List<SelectListItem>, "--Select--", new { id = "useridPermission", @class = "form-control form-control-sm " })
+                                @*<span class="input-group-append">
+                                        <button id="btngrouplcid" class="btn btn-danger" type="button" style="font-size: 0.5rem;" onclick="MenuPermissionLoad()">Load</button>
+                                    </span>*@
+                                @*<select  id="useridPermission"
+                                            class="form-control form-control-sm"
+                                            asp-items="@ViewBag.useridPermission">
+                                        <option value="">--Select--</option>
+                                    </select>*@
+                                @Html.ValidationMessageFor(model => model.useridPermission)
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12" id="divItemGroup">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        New User
+                                    </span>
+                                </div>
+                                @*@Html.DropDownListFor(m => m.useridPermission, ViewBag.useridPermission as List<SelectListItem>, "--Select--", new { id = "newUseridPermission", @class = "form-control form-control-sm " })*@
+                                @*@Html.DropDownList("newUserPermission", ViewBag.newUserPermission as List<SelectListItem>, "--Select--", new { id = "newUseridPermission", @class = "form-control form-control-sm " })*@
+
+                                <select id="newUseridPermission"
+                                        class="form-control form-control-sm"
+                                        asp-items="@ViewBag.newUserPermission ">
+                                    <option value="">--Select--</option>
+                                </select>
+                                @*@Html.DropDownList("newUserPermission", ViewBag.newUserPermission as List<SelectListItem>, "--Select--", new { id = "newUseridPermission", @class = "form-control form-control-sm" })*@
+                                <span class="input-group-append">
+                                    <button id="btnNewPermission" class="btn btn-danger" type="button" style="font-size: 0.5rem;" onclick="NewPermission()">Transfer</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12" id="divItemGroup">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Default Module
+                                    </span>
+                                </div>
+                                <select id="DefaultModule" disabled
+                                        class="form-control form-control-sm"
+                                        asp-items="@ViewBag.ModuleList ">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <br />
+
+        @*<div id="divGroupLc" class="row">
+
+            </div>*@
+        @* For Menu Permission *@
+
+        <div id="divPIDetails" class="row">
+            <div class="col-md-6 order-md-1 mb-2">
+                <div class="card p-1">
+                    <div class="table-responsive text-nowrap">
+                        <input type="button" id="selectAll" class="btn btn-warning float-right rounded-0" value="Select All" />
+                        <table id="tblpidetails" class="tblpidetails display responsive display nowrap table-bordered table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Module Menu Id</th>
+                                    <th style="width:15%;">Parent Menu Name</th>
+                                    <th style="width:15%;">Module Menu Name</th>
+                                    <th style="width:15%;">Menu Caption</th>
+                                    <th style="width:15%;">Menu Controller</th>
+                                    <th style="width:15%;">Menu Permission Details Id</th>
+                                    <th style="width:15%;">Menu Permission Id</th>
+                                    <th style="width:15%;">Is Create</th>
+                                    <th style="width:15%;">Is Edit</th>
+                                    <th style="width:30%;">Is Delete</th>
+                                    <th style="width:30%;">Is View</th>
+                                    <th style="width:30%;">Is Report</th>
+                                    <th style="width:30%;">Is Default</th>
+                                    <th style="width:30%;">SL No</th>
+
+
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.MenuList != null)
+                                {
+                                    foreach (var item in ViewBag.MenuList)
+                                    {
+                                        <tr class="txtMultpidetails"> 
+                                            <td>
+                                                @item.ModuleMenuId
+                                            </td>
+                                            <td>
+                                                @if (item.ParentMenuName != null)
+                                                {
+                                                    @item.ParentMenuName
+
+                                                }
+                                            </td>
+                                            <td>
+                                                @item.ModuleMenuName
+                                            </td>
+                                            <td>
+                                                @*Ok*@
+                                                @item.ModuleMenuCaption
+                                            </td>
+                                            <td>
+                                                @item.ModuleMenuController
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+                                            <td>
+                                                @item.IsDefault
+                                            </td>
+                                            <td>
+                                                @item.SLNO
+                                            </td>
+
+                                            <td></td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 order-md-2 mb-2">
+                <div class="card p-1">
+                    <div class="table-responsive text-nowrap">
+                        <input type="button" id="selectAllMP" class="btn btn-warning float-right rounded-0" value="Select All" />
+
+                        <table id="tblMachinaryLCdetails" class="tbl display responsive nowrap table-bordered table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Module Menu Id</th>
+                                    <th style="width:15%;">Parent Menu Name</th>
+                                    <th style="width:15%;">Module Menu Name</th>
+                                    <th style="width:15%;">Menu Caption</th>
+                                    <th style="width:15%;">Menu Controller</th>
+                                    <th style="width:15%;">Menu Permission Details Id</th>
+                                    <th style="width:15%;">Menu PermissionId</th>
+                                    <th style="width:15%;">Is Create</th>
+                                    <th style="width:15%;">Is Edit</th>
+                                    <th style="width:30%;">Is Delete</th>
+                                    <th style="width:30%;">Is View</th>
+                                    <th style="width:30%;">Is Report</th>
+                                    <th style="width:30%;">Is Default</th>
+                                    <th style="width:30%;">SL No</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null)
+                                {
+                                    if (Model.MenuPermission_Details != null)
+                                    {
+
+
+                                        foreach (var item in Model.MenuPermission_Details.OrderBy(x => x.SLNo))
+                                        {
+                                            <tr class="txtMultMachinaryLC">
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ModuleMenuId)
+                                                </td>
+
+                                                <td>
+                                                    @* @Html.DisplayTextFor(i => item.ModuleMenus.ParentModuleMenu.ModuleMenuCaption) *@
+                                                    @(item.ModuleMenus.ParentModuleMenu == null ? "" : item.ModuleMenus.ParentModuleMenu.ModuleMenuCaption)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ModuleMenus.ModuleMenuName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ModuleMenus.ModuleMenuCaption)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ModuleMenus.ModuleMenuController)
+                                                </td>
+
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.MenuPermissionDetailsId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.MenuPermissionId)
+                                                </td>
+
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.IsCreate)
+
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.IsEdit)
+                                                </td>
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.IsDelete)
+                                                </td>
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.IsView)
+                                                </td>
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.IsReport)
+                                                </td>
+                                                <td>
+                                                    @Html.CheckBoxFor(i => item.isDefault)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.SLNo)
+                                                </td>
+
+                                                <td></td>
+
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* For Report Permission *@
+
+        @* Left Side Report Table *@
+
+        <div><h4 style="color:rgb(197 186 186)">Report Permission</h4></div>
+        <div id="divRPDetails" class="row">
+            @{
+                IEnumerable<GTERP.Controllers.MenuPermissionController.ReportPermissionsVM> report = ViewBag.ReportList;
+
+            }
+            <div class="col-md-6 order-md-1 mb-2">
+                <div class="card p-1">
+                    <div class="table-responsive text-nowrap">
+                        <input type="button" id="selectAll2" class="btn btn-warning float-right rounded-0" value="Select All" />
+                        <table id="tblrpdetails2" class="tblrpdetails2 display responsive display nowrap table-bordered table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Report Permission Id</th>
+                                    <th style="width:15%;">Report Name</th>
+                                    <th style="width:15%;">Report Type</th>
+
+                                    <th style="width:15%;">Is Create</th>
+                                    <th style="width:15%;">Is Edit</th>
+                                    <th style="width:30%;">Is Delete</th>
+                                    <th style="width:30%;">Is View</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.ReportList != null)
+                                {
+                                    foreach (var item in ViewBag.ReportList)
+                                    {
+                                        <tr class="txtMultpidetails">
+                                            <td>
+                                                @item.ReportPermissionsId
+                                            </td>
+                                            <td>
+                                                @if (item.ReportPermissionsId != null)
+                                                {
+                                                    @item.ReportName
+
+                                                }
+                                            </td>
+                                            <td>
+                                                @item.ReportType
+                                            </td>
+
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @* Right Side Report Table *@
+
+            <div class="col-md-6 order-md-2 mb-2">
+                <div class="card p-1">
+                    <div class="table-responsive text-nowrap">
+                        <input type="button" id="selectAllMP2" class="btn btn-warning float-right rounded-0" value="Select All" />
+
+                        <table id="tblMachinaryLCdetails2" class="tbl display responsive nowrap table-bordered table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Report Permission Id</th>
+                                    <th style="width:15%;">Report Name</th>
+                                    <th style="width:15%;">Report Type</th>
+
+
+                                    <th style="width:15%;">Is Create</th>
+                                    <th style="width:15%;">Is Edit</th>
+                                    <th style="width:30%;">Is Delete</th>
+                                    <th style="width:30%;">Is View</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @if (ViewBag.ReportPermission != null)
+                                {
+
+
+
+
+                                    foreach (var item in ViewBag.ReportPermission)
+                                    {
+
+                                        <tr class="txtMultMachinaryLC">
+                                            <td>
+                                                @item.ReportId
+                                            </td>
+
+                                            <td>
+                                                @item.ReportName
+                                            </td>
+                                            <td>
+                                                @item.ReportType
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+                                        </tr>
+                                    }
+
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center m-2">
+            <br />
+            <div class="col-md-3"></div>
+            @*<div class="col-md-3"><h4>Master LC Entry</h4></div>*@
+            @if (ViewBag.Title == "Create")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+                  
+                        <button class="btn btn-success mb-2 btn-block" type="button" onclick="ReportPermision_save()">Save</button>
+                    
+
+                </div>
+            }
+            else if (ViewBag.Title == "Edit")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+                    <button class="btn btn-warning mb-2 btn-block" type="button" onclick="ReportPermision_save()">Update</button>
+                </div>
+            }
+            else if (ViewBag.Title == "Delete")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+
+                    <button class="btn btn-danger mb-2 btn-block" type="button" onclick="MenuPermission_delete()">Delete</button>
+
+                </div>
+            }
+            <div class="col-md-3 col-xs-12 d-block mx-auto">
+                @Html.ActionLink("Back", "Index", null, null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+
+            </div>
+            <div class="col-md-3"></div>
+
+        </div>
+    </div>
+</div>
+
+    }
+</body>
+
+@section Scripts{
+
+    <script type="text/javascript">
+    //$("#comid").select2();
+        $("#useridPermission").select2();
+        $("#newUseridPermission").select2();
+
+        //useridPermission
+        //newUseridPermission
+
+        function MenuPermission_delete() {
+            var MenuPermissionId = $("#MenuPermissionId").val();
+            var ReportPermissionId = $('#ReportPermission_MasterId').val();
+            //alert(ReportPermissionId);
+            //alert(MenuPermissionId);
+
+            @*$.ajax({
+
+                url: '@Url.Action("Delete", "MenuPermission")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: MenuPermissionId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "MenuPermission")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });*@
+
+
+            var options = {};
+            options.url = '@Url.Action("Delete", "MenuPermission")';
+
+            options.type = "POST";
+            options.dataType = "json";
+            options.async = false;
+            options.data = { id: MenuPermissionId,ReportId:ReportPermissionId };
+
+            //alert('nit');
+            options.success = function (result) {
+
+                if (result.Success == "1") {
+                    window.location.href = '@Url.Action("Index", "MenuPermission")';
+                }
+                else
+                {
+                    //alert(result.ex);
+                    if (!result.success) {
+                        for (var error in result.errors) {
+                            $('#errorMessages').append(error + '<br />');
+                        }
+                    }
+
+                };
+
+            }
+                $.ajax(options);
+
+        }
+
+
+    function CurrentDate() {
+        var date = new Date();
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+        return val;
+
+    }
+
+        @*var x = "@ViewBag.SupplierId";
+        if (x > 0) {
+            $('#SupplierId').val("@ViewBag.SupplierId");
+        }*@
+
+
+
+        $("#useridPermission").on('change', function () {
+            var comId = $("#comid").val();
+            var userId = $('#useridPermission').val();
+            var menuPermissionId = "";
+
+            $.ajax({
+
+                url: '@Url.Action("GetMenuPermissionId", "MenuPermission")',
+                type: 'Post',
+                data: {
+                    'comId': comId,
+                    'userId': userId,
+                },
+                async:false,
+                dataType: 'json',
+                success: function (data) {
+
+                    var y = "@ViewBag.Title";
+                    if (y == "Create") {
+                        //window.location.href = "Create?MenuPermissionId=" + MenuPermissionId + "&UserId= " + UserId + " &comid=" + comid + "&isDelete=0"
+                        window.location.href = "Create?ComId=" + comId + "&UserId=" + userId + "&MenuPermissionId=" + data;
+                    }
+                    else {
+                        window.location.href = "Create?ComId=" + comId + "&UserId=" + userId + "&MenuPermissionId=" + data;
+                        //window.location.href = "Create?MenuPermissionId=" + MenuPermissionId + "&UserId= " + UserId + " &comid=" + comid + "&isDelete=0"
+                    }
+                },
+                error: function (request, error) {
+                    alert("Request: " + JSON.stringify(request));
+                }
+            });
+
+
+            $.ajax({
+
+                url: '@Url.Action("GetReportPermissionId", "MenuPermission")',
+                type: 'Post',
+                data: {
+                    'comId': comId,
+                    'userId': userId,
+                },
+                    async: false,
+                dataType: 'json',
+                success: function (data) {
+
+                    var y = "@ViewBag.Title";
+                    if (y == "Create") {
+                        //window.location.href = "Create?MenuPermissionId=" + MenuPermissionId + "&UserId= " + UserId + " &comid=" + comid + "&isDelete=0"
+                        window.location.href = "Create?ComId=" + comId + "&UserId=" + userId + "&MenuPermissionId=" + $('#MenuPermissionId').val() + "&ReportPermission_MasterId=" + data;
+                    }
+                    else {
+                        window.location.href = "Create?ComId=" + comId + "&UserId=" + userId + "&MenuPermissionId=" + $('#MenuPermissionId').val() + "&ReportPermission_MasterId=" + data;
+                        //window.location.href = "Create?MenuPermissionId=" + MenuPermissionId + "&UserId= " + UserId + " &comid=" + comid + "&isDelete=0"
+                    }
+                },
+                error: function (request, error) {
+                    alert("Request: " + JSON.stringify(request));
+                }
+            });
+
+
+
+        }
+        );
+
+        function NewPermission() {
+            alert('New permission');
+        var menuPermissionId = $("#MenuPermissionId").val();
+        var userIdPermission = $("#newUseridPermission").val();
+        var comId = $("#comid").val();
+        //console.log(MenuPermissionId + " " + userIdPermission + " " + comId);
+
+            var y = "@ViewBag.Title";
+            if (y == "Edit") {
+                window.location.href = "UserTransfer?menuPermissionId=" + menuPermissionId +"&userIdPermission="+userIdPermission+"&comId="+comId;
+            }
+            else {
+                window.location.href = "?menuPermissionId=" + menuPermissionId +"&userIdPermission="+userIdPermission+"&comId="+comId ;
+            }
+    };
+
+
+     function MachinaryLC_save() {
+        // Step 1: Read View Data and Create JSON Object
+
+        if (!$("#myform").valid()) {
+
+            alert('Please Fill Up All Necessary Information Correctly.');
+            return false;
+        }
+
+
+        // Creating Detail Json Object
+        var MenuPermission_Details = {
+            "MenuPermissionDetailsId": "", "MenuPermissionId": "",
+            "ModuleMenuId": "", "IsCreate": "",
+            "IsEdit": "", "IsDelete": "", "IsView": "", "IsReport": "", "IsDefault": "", "SLNo": ""
+        };
+
+        var MenuPermission_Master = {
+            "userid": "", "DateAdded": "",
+            "useridUpdate": "", "DateUpdated": "",
+            "DefaultModuleId":0,
+            "MenuPermissionId": "", "useridPermission": "", "comid": "","MenuPermission_Details": []
+        };
+
+
+        MenuPermission_Master.userid = $("#UserId").val() || 0;
+        MenuPermission_Master.DefaultModuleId = $("#DefaultModule").val() || 0;
+        MenuPermission_Master.useridUpdate = $("#useridUpdate").val() || 0;
+        MenuPermission_Master.DateAdded = $("#DateAdded").val();
+        //MenuPermission_Master.DateUpdated = $("#DateUpdated").val();
+
+        // Creating Masters Json Object
+
+        // Set Invoice Main Value
+        MenuPermission_Master.MenuPermissionId = $("#MenuPermissionId").val() || 0;
+        MenuPermission_Master.useridPermission = $("#useridPermission").val();
+
+        MenuPermission_Master.comid = $("#comid").val();
+
+
+        ////Invoice subs data
+        var oTable = $('#tblMachinaryLCdetails').dataTable().fnGetData();
+        var nTable = $('#tblMachinaryLCdetails').dataTable().fnGetNodes();
+
+
+
+        for (var i = 0; i < oTable.length; i++) {
+
+            //if ($('h2').text() == "Menu Permission Edit")
+
+
+            if ($('#styletext').text() == "Menu Permission Edit")
+            {
+                MenuPermission_Details.MenuPermissionId = $('#MenuPermissionId').val();
+            }
+            else {
+                MenuPermission_Details.MenuPermissionId = 0;
+            }
+
+            MenuPermission_Details.MenuPermissionDetailsId = 0;
+            MenuPermission_Details.ModuleMenuId = oTable[i][0];
+
+            //console.log($(nTable[i].cells[9].children[0]).prop('checked'));     // checkbox is check or uncheck
+            MenuPermission_Details.IsCreate = $(nTable[i].cells[7].children[0]).prop('checked');
+            MenuPermission_Details.IsEdit = $(nTable[i].cells[8].children[0]).prop('checked');   //oTable[i][0];
+            MenuPermission_Details.IsDelete = $(nTable[i].cells[9].children[0]).prop('checked'); //oTable[i][0];
+            MenuPermission_Details.IsView = $(nTable[i].cells[10].children[0]).prop('checked');   //oTable[i][0];
+            MenuPermission_Details.IsReport = $(nTable[i].cells[11].children[0]).prop('checked'); //oTable[i][0];
+
+            MenuPermission_Details.IsDefault = $(nTable[i].cells[12].children[0]).prop('checked'); //oTable[i][0];
+
+
+
+
+            MenuPermission_Details.SLNo = nTable[i].cells[13].children[0].value || 0; //$(nTable[i].cells[13].children[0]).value || 0; //oTable[i][0];
+
+
+            //rows[i].cells[7].children[0].value || 0;
+
+            console.log(MenuPermission_Details);
+
+            MenuPermission_Master.MenuPermission_Details.push(MenuPermission_Details);
+
+
+             MenuPermission_Details = {
+                 "MenuPermissionDetailsId": "", "MenuPermissionId": "", "ModuleMenuId": "",
+                 "IsCreate": "", "IsEdit": "", "IsDelete": "", "IsView": "", "IsReport": "", "IsDefault": "", "SLNo": ""
+            };
+
+        }
+
+        // Step 1: Ends Here
+        // alert('4');
+        var n = $(MenuPermission_Master).length;
+        alert('Data is Generated for Saving...please Wait for the next alert.');
+        //console.log(MenuPermission_Master);
+
+
+        console.log(MenuPermission_Details);
+
+
+
+         var options = {};
+        options.url = '@Url.Action("Create", "MenuPermission")';
+                options.type = "POST";
+                options.dataType = "json";
+                options.data = { MenuPermission_Master };
+                options.success =  function (result) {
+
+                    alert('Data Save Successfully');
+
+                if (result.Success == "1") {
+                    //window.location.href = "/Invoice/index";
+
+                     window.setTimeout(function () {
+
+                            // Move to a new location or you can do something else
+                             window.location.href = '@Url.Action("Index", "MenuPermission")';
+                        }, 500);
+
+
+                }
+                else {
+                    alert(result.ex);
+                }
+        };
+
+        //console.log(options);
+                $.ajax(options);
+        // Set 2: Ajax Post
+        // Here i have used ajax post for saving/updating information
+        @*$.ajax({
+            //url: '/COM_MenuPermission/Create',
+            url: '@Url.Action("Create", "MenuPermission")',
+
+            data: { MenuPermission_Master },
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+                alert('Data Save Successfully');
+
+                if (result.Success == "1") {
+                    //window.location.href = "/Invoice/index";
+
+                     window.setTimeout(function () {
+
+                            // Move to a new location or you can do something else
+                             window.location.href = '@Url.Action("Index", "MenuPermission")';
+                        }, 500);
+
+
+                }
+                else {
+                    alert(result.ex);
+                }
+            }
+        });*@
+      }
+
+    $(document).ready(function () {
+
+
+        $('#selectAll').click(function () {
+            $('#tblpidetails tbody tr').removeClass('selected');
+            $('#tblpidetails tbody tr').addClass('selected');
+        });
+
+        $('#selectAllMP').click(function () {
+            $('#tblMachinaryLCdetails tbody tr').removeClass('selected');
+            $('#tblMachinaryLCdetails tbody tr').addClass('selected');
+        });
+
+        ///problem
+        var tblMachinaryLCdetails = $('#tblMachinaryLCdetails').dataTable({
+
+            "aoColumns": [
+
+                { "sClass": "ModuleMenuId", "visible": true },
+                { "sClass": "ParentMenuName", "visible": true },
+                { "sClass": "ModuleMenuName", "visible": true },
+                { "sClass": "ModuleMenuCaption", "visible": true },
+                { "sClass": "ModuleMenuController", "visible": true },
+                { "sClass": "MenuPermissionDetailsId", "visible": true },
+                { "sClass": "MenuPermissionId", "visible": true },
+                {
+                    // check or uncheck vlaue
+                    "sClass": "IsCreate", "visible": true,
+                    "render": function (data) {
+                        //alert("got");
+                        return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';
+                    }
+                },
+                {
+                    "sClass": "IsEdit", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';   }
+                },
+                {
+                    "sClass": "IsDelete", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';   }
+                },
+                {
+                    "sClass": "IsView", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';   }
+                },
+                {
+                    "sClass": "IsReport", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';   }
+                },
+                {
+                    "sClass": "IsDefault", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+                {
+                    'targets': 13,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm txtSLNo" id="SLNo" name="SLNo" type="text" autocomplete="off"  data-val="true" value=' + data + '>'
+                        //$.fn.dataTable.render.number(',', '.', 2, '')
+
+                    }
+                },
+                null
+
+                //{ "sClass": "IsEdit", "visible": true, render: $.fn.dataTable.render.number(',', '.', 3, '') },
+                //{ "sClass": "ImportRate", "visible": true, render: $.fn.dataTable.render.number(',', '.', 3, '') },
+                //{ "sClass": "OrderValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 3, '') },
+
+                //null,
+                //{ "sClass": "PIId", "visible": true }
+
+            ],
+
+            "dom": 'T<"clear">lfrtip',
+
+            "tableTools": {
+                "sRowSelector": "td:not(:first-child)"
+            },
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+
+
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "paging": false,
+            "scrollX": true,
+            "scrollY": "45vh",
+            language: {
+                search: '',
+                searchPlaceholder: "Search..."
+            },
+            "scrollCollapse": true,
+            //"retrieve": true,
+            rowCallback: function (row) {
+                $(row).addClass('txtMultMachinaryLC');
+            }, select: "multi",
+            columnDefs: [
+                {
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'><=</button>"
+                    }
+                },
+                {
+                    targets: [7,8,9,10,11],
+                    render: function () {
+                        return '<input type="checkbox" checked/>'
+                    }
+                }
+            ],
+             dom: '<"dom_wrapper fh-fixedHeader"flB>tip',//dom: 'tBfip',
+            buttons: [{
+                extend: "selectRows",
+                className: 'btn-primary rounded-0',
+                text: 'Detach From Access List',
+                action: function (e, sourceTable, button, config) {
+
+                    var selectedRows = sourceTable.rows(".selected");
+                    var mData = selectedRows.data();
+                    // I tried making a copy of the entire data object using JSON but it
+                    // gave me a circular reference error so I am doing it row at a time.
+                    // remove the seleted rows
+                    selectedRows.remove().draw();
+                    targetTable = $("#tblpidetails").DataTable();
+                    $.each(mData, function (idx, item) {
+                        targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                        //targetTable.addClass('txtMult');
+
+                    })
+                    //$this.addClass('yourClass');
+                    targetTable.draw();
+                    //$('.tblgrouplcsub tr:last').addClass('txtMult');
+                    //multInputsMachinaryLC();
+                }
+            }],
+            initComplete: function () {
+                $("#tblMachinaryLCdetails button").on("click", function (evt) {
+
+                    var t1 = $("#tblMachinaryLCdetails").DataTable();
+                    var t2 = $("#tblpidetails").DataTable();
+                    var tr = $(this).closest("tr");
+                    var row = t1.row(tr);
+                    var data = JSON.parse(JSON.stringify(row.data()));
+                    //alert(data[0]);
+
+                    ///alert('hit');
+                    row.remove().draw();
+                    t2.row.add(data).draw();
+
+                    //multInputsMachinaryLC();
+                });
+            }
+        })
+
+
+        var tblpidetails = $('#tblpidetails').dataTable({
+
+            "aoColumns": [
+
+                { "sClass": "ModuleMenuId", "visible": true },
+                { "sClass": "ParentMenuName", "visible": true },
+                { "sClass": "ModuleMenuName", "visible": true },
+                { "sClass": "ModuleMenuCaption", "visible": true },
+                { "sClass": "ModuleMenuController", "visible": true },
+                { "sClass": "MenuPermissionDetailsId", "visible": true },
+                { "sClass": "MenuPermissionId", "visible": true },
+                {
+                    // check or uncheck vlaue
+                    "sClass": "IsCreate", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';  }
+                },
+                {
+                    "sClass": "IsEdit", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';  }
+                },
+                {
+                    "sClass": "IsDelete", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';  }
+                },
+                {
+                    "sClass": "IsView", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';  }
+                },
+                {
+                    "sClass": "IsReport", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';  }
+                },
+                {
+                    "sClass": "IsDefault", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>'; }
+                },
+                {
+                    'targets': 13,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm txtSLNo" id="OSLNo" name="SLNo" type="text" autocomplete="off"  data-val="true" value=' + data + '>'
+                        //$.fn.dataTable.render.number(',', '.', 2, '')
+
+                    }
+                },
+                null
+
+            ],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "scrollX": true,
+            "scrollY": "45vh",
+            language: { search: '', searchPlaceholder: "Search..." },
+            "scrollCollapse": true,
+            rowCallback: function (row) {
+                $(row).addClass('txtMultpidetails');
+            }, select: "multi",
+            columnDefs: [
+                {
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'>=></button>"
+                    }
+                },
+                {
+                    targets: [7,8,9,10,11,12],
+                    render: function () {
+                        return '<input type="checkbox" checked/>'
+                    }
+                }
+
+            ],
+             dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            buttons: [{
+                extend: "selectRows",
+
+                text: 'Attach To Access List',
+                className: 'btn-primary rounded-0',
+                action: function (e, sourceTable, button, config) {
+
+
+                    //console.log(sourceTable);
+
+                    var selectedRows = sourceTable.rows(".selected");
+                    var mData = selectedRows.data();
+                    selectedRows.remove().draw();
+                    targetTable = $("#tblMachinaryLCdetails").DataTable();
+                    $.each(mData, function (idx, item) {
+                        //targetTable.row.add(item);
+                        targetTable.row.add([
+                            `${item[0]}`,`${item[1]}`,`${item[2]}`,`${item[3]}`,`${item[4]}`,`${item[5]}`,`${item[6]}`,
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '0',
+
+                            ''
+                        ]);
+                        //targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                    })
+                    targetTable.draw();
+                }
+            }],
+            initComplete: function () {
+                $("#tblpidetails button").on("click", function (evt) {
+
+                    var t1 = $("#tblpidetails").DataTable();
+                    var t2 = $("#tblMachinaryLCdetails").DataTable();
+                    var tr = $(this).closest("tr");
+                    var row = t1.row(tr);
+                    var data = JSON.parse(JSON.stringify(row.data()));
+                    //alert(data[0]);
+                    row.remove().draw();
+                    //console.log(data);
+                    //t2.row.add(data).draw();
+                    t2.row.add([
+                            `${data[0]}`,`${data[1]}`,`${data[2]}`,`${data[3]}`,`${data[4]}`,`${data[5]}``${data[6]}`,
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                        '<input type="checkbox" checked/>',
+                        '<input type="checkbox" checked/>',
+'0',
+                            ''
+                        ]).draw();
+                });
+            }
+        }) //
+    });
+
+
+    function CurrentDate() {
+        var date = new Date();
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+        return val;
+
+    }
+
+    @*function SubMenuPermissionLoad() {
+        var softwareId = $("#software").val();
+        //alert(comid);
+            var versionId = $('#version').val();
+
+            var y = "@ViewBag.Title";
+        if (y == "Create") {
+            window.location.href = "Create?softwareId=" + softwareId + "&versionId=" + versionId;
+            }
+        else {
+            window.location.href = "Create?softwareId=" + softwareId + "&versionId=" + versionId;
+            }
+
+    };
+
+    function NewPermission() {
+            alert('New permission');
+        var menuPermissionId = $("#SubMenuPermissionId").val();
+        var userIdPermission = $("#newUseridPermission").val();
+        var comId = $("#comid").val();
+        //console.log(MenuPermissionId + " " + userIdPermission + " " + comId);
+
+            var y = "@ViewBag.Title";
+            if (y == "Edit") {
+                window.location.href = "UserTransfer?menuPermissionId=" + menuPermissionId +"&userIdPermission="+userIdPermission+"&comId="+comId;
+            }
+            else {
+                window.location.href = "?menuPermissionId=" + menuPermissionId +"&userIdPermission="+userIdPermission+"&comId="+comId ;
+            }
+    };*@
+
+        function ReportPermision_save() {
+        // Step 1: Read View Data and Create JSON Object
+            MachinaryLC_save();
+
+            var a = $("#ReportPermission_MasterId").val();
+            //alert(a);
+
+        if (!$("#myform").valid()) {
+
+            alert('Please Fill Up All Necessary Information Correctly.');
+            return false;
+        }
+
+
+        // Creating Detail Json Object
+            var ReportPermission_Details = {
+                "ReportPermission_DetailsId": "", "ReportPermission_MasterId": 0,
+            "ReportId": "", "IsCreate": "",
+                "IsEdit": "", "IsDelete": "", "IsView": "", "DateAdded": "", "DateUpdated": "", "SLNo": ""
+        };
+
+            var ReportPermission_Master = {
+                "ReportPermission_MasterId": "", "ComId": "","UserId":"",
+                "UpdateByUser": "", "Active": "", "DateAdded": "","Updatedby":"","useridPermission":"",
+                "DateUpdated": "","ReportPermission_Details": []
+        };
+
+            ReportPermission_Master.UserId = $("#UserId").val() || 0;
+            ReportPermission_Master.UpdateByUser = $("#useridUpdate").val() || 0;
+            ReportPermission_Master.DateAdded = $("#DateAdded").val();
+            ReportPermission_Master.ReportPermission_MasterId = a;
+            ReportPermission_Master.Updatedby = $("#UserId").val() || 0;
+            ReportPermission_Master.DateUpdated = $("#DateAdded").val();
+            ReportPermission_Master.ComId = $("#comid option:selected").val();
+             ReportPermission_Master.useridPermission = $("#useridPermission").val();
+            //alert(a);
+        // for report permission
+            var oTable2 = $('#tblMachinaryLCdetails2').dataTable().fnGetData();
+
+
+            console.log(oTable2);
+        var nTable2 = $('#tblMachinaryLCdetails2').dataTable().fnGetNodes();
+
+            for (var i = 0; i < oTable2.length; i++) {
+
+                //if ($('h2').text() == "Menu Permission Edit")
+
+
+                if ($('#styletext').text() == "Menu Permission Edit") {
+                    ReportPermission_Details.ReportPermission_MasterId = a;
+                }
+                else {
+                    ReportPermission_Details.ReportPermission_MasterId = 0;
+                }
+
+                ReportPermission_Details.ReportPermission_DetailsId = 0;
+                ReportPermission_Details.ReportId = oTable2[i][0];
+
+                //console.log($(nTable[i].cells[9].children[0]).prop('checked'));     // checkbox is check or uncheck
+                ReportPermission_Details.IsCreate = $(nTable2[i].cells[3].children[0]).prop('checked');
+                ReportPermission_Details.IsEdit = $(nTable2[i].cells[4].children[0]).prop('checked');   //oTable[i][0];
+                ReportPermission_Details.IsDelete = $(nTable2[i].cells[5].children[0]).prop('checked'); //oTable[i][0];
+                ReportPermission_Details.IsView = $(nTable2[i].cells[6].children[0]).prop('checked');   //oTable[i][0];
+
+                console.log(ReportPermission_Details);
+
+                ReportPermission_Master.ReportPermission_Details.push(ReportPermission_Details);
+                console.log(ReportPermission_Master);
+
+                var ReportPermission_Details = {
+                    "ReportPermission_DetailsId": "", "ReportPermission_MasterId": "",
+                    "ReportId": "", "IsCreate": "",
+                    "IsEdit": "", "IsDelete": "", "IsView": "", "DateAdded": "", "DateUpdated": "", "SLNo": ""
+
+                }
+
+            }
+
+
+
+            var n = $(ReportPermission_Master).length;
+            alert('Data is Generated for Saving...please Wait for the next alert.');
+
+             var options = {};
+        options.url = '@Url.Action("CreateReport", "MenuPermission")';
+                options.type = "POST";
+            options.dataType = "json";
+            options.data = { ReportPermission_Master };
+            options.success =  function (result) {
+
+                //alert('Report Permission Update Successfully');
+
+            if (result.Success == "1") {
+                //window.location.href = "/Invoice/index";
+
+                window.setTimeout(function () {
+
+                    // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "MenuPermission")';
+                }, 500);
+            }
+            else {
+                alert(result.ex);
+            }
+        };
+
+        //console.log(options);
+                $.ajax(options);
+            console.log(ReportPermission_Details);
+    }
+
+    $(document).ready(function () {
+
+
+        // for report permission
+
+        $('#selectAll2').click(function () {
+            $('#tblrpdetails2 tbody tr').removeClass('selected');
+            $('#tblrpdetails2 tbody tr').addClass('selected');
+        });
+
+        $('#selectAllMP2').click(function () {
+            $('#tblMachinaryLCdetails2 tbody tr').removeClass('selected');
+            $('#tblMachinaryLCdetails2 tbody tr').addClass('selected');
+        });
+
+
+        // for report permission
+      var tblMachinaryLCdetails2 = $('#tblMachinaryLCdetails2').dataTable({
+
+            "aoColumns": [
+
+                { "sClass": "ReportID", "visible": true },
+                { "sClass": "ReportName", "visible": true },
+                { "sClass": "ReportType", "visible": true },
+
+                {
+                    // check or uncheck vlaue
+                    "sClass": "IsCreate", "visible": true,
+                    "render": function (data) {
+                        //alert("got");
+                        return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>';
+
+                    }
+                },
+                {
+                    "sClass": "IsEdit", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+                {
+                    "sClass": "IsDelete", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+                {
+                    "sClass": "IsView", "visible": true,
+                    "render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+
+
+                null
+
+
+            ],
+
+            "dom": 'T<"clear">lfrtip',
+
+            "tableTools": {
+                "sRowSelector": "td:not(:first-child)"
+            },
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+
+
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "paging": false,
+            "scrollX": true,
+            "scrollY": "45vh",
+            language: {
+                search: '',
+                searchPlaceholder: "Search..."
+            },
+            "scrollCollapse": true,
+            //"retrieve": true,
+            rowCallback: function (row) {
+                $(row).addClass('txtMultMachinaryLC');
+            }, select: "multi",
+            columnDefs: [
+                {
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'><=</button>"
+                    }
+                },
+                {
+                    targets: [3, 4, 5, 6],
+                    render: function () {
+                        return '<input type="checkbox" checked/>'
+                    }
+                }
+            ],
+            dom: '<"dom_wrapper fh-fixedHeader"flB>tip',//dom: 'tBfip',
+            buttons: [{
+                extend: "selectRows",
+                className: 'btn-primary rounded-0',
+                text: 'Detach From Access List',
+                action: function (e, sourceTable, button, config) {
+
+                    var selectedRows = sourceTable.rows(".selected");
+                    var mData = selectedRows.data();
+                    // I tried making a copy of the entire data object using JSON but it
+                    // gave me a circular reference error so I am doing it row at a time.
+                    // remove the seleted rows
+                    selectedRows.remove().draw();
+                    targetTable = $("#tblrpdetails2").DataTable();
+                    $.each(mData, function (idx, item) {
+                        targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                        //targetTable.addClass('txtMult');
+
+                    })
+                    //$this.addClass('yourClass');
+                    targetTable.draw();
+                    //$('.tblgrouplcsub tr:last').addClass('txtMult');
+                    //multInputsMachinaryLC();
+                }
+            }],
+            initComplete: function () {
+                $("#tblMachinaryLCdetails2 button").on("click", function (evt) {
+
+                    var t1 = $("#tblMachinaryLCdetails2").DataTable();
+                    var t2 = $("#tblpidetails").DataTable();
+                    var tr = $(this).closest("tr");
+                    var row = t1.row(tr);
+                    var data = JSON.parse(JSON.stringify(row.data()));
+                    //alert(data[0]);
+
+                    ///alert('hit');
+                    row.remove().draw();
+                    t2.row.add(data).draw();
+
+                    //multInputsMachinaryLC();
+                });
+            }
+        })
+
+
+        var tblrpdetails2 = $('#tblrpdetails2').dataTable({
+
+            "aoColumns": [
+
+                { "sClass": "ReportPermissionsId", "visible": true },
+                { "sClass": "ReportName", "visible": true },
+                { "sClass": "ReportType", "visible": true },
+                 {
+                    // check or uncheck vlaue
+                    "sClass": "IsCreate", "visible": true,
+                    "render": function () {
+                        //alert("got");
+                        return  '<input type="checkbox" checked/>' ;
+                    }
+                },
+                {
+                    "sClass": "IsEdit", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';}
+                },
+                {
+                    "sClass": "IsDelete", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';}
+                    //"render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+                {
+                    "sClass": "IsView", "visible": true,
+                    "render": function () { return '<input type="checkbox" checked/>';}
+                    //"render": function (data) { return $(data).prop('checked') ? '<input type="checkbox" checked/>' : '<input type="checkbox"/>'; }
+                },
+
+                null
+
+            ],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "scrollX": true,
+            "scrollY": "45vh",
+            language: { search: '', searchPlaceholder: "Search..." },
+            "scrollCollapse": true,
+            rowCallback: function (row) {
+                $(row).addClass('txtMultpidetails');
+            }, select: "multi",
+
+            dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            buttons: [{
+                extend: "selectRows",
+
+                text: 'Attach To Access List',
+                className: 'btn-primary rounded-0',
+                action: function (e, sourceTable, button, config) {
+
+
+                    //console.log(sourceTable);
+
+                    var selectedRows = sourceTable.rows(".selected");
+                    var mData = selectedRows.data();
+                    selectedRows.remove().draw();
+                    targetTable = $("#tblMachinaryLCdetails2").DataTable();
+                    $.each(mData, function (idx, item) {
+                        //targetTable.row.add(item);
+                        targetTable.row.add([
+                            `${item[0]}`, `${item[1]}`, `${item[2]}`,
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            '<input type="checkbox" checked/>',
+                            ''
+                        ]);
+                        //targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                    })
+                    targetTable.draw();
+                }
+            }],
+            initComplete: function () {
+                $("#tblrpdetails2 button").on("click", function (evt) {
+
+                    var t1 = $("#tblrpdetails2").DataTable();
+                    var t2 = $("#tblMachinaryLCdetails2").DataTable();
+                    var tr = $(this).closest("tr");
+                    var row = t1.row(tr);
+                    var data = JSON.parse(JSON.stringify(row.data()));
+                    //alert(data[0]);
+                    row.remove().draw();
+                    console.log(data);
+                    //t2.row.add(data).draw();
+                    t2.row.add([
+                        `${data[0]}`, `${data[1]}`, `${data[2]}`,
+                        '<input type="checkbox" checked/>',
+                        '<input type="checkbox" checked/>',
+                        '<input type="checkbox" checked/>',
+                        '<input type="checkbox" checked/>',
+                        ''
+                    ]).draw();
+                });
+            }
+        })
+    });
+
+    </script>
+}
+
+

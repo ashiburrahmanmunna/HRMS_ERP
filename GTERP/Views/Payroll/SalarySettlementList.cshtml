@@ -1,0 +1,575 @@
+﻿@using GTERP.Controllers.HR
+@{
+    ViewBag.Title = "Salary Settlement Entry";
+}
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.ViewModels.OTFC
+
+@{
+    var employees = ViewBag.EmployeeInfo;
+    List<Cat_Shift> shifts = ViewBag.Shift;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i> Salary Settlement Entry
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Pross Type
+                                            </span>
+                                        </div>
+                                        <select asp-items="@ViewBag.ProssType" id="prossType">
+                                        </select>
+                                    </div>
+                            </div>
+
+                            <div class="col-md-3 col-12">
+                                <button type="button" id="btnLoad" class="rounded-0 btn btn-warning btn-block">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load
+                                </button>
+
+                            </div>
+
+
+                            <div class="col-md-3 col-12">
+
+                                <button type="button" id="btnSave" class="rounded-0 btn btn-primary btn-block">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+                                </button>
+                            </div>
+
+
+                        </div>
+                        <hr />
+                        @*<input type="button" class="btn btn-warning float-right rounded-0" value="Select All" id="btn" />*@
+                        <div class="table-responsive">
+                        <table id="tblEmp" class="table table-hover table-striped text-nowrap" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>EmpId</th>
+                                    <th>Emp Code</th>
+                                    <th>Pross Type</th>
+                                    <th>Emp Name</th>
+                                    <th>Gross Salary</th>
+                                    <th>AttBonus</th>
+                                    <th>Arrear</th>
+                                    <th>OtherAllow</th>
+                                    <th>TrnAllow</th>
+                                    <th>OTAmt</th>
+                                    <th>OthersAddition</th>
+                                    <th>CompensationDay</th>
+                                    <th>CompensationAdd</th>
+                                    <th>SubsistenceDay</th>
+                                    <th>SubsistenceAdd</th>
+                                    <th>DeathFacilityDay</th>
+                                    <th>DeathFacilityAdd</th>
+                                    <th>NoticePayDay</th>
+                                    <th>NoticePayAdd</th>
+                                    <th>ServiceBenifitDay</th>
+                                    <th>ServiceBenifitAdd</th>
+                                    <th>ELDay</th>
+                                    <th>ELAmt</th>
+                                    <th>TotalPayable</th>
+                                    <th>AbsentAmt</th>
+                                    <th>Adv</th>
+                                    <th>PF</th>
+                                    <th>Basic Salary</th>
+                                    <th>IncomeTax</th>
+                                    <th>OthersDeduct</th>
+                                    <th>Stamp</th>
+                                    <th>NoticePayDedDay</th>
+                                    <th>NoticePayDed</th>
+                                    <th>SuspentionDay</th>
+                                    <th>SuspentionDed</th>
+                                    <th>TotalDeduct</th>
+                                    <th>NetSalaryPay</th>
+                                    <th>PFOwn</th>
+                                    <th>PFComp</th>
+                                    <th>PFProfit</th>
+                                    <th>PFTotal</th>
+                                    <th>NetPayableAmt</th>
+                                    <th>Remarks</th>
+                                    <th>IsPaid</th>
+                                    <th>EmployeeCode</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null)
+                                {
+                                    @foreach (var item in ViewBag.OTFCList)
+                                    {
+                                        <tr>
+                                            <td >@item.EmpId</td>
+                                            <td>@item.EmpCode</td>
+                                            <td>@item.ProssType</td>
+                                            <td>@item.EmpName</td>
+                                            <td>@item.GS</td>
+                                            <td>@item.AttBonus</td>
+                                            <td>@item.Arrear</td>
+                                            <td>@item.OtherAllow</td>
+                                            <td>@item.TrnAllow</td>
+                                            <td>@item.OTAmt</td>
+                                            <td>@item.OthersAddition</td>
+                                            <td>@item.CompensationDay</td>
+                                            <td>@item.CompensationAdd</td>
+                                            <td>@item.SubsistenceDay</td>
+                                            <td>@item.SubsistenceAdd</td>
+                                            <td>@item.DeathFacilityDay</td>
+                                            <td>@item.DeathFacilityAdd</td>
+                                            <td>@item.NoticePayDay</td>
+                                            <td>@item.NoticePayAdd</td>
+                                            <td>@item.ServiceBenifitDay</td>
+                                            <td>@item.ServiceBenifitAdd</td>
+                                            <td>@item.ELDay</td>
+                                            <td>@item.ELAmt</td>
+                                            <td>@item.TotalPayable</td>
+                                            <td>@item.AbsentAmt</td>
+                                            <td>@item.Adv</td>
+                                            <td>@item.PF</td>
+                                            <td>@item.BS</td>
+                                            <td>@item.IncomeTax</td>
+                                            <td>@item.OthersDeduct</td>
+                                            <td>@item.Stamp</td>
+                                            <td>@item.NoticePayDedDay</td>
+                                            <td>@item.NoticePayDed</td>
+                                            <td>@item.SuspentionDay</td>
+                                            <td>@item.SuspentionDed</td>
+                                            <td>@item.TotalDeduct</td>
+                                            <td>@item.NetSalaryPay</td>
+                                            <td>@item.PFOwn</td>
+                                            <td>@item.PFComp</td>
+                                            <td>@item.PFProfit</td>
+                                            <td>@item.PFTotal</td>
+                                            <td>@item.NetPayableAmt</td>
+                                            <td>@item.Remarks</td>
+                                            <td>@item.IsPaid</td>
+                                            <td>@item.EmployeeCode</td>
+
+
+                                        </tr>
+                                    }
+
+                                }
+                                </tbody>
+                               
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        $('#prossType').select2();
+
+        $(document).ready(function () {
+            var message = "Salary Settlement Entry";
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            visible: false
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            messageTop: message,
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13],
+                                format: {
+                                    body: function (data, row, column, node) {
+
+                                        if (column == 8 || column==9) {
+                                            return $(data).val();
+                                        } else {
+                                            return data;
+                                        }
+
+                                    }
+                                }
+                            }
+                        },
+                        
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info mr-1',
+                            titleAttr: 'Print Table',
+                            messageTop: message,
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 9,  11,  13],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        if (column == 8 || column == 9) {
+                                            return $(data).val();
+                                        } else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    ]
+                },
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'ProssType', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'GS', 'visible': true },
+                    { 'sClass': 'AttBonus', 'visible': true },
+                    { 'sClass': 'Arrear', 'visible': true },
+                    { 'sClass': 'Allowance', 'visible': true },
+                    { 'sClass': 'TrnAllow', 'visible': true },
+                    { 'sClass': 'OTAmt', 'visible': true },
+                    { 'sClass': 'OthersAddition', 'visible': true },
+                    { 'sClass': 'CompensationDay', 'visible': true },
+                    { 'sClass': 'CompensationAdd', 'visible': true },
+                    { 'sClass': 'SubsistenceDay', 'visible': true },
+                    { 'sClass': 'SubsistenceAdd', 'visible': true },
+                    { 'sClass': 'DeathFacilityDay', 'visible': true },
+                    { 'sClass': 'DeathFacilityAdd', 'visible': true },
+                    { 'sClass': 'NoticePayDay', 'visible': true },
+                    { 'sClass': 'NoticePayAdd', 'visible': true },
+                    { 'sClass': 'ServiceBenifitDay', 'visible': true },
+                    { 'sClass': 'ServiceBenifitAdd', 'visible': true },
+                    { 'sClass': 'ELDay', 'visible': true },
+                    { 'sClass': 'ELAmt', 'visible': true },
+                    { 'sClass': 'TotalPayable', 'visible': true },
+                    { 'sClass': 'AbsentAmt', 'visible': true },
+                    { 'sClass': 'Adv', 'visible': true },
+                    { 'sClass': 'PF', 'visible': true },
+                    { 'sClass': 'BS', 'visible': true },
+                    { 'sClass': 'IncomeTax', 'visible': true },
+                    { 'sClass': 'OthersDeduct', 'visible': true },
+                    { 'sClass': 'Stamp', 'visible': true },
+                    { 'sClass': 'NoticePayDedDay', 'visible': true },
+                    { 'sClass': 'NoticePayDed', 'visible': true },
+                    { 'sClass': 'SuspentionDay', 'visible': true },
+                    { 'sClass': 'SuspentionDed', 'visible': true },
+                    { 'sClass': 'TotalDeduct', 'visible': true },
+                    { 'sClass': 'NetSalaryPay', 'visible': true },
+                    { 'sClass': 'PFOwn', 'visible': true },
+                    { 'sClass': 'PFComp', 'visible': true },
+                    { 'sClass': 'PFProfit', 'visible': true },
+                    { 'sClass': 'PFTotal', 'visible': true },
+                    { 'sClass': 'NetPayableAmt', 'visible': true },
+                    { 'sClass': 'Remarks', 'visible': true },
+                    { 'sClass': 'IsPaid', 'visible': true },
+                    { 'sClass': 'EmployeeCode', 'visible': true }
+
+                ],
+                'columnDefs': [
+
+                    {
+                        'targets': 43, 'searchable': false, 'orderable': false, 'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == 1)
+                                return '<input type="checkbox" name="id[IsPaid]" checked value="' + $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsPaid]" value="' + $('<div/>').text(data).html() + '">';
+                        }
+                    },
+
+                    {
+                        'targets': [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,44], 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    }
+
+                ],
+                'paging': true,
+                'info': true,
+                //"scrollY": 455,
+                //"scrollX": true,
+                language: {
+                    sLengthMenu: " _MENU_",
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+                select: {
+                    style: 'Multi',
+                    selector: 'td:nth-child(1),td:nth-child(2),td:nth-child(3),td:nth-child(4)'
+                },
+
+            });
+
+
+            $('#tblEmp').change(function () {
+                TotalOTSum();
+            });
+
+            TotalOTSum();
+            function TotalOTSum() {
+
+                var totalot = 0;
+                var totalshiftnight = 0;
+
+
+                var rows = $("#tblEmp").dataTable().fnGetNodes();
+
+
+                for (var i = 0; i < rows.length; i++) {
+
+                    var ttlotrow = rows[i].cells[8].children[0].value;//.replace(/[\$,]/g, '');
+                    var ttlshiftnightrow = rows[i].cells[9].children[0].value;//.replace(/[\$,]/g, '');
+
+
+                    totalot += parseFloat(ttlotrow);
+                    totalshiftnight += parseFloat(ttlshiftnightrow);
+
+                }
+
+
+                $(".totalot").text(totalot.toLocaleString());
+                $(".totalshiftnight").text(totalshiftnight.toLocaleString());
+
+                //$("#TotalGRRValue").val(totalgrr.toLocaleString());
+
+            };
+
+
+            $("#btnLoad").click(function () {
+                //debugger;
+                DailyEmpFixedAttandanceData();
+            });
+            function initializeGrid(data) {
+
+                //$('#tblEmp').DataTable().clear().draw();
+                //alert("Test");
+                let arrays = [];
+                //console.table(data);
+                for (var i = 0; i < data.length; i++) {
+
+                    arrays.push([
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].ProssType,
+                        data[i].EmpName,
+                        data[i].GS,
+                        data[i].AttBonus,
+                        data[i].Arrear,
+                        data[i].OtherAllow,
+                        data[i].TrnAllow,
+                        data[i].OTAmt,
+                        data[i].OthersAddition,
+                        data[i].CompensationDay,
+                        data[i].CompensationAdd,
+                        data[i].SubsistenceDay,
+                        data[i].SubsistenceAdd,
+                        data[i].DeathFacilityDay,
+                        data[i].DeathFacilityAdd,
+                        data[i].NoticePayDay,
+                        data[i].NoticePayAdd,
+                        data[i].ServiceBenifitDay,
+                        data[i].ServiceBenifitAdd,
+                        data[i].ELDay,
+                        data[i].ELAmt,
+                        data[i].TotalPayable,
+                        data[i].AbsentAmt,
+                        data[i].Adv,
+                        data[i].PF,
+                        data[i].BS,
+                        data[i].IncomeTax,
+                        data[i].OthersDeduct,
+                        data[i].Stamp,
+                        data[i].NoticePayDedDay,
+                        data[i].NoticePayDed,
+                        data[i].SuspentionDay,
+                        data[i].SuspentionDed,
+                        data[i].TotalDeduct,
+                        data[i].NetSalaryPay,
+                        data[i].PFOwn,
+                        data[i].PFComp,
+                        data[i].PFProfit,
+                        data[i].PFTotal,
+                        data[i].NetPayableAmt,
+                        data[i].Remarks,
+                        data[i].IsPaid,
+                        data[i].EmployeeCode
+
+                    ]);
+                }
+
+
+                table.rows.add(arrays).draw(false);
+                //TotalOTSum();
+        };
+
+            function DailyEmpFixedAttandanceData() {
+                //debugger;
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+                let prossType = $("#prossType option:selected").val();
+
+
+                table.rows().remove().draw();
+             $.ajax({
+                  type: 'POST',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("Search", "Payroll")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: { prossType: prossType },
+                 success: function (data) {
+                     if (data.Success == "1") {
+                         if (data.result == null) {
+                             toastr.info("Data not found!!");
+                         }
+                         else {
+                             initializeGrid(data.result);
+                         }
+
+                     }
+                     else {
+                         toastr.error(result.ex);
+                     }
+                     StopSpinner("#btnLoad");
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                     StopSpinner("#btnLoad");
+                 }
+            });
+
+            };
+
+            $("#btnSave").click(function () {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var dtfrom = $('#DtFrom').val();
+                var dtto = $('#DtTo').val();
+                var ProssType = $("#prossType ").val();
+                var criteria = $("#Criteria:checked").val();
+                var HR_SalarySettlements = [];
+
+                var otfcList = table.rows('.selected').nodes();
+
+                var data = table.rows('.selected').data();
+
+
+                var HR_SalarySettlement = {
+                    StlId: "0", EmpId: "", Empcode: "", ProssType: "", AttBonus: "", Arrear: "", OtherAllow: "", DtInput: CurrentDate(),
+                    TrnAllow: "", ExOTAmount: "", OthersAddition: "", CompensationDay: "", CompensationAdd: "", SubsistenceDay: "", SubsistenceAdd: "",
+                    DeathFacilityDay: "", DeathFacilityAdd: "", NoticePayDay: "", NoticePayAdd: "", ServiceBenifitDay: "", ServiceBenifitAdd: "", CurrEL: "", IsPaid: 0,
+                    ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: CurrentDate(), UpdateByUserId:CurrentDate(), DateUpdated: CurrentDate()
+                };
+
+                for (var i = 0; i < data.length; i++) {
+                    HR_SalarySettlement.EmpId = data[i][0];
+                    HR_SalarySettlement.Empcode = data[i][1];//otfcList[i].cells[1].children[0].value || 0;
+                    HR_SalarySettlement.ProssType = $("#prossType option:selected").val();
+                    HR_SalarySettlement.AttBonus = otfcList[i].cells[4].children[0].value || 0;
+                    HR_SalarySettlement.Arrear = otfcList[i].cells[5].children[0].value || 0;
+                    HR_SalarySettlement.OtherAllow = otfcList[i].cells[6].children[0].value || 0;
+                    HR_SalarySettlement.TrnAllow = otfcList[i].cells[7].children[0].value || 0;
+                    HR_SalarySettlement.ExOTAmount = otfcList[i].cells[8].children[0].value || 0;
+                    HR_SalarySettlement.OthersAddition = otfcList[i].cells[9].children[0].value || 0;
+                    HR_SalarySettlement.CompensationDay = otfcList[i].cells[10].children[0].value || 0;
+                    HR_SalarySettlement.CompensationAdd = otfcList[i].cells[11].children[0].value || 0;
+                    HR_SalarySettlement.SubsistenceDay = otfcList[i].cells[12].children[0].value || 0;
+                    HR_SalarySettlement.SubsistenceAdd = otfcList[i].cells[13].children[0].value || 0;
+                    HR_SalarySettlement.DeathFacilityDay = otfcList[i].cells[14].children[0].value || 0;
+                    HR_SalarySettlement.DeathFacilityAdd = otfcList[i].cells[15].children[0].value || 0;
+                    HR_SalarySettlement.NoticePayDay = otfcList[i].cells[16].children[0].value || 0;
+                    HR_SalarySettlement.NoticePayAdd = otfcList[i].cells[17].children[0].value || 0;
+                    HR_SalarySettlement.ServiceBenifitDay = otfcList[i].cells[18].children[0].value || 0;
+                    HR_SalarySettlement.ServiceBenifitAdd = otfcList[i].cells[19].children[0].value || 0;
+                    HR_SalarySettlement.CurrEL = otfcList[i].cells[20].children[0].value || 0;
+
+                    if ($(otfcList[i].cells[42].children[0]).is(':checked'))
+                    {
+                        alert("Test");
+                        HR_SalarySettlement.IsPaid = 1;
+                    }
+
+
+
+                    HR_SalarySettlements.push(HR_SalarySettlement);
+
+                    HR_SalarySettlement = {
+                        StlId: "0", EmpId: "", Empcode: "", ProssType: "", AttBonus: "", Arrear: "", OtherAllow: "", DtInput: CurrentDate(),
+                    TrnAllow: "", ExOTAmount: "", OthersAddition: "", CompensationDay: "", CompensationAdd: "", SubsistenceDay: "", SubsistenceAdd: "",
+                   DeathFacilityDay: "", DeathFacilityAdd: "", NoticePayDay: "", NoticePayAdd: "", ServiceBenifitDay: "", ServiceBenifitAdd: "", CurrEL: "",IsPaid: 0,
+                    ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: CurrentDate(), UpdateByUserId:CurrentDate(), DateUpdated: CurrentDate()
+                    };
+
+                };
+
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CreateSalarySettlement", "Payroll")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                     dataType: 'json',
+                     headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                     //async: true,
+                     data: { HR_SalarySettlements: HR_SalarySettlements, ProssType: ProssType},
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            table.clear().draw();
+                        }
+                        else
+                            toastr.error(data.ex);
+
+                        StopSpinner("#btnSave");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#btnSave");
+                    }
+                });
+            });
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+    </script>
+}

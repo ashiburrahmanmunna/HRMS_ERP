@@ -1,0 +1,75 @@
+﻿@model IEnumerable<GTERP.Models.PBC_EmployeeTask>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<div>
+    <div>
+        <h3 class="text-center">PBC Task Submission Details</h3>
+        <table class="table table-bordered table-striped table-condesed" id="assignTable">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Submission Date</th>
+                    <th>Employee Comments</th>
+                    <th>Files</th>
+                    <th>Status</th>
+                    <th>Status Date</th>
+                    <th>IsComplete</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td>@a.HR_Emp_Info.EmpName</td>
+                        <td>@a.SubmitDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@a.User_Comments</td>
+                        <td><a asp-action="Download" asp-route-filename="@a.Files">@a.Files</a></td>
+
+                    <td>
+                        @if (a.PBC_Status.PBCStatusId == 1)
+                        {
+                            <span>@a.PBC_Status.Status</span>
+                        }
+                        @if (a.PBC_Status.PBCStatusId == 2)
+                        {
+                            <span>Checked by @a.CheckedBy</span>
+                        }
+                        @if (a.PBC_Status.PBCStatusId == 3)
+                        {
+                            <span>Approved by @a.ApprovedBy</span>
+                        }
+                        @if (a.PBC_Status.PBCStatusId == 4)
+                        {
+                            <span>Disapproved by @a.ApprovedBy</span>
+                        }
+                    </td>
+                        <td>@a.StatusDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@(a.IsComplete == true ? "Yes" : "No")</td>
+                        <td>
+
+                            <a asp-controller="EmployeeTask" asp-action="Details" asp-route-id="@a.TaskAssignId" id="Details" title="Task details" class="btn btn-sm btn-info"><i class="bi bi-info"></i>Details</a>
+                            <a asp-action="Edit" asp-route-id="@a.EmployeeTaskId" title="Edit" class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></a>
+
+                            @*<a asp-action="Create" asp-controller="EmployeeTask" asp-route-ts="@a.TaskAssignId" asp-route-eid="@a.HR_Emp_Info.EmpId" id="Details" title="Submit Task" class="btn btn-sm btn-info"><i class="bi bi-plus"></i>Create</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<script>
+        $(document).ready(function () {
+            $('#assignTable').DataTable({
+                "scrollY": "300px",
+                "scrollCollapse": true,
+                "paging": false,
+                "filter":false
+            });         
+        });
+</script>
+

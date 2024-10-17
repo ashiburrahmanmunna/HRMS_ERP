@@ -1,0 +1,1523 @@
+﻿@model  IEnumerable<GTERP.Models.COM_ProformaInvoice>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    @*<script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>*@
+    
+    
+    @*<link href="~/Content/DataTables/css/jquery.dataTables.css" rel="stylesheet" />*@
+    
+    
+    @*<script src="~/Scripts/DataTables/dataTables.bootstrap4.js"></script>
+    <link href="~/Content/DataTables/css/dataTables.bootstrap4.css" rel="stylesheet" />*@
+    
+    
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+    @*<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/Content/DataTables/css/select.bootstrap4.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/dataTables.cellEdit.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
+</head>
+<style>
+    /*.datepickerfahad {
+            position: relative;
+            z-index: 9999;
+
+        }*/
+
+
+    #styledataload {
+        position: relative;
+        z-index: 0;
+    }
+
+
+    th {
+        font-size: 14px;
+    }
+
+    td {
+        font-size: 13px;
+    }
+
+
+    div.dataTables_length {
+        float: right;
+    }
+    /*.dt-buttons {
+
+        }*/
+    /*div.dataTables_length select {
+            font-size:17px;
+
+        }*/
+    /*div.dataTables_length> label {
+            display: none;
+        }*/
+    div.dataTables_filter {
+        float: left;
+        /*font-size: 17px;*/
+    }
+
+    div.dt-buttons {
+        float: right;
+        font-size: 12px !important;
+    }
+    /*div.dataTables_info {
+            float: left;
+        }*/
+
+    div.dataTables_paginate {
+        float: right;
+    }
+
+    div.DTTT {
+        float: left;
+        margin-right: 50px;
+    }
+
+    div.buttons {
+        clear: both;
+    }
+
+    .fas, .far {
+        font-size: 10px !important;
+    }
+
+
+    table.dataTable tbody td, .sorting {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .sorting_asc {
+        color: green;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .sorting_desc {
+        color: #0932d1;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .table-sm th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 30px;
+    }
+
+
+</style>
+<body>
+    @*@using (Html.BeginForm())*@
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+    {
+        //@Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div id="dialog" title="Basic dialog">
+            <p>This is the default dialog which is useful for displaying information , resized and closed with the 'x' icon.</p>
+        </div>
+        <div class="container-fluid">
+            <h2 id="styletext" class="text-center">Proforma Invoice</h2>
+            <hr />
+
+            <div id="divProformaInvoice" class="row">
+                <div class="col-md-12 order-md-1 mb-2">
+                    <div class="card p-4">
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblProform" class="tblProform table table-striped table-bordered table-sm responsive nowrap table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%;">PINo</th>
+                                        <th style="width:15%;">PIDate</th>
+                                        <th style="width:15%;">PIRecvDate</th>
+
+
+                                        <th style="width:15%;">concernid</th>
+                                        <th style="width:15%;">currencyid</th>
+                                        <th style="width:15%;">supplierid</th>
+                                        <th style="width:15%;">employeeid</th>
+
+                                        <th style="width:15%;">itemgroupid</th> @*new*@
+                                        <th style="width:15%;">itemdescid</th> @*new*@
+                                        <th style="width:15%;">itemdescidMultiple</th> @*new*@
+                                        <th style="width:15%;">GroupLCId</th> @*new*@
+
+                                        <th style="width:15%;">PaymentTermsId</th> @*new*@
+                                        <th style="width:15%;">DayListId</th> @*new*@
+
+
+                                        <th style="width:15%;">Concern</th>
+                                        <th style="width:15%;">Currency</th>
+                                        <th style="width:15%;">Supplier</th>
+                                        <th style="width:15%;">Employee</th>
+
+                                        <th style="width:15%;">Merchandiser</th> @*new*@
+
+
+                                        <th style="width:15%;">Import PONo</th>
+                                        <th style="width:15%;">File No</th>
+                                        <th style="width:15%;">LCAF</th>
+                                        <th style="width:15%;">Item Group</th>
+                                        <th style="width:15%;">Item Description</th>
+
+
+                                        <th style="width:15%;">Item GroupName Ref</th> @*new*@
+                                        <th style="width:15%;">Item Description Ref</th> @*new*@
+                                        <th style="width:15%;">Item Description Multiple</th>
+                                        <th style="width:15%;">Group LC Ref</th>
+
+                                        <th style="width:15%;">Size</th>
+
+                                        <th style="width:30%;">Import Qty</th>
+
+                                        <th style="width:30%;">UnitMaster</th>
+                                        <th style="width:30%;">Import Rate</th>
+                                        <th style="width:30%;">Total Value</th>
+                                        <th style="width:30%;">Carton / Roll Qty</th>
+                                        <th style="width:30%;">Remarks</th>
+                                        <th style="width:30%;">Payment Terms</th>
+                                        <th style="width:30%;">Day</th>
+
+
+                                        <th>
+
+                                        </th>
+
+                                        <th style="width:30%;">ConcernBank</th>
+                                        <th style="width:30%;">SupplierBank</th>
+
+                                        <th style="width:30%;">PINatureId</th>
+                                        <th style="width:30%;">PINature</th>
+
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                    <tr class="txtproform">
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PINo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PIDate)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PIReceivingDate)
+                                            @* newly added 2 *@
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.CommercialCompanyId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.CurrencyId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.SupplierId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.EmployeeId)
+                                            @* 6 newly added *@
+                                        </td>
+
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemGroupId)
+                                            @* 6 newly added *@
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PaymentTermsId)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.DayListId)
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemDescId)
+                                            @* 6 newly added *@
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemDescList)
+
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.Company.CompanyName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.Currency.CurCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.SupplierInformation.SupplierName)
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.Employee.EmployeeName)
+                                            @* 6 newly added *@
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.MerchandiserName)
+                                            @* 6 newly added *@
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ImportPONo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.FileNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.LCAF)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemGroupName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemDescription)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemGroups.ItemGroupName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ItemDescs.ItemDescName)
+                                        </td>
+                                        <td>
+                                            @*item description multiple data*@
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.COM_GroupLC_Mains.GroupLCRefName)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.Size)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ImportQty)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.UnitMaster.UnitMasterId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ImportRate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.TotalValue)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.CartonRollQty)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.Remarks)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PaymentTerms.PaymentTermsName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.DayList.DayListName)
+                                        </td>
+                                        <td>
+                                            <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.BankAccountId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.LienBankAccountId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PINatureId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.PINatures.PINatureName)
+                                        </td>
+
+
+                                    </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-md-12 order-md-1 mb-2">
+                    <div class="table-responsive card p-4">
+                        <table class="table table-condensed">
+                            <tr class="row">
+                                @*<td id="divPiNature" class="col-md-2 col-12">
+                                    <span class="text-right">
+                                        <label>PI Nature:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("PINatureId", ViewBag.PINatureId as List<SelectListItem>, new { id = "PINatureId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>*@
+                                <td id="divstyle" class="col-3">
+                                    <span class="text-right">
+                                        <label>PI No:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("PINo", "", new { @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col-3">
+                                    <span class="text-right">
+                                        <label>Import PONo:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("ImportPONo", "=N/A=", new { @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col">
+                                    <span class="text-right">
+                                        <label>PI Date:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("PIDate", "", new { @class = "form-control form-control-sm datepickerfahad" })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col">
+                                    <span class="text-right">
+                                        <label>PI Recv. Date:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("PIReceivingDate", "", new { @class = "form-control form-control-sm datepickerfahad" })
+                                    </span>
+                                </td>
+                                <td id="divconcern" class="col-md-2 col-12">
+                                    <span class="text-right">
+                                        <label>Concern:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("CommercialCompanyId", ViewBag.CommercialCompanyId as List<SelectListItem>, new { id = "CommercialCompanyId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+
+
+                                <td id="divstyle" class="col">
+                                    <span class="text-right">
+                                        <label>LCAF:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("LCAF", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="row">
+
+                                <td id="divGroupLCRef" class="col-3">
+                                    <span class="text-right">
+                                        <label>Group LC Ref :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("GroupLCId", ViewBag.GroupLCId as List<SelectListItem>, "-- Select From List --", new { id = "GroupLCId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col-1">
+                                    <span class="text-right">
+                                        <label>Currency:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("CurrencyId", ViewBag.CurrencyId as List<SelectListItem>, new { id = "CurrencyId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+                                <td id="divstyle" class="col-3">
+                                    <span class="text-right">
+                                        <label>Supplier:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("SupplierId", ViewBag.SupplierId as List<SelectListItem>, new { id = "SupplierId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+                                <td id="divemployee" class="col-2">
+                                    <span class="text-right">
+                                        <label>Merchandiser :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("EmployeeId", ViewBag.EmployeeId as List<SelectListItem>, new { id = "EmployeeId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+                                <td id="divstyle" class="col-2">
+                                    <span class="text-right">
+                                        <label>Merchandiser Name:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("MerchandiserName", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+                                <td id="divfileno" class="col-1">
+                                    <span class="text-right">
+                                        <label>File No:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("FileNo", "=N/A=", new { @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+                                <td id="divBank" class="col-2">
+                                    <span class="text-right">
+                                        <label>Concern Bank Account:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("BankAccountId", ViewBag.ItemGroupId as List<SelectListItem>, "-- Select From List --", new { id = "BankAccountId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+                                <td id="divBankAccountId" class="col-2">
+                                    <span class="text-right">
+                                        <label>Concern Bank :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("OpeningBankId", ViewBag.ItemGroupId as List<SelectListItem>, "-- Select From List --", new { id = "OpeningBankId", @class = "form-control form-control-sm", @disabled = "disabled" })
+                                    </span>
+                                </td>
+                                <td id="divLienBankAccountId" class="col-2">
+                                    <span class="text-right">
+                                        <label>Supplier Bank Account:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("LienBankAccountId", ViewBag.LienBankAccountId as List<SelectListItem>, "-- Select From List --", new { id = "LienBankAccountId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+
+                                <td id="divItemGroupId" class="col-2">
+                                    <span class="text-right">
+                                        <label>Item Group Name :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("ItemGroupId", ViewBag.ItemGroupId as List<SelectListItem>, new { id = "ItemGroupId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+                                <td id="divItemDescId" class="col-3">
+                                    <span class="text-right">
+                                        <label>Item Desc. :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("ItemDescId", ViewBag.ItemDescId as List<SelectListItem>, new { id = "ItemDescId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+                                <td id="divItemGroupmulti" class="col-6">
+
+                                    <span class="text-right">
+                                        <label>Item Desc. :</label>
+                                    </span>
+                                    @*<span class="input-group">
+                                            @Html.DropDownList("ItemDescArray", null, htmlAttributes: new { @class = "form-control", @multiple = "multiple" })
+                                        </span>*@
+                                    <span class="input-group">
+                                        @Html.DropDownList("ItemDescArray", ViewBag.ItemDescArray as List<SelectListItem>, new { id = "ItemDescArray", @class = "form-control form-control-sm", @multiple = "multiple" })
+                                    </span>
+                                    @*@Html.ValidationMessageFor(model => model.ItemDescArray, "", new { @class = "text-danger" })*@
+
+                                </td>
+
+
+
+
+                                <td id="divItemGroup" class="col-2">
+                                    <span class="text-right">
+                                        <label>Item GroupName:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("ItemGroupName", "=N/A=", new { @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+                                <td id="divItemDesc" class="col-2">
+                                    <span class="text-right">
+                                        <label>Item Description:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("ItemDescription", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+
+                                <td id="divSize" class="col-2">
+                                    <span class="text-right">
+                                        <label>Size:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("Size", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+
+                                <td id="divstyle" class="col-2">
+                                    <span class="text-right">
+                                        <label>Unit :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("UnitMasterId", ViewBag.UnitMasterId as List<SelectListItem>, new { id = "UnitMasterId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+
+
+
+
+                                <td id="divstyle" class="col-2">
+                                    <span class="text-right">
+                                        <label>Import Qty:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("ImportQty", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col-2">
+                                    <span class="text-right">
+                                        <label>Import Rate:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("ImportRate", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+                                <td id="divstyle" class="col-2">
+                                    <span class="text-right">
+                                        <label>Total Value:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("TotalValue", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+                                <td id="divcartonrollqty" class="col-2">
+                                    <span class="text-right">
+                                        <label>Carton / Roll Qty:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("CartonRollQty", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+
+                                <td id="divRemarks" class="col-3">
+                                    <span class="text-right">
+                                        <label>Remarks:</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.TextBox("Remarks", "", new { @class = "form-control form-control-sm " })
+                                    </span>
+                                </td>
+
+                                <td id="divPaymentterm" class="col-2">
+                                    <span class="text-right">
+                                        <label>Payment Terms :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("PaymentTermsId", ViewBag.PaymentTermsId as List<SelectListItem>, new { id = "PaymentTermsId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+                                <td id="divdaylist" class="col-2">
+                                    <span class="text-right">
+                                        <label>Day :</label>
+                                    </span>
+                                    <span class="input-group">
+                                        @Html.DropDownList("DayListId", ViewBag.DayListId as List<SelectListItem>, new { id = "DayListId", @class = "form-control form-control-sm" })
+                                    </span>
+                                </td>
+
+
+                                <td class="col-1">
+                                    <span class="text-right">
+                                        <label></label>
+                                    </span>
+                                    <span class="input-group">
+                                        <button type="button" onclick="DuplicateCheckAdd()" class="btn btn-success mb-2 btn-block">Add</button>
+                                    </span>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row text-center m-2">
+                <br />
+                <div class="col-md-3 d-block mx-auto"></div>
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+                    <button class="form-control form-control-sm btn btn-success mb-2 btn-block" type="button" onclick="ProformaInvoice_save()">Save</button>
+                </div>
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+                    @Html.ActionLink("Back", "Index", "COM_ProformaInvoice", null, new { @class = "form-control form-control-sm btn btn-info btn-block", @id = "btnBack" })
+                </div>
+                <div class="col-md-3 d-block mx-auto"></div>
+            </div>
+        </div>
+
+
+    }
+</body>
+<script>
+
+
+    $("#PINo").focus();
+        
+        $("#PINo").blur(function () {
+            var name = $('#PINo').val();
+            if (name.length == 0) {
+                //$('#PINo').after('<div class="red">Name is Required</div>');
+                toastr.error("PINO is Required")
+                $("#PINo").focus();
+                return false;
+            }
+            else {
+                $('#PINo').next(".red").remove(); // *** this line have been added ***
+                return true;
+            }
+        });
+
+    $("#ItemDescArray").select2();
+    $("#CommercialCompanyId").select2();
+    $("#SupplierId").select2();
+    $("#EmployeeId").select2();
+    $("#UnitMasterId").select2();
+
+    $("#ItemGroupId").select2();
+    $("#ItemDescId").select2();
+
+    $("#GroupLCId").select2();
+
+    $("#PaymentTermsId").select2();
+    $("#DayListId").select2();
+
+    $("#LienBankAccountId").select2();
+    $("#BankAccountId").select2();
+
+
+    
+
+
+    var pilist;
+    //alert(pilist);
+    $("#dialog").hide();
+    $("#divemployee").hide();
+
+    $("#divItemGroup").hide();
+    $("#divItemDesc").hide();
+    $("#divItemDescId").hide();
+
+    
+
+    
+
+    
+
+    function databasepilist() {
+
+            var MyAppUrlSettings = {
+                MyUsefulUrl: '@Url.Action("PI_Duplicate_Check", "COM_ProformaInvoice")'
+            }
+
+        $.ajax({
+            type: 'POST',
+            url: MyAppUrlSettings.MyUsefulUrl,
+            dataType: 'json',
+            async: false,
+            data: { id: $("#PINo").val() },
+
+            success: function (data) {
+                    //var s = '<option value="-1">--Select BBLC--</option>';
+
+                pilist = data;
+                //alert(pilist);
+                    //console.log(data);
+                    
+              
+                },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+        });
+
+    };
+
+
+    function duplicatecheckfromdb() {
+
+
+
+
+        for (var i = 0; i < pilist.length; i++) {
+            //alert('running');
+            //alert(data[i].Text);
+            if ($("#PINo").val() == pilist[i].Text) {
+                ///alert('database found');
+
+                $(function () {
+                    //$("#dialog").text('PINO Already Inputed In the Database');
+                    //$("#dialog").dialog();
+                    toastr.error('PINO Already Inputed In the Database');
+                    //return true;
+                    //$('#myInput').focus();
+                });
+                //returnvalue = true;
+                return true;
+
+            }
+            //alert('hit');
+            //s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+
+        }
+    }
+
+
+    function duplicatecheckfromlist() {
+
+
+
+
+        var returnvalue = false;
+        var PINO = $('#PINo').val();
+
+        tblProform.rows().every(function () {
+            var pinotd = this.data()[0];
+
+            if (PINO == pinotd) {
+                flag = 1;
+
+                if (parseFloat(pinotd.length) > 0) {
+                    //alert('Serial Already Inputed');
+                    $(function () {
+                        toastr.error('PINO Already Input In The List');
+                        //$("#dialog").text('PINO Already Input In The List');
+                        //$("#dialog").dialog();
+                        //$('#myInput').focus();
+                    });
+                    //alert('found');
+                    //e.preventDefault();
+
+                }
+                returnvalue = true;
+                return returnvalue;
+            }
+            return returnvalue;
+
+        })
+        return returnvalue;
+        //return true;
+    }
+
+
+    function Add() {
+        //var checked = true;
+
+        if ($('#ImportRate').val() == "" || $('#ImportRate').val() == "0")
+        {
+            var TotalValue = $('#TotalValue').val();
+            var ImportQty = $('#ImportQty').val();
+
+
+            var CalculateRate = TotalValue / ImportQty;
+
+            $('#ImportRate').val(CalculateRate.toFixed(4));
+
+        }
+        else {
+
+            $('#ImportRate').val();
+
+
+        }
+
+        if ($('#ImportRate').val() == "NaN") {
+            $('#ImportRate').val(0);
+        }
+
+        //alert('passed');
+
+
+        //$('#ItemDescArray').on('change', function () {
+            //$(this) = $('#ItemDescArray')
+
+        //var multiitemdesc = '';
+            //alert($('#ItemDescArray').val());
+            var selMulti = $.map($("#ItemDescArray option:selected"), function (el, i) {
+                return $(el).text();
+            });
+
+        //multiitemdesc.val(selMulti.join(", "));
+
+        //});
+
+
+        //var tblProform = $('#tblProform').DataTable();
+        $('#tblProform').dataTable().fnAddData([
+
+            $('#PINo').val() || 0,
+            $('#PIDate').val(),
+            $('#PIReceivingDate').val(),
+
+            $('#CommercialCompanyId').val() || 0,
+            $('#CurrencyId').val() || 0,
+            $('#SupplierId').val() || 0,
+            $('#EmployeeId').val() || 0,
+            $('#ItemGroupId').val() || 0,
+            $('#ItemDescId').val() || 0,
+            $('#ItemDescArray').val() || 0, ///added by fhad for nawab bhai multi item or desc
+            $('#GroupLCId').val(),
+            $('#PaymentTermsId').val(),
+            $('#DayListId').val(),
+
+            $('#CommercialCompanyId option:selected').text(),
+            $('#CurrencyId option:selected').text(),
+            $('#SupplierId option:selected').text(),
+            $('#EmployeeId option:selected').text(),
+            $('#MerchandiserName').val(),
+
+
+            $('#ImportPONo').val() || 0,
+            $('#FileNo').val(),
+            $('#LCAF').val(),
+            $('#ItemGroupName').val(),
+            $('#ItemDescription').val(),
+
+            $('#ItemGroupId option:selected').text(),
+            $('#ItemDescId option:selected').text(),
+            selMulti.join(", "),   ///added by fhad for nawab bhai multi item or desc
+            $('#GroupLCId option:selected').text(),
+
+
+
+            
+
+
+            $('#Size').val(),
+            $('#ImportQty').val(),
+            $('#UnitMasterId').val(),
+            $('#ImportRate').val(),
+            $('#TotalValue').val(),
+            $('#CartonRollQty').val(),
+
+            $('#Remarks').val(),
+            $('#PaymentTermsId option:selected').text(),
+            $('#DayListId option:selected').text(),
+
+
+
+            
+
+            '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+            $('#BankAccountId').val(),
+            $('#LienBankAccountId').val(),
+            $('#PINatureId').val(),
+            $('#PINatureId option:selected').text()
+            
+            
+        ])
+
+      //  var piform = $('#tblProform').height();
+        //alert('ok');
+        //$("html, body").animate({ scrollTop: z }, 50);
+    }
+
+
+    function DuplicateCheckAdd() {
+
+
+        var name = $('#PINo').val();
+        if (name.length == 0) {
+            //$('#PINo').after('<div class="red">Name is Required</div>');
+            toastr.error("PINO is Required")
+            return false;
+        }
+        else {
+            //$('#PINo').next(".red").remove(); // *** this line have been added ***
+            //return true;
+        }
+
+
+
+        //var pilist;
+        //alert('1');
+        databasepilist();
+        //alert('2');
+
+ 
+
+
+        if (duplicatecheckfromdb() == true) {
+
+        }
+        else {
+
+            //console.log(pilist);
+            //alert('3');
+            if (duplicatecheckfromlist() == true) {
+
+            }
+            else {
+
+                var x = $('#FileNo').val().length;
+                if (x >= 9)
+                {
+                    Add();
+                }
+                else {
+
+                    alert('File No Must Be 9 Digit');
+                    $('#FileNo').focus();
+
+                }
+
+            }
+        }
+
+    }
+  
+
+    $("#PIDate").val(CurrentDate());
+    $("#PIReceivingDate").val(CurrentDate());
+
+
+
+    function CurrentDate() {
+        var date = new Date();
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+        return val;
+
+    }
+
+    $("#PIDate").datepicker({
+        onSelect: function (date) {
+            // Your CSS changes, just in case you still need them
+            $('a.ui-state-default').removeClass('ui-state-highlight');
+            $(this).addClass('ui-state-highlight');
+            var dateFormat = $("#PIDate").datepicker("option", "dateFormat");
+            //setter
+            $("#PIDate").datepicker("option", "dateFormat", 'dd-M-y');
+        }
+    });
+
+    $("#PIReceivingDate").datepicker({
+        onSelect: function (date) {
+            // Your CSS changes, just in case you still need them
+            $('a.ui-state-default').removeClass('ui-state-highlight');
+            $(this).addClass('ui-state-highlight');
+            var dateFormat = $("#PIReceivingDate").datepicker("option", "dateFormat");
+            //setter
+            $("#PIReceivingDate").datepicker("option", "dateFormat", 'dd-M-y');
+        }
+    });
+
+
+
+    tblProform = $('#tblProform').dataTable({
+        "aoColumns": [
+
+            { "sClass": "PINo", "visible": true },
+            { "sClass": "PIDate", "visible": true },
+
+            { "sClass": "PIReceivingDate", "visible": true },
+
+            { "sClass": "Concern", "visible": false },
+            { "sClass": "CurrencyId", "visible": false },
+            { "sClass": "SupplierId", "visible": false },
+            { "sClass": "EmployeeId", "visible": false },
+            { "sClass": "groupid", "visible": false },
+            { "sClass": "descid", "visible": false },
+            { "sClass": "descidmulti", "visible": false },
+            { "sClass": "grouplcid", "visible": false },
+            { "sClass": "paymenttermsid", "visible": false },
+            { "sClass": "daylistid", "visible": false },
+
+
+
+            { "sClass": "companyname", "visible": true },
+            { "sClass": "currencycode", "visible": true },
+            { "sClass": "suppliername", "visible": true },
+
+            { "sClass": "employeename", "visible": false },
+            { "sClass": "merchandisername", "visible": true },
+
+            { "sClass": "ImportPONo", "visible": true },
+            { "sClass": "FileNo", "visible": true },
+            { "sClass": "LCAF", "visible": true },  ////5
+            { "sClass": "ItemGroupName", "visible": false },  ////5
+            { "sClass": "ItemDescription", "visible": false },
+
+            { "sClass": "itemgroupnameref", "visible": true },
+            { "sClass": "itemdescnameref", "visible": false },
+            { "sClass": "itemdescnamemulti", "visible": true },
+            { "sClass": "grouplcref", "visible": true },
+
+            { "sClass": "Size", "visible": true },
+
+            { "sClass": "ImportQty", "visible": true },////////   6
+            { "sClass": "UnitMasterId", "visible": true },/////  7
+            { "sClass": "ImportRate", "visible": true },/////  7
+            { "sClass": "TotalValue", "visible": true },   ////
+            { "sClass": "CartonRollQty", "visible": true },   ////
+
+
+            { "sClass": "Remarks", "visible": true },   ////
+
+            { "sClass": "PaymentTerms", "visible": true },   ////
+            { "sClass": "DayList", "visible": true },   ////
+
+
+
+            null,
+            { "sClass": "BankAccountId", "visible": false },   ////
+            { "sClass": "LienBankAccountId", "visible": false },   ////
+            { "sClass": "PINatureId", "visible": false },   ////
+            { "sClass": "PINatureName", "visible": true }   ////
+
+
+            
+        ],
+
+
+        //"dom": 'T<"clear">lfrtip',
+
+        //"tableTools": {
+        //    "sRowSelector": "td:not(:first-child)"
+        //},
+        //select: {
+        //    style: 'os',
+        //    selector: 'td:first-child'
+        //},
+        rowCallback: function (row) {
+            $(row).addClass('txtproform');
+        },
+        //"bLengthChange": false,
+        //"bFilter": true,
+        //"bSort": true,
+        //"bInfo": false,
+        //"paging": false,
+        //"searching": true
+        dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf'
+        ],
+        "searching": true,
+        "paging": false,
+        "ordering": true,
+        "info": false,
+        "iDisplayLength": 20,
+        "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+        "scrollX": true,
+        "scrollCollapse": true,
+        language: {
+            sLengthMenu: "_MENU_"
+        }
+    });
+
+
+    $(document).ready(function () {
+        tblProform = $('#tblProform').DataTable();
+        //tblProform.MakeCellsEditable({
+        //    "onUpdate": myCallbackFunction,
+        //    "inputCss": 'my-input-class',
+        //    "columns": [],
+        //    "inputTypes": [
+        //        {
+        //            "column": 1,
+        //            "type": "datepicker-confirm",
+        //            "options": {
+        //                "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+        //            }
+        //        }
+        //    ]
+        //});
+    });
+
+    function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+        //console.log("The new value for the cell is: " + updatedCell.data());
+        //console.log("The old value for that cell was: " + oldValue);
+        //console.log("The values for each cell in that row are: " + updatedRow.data());
+    }
+
+    var row;
+    var col;
+    $('#tblProform tbody').on('click', '.dlttrash', function () {
+        var table = $('#tblProform').DataTable();
+        ///fahad is delete code
+        //$(this).parent().parent().hide(); ///fahad for checking.
+        table.row($(this).parents('tr')).remove().draw();
+
+        row = $(this).parent().parent().index();
+        toastr.error("Row Deleted")
+
+        //var cell = table.cell(row, 23);
+        //cell.data('True');
+        var x = "500.00";
+        var y = $('#tblProform').height();
+        var z = parseFloat(x) + parseFloat(y);
+        $("html, body").animate({ scrollTop: z }, 500);
+   
+
+
+    });
+
+    function ProformaInvoice_save() {
+
+
+        if (!$("#myform").valid()) {
+            toastr.error('Please Fill Up All Necessary Information Correctly.');
+            $("html, body").animate({ scrollTop: 0 }, 500);
+            return false;
+        }
+
+
+            // Step 1: Read View Data and Create JSON Object
+        var COM_ProformaInvoice = { "PIId": "", "PINo": "", "PIDate": "", "PIReceivingDate": "", "CommercialCompanyId": "", "CurrencyId": "", "SupplierId": "", "EmployeeId": "", "ItemGroupId": "", "ItemDescId": "", "ItemDescArray": "", "GroupLCId": "", "PaymentTermsId": "", "DayListId": "", "ImportPONo": "", "FileNo": "", "LCAF": "", "ItemGroupName": "", "ItemDescription": "", "Size": "", "ImportQty": "", "UnitMasterId": "", "ImportRate": "", "TotalValue": "", "CartonRollQty": "", "Remarks": "", "MerchandiserName": "", "BankAccountId": "", "LienBankAccountId": "", "PINatureId": "" /*,  "isDelete": ""*/ };
+          var COM_ProformaInvoices= [];
+
+            ////Voucher subs data
+        var oTable = $('#tblProform').dataTable().fnGetData();
+        for (var i = 0; i < oTable.length; i++) {
+
+            //COM_ProformaInvoice.PIId = oTable[i][0];
+            COM_ProformaInvoice.PIId = 0;
+
+            COM_ProformaInvoice.PINo = oTable[i][0];
+            COM_ProformaInvoice.PIDate = oTable[i][1];
+            COM_ProformaInvoice.PIReceivingDate = oTable[i][2];
+
+            COM_ProformaInvoice.CommercialCompanyId = oTable[i][3];
+            COM_ProformaInvoice.CurrencyId = oTable[i][4];
+            COM_ProformaInvoice.SupplierId = oTable[i][5];
+            COM_ProformaInvoice.EmployeeId = oTable[i][6];
+
+            COM_ProformaInvoice.ItemGroupId = oTable[i][7];
+            COM_ProformaInvoice.ItemDescId = oTable[i][8];
+
+            //alert(oTable[i][9]);
+            COM_ProformaInvoice.ItemDescArray = oTable[i][9];
+            COM_ProformaInvoice.GroupLCId = oTable[i][10];
+
+            COM_ProformaInvoice.PaymentTermsId = oTable[i][11];
+            COM_ProformaInvoice.DayListId = oTable[i][12];
+
+
+
+            ////////////////merchandisername
+            COM_ProformaInvoice.MerchandiserName = oTable[i][17];
+
+            COM_ProformaInvoice.ImportPONo = oTable[i][18];//--8
+            COM_ProformaInvoice.FileNo = oTable[i][19];
+            COM_ProformaInvoice.LCAF = oTable[i][20];
+            COM_ProformaInvoice.ItemGroupName = oTable[i][21] || '=N/A=';
+            COM_ProformaInvoice.ItemDescription = oTable[i][22] || '=N/A=';
+
+
+
+            //COM_ProformaInvoice.GroupLCId = oTable[i][24];
+
+            COM_ProformaInvoice.Size = oTable[i][27];
+
+            COM_ProformaInvoice.ImportQty = oTable[i][28];
+            COM_ProformaInvoice.UnitMasterId = oTable[i][29];
+            COM_ProformaInvoice.ImportRate = oTable[i][30];
+            COM_ProformaInvoice.TotalValue = oTable[i][31];
+            COM_ProformaInvoice.CartonRollQty = oTable[i][32];
+
+            COM_ProformaInvoice.Remarks = oTable[i][33];
+
+
+            COM_ProformaInvoice.BankAccountId = oTable[i][37];
+            COM_ProformaInvoice.LienBankAccountId = oTable[i][38];
+
+            COM_ProformaInvoice.PINatureId = oTable[i][39];
+            //COM_ProformaInvoice.PINatureName = oTable[i][40];//no need cause its name just for next referance
+
+            
+
+              COM_ProformaInvoices.push(COM_ProformaInvoice);
+            var COM_ProformaInvoice = { "PIId": "", "PINo": "", "PIDate": "", "PIReceivingDate": "", "CommercialCompanyId": "", "CurrencyId": "", "SupplierId": "", "EmployeeId": "", "ItemGroupId": "", "ItemDescId": "", "ItemDescArray": "", "GroupLCId": "", "PaymentTermsId": "", "DayListId": "", "ImportPONo": "", "FileNo": "", "LCAF": "", "ItemGroupName": "", "ItemDescription": "", "Size": "", "ImportQty": "", "UnitMasterId": "", "ImportRate": "", "TotalValue": "", "CartonRollQty": "", "Remarks": "", "MerchandiserName": "", "BankAccountId": "", "LienBankAccountId": "", "PINatureId": "" /*,  "isDelete": ""*/ };
+
+          }
+          console.log(COM_ProformaInvoices);
+          COM_ProformaInvoices = JSON.stringify({ 'COM_ProformaInvoices': COM_ProformaInvoices });
+
+         // alert('ajax call');
+          $.ajax({
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+              type: 'POST',
+              url: '@Url.Action("Create", "COM_ProformaInvoice")',
+              data: COM_ProformaInvoices,
+               success: function (result) {
+
+                   if (result.Success == "1") {
+
+
+
+                       customFile('1', result.ex);
+
+                       window.setTimeout(function () {
+
+                           // Move to a new location or you can do something else
+                           window.location.href = '@Url.Action("Index", "COM_ProformaInvoice")';
+
+                       }, 500);
+
+                   }
+                   else {
+
+                       toastr.error(result.ex)
+
+                   }
+              },
+              error: function (result) {
+                  toastr.error(result.ex);
+
+              }
+
+
+
+
+
+              @*success: function (result) {
+                  if (result.Success == "1") {
+                      window.location.href = '@Url.Action("Index", "COM_ProformaInvoice")';
+                  }
+                  else {
+                      alert(result.ex);
+                  }
+              },
+              failure: function (response) {
+                  $('#result').html(response);
+              }*@
+        });
+
+
+
+
+           // alert('finalize');
+    }
+
+    
+           function ConcernBank_Info() {
+            $("#OpeningBankId").empty();
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("ConcernOpeningBankList", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#BankAccountId").val() },
+
+                        success: function (data) {
+                            var s = '';//'<option value="-1">Please Select Product</option>';
+
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#OpeningBankId").html(s);
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                    return false;
+             };
+
+                 $('#BankAccountId').select2({})
+                .on("select2:select", function (e) {
+                    if ($('#BankAccountId').val() > 0) {
+
+                        //ConcernBankAccount_Info();
+                        //alert($("#BankAccountId").val());
+                        ConcernBank_Info();
+                    }
+                    else {
+                        alert('Please Select Bank Account First.')
+                    }
+
+                    // have to fire our own change event because value set in JS
+                    // TODO capture ahead of time instead of using default
+                    //$(this).trigger('change');
+                    console.log("select2:select")
+            });
+
+
+
+
+        $('#CommercialCompanyId').select2({})
+            .on("select2:select", function (e) {
+                if ($('#CommercialCompanyId').val() > 0) {
+
+                    //ConcernBankAccount_Info();
+                    //alert($("#BankAccountId").val());
+                    ConcernBank_Account();
+                }
+                else {
+                    alert('Please Select Concern Information First.')
+                }
+
+                // have to fire our own change event because value set in JS
+                // TODO capture ahead of time instead of using default
+                //$(this).trigger('change');
+                console.log("select2:select")
+            });
+
+
+
+        function ConcernBank_Account() {
+            $("#BankAccountId").empty();
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("ConcernOpeningBankAccountList", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#CommercialCompanyId").val() },
+
+                        success: function (data) {
+                            var s = '';//'<option value="-1">Please Select Product</option>';
+
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#BankAccountId").html(s);
+
+
+                            ConcernBank_Info();
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                    return false;
+    };
+
+
+
+
+
+
+
+
+
+
+
+       function SupplierBank_Info() {
+            $("#LienBankAccountId").empty();
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("SupplierBankList", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#SupplierId").val() },
+
+                        success: function (data) {
+                            var s = '<option value=null>-- Select From List--</option>';
+
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#LienBankAccountId").html(s);
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                    return false;
+             };
+
+                 $('#SupplierId').select2({})
+                .on("select2:select", function (e) {
+                    if ($('#SupplierId').val() > 0) {
+
+                        //ConcernBankAccount_Info();
+                        //alert($("#BankAccountId").val());
+                        SupplierBank_Info();
+                    }
+                    else {
+                        alert('Please Select Supplier First.')
+                    }
+
+                    // have to fire our own change event because value set in JS
+                    // TODO capture ahead of time instead of using default
+                    //$(this).trigger('change');
+                    console.log("select2:select")
+            });
+
+
+
+</script>
+
+
+
+

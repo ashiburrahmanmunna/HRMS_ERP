@@ -1,0 +1,191 @@
+﻿@model IEnumerable<GTERP.Models.PF_ChartOfAccount>
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-2 col-12">
+                @Html.ActionLink("Accounts Head Creation", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+            </div>
+
+            <div class="col-md-4 col-12">
+                <h2 id="styletext">Chart Of Account</h2>
+            </div>
+            <div class="col-md-2 col-12">
+
+                <button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintAccCOA')">Chart of Accounts Report</button>
+            </div>
+            <div class="col-md-4 col-12">
+                <fieldset class="text-right">
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="finalpanel" class="card p-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table tbllist table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+
+        function ReportPrint(btnvalue) {
+
+            var reporttype = $("input[name=RptType]:checked").val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AccountsReport", "PF_ChartOfAccounts")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+        $(document).ready(function () {
+
+                var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "PF_ChartOfAccounts")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "AccId", "data": "AccId", "searchable": true, "visible": false },
+
+                    { "title": "Acc Code", "data": "AccCode" },
+                    { "title": "Acc Name", "data": "AccName" },
+
+                    { "title": "Acc Type", "data": "AccType" },
+                    { "title": "Parent Name", "data": "ParentName", "searchable": true },
+                    {
+                        "title": "Action",
+                        "data": "AccId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "PF_ChartOfAccounts")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "PF_ChartOfAccounts")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger mr-1',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                    "language": {
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    }
+               });
+
+        });
+
+    </script>
+}

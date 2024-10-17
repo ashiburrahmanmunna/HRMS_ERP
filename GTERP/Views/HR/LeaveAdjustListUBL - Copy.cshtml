@@ -1,0 +1,350 @@
+﻿@model GTERP.Models.HR_Leave_AdjustUbL
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .mCustomScrollbar {
+        height: 300px;
+        overflow: hidden;
+    }
+</style>
+
+@*@using (Html.BeginForm("Index", "HolidaySetup", FormMethod.Post))
+    {*@
+<div class="card">
+    <div class="form-header btn-info">
+        <i class="fas fa-plus-square"></i> Rest Duty
+        <div id="loading" style="display: inline;">
+            <div id="loadingGif" style="display: inline;">
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8 col-12 card">
+                <div id="monthLoadDiv">
+                    <fieldset id="fieldsetDate" class="pt-2 border-bottom">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Date
+                                </span>
+                            </div>
+                            <input type="text" id="DtMonth" class="form-control formInput" />
+                            <div class="input-group-append">
+                                <button id="loadButton" type="button" class="btn btn-primary" style="margin-top: 0;">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load List
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="table-responsive my-2">
+                    <table id="holidaySetupTable" class="table table-sm table-striped trow table-hover text-nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Leave Id</th>
+                                <th>Employee Name</th>
+                                <th>Leave Date</th>
+                                <th>Duty Date</th>
+                                @* <th>Type</th> *@
+                                <th>Remarks</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @*</fieldset>
+            </div>
+            </div>*@
+            <div id="formDiv" class="col-md-4 col-12">
+                <fieldset id="fieldsetForm" class="card p-3">
+                    <div id="formTable">
+                        @Html.HiddenFor(m => m.Id)
+                        @Html.HiddenFor(x => x.ComId)
+
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Employee
+                                    </span>
+                                </div>
+                                <select asp-for="EmpCode" asp-items="ViewBag.EmpCode" class="form-control">
+                                    <option value="" selected>--Please Select--</option>
+                                </select>
+                                @Html.ValidationMessageFor(model => model.EmpCode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        ReplaceDate
+                                    </span>
+                                </div>
+                                <input type="text" asp-for="ReplaceDate" class="form-control formInput" id="replaceDate" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        DutyDate
+                                    </span>
+                                </div>
+                                <input type="text" asp-for="DutyDate" class="form-control formInput" id="DtFrom" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.LabelFor(m => m.Remark)
+                                    </span>
+                                </div>
+                                @Html.EditorFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div id="buttonDiv">
+                        <p class="text-center">
+                            <button id="saveButton" type="button" class="btn btn-success rounded-0">
+                                <i class="fa fa-floppy-o"></i> Process
+                            </button>
+                            <button id="resetButton" type="button" class="btn btn-warning rounded-0">
+                                <i class="fa fa-refresh"></i> Cancel
+                            </button>
+                            <button id="editButton" type="button" class="btn btn-primary rounded-0">
+                                <i class="fa fa-trash-o"></i> Edit
+                            </button>
+                            <button id="deleteButton" type="button" class="btn btn-danger rounded-0">
+                                <i class="fa fa-trash-o"></i> Delete
+                            </button>
+                        </p>
+
+                    </div>
+                </fieldset>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function dateFormat(date) {
+            let aDate = new Date(date);
+            return `${aDate.getDate()}-${month[aDate.getMonth()]}-${aDate.getFullYear()}`;
+        }
+
+        var table;
+
+        $(document).ready(function () {
+
+            $("#EmpCode").change(function () {
+                var selectedEmpCode = $(this).val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadLeaveAdjustByEmpCode", "HR")',
+                    dataType: 'json',
+                    data: { empcode: selectedEmpCode },
+                    success: function (result) {
+                        console.log(result);
+                        initializeGrid(result);
+                    },
+                    error: function (ex) {
+                        console.error("Error loading leave adjustment data:", ex);
+                    }
+                });
+            });
+
+            $("#replaceDate, #DtFrom, #DtMonth").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-M-yy',
+                onSelect: function (date) {
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                }
+            });
+
+            $("#deleteButton, #editButton").prop("disabled", true);
+
+            table = $('#holidaySetupTable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                columns: [
+                    { 'data': 'LvId' },
+                    { 'data': 'EmpCode' },
+                    { 'data': 'LeaveDate' },
+                    { 'data': 'DutyDate' },
+                    { 'data': 'Remark' }
+                ],
+                select: true,
+                paging: false,
+                info: true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+                scrollCollapse: true
+            });
+
+            $("#saveButton").click(function (e) {
+                e.preventDefault();
+                let HR_Leave_Avail = {
+                    Id: $("#LvId").val() || 0,
+                    EmpCode: $("#EmpCode").val(),
+                    ReplaceDate: $("#replaceDate").val(),
+                    DutyDate: $("#DtFrom").val(),
+                    Remark: $("#Remark").val()
+                };
+
+                if (HR_Leave_Avail.DutyDate !== "") {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("CreateLeaveAdjustUBL", "HR")',
+                        dataType: 'json',
+                        data: { model: HR_Leave_Avail },
+                        success: function (result) {
+                            if (result.Success == "1")
+                                customFile('1', result.ex);
+                            else
+                                toastr.error(result.ex);
+                        },
+                        error: function (ex) {
+                            customFile('1', "Data inserted successfully...");
+                        }
+                    });
+
+                    ClearTextBoxes();
+                } else {
+                    $("#DtFrom").css("border-color", "red");
+                    toastr.error("Please provide all the required fields");
+                }
+            });
+
+            $("#resetButton").click(function () {
+                ClearTextBoxes();
+                $(".datepicker").val("");
+            });
+
+            $("#deleteButton").click(function () {
+                if ($("#DtFrom").val() === "") {
+                    alert("Select an entry to delete.");
+                } else {
+                    var r = confirm("Are you sure to delete leave adjust?");
+                    if (r) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("DeleteLeaveAdjust", "HR")',
+                            dataType: 'json',
+                            data: { dtFrom: $("#DtFrom").val() },
+                            success: function (result) {
+                                if (result.Success == "1")
+                                    customFile('1', result.ex);
+                                else
+                                    customFile(result.Success, result.ex);
+                            },
+                            error: function (ex) {
+                                toastr.error("Sorry, an error occurred.");
+                            }
+                        });
+                        var today = new Date().toISOString().split('T')[0];
+                        var url = '@Url.Action("LoadLeaveAdjustPartial", "HR")' + '?date=' + today;
+                        $("#holidaySetupTable").load(url, function () { });
+                        $("#holidaySetupTable tbody").html("");
+                    }
+                }
+                ClearTextBoxes();
+            });
+
+            $("#editButton").click(function () {
+                if ($("#DtFrom").val() === "") {
+                    alert("Select an entry to modify.");
+                } else {
+                    var r = confirm("Are you sure to modify leave adjust?");
+                    if (r) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("EditLeaveAdjust", "HR")',
+                            dataType: 'json',
+                            data: { dtFrom: $("#DtFrom").val(), dtJoin: $("#dtJoin").val(), remark: $("#Remark").val() },
+                            success: function (result) {
+                                if (result.Success == "1")
+                                    customFile('1', result.ex);
+                                else
+                                    customFile(result.Success, result.ex);
+                            },
+                            error: function (ex) {
+                                toastr.error("Sorry, an error occurred.");
+                            }
+                        });
+                        var today = new Date().toISOString().split('T')[0];
+                        var url = '@Url.Action("LoadLeaveAdjustPartial", "HR")' + '?date=' + today;
+                        $("#holidaySetupTable").load(url, function () { });
+                        $("#holidaySetupTable tbody").html("");
+                    }
+                }
+                ClearTextBoxes();
+            });
+
+            $(document).on("click", "#holidaySetupTable tr", function () {
+                let rowData = table.row(".selected").data();
+                function formatDate2(dateString) {
+                    const date = new Date(dateString);
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const monthNames = [
+                        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                    ];
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                }
+                $("#DtFrom").val(dateFormat(rowData[2]));
+                $("#LvType").val(rowData[3]);
+                $("#Remark").val(rowData[4]);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("getDtjoin", "HR")',
+                    dataType: 'json',
+                    data: { dtFrom: $("#DtFrom").val(), remark: $("#Remark").val() },
+                    success: function (result) {
+                        $("#dtJoin").val(formatDate2(result));
+                    },
+                    error: function (ex) {
+                        customFile('1', "Data inserted successfully...");
+                    }
+                });
+                $("#DtFrom").prop("disabled", true);
+                $("#dtJoin").prop("disabled", true);
+                $("#deleteButton").prop("disabled", false);
+                $("#editButton").prop("disabled", false);
+                $("#saveButton").prop("disabled", true);
+            });
+        });
+
+        function initializeGrid(data) {
+            table.clear().draw();
+            table.rows.add(data).draw();
+        }
+
+        function ClearTextBoxes() {
+            $("#dtJoin, #DtFrom, #Remark").val("");
+            $("input").css("border-color", "");
+        }
+    </script>
+}

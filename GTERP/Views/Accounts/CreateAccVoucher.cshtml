@@ -1,0 +1,4289 @@
+﻿@model GTERP.Models.Acc_VoucherMain
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+<style>
+    .input-group {
+        font-size: 12px;
+    }
+
+    h5 {
+        font-family: 'Raleway';
+    }
+
+    #ejbeatycelledit {
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        width: auto;
+    }
+
+    .my-input-class {
+        padding: 3px 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .my-confirm-class {
+        padding: 3px 6px;
+        font-size: 12px;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+        border-radius: 4px;
+        background-color: #337ab7;
+        text-decoration: none;
+    }
+
+    .my-cancel-class {
+        padding: 3px 6px;
+        font-size: 12px;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+        border-radius: 4px;
+        background-color: #a94442;
+        text-decoration: none;
+    }
+
+    .error {
+        border: solid 1px;
+        border-color: #a94442;
+    }
+
+    .cancel {
+        line-height: 1;
+    }
+
+    .destroy-button {
+        padding: 5px 10px 5px 10px;
+        border: 1px blue solid;
+        background-color: lightgray;
+    }
+
+    #ui-datepicker-div {
+        position: absolute;
+        display: inline-block;
+    }
+
+    /*new added by shahinur*/
+    .modal:nth-of-type(even) {
+        z-index: 1052 !important;
+    }
+    /*end*/
+
+    /*Maintaining txtarea or text box height when cell is going to be edited by fahad*/
+    button, input, optgroup, select, textarea, text {
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        width: 100%;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    #myInput {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 80%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        /*font-size: 16px;
+        margin-bottom: 12px;*/
+    }
+
+    #myInputSearch {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+    #tblaccountsearch img {
+        height: 160px !important;
+    }
+
+    #tblaccountsearch .searchproductimage img:hover {
+        -moz-transform: scale(1.1) rotate(.01deg);
+        -webkit-transform: scale(1.1) rotate(.01deg);
+        transform: scale(1.1) rotate(.01deg);
+    }
+
+    table tr:hover {
+        cursor: pointer;
+    }
+    /* For all tables*/
+    table.sortable tr:hover {
+        cursor: pointer;
+    }
+
+
+    td.addsubsection {
+        color: red;
+        font-weight: bold;
+    }
+    /* only for this one*/
+    .far, .fas, .mdi {
+        font-size: 11px;
+    }
+</style>
+
+@{ var sl = 0;}
+<body>
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+    {
+        @*@Html.AntiForgeryToken()*@
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="container-fluid">
+            <div class="card">
+
+                <div class="@Model.Acc_VoucherType.VoucherTypeClass">
+                    <h5 class="text-center">@Model.Acc_VoucherType.VoucherTypeName.ToString() [ @ViewBag.Title ] </h5>
+                </div>
+
+
+
+                <div class="card-body">
+
+                    @if (Model != null)
+                    {
+                        <input type="hidden" id="CountryIdLocal" name="CountryIdLocal" value="@Model.CountryIdLocal" />
+                        @Html.HiddenFor(model => model.VoucherId)
+                        @Html.HiddenFor(model => model.VoucherSerialId)
+                        @Html.HiddenFor(model => model.UserId)
+                        @Html.HiddenFor(model => model.ComId)
+                        @Html.HiddenFor(model => model.UpdateByUserId)
+                        @Html.HiddenFor(model => model.DateAdded)
+                        @Html.HiddenFor(model => model.DateUpdated)
+                        @Html.HiddenFor(model => model.isPosted)
+                        @Html.HiddenFor(model => model.IsCash)
+                        @Html.HiddenFor(model => model.useridApprove)
+                        @Html.HiddenFor(model => model.useridCheck)
+                        @Html.HiddenFor(model => model.vAmountInWords)
+                    }
+                    else
+                    {
+                        <input type="hidden" id="comid" name="comid" value="" />
+                        <input type="hidden" id="VoucherId" name="VoucherId" value="" />
+                        <input type="hidden" id="VoucherSerialId" name="VoucherSerialId" value="" />
+                        <input type="hidden" id="userid" name="userid" value="" />
+                    }
+
+                    <div class="row" id="divvouchermain">
+                        <div class="col-md-9 col-12 mb-2">
+                            <div class="card p-3">
+                                <div class="row">
+                                    <div class="col-md-7 col-12" id="divVoucherType">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    Voucher Type
+                                                </span>
+                                            </div>
+                                            @Html.HiddenFor(model => model.VoucherTypeId)
+                                            @Html.DropDownList("Acc_VoucherType", ViewBag.Acc_VoucherType as List<SelectListItem>, new { id = "Acc_VoucherType", @class = "form-control ", @disabled = "disabled" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12" id="divAccountHead">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    Transaction Head
+                                                </span>
+                                            </div>
+                                            @Html.HiddenFor(model => model.AccId)
+                                            @Html.DropDownList("AccountMain", ViewBag.AccountMain as List<SelectListItem>, "=N/A=", new { id = "AccountMain", @class = "form-control " })
+                                        </div>
+                                    </div>
+
+                                    <div id="divPrdUnit" class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    Sub Unit
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("PrdUnitId", ViewBag.PrdUnitId as List<SelectListItem>, new { id = "PrdUnitId", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                    <div id="divVoucherDate" class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.VoucherDate)
+                                                </span>
+                                            </div>
+                                            <input asp-for="VoucherDate" class="form-control tg" type="date" />
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.VoucherNo)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.VoucherNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Auto Generated", disabled = "disabled" } })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ReferanceTwo)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.ReferanceTwo, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.Referance)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.Referance, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ReferanceThree)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.ReferanceThree, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    Description
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.VoucherDesc, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-8 col-12 mb-12">
+                                    <div class="input-group mb-1">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                Voucher Transaction Group
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("VoucherTranGroupArray", null, htmlAttributes: new { @class = "form-control", @multiple = "multiple" })
+                                    </div>
+                                </div>*@
+
+                                    <div id="divCurrencyVoucher" class="col-md-4 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    Currency
+                                                </span>
+                                            </div>
+                                            @Html.DropDownList("CountryIdVoucher", ViewBag.CountryIdVoucher as List<SelectListItem>, new { @id = "CountryIdVoucher", @class = "form-control" })
+                                            @*@Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })*@
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ConvRate)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.ConvRate, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.LastVoucherNo)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.LastVoucherNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Auto Generated", disabled = "disabled" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12 mb-2">
+                            <div class="card">
+
+
+                                <div id="testtarget">
+                                    <div class="card-header py-2">
+                                        <h5 class="text-center">Total</h5>
+                                    </div>
+                                    <div class="card-body px-3">
+                                        <div class="row">
+                                            <div class="col-md-12 col-12 ">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.VAmount)
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBoxFor(model => model.VAmount, new { @id = "VAmount", name = "MainVAmount", disabled = "disabled", @class = "form-control" })
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.VAmountLocal)
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBoxFor(model => model.VAmountLocal, new { @id = "VAmountLocal", name = "MainVAmountLocal", disabled = "disabled", @class = "form-control" })
+                                                </div>
+                                                <div class="input-group input-group-sm mb-2" id="divDifference">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            Difference
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("Difference", "0", new { @class = "form-control", disabled = "disabled" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-12">
+                                                        
+                                                        @if (ViewBag.Title == "Create")
+                                                        {
+                                                        <button id="voucherSave" class="btn btn-primary btn-block spinnerclass rounded-0 btn-sm" type="button">
+                                                            <span class="d-none spinner-border spinner-border-sm " role="status" aria-hidden="true"></span> Save
+
+                                                        </button>
+                                                        }
+                                                        else if (ViewBag.Title == "Edit")
+                                                        {
+                                                            <button id="voucherSave" class="btn btn-warning btn-block spinnerclass rounded-0 btn-sm" type="button" @*onclick="Voucher_save()"*@>
+                                                                <span class="d-none spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Update
+                                                            </button>
+                                                        }
+                                                        else if (ViewBag.Title == "Delete")
+                                                        {
+                                                            <button id="voucherDelete" class="btn btn-danger btn-block spinnerclass rounded-0 btn-sm" type="button" @*onclick="ConfirmDialogDelete('Are you sure');"*@>
+                                                                <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Delete
+                                                            </button>
+
+                                                            @*<button class="btn btn-danger btn-lg btn-block" type="button" onclick="Voucher_delete()">Delete</button>*@
+                                                        }
+
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        @Html.ActionLink("Back", "AccVoucherList", "Accounts", null, new { @class = "btn btn-info btn-block rounded-0 btn-sm", @id = "btnBack" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="divvouchersub" class="row">
+                        <div class="col-md-12 order-md-1 mb-2">
+                            <div class="card px-2">
+                                <br />
+                                @*<div>
+                                        Toggle column:
+                                        <a class="toggle-vis" data-column="7">Group Head</a> -
+                                        <a class="toggle-vis" data-column="9">Employee Name</a> -
+                                        <a class="toggle-vis" data-column="11">Note 1</a> -
+                                        <a class="toggle-vis" data-column="12">Note 2</a>
+                                    </div>*@
+
+                                <div class="table-responsive">
+                                    <table id="tblvouchersub" class="text-center table tbl display table-striped table-hover text-nowrap" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Voucher Id</th>
+                                                <th>Voucher Sub Id</th>
+                                                <th>AccId</th>
+                                                <th>CountryId</th>
+                                                <th>CountryIdForeign</th>
+                                                <th>Row No</th>
+
+                                                <th>Account Head</th>
+                                                <th>Group Head</th>
+
+                                                <th>Employee Id</th>
+                                                <th>Employee</th>
+
+                                                <th>Customer Id</th>
+                                                <th>Customer</th>
+
+                                                <th>Supplier Id</th>
+                                                <th>Supplier</th>
+
+
+                                                <th>Curr</th>
+
+                                                <th>Note 1</th>
+
+
+                                                <th>Note 2</th>
+                                                <th>Debit</th>
+                                                <th>Credit</th>
+                                                <th>FC</th>
+                                                <th>Currency Rate</th>
+
+
+                                                <th>Debit [Local]</th>
+                                                <th>Credit [Local]</th>
+
+
+                                                <th></th>
+                                                <th>Check Box</th>
+                                                <th>CCId</th>
+                                                <th>SL No</th>
+
+                                                <th>Tran Group Id</th>
+                                                <th>Tran Group</th>
+
+
+                                                @*<th style="width:40%;">Product</th>*@
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model != null)
+                                            {
+                                                if (Model.VoucherSubs != null)
+                                                {
+
+                                                    foreach (var item in Model.VoucherSubs.OrderBy(x => x.SLNo))
+                                                    {
+                                                        if (item.SRowNo > -1)
+                                                        {
+                                                            <tr class="txtVoucherSub">
+                                                                <td>
+                                                                    @*class="d-none"*@
+                                                                    @Html.DisplayTextFor(i => item.VoucherId)
+                                                                </td>
+                                                                <td>
+                                                                    @*class="d-none"*@
+                                                                    @Html.DisplayTextFor(i => item.VoucherSubId)
+                                                                </td>
+                                                                <td>
+                                                                    @*class="d-none"*@
+                                                                    @Html.DisplayTextFor(i => item.AccId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.CurrencyId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.CurrencyForeignId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.SRowNo)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Acc_ChartOfAccount.AccName) - [ @Html.DisplayTextFor(i => item.Acc_ChartOfAccount.AccCode) ]
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Acc_ChartOfAccount.ParentChartOfAccount.AccName)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.EmpId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.HR_Emp_Infos.EmpName)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.CustomerId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Customers.CustomerName)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.SupplierId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Suppliers.SupplierName)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Country.CurrencyShortName)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Note1)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.Note2)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.TKDebit)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.TKCredit)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.CountryForeign.CurrencyShortName)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.CurrencyRate)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.TKDebitLocal)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.TKCreditLocal)
+                                                                </td>
+
+                                                                <td>
+                                                                    <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                                </td>
+                                                                <td>
+                                                                    @if (item.Acc_ChartOfAccount.IsChkRef == true)
+                                                                    {
+
+                                                                        <input type="checkbox" class="clickchk" onchange="cbChange(this)">
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                    }
+
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.ccId)
+                                                                </td>
+                                                                <td>
+                                                                    @*@{ sl++;}
+                                                                        @sl*@
+                                                                    @Html.DisplayTextFor(i => item.SLNo)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.VoucherTranGroupIdRow)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.VoucherTranGroups.VoucherTranGroupName)
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="text-left" colspan="2">
+                                                    <h4>Total Head :<span id="ttlCountQty"></span> </h4>
+                                                </td>
+
+                                                <td colspan="6">   </td>
+
+
+
+
+                                                <td colspan="1">   </td>
+
+                                                <td class="text-right" colspan="2"><h4>Total:</h4></td>
+                                                <td colspan="1">
+                                                    <h4 class="vouchersubtotaldebit">0.00</h4>
+                                                </td>
+                                                <td colspan="1">
+                                                    <h4 class="vouchersubtotalcredit">0.00</h4>
+
+                                                </td>
+                                                <td colspan="2"></td>
+                                                <td colspan="1">
+                                                    <h4 class="vouchersubtotaldebitlocal">0.00</h4>
+                                                </td>
+                                                <td colspan="1">
+                                                    <h4 class="vouchersubtotalcreditlocal">0.00</h4>
+                                                </td>
+                                                <td colspan="2">   </td>
+                                                <td colspan="1">   </td>
+
+
+
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>  @*Datatable Initializer*@
+                    <!-- Button trigger modal -->
+
+                    <button style="display:none" id="btnaddsubsection" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                        Sub Section
+                    </button>
+
+                    <button style="display:none" id="btnsubsectiongrid" type="button" class="btn btn-primary" data-toggle="modal" data-target="#SubSectionModal">
+                        Sub Section
+                    </button>
+
+
+
+                    <!-- Modal -->
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Section Wise Expense</h5>
+                                    <button id="btnclose" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="SubSectionList" class="row">
+                                        <div class="col order-md-1 mb-2">
+                                            <div class="card p-2">
+
+                                                <br />
+                                                <div class="mb-2">
+
+
+                                                    <input type="text" id="myInputSearch" class="form-control" onkeyup="" onmouseover="" placeholder="Search for Serial.." title="Type in a name">
+
+                                                </div>
+
+
+                                                <div class="table-responsive text-nowrap">
+                                                    <table id="tblsubsectionsearch" class="tbl display responsive nowrap table-striped table-hover no-footer text-center" cellspacing="0" width="100%">
+
+                                                        <thead>
+                                                            <tr>
+                                                                <th>SubSectId</th>
+                                                                <th>Sub Sect Name</th>
+
+
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+
+                                                            @foreach (var item in ViewBag.SubSectionList)
+                                                            {
+                                                                <tr>
+
+                                                                    <td>
+                                                                        @item.SubSectId
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.SubSectName
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <br />
+
+                                            </div>
+
+                                        </div>
+                                    </div>  @*Datatable Initializer tblproductserialsearch*@
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="modal fade" id="SubSectionModal" tabindex="-1" role="dialog" aria-labelledby="SubSectionModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="SubSectionModalLabel">Cheque Details</h5>
+                                    @*<button id="btnclose" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>*@
+                                </div>
+                                <div class="modal-body">
+                                    <div id="divSubSectionList" class="row">
+                                        <div class="col order-md-1 mb-2">
+                                            <div class="card p-2">
+
+                                                <br />
+
+                                                <div class="table-responsive text-nowrap">
+                                                    <table id="tblvouchersubsection"
+                                                           class="tblvouchersubsection display responsive nowrap table-striped table-hover no-footer text-center" cellspacing="0" width="100%">
+
+                                                        <thead>
+                                                            <tr>
+                                                                <th>VoucherId</th>
+                                                                <th>VoucherSubId</th>
+                                                                <th>AccId</th>
+                                                                <th>RowNo</th>
+                                                                <th>subsectid</th>
+                                                                <th>Sub Section</th>
+                                                                <th>Note 1</th>
+                                                                <th>Note 2</th>
+                                                                <th>Amount</th>
+                                                                <th>Action</th>
+
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            @if (Model != null)
+                                                            {
+                                                                @if (Model.VoucherSubs != null)
+                                                                {
+
+                                                                    foreach (var item in Model.VoucherSubs)
+                                                                    {
+                                                                        @if (item.VoucherSubSections != null)
+                                                                        {
+
+                                                                            foreach (var itemsubsection in item.VoucherSubSections)
+                                                                            {
+
+                                                                                <tr class="txtVoucherSubSection">
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.VoucherId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.VoucherSubId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.AccId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.SRowNo)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.SubSectId)
+                                                                                    </td>
+                                                                                    <td class="addsubsection">
+
+                                                                                        @*<i class="fa fa-plus">*@
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.SubSection.SubSectName)
+                                                                                        @*</i>*@
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.Note1)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.Note2)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.Amount)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a class="dlttrashsubsection" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                                                    </td>
+
+                                                                                </tr>
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="text-right" colspan="7">
+                                                                    <h4>Total : </h4>
+                                                                </td>
+                                                                @*<td colspan="0">
+                                                                        <h4 class="serialaddsubtotalqty">0.00</h4>
+                                                                    </td>*@
+
+
+                                                                <td colspan="1">
+                                                                    <h4 class="serialaddsubtotalunitprice">0.00</h4>
+                                                                </td>
+                                                                <td></td>
+                                                                @*<td colspan="2"></td>*@
+
+
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+
+                                                </div>
+                                                <div class="row text-center m-2">
+                                                    <br />
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+
+                                                        <button type="button" onclick="AddSubSection()" class="btn btn-sm btn-success mb-2 rounded-0 btn-block">Add</button>
+
+                                                    </div>
+                                                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+                                                        <button type="button" onclick="ShowAllSubSection()" class="btn btn-sm btn-info mb-2 rounded-0 btn-block">Show All</button>
+
+                                                    </div>
+                                                    <div class="col-md-4"></div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div id="divvouchersubcheck" class="row">
+                                        <div class="col order-md-1 mb-2">
+                                            <div class="card p-2">
+
+                                                <br />
+
+                                                <div class="table-responsive text-nowrap">
+                                                    <table id="tblvouchersubcheckno"
+                                                           class="tbl table display responsive nowrap table-striped table-hover no-footer text-center" cellspacing="0" width="100%">
+
+                                                        <thead>
+                                                            <tr>
+                                                                <th>VoucherId</th>
+                                                                <th>VoucherCheckId</th>
+                                                                <th>AccId</th>
+                                                                <th>RowNo</th>
+
+                                                                <th>Check No</th>
+                                                                <th>Check Date From</th>
+                                                                <th>Check Date To</th>
+
+                                                                <th>Remarks</th>
+
+
+                                                                <th>Amount</th>
+
+                                                                <th>dtChkClear</th>
+                                                                <th>isClear</th>
+                                                                <th>InterestRate</th>
+
+
+                                                                <th>Action</th>
+
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            @if (Model != null)
+                                                            {
+                                                                @if (Model.VoucherSubs != null)
+                                                                {
+
+                                                                    foreach (var item in Model.VoucherSubs)
+                                                                    {
+
+                                                                        @if (item.VoucherSubChecnoes != null)
+                                                                        {
+
+                                                                            foreach (var itemsubsection in item.VoucherSubChecnoes)
+                                                                            {
+
+                                                                                <tr class="txtVoucherSubCheckNo">
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.VoucherId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.VoucherSubId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.AccId)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.SRowNo)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.ChkNo)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.dtChk)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.dtChkTo)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.Remarks)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.Amount)
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.dtChkClear)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.isClear)
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        @Html.DisplayTextFor(i => itemsubsection.InterestRate)
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <a class="dlttrashsubcheckno" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                                                    </td>
+                                                                                </tr>
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+
+
+                                                                <td class="text-right" colspan="7">
+                                                                    <h4 id="">Total : </h4>
+                                                                </td>
+
+
+                                                                <td colspan="1">
+                                                                    <h4 class="chqtotalamount" id="chqtotal">0.00</h4>
+                                                                </td>
+                                                                <td></td>
+
+
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+
+                                                </div>
+
+
+                                                <div class="row text-center m-2">
+
+
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+
+                                                        <button type="button" onclick="AddSubCheckNo()" class="btn btn-sm btn-success mb-2 rounded-0 btn-block">Add</button>
+
+                                                    </div>
+
+                                                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+                                                        <button type="button" onclick="ShowAllSubCheckNo()" class="btn btn-sm btn-info mb-2 rounded-0 btn-block">Show All</button>
+
+                                                    </div>
+                                                    <div class="col-md-4"></div>
+
+
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+                                    </div>  @*Datatable Initializer tblproductserialadd*@
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                        @if (ViewBag.Title != "View")
+                        {
+                            <difv class="row">
+                                <div class="col-md-12 order-md-1 mb-2">
+                                    <div class="card p-4">
+                                        @*<div class="col-12">*@
+                                        <div class="row">
+                                            <div class="col-md-6 col-12">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Account Head</label>
+
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("Account", ViewBag.Account as List<SelectListItem>, "=N/A=", new { id = "Account", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12" id="divAccountParent">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Group Head</label>
+                                                        </span>
+                                                    </div>
+                                                    @* @Html.DropDownList("AccountParent", ViewBag.AccountParent as List<SelectListItem>, "=N/A=", new { id = "AccountParent", @class = "form-control", @disabled = "disabled" })*@
+                                                    @Html.TextBox("AccountParent", "", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divDebitAmount">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Debit Amount</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("DebitAmount", "0", new { @class = "form-control", autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divCreditAmount">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Credit Amount</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("CreditAmount", "0", new { @class = "form-control"  , autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1 col-12" id="span">
+
+                                                <button type="button" id="addBtn" onclick="Add()" class="btn btn-sm btn-success btn-block rounded-0 mb-2 abcdef">Add</button>
+                                                @*<button type="button" onclick="DeleteRow()" class="btn btn-success mb-2 btn-block" id="btnDelete" value="Delete"/>*@
+
+                                            </div>
+                                            <div class="col-md-2 col-12" id="divCurrency">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.CountryId)
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("Country", ViewBag.Country as List<SelectListItem>, new { @id = "CountryId", @class = "form-control" })
+                                                    @*@Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" } )    , @disabled = "disabled"*@
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divCurrencyRate">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Conv. Rate </label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("ConvRateSelect", "1", new { @class = "form-control", @name = "maincurrencyrate" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divVoucherSubNoteOne">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Note 1</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("VoucherSubNoteOne", "", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divVoucherSubNoteTwo">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Note 2 </label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("VoucherSubNoteTwo", "", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3 col-12" id="divTKCreditLocal">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label> Debit Amount [Local]</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("TKDebitLocal", "0", new { @class = "form-control" , @disabled = "disabled" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12" id="divTKDebitLocal">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Credit Amount [Local]</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.TextBox("TKCreditLocal", "0", new { @class = "form-control" , @disabled = "disabled" })
+                                                </div>
+                                            </div>
+                                            @*<div id="divNetAmountBDT" class="col">
+                                                    <span class="text-right">
+                                                        <label>@Html.LabelFor(model => model.VAmountLocal) :</label>
+                                                    </span>
+                                                    <span class="input-group" >
+                                                        @Html.TextBoxFor(model => model.VAmountLocal, new { @class = "form-control", @name = "mainnetamountbdt" })
+                                                    </span>
+                                                </div>*@
+                                            <div class="col-md-4 col-12" id="divEmployee">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Ref Employee</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("EmpId", ViewBag.EmpId as List<SelectListItem>, "=N/A=", new { id = "EmpId", @class = "form-control " })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12" id="divCustomer">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Ref Customer</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("CustomerId", ViewBag.CustomerId as List<SelectListItem>, "=N/A=", new { id = "CustomerId", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12" id="divSupplier">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Ref Supplier</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("SupplierId", ViewBag.SupplierId as List<SelectListItem>, "=N/A=", new { id = "SupplierId", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12" id="divVoucherTranGroupRow">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            <label>Vchr. Type</label>
+                                                        </span>
+                                                    </div>
+                                                    @Html.DropDownList("VoucherTranGroupIdRow", ViewBag.VoucherTranGroupIdRow as List<SelectListItem>, "=N/A=", new { id = "VoucherTranGroupIdRow", @class = "form-control" })
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        @*</div>*@
+                                    </div>
+                                </div>
+                            </difv>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        }
+
+
+
+</body>
+
+
+@section Scripts{
+    <script type="text/javascript">
+        var IsBankItem = 0;
+        var IsChkRef = 0;
+
+
+        //  var obj = {};
+        //    var arr = [];
+
+        //     $('#EmpId option').each(function () {
+        //         var value = $(this).val(), text = $(this).text();
+        //         obj[value] = text;
+
+        //        //statuslistnotjson.push(a);
+        //    //statuslistnotjson.push(`"${$(this).val()}" : "${$(this).text()}"`);
+
+        //     });
+        //    //arr.push(obj);
+        //var statuslist = obj;
+        //console.log(statuslist);
+
+
+        var selMulti = $.map($("#ItemDescArray option:selected"), function (el, i) {
+            return $(el).text();
+        });
+
+
+        //var spinner = "";
+        //spinner = $('#' + 'voucherspinner');
+
+        $("#Account").on("focus", function () {
+        $("#Account").select2("open");
+        });
+        $("#AccountMain").on("focus", function () {
+            $("#AccountMain").select2("open");
+        });
+
+
+        //$(".empid").select2();
+
+        $("#Account").select2();
+        //$("#AccountParent").select2();
+        $('#AccountParent').attr("disabled", "disabled");
+        $("#AccountMain").select2();
+        $("#VoucherType").select2();
+        $("#PrdUnitId").select2();
+
+
+
+        var isMultiDebitCredit = '@HttpContextAccessor.HttpContext.Session.GetString("isMultiDebitCredit").ToLower()' == 'true';
+        var isMultiCurrency = '@HttpContextAccessor.HttpContext.Session.GetString("isMultiCurrency").ToLower()' == 'true';
+        var isVoucherDistributionEntry = '@HttpContextAccessor.HttpContext.Session.GetString("isVoucherDistributionEntry").ToLower()'== 'true';
+        var isChequeDetails ='@HttpContextAccessor.HttpContext.Session.GetString("isChequeDetails").ToLower()' == 'true';
+        var isModal = true;
+
+        //var isMultiDebitCredit = true;
+        //var isMultiCurrency = true;
+        //var isVoucherDistributionEntry = true;
+        //var isChequeDetails = true;
+        //var isModal = true;
+
+
+        if (isVoucherDistributionEntry == true || isChequeDetails == true) { isModal = true; } else {
+            isModal = false;
+        }
+
+        if (isMultiCurrency == true) {
+            //$('#TKDebitLocal').removeAttr("disabled");
+            //$('#TKCreditLocal').removeAttr("disabled");
+            //$('#CountryId').removeAttr("disabled");
+            $('#ConvRateSelect').removeAttr("disabled");
+
+
+        }
+        else {
+            $('#TKDebitLocal').attr("disabled", "disabled");
+            $('#TKCreditLocal').attr("disabled", "disabled");
+            //$('#CountryId').attr("disabled", "disabled");
+            $('#ConvRateSelect').attr("disabled", "disabled");
+            //$('#divCurrency').hide();
+
+
+        }
+        $(document).on('click', '.cancel', function () {
+            if ($.fn.DataTable.isDataTable(tblVouchersub)) {
+                if (tblVouchersub.rows('.selected').any()) {
+                    $('#tblvouchersub tr.selected').removeClass('selected');
+                }
+                $("#addBtn").text("Add");
+                $(this).remove();
+                $('#Account').val('0').change();
+
+                $('#AccountParent').val('0').change();
+
+                $('#EmpId').val(0).change();
+                $('#CustomerId').val(0).change();
+                $('#SupplierId').val(0).change();
+                $('#Country').val("");
+                $('#DebitAmount').val("");
+                $('#CreditAmount').val(0);
+                $('#ConvRateSelect').val("");
+                $('#TKDebitLocal').val("");
+                $('#VoucherSubNoteOne').val("");
+                $('#VoucherSubNoteTwo').val("");
+                $('#VoucherTranGroupIdRow').val(0).change();
+
+
+            }
+
+
+        });
+
+        //AccountMain
+        $(document).ready(function () {
+
+
+            //#region allautocomplete_code   //// Autocomlete Feature
+
+
+            autocompleteReferance();
+            autocompleteReferanceTwo();
+            autocompleteReferanceThree();
+            autocompleteNoteOne();
+            autocompleteNoteTwo();
+
+            function autocompleteReferance() {
+                var MyAppUrlset = {
+                    MyUsefulUrl: '@Url.Action("AccountReferance", "Accounts")'
+                }
+                //Referance//ReferanceTwo//ReferanceThree
+                $("#Referance").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: MyAppUrlset.MyUsefulUrl,
+                            dataType: "json",
+                            data: { query: $("#Referance").val() },
+                            success: function (data) {
+                                console.log(data);
+
+                                response($.map(data, function (item) {
+                                    return { label: item.Text };
+                                }));
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error");
+                            },
+                        });
+                    },
+                    autoFocus: true,
+                    minLength: 2
+                });
+            }
+
+            function autocompleteReferanceTwo() {
+                var MyAppUrlset = {
+                    MyUsefulUrl: '@Url.Action("AccountReferanceTwo", "Accounts")'
+                }
+                //Referance//ReferanceTwo//ReferanceThree
+                $("#ReferanceTwo").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: MyAppUrlset.MyUsefulUrl,
+                            dataType: "json",
+                            data: { query: $("#ReferanceTwo").val() },
+                            success: function (data) {
+                                //console.log(data);
+
+                                response($.map(data, function (item) {
+                                    return { label: item.Text };
+                                }));
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error");
+                            },
+                        });
+                    },
+                    autoFocus: true,
+                    minLength: 2
+                });
+            }
+
+            function autocompleteReferanceThree() {
+                var MyAppUrlset = {
+                    MyUsefulUrl: '@Url.Action("AccountReferanceThree", "Accounts")'
+                }
+                //Referance//ReferanceTwo//ReferanceThree
+                $("#ReferanceThree").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: MyAppUrlset.MyUsefulUrl,
+                            dataType: "json",
+                            data: { query: $("#ReferanceThree").val() },
+                            success: function (data) {
+                                //console.log(data);
+
+                                response($.map(data, function (item) {
+                                    return { label: item.Text };
+                                }));
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error");
+                            },
+                        });
+                    },
+                    autoFocus: true,
+                    minLength: 2
+                });
+            }
+
+            function autocompleteNoteOne() {
+                var MyAppUrlset = {
+                    MyUsefulUrl: '@Url.Action("NoteOne", "Accounts")'
+                }
+                //Referance//ReferanceTwo//ReferanceThree
+                $("#VoucherSubNoteOne").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: MyAppUrlset.MyUsefulUrl,
+                            dataType: "json",
+                            data: { query: $("#VoucherSubNoteOne").val() },
+                            success: function (data) {
+                                //console.log(data);
+
+                                response($.map(data, function (item) {
+                                    return { label: item.Text };
+                                }));
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error");
+                            },
+                        });
+                    },
+                    autoFocus: true,
+                    minLength: 2
+                });
+            }
+
+            function autocompleteNoteTwo() {
+                var MyAppUrlset = {
+                    MyUsefulUrl: '@Url.Action("NoteTwo", "Accounts")'
+                }
+                //Referance//ReferanceTwo//ReferanceThree
+                $("#VoucherSubNoteTwo").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: MyAppUrlset.MyUsefulUrl,
+                            dataType: "json",
+                            data: { query: $("#VoucherSubNoteTwo").val() },
+                            success: function (data) {
+                                //console.log(data);
+
+                                response($.map(data, function (item) {
+                                    return { label: item.Text };
+                                }));
+                            },
+                            error: function (xhr, status, error) {
+                                alert("Error");
+                            },
+                        });
+                    },
+                    autoFocus: true,
+                    minLength: 2
+                });
+            }
+
+
+
+           //#endregion allautocomplete_code
+
+            $('#tblvouchersub tbody').on('click', '.accname', function () {
+                if ($.fn.DataTable.isDataTable('#tblvouchersub')) {
+
+
+
+                    ////very much importatnt for unbiding otherwise it will be more heavy
+                    $("#tblvouchersub").unbind("click");
+                    $("#tblvouchersub").unbind("select");
+
+
+                    tblVouchersub.$('tr.selected').removeClass('selected');
+                    $(this).parent().addClass('selected');
+
+                    //alert('hit');
+
+                    tblVouchersub
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#addBtn").text("Modify");
+                            if ($("#span").children('#Cancel')) {
+                                $("#span").children('#Cancel').remove();
+                                $("#span").append('<button type="button" id="Cancel" class="btn btn-danger rounded-0  cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#span").append('<button type="button" id="Cancel" class="btn btn-danger rounded-0 cancel">Cancel</button>');
+                            }
+
+
+                            var f = tblVouchersub.rows('.selected').data();
+                            //console.log(f[0]);
+
+                            selectedItem = `${f[0][2]}`;
+
+                            $('#Account').val(`${f[0][2]}`).change();
+                            //AccountInfo();
+                            $('#AccountParent').val(`${f[0][7]}`);
+
+                            //alert(f[0][4]);
+
+                            console.log(f[0][4]);
+                            $('#EmpId').val(`${f[0][8]}`).change();
+                            $('#CustomerId').val(`${f[0][10]}`).change();
+                            $('#SupplierId').val(`${f[0][12]}`).change();
+                            $('#CountryId').val(f[0][4]).change();
+                            $('#DebitAmount').val(f[0][17]);
+                            $('#CreditAmount').val(f[0][18]);
+                            $('#ConvRateSelect').val(f[0][20]);
+                            $('#TKDebitLocal').val(f[0][21]);
+                            $('#VoucherSubNoteOne').val(f[0][15]);
+                            $('#VoucherSubNoteTwo').val(f[0][16]);
+
+
+
+
+                            $('#VoucherTranGroupIdRow').val(f[0][27]).change();
+
+                            //alert($('#VoucherTranGroupIdRow').val());
+
+                            $('#DebitAmount').removeAttr("disabled");
+                            $('#CreditAmount').removeAttr("disabled");
+
+
+                            AmtCalc();
+
+                            //selectedItem = null;
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#addBtn").text("Add");
+                            $("#spn").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+
+                        });
+
+                    //$(this).unbind('click');
+                    //$("#addBtn").text("Modify");
+                    //if ($("#span").children('#Cancel')) {
+                    //    $("#span").children('#Cancel').remove();
+                    //    $("#span").append('<button type="button" id="Cancel" class="btn btn-danger cancel rounded-0 col">Cancel</button>');
+                    //}
+                    //else {
+                    //    $("#spn").append('<button type="button" id="Cancel" class="btn btn-danger cancel rounded-0 col">Cancel</button>');
+                    //}
+
+                };
+            });
+
+
+            $('#tblvouchersub tbody').on('click', ':not(.accname)', function () {
+                if ($.fn.DataTable.isDataTable('#tblvouchersub')) {
+
+                    //tblgoodsreceive
+                    // $("#tblgoodsinfo").unbind("select");
+                    $(this).parent().removeClass("selected");
+                };
+            });
+
+
+
+
+            $('#divVoucherType').hide();//.css('display', 'none');
+
+
+            if (isChequeDetails == true) {
+                //$('#exampleModal').hide();
+                $('#exampleModal').css('display', 'none');
+            }
+            else if (isVoucherDistributionEntry == true) {
+                $('#SubSectionModal').hide();
+                //$('#SubSectionModal').css('display', 'none');
+            }
+
+            //AccountInfo();//----------------------------------------------------------
+
+
+
+            //$('input').on('keydown', function (e) {
+            //    if (e.keyCode == 9) {
+            //        //$(this).focus();
+            //        //e.preventDefault();
+            //    }
+            //});
+
+            @*var isBarcodeSearch = '@HttpContextAccessor.HttpContext.Session.GetString("isBarcodeSearch")'.toLowerCase() == 'true';*@
+
+
+
+
+            if (isVoucherDistributionEntry == true) { $("#divSubSectionList").show(); } else { $("#divSubSectionList").hide(); }
+            if (isChequeDetails ==true) {  $("#divvouchersubcheck").show(); } else { $("#divvouchersubcheck").hide(); }
+
+
+            myCallbackFunction();
+
+            TotalAmount();
+
+            if (isMultiDebitCredit == true) {
+                $("#divAccountHead").hide();
+            }
+            else {
+
+
+                $('#divDifference').hide();
+                $('#CreditAmount').attr("disabled", "disabled");;
+                $('#TKCreditLocal').attr("disabled", "disabled");;
+                ///
+            };
+
+            var col = null;
+            var row = null;
+            var userid = '@HttpContextAccessor.HttpContext.Session.GetString("userid").ToString()';
+            var comid = '@HttpContextAccessor.HttpContext.Session.GetString("comid").ToString()';
+            //alert(comid);
+            var defaultcurrencyid = '@HttpContextAccessor.HttpContext.Session.GetInt32("defaultcurrencyid")';
+            //alert(defaultcurrencyid);
+            $('#btnaddsubsection').hide();
+            $('#btnaddAmount').hide();
+
+
+            //$("#userid").val(userid.toString());
+            //$("#comid").val(comid.toString());
+            $("#CountryId").val(defaultcurrencyid.toString()).change();
+
+
+            if ($("#VoucherId").val() > 0) {
+
+            }
+            else {
+
+                //$("#VoucherDate").val(CurrentDate());
+
+                //SupplierInfo();
+
+
+
+            }
+
+            //$("#VoucherDate").datepicker({
+            //    onSelect: function (date) {
+            //        // Your CSS changes, just in case you still need them
+            //        $('a.ui-state-default').removeClass('ui-state-highlight');
+            //        $(this).addClass('ui-state-highlight');
+            //        var dateFormat = $("#VoucherDate").datepicker("option", "dateFormat");
+            //        //setter
+            //        $("#VoucherDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+            //    }
+            //});
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        //var oTable = $('#tbl').dataTable();
+
+
+
+
+            //$("#tblaccsearch").toggleClass('cards');
+            //$("#tblaccsearch thead").toggle();
+
+
+            //$('#btToggleDisplay').on('click', function () {
+            //    event.preventDefault();
+            //    $("#tblaccsearch").toggleClass('cards');
+            //    $("#tblaccsearch thead").toggle();
+            //    //e.preventDefault();
+
+            //})
+
+
+
+
+        });
+
+
+
+
+        //$('#Account').focus();///fahad my input
+
+
+        $('#myInput').attr('autocomplete', 'off');
+        $("#dialog").hide();
+
+        var tblVouchersub; //= $('#tblvouchersub').DataTable();
+        var tblaccsearch;
+        var accid;
+        var acc_amount_debit;
+        var acc_amount_credit;
+
+
+        var empid;
+
+        var rownovouchersub;
+
+
+
+        var accname;
+
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            //var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            var val = date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear();
+
+            return val;
+
+        }
+
+        function VoucherDateformat() {
+            var date = new Date($("#VoucherDate").val());
+
+
+            //alert(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear())
+            var val = ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear();
+
+
+            //var x = $("#VoucherDate").val();
+
+            //var abc = date.getMonth() + 1;
+            //var val = x;//date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+            //alert(x);
+            //alert($("#VoucherDate").val());
+            //alert(date.getMonth());
+
+            return val;
+
+        }
+        function VoucherDateformatTwo() {
+            var date = new Date($("#VoucherDate").val());
+
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        function AddSubSection() {
+
+            alert('add sub section');
+
+            var check = $('#tblvouchersub').find('input[type=checkbox]:checked').length;
+            //var Qty = $('#tblvouchersub').find('input[type=checkbox]:checked').length;
+            if (check > 0) {
+
+            }
+            else {
+                alert("At least One Row Should Be Selected");
+                e.preventDefault();
+            }
+
+            var subsectid = 0//$('#myInputSearch').val() || '=N/A=';
+            //alert(AccId);
+            //var subsectionname = '<a data-itemId="0" href="#" class="addsubsection"> <i class="fa fa-plus">=N/A=</i></a >';
+            var subsectionname = '=N/A=';
+
+            var subsectionnoteone = '=N/A=';
+            var subsectionnotetwo = '=N/A=';//parseFloat(SerialQty) * parseFloat(SerialUnitPrice);
+            var subsectionamount = 0;
+            var vouchersubrowno = rownovouchersub;
+
+
+
+            $('#tblvouchersubsection').dataTable().fnAddData([0, 0, accid, vouchersubrowno, subsectid, subsectionname, subsectionnoteone, subsectionnotetwo, subsectionamount, '<a data-itemId="0" href="#" class="dlttrashsubsection deleteItem"> <i class="fa fa-trash"></i></a>']);
+
+            $('#myInputSearch').val();
+            //serialQty();
+            //alert('addSerial');
+        }
+
+        function AddSubCheckNo() {
+
+            var check = $('#tblvouchersub').find('input[type=checkbox]:checked').length;
+            //var Qty = $('#tblvouchersub').find('input[type=checkbox]:checked').length;
+            if (check > 0) {
+
+            }
+            else {
+                alert("At least One Row Should Be Selected");
+                e.preventDefault();
+            }
+
+            var checkno = '=N/A='//$('#myInputSearch').val() || '=N/A=';
+            //alert(AccId);
+            var checkremarks = '=N/A=';
+
+
+
+            $('#tblvouchersubcheckno').dataTable().fnAddData([0, 0, accid, rownovouchersub, checkno, VoucherDateformatTwo(), VoucherDateformat(), checkremarks, parseFloat(acc_amount_debit) + parseFloat(acc_amount_credit), VoucherDateformat(), false,0, '<a data-itemId="0" href="#" class="dlttrashsubcheckno deleteItem"> <i class="fa fa-trash"></i></a>']);
+            //CurrentDate()
+            $('#myInputSearch').val();
+            //serialQty();
+            //alert('addSerial');
+        }
+
+        /////account head search
+        tblaccsearch = $('#tblaccsearch').dataTable({
+            "aoColumns": [
+                { "name": "srchaccid", "sClass": "srchaccid", "visible": false},
+                { "name": "srchacccode", "sClass": "srchacccode", "visible": true },
+                { "name": "srchaccname", "sClass": "srchaccname", "visible": true },
+                { "name": "parentcode", "sClass": "srparentcode", "visible": true },
+                { "name": "parentname", "sClass": "srparentname", "visible": true },
+
+                { "name": "balance", "sClass": "srbalance", "visible": true },
+                { "name": "ischkbalance", "sClass": "srischkbalance", "visible": true },
+                { "name": "countryid", "sClass": "srcountryId", "visible": false },
+                { "name": "countryidlocal", "sClass": "srcountryidlocal", "visible": false },
+                { "name": "amountlocalbuy", "sClass": "sramountlocalbuy", "visible": false },
+                { "name": "amountlocalsale", "sClass": "sramountlocalsale", "visible": false },
+                { "name": "iscredit", "sClass": "sriscredit", "visible": true }
+                //,{ "name": "isdebit", "sClass": "srisdebit", "visible": true }
+
+            ],
+            "paging": true,
+            "searching": true,
+            "info": false,
+            "select": true,
+            "language": {
+
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+            "iDisplayLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            //"oLanguage": { "sZeroRecords": "", "sEmptyTable": "" },
+            dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"><"col-sm-4"p>>'
+        });
+
+
+
+
+        function myFunction() {
+
+            var tblaccsearch = $('#tblaccsearch').DataTable();   //pay attention to capital D, which is mandatory to retrieve "api" datatables' object, as //Lionel said
+            $('#myInput').keyup(function () {
+                tblaccsearch.search($(this).val()).draw();
+
+
+            })
+
+
+        };
+
+
+
+        $('#myInput').on('keypress', function (e) {
+
+            //alert('hit');
+
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+
+                tblaccsearch = $('#tblaccsearch').DataTable();
+                var totalvisibleRows = $('#tblaccsearch tbody tr:visible').length;
+                tblaccsearch.$('tr.selected').removeClass('selected');
+
+
+                //console.log(totalvisibleRows);
+
+                if (totalvisibleRows > 0) {
+                    //alert(totalvisibleRows);
+                    $.each($('#tblaccsearch tr'), function () { //Loop through rows
+
+
+                        if ($(this).children('td:visible').length > 0) { //If this row has more than one visible column
+                            $(this).addClass('selected');
+
+
+
+                            var rowsFY = tblaccsearch.rows('.selected').data();
+                            if (rowsFY.length > 0) {
+                                //console.log(rowsFY[0][0]);
+                                var FYId = rowsFY[0][0];
+
+                            }
+
+
+
+
+                            var x = tblaccsearch.row(this).data()[0];
+                            var z = tblaccsearch.row(this).data()[1];
+
+                            $('#Account').val(x);
+                            $('#Account').change();
+                            $('#AccountParent').change();
+
+
+
+
+                            //alert(x);
+                            //alert(z);
+
+                            //alert('fahad z hit');
+
+                            $('#myInput').val('');
+                            tblaccsearch.columns(2).search("").draw();
+                            $('#myInput').focus();
+
+
+                            $('#btnaddAmount').click();
+
+
+                            //Add();
+
+                            //$('#myInputSearch').val('');
+                            //e.preventDefault();
+
+
+                        }
+
+                    })
+                }
+                else {
+
+                };
+
+
+
+
+                e.preventDefault();
+
+            }
+        });
+
+        $('#tblaccsearch tbody').on('click', 'tr', function () {
+
+            //var z = tblaccsearch.row(this).data()[1];
+            //alert(z);
+
+            var totalvisibleRowsx = $('#tblaccsearch tbody tr.selected').length;
+            //tblproductsearch.$('tr.selected').removeClass('selected');
+            if (totalvisibleRowsx == 1) {
+
+                $.each($('#tblproductsearch tr.selected'), function () { //Loop through rows
+
+                    //$("#Product").val()
+
+                    var y = tblaccsearch.row(this).data()[1];
+                    //alert(y);
+
+                    var x = tblaccsearch.row(this).data()[2];
+                    //alert(x);
+
+
+
+                    //// Handler for .ready() called.
+                    //$('#Category').val(y);
+                    ////$('#Category').change();
+                    //$('#Product').val(x);//.change();
+
+                    //alert(z);
+
+
+                    //e.preventDefault();
+                    //$.when(ProductInfo()).then(BarcodeSearch()).then(ProductSerialSearch()).then($('#ProductSerial').val(z)).then(Add());
+
+                    //alert($('#ProductSerial').val());
+                    $('#myInput').val('');
+
+
+
+
+                })
+            }
+
+        });
+
+
+        //alert(isMultiCurrency);
+
+        // here i have used datatables.js (jQuery Data Table)
+        tblVouchersub = $('#tblvouchersub').DataTable({
+
+            columns: [
+                { name: "VoucherId", "sClass": "voucherid", "visible": false }, //1
+                { name: "VoucherSubId", "sClass": "vouchersubid", "visible": false }, //2
+                { name: "AccId", "sClass": "accid", "visible": false }, //3
+                { name: "CurrencyId", "sClass": "countryid", "visible": false }, //4
+                { name: "CurrencyForeignId", "sClass": "countryforeignid", "visible": false },  ////5
+                { name: "SRowNo", "sClass": "rowno", "visible": false }, //6
+                { name: "accname", "sClass": "accname", "visible": true },////////   7
+                { name: "parentname", "sClass": "parentname", "visible": true },/////  8
+
+                { name: "EmpId", "sClass": "empid", "visible": false },/////  9
+                //{
+                //    name: "EmpId", "sClass": "empid", 'visible': true,
+                //    "render": function (d, t, r) {
+                //        var $select = $("<select></select>", {
+                //            //"id": r[0] + "start",
+                //            "class": "form-control StatusGridOption",
+                //            "value": d
+                //        });
+                //        $.each(statuslist, function (k, v) {
+                //            var $option = $("<option></option>", {
+                //                "text": v,
+                //                "value": k
+                //            });
+                //            if (d === v) {
+                //                $option.attr("selected", "selected")
+                //            }
+                //            $select.append($option);
+                //        });
+                //        return $select.prop("outerHTML");
+                //    }
+                //},
+
+                { name: "EmpName", "sClass": "empname", "visible": true },/////  10
+
+                { name: "CustomerId", "sClass": "customerid", "visible": false },/////  11
+                { name: "CustomerName", "sClass": "customername", "visible": true },/////  12
+
+                { name: "SupplierId", "sClass": "supplierid", "visible": false },/////  13
+                { name: "SupplierName", "sClass": "suppliername", "visible": true },/////  14
+
+                { name: "currency", "sClass": "currency", "visible": isMultiCurrency },   ////      15
+                { name: "Note1", "sClass": "note1", "visible": true }, ////      16
+                { name: "Note2", "sClass": "note2", "visible": true }, ///  17
+                { name: "TKDebit", "sClass": "debit", "visible": true }, ///  18
+                { name: "TKCredit", "sClass": "credit", "visible": true },    ////    19
+                { name: "localcurrency", "sClass": "localcurrency", "visible": isMultiCurrency }, //////  20
+                { name: "CurrencyRate", "sClass": "currencyrate", "visible": isMultiCurrency }, //////  21
+                { name: "TKDebitLocal", "sClass": "debitlocal", "visible": isMultiCurrency }, ///////  22
+                { name: "TKCreditLocal", "sClass": "creditlocal", "visible": isMultiCurrency }, //////////  23
+                null,
+                { name: "checkbox", "sClass": "checkbox", "visible": isModal }, //////////  24
+                { name: "CCId", "sClass": "ccid", "visible": false } ,//////////  25
+                { name: "SLNo", "sClass": "slno", "visible": true }, //////////  26
+
+
+                { name: "VoucherTranGroupIdRow", "sClass": "VoucherTranGroupIdRow", "visible": false },/////  27
+                { name: "VoucherTranGroupName", "sClass": "VoucherTranGroupName", "visible": true }/////  28
+
+            ],
+            "columnDefs": [
+                { "visible": false, "targets": [] }
+            ],
+            dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+            buttons: {
+                dom: {
+                    button: {
+                        className: 'btn rounded-0'
+                    }
+                },
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        "columns": ':not(:last-child)',
+                        text: '<i class="mdi mdi-view-column"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Show / hide columns',
+                        //collectionLayout: 'fixed two-column'
+
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="mdi mdi-file-excel"></i>',
+                        className: 'btn-success',
+                        titleAttr: 'Export to excel',
+                        exportOptions: {
+                            columns: ':visible',
+                            rows: ':visible'
+                        }
+                    }
+
+                ]
+            },
+            columnDefs: [
+                {
+                    'render': function (data, type, row) {
+                        return '<input class="form-control SL p-0 mb-0 text-center h-25"  data-val="true" value=' + data + '>';
+                    },
+                    'targets': 26
+                }
+                //,{
+                //        orderable: false,
+                //        className: 'select-checkbox',
+                //        targets: 2
+                //}
+            ],
+            //    {
+            //        'render': function (data, type, row) {
+            //            return '<input class="form-control StatusGrid"  data-val="true" value=' + data + '>';
+            //        },
+            //        'targets': 8
+            //    }
+            //],
+            //"fnDrawCallback": function () {
+            //    $('.StatusGridOption').select2();
+            //},
+
+            //drawCallback: function() {
+            //    $('.StatusGridOption').select2();
+            //},
+            //"dom": 'T<"clear">lfrtip',
+
+            //"tableTools": {
+            //    "sRowSelector": "td:not(:first-child)"
+            //},
+            //select: {
+            //    style: 'os'
+            //    //, selector: 'td:first-child'
+            //},
+            select: true,
+            select: {
+                style: 'single',
+                selector: 'td:nth-child(1)'
+            },
+            //select:true,
+            //select:'single',
+            //{
+                //style: 'os',
+                //selector: 'td:first-child'
+           // },
+            rowCallback: function (row) {
+                $(row).addClass('txtVoucherSub');
+                //console.log(row);
+                //$('.StatusGridOption').select2();
+            },
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "searching": true,
+            "language": {
+
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+            //,initComplete: function () {
+            //   $('.StatusGridOption').select2();
+            // },
+
+        });
+
+
+        $("#CustomerId").select2();
+        $("#SupplierId").select2();
+        $("#VoucherTranGroupIdRow").select2();
+
+
+
+
+        $("#EmpId").select2();
+
+        $('#EmpId').on('select2:select', function (e) {
+           // alert('hit');
+            //var data = e.params.data;
+            //console.log(data);
+            //tblVouchersub.column(9).visible(true);
+            //tblVouchersub.draw;
+
+        });
+
+
+
+        var tblvouchersubsection = $('#tblvouchersubsection').DataTable({
+            "aoColumns": [
+                { "sClass": "ssVoucherid", "visible": false },
+                { "sClass": "ssVouchersubid", "visible": false },
+                { "sClass": "ssAccid", "visible": false },
+                { "sClass": "ssSubsectid", "visible": false },
+                { "sClass": "ssRowno", "visible": false },
+                { "sClass": "addsubsection", "visible": true },
+                { "sClass": "ssNote1", "visible": true },
+                { "sClass": "ssNote2", "visible": true },
+                { "sClass": "ssAmount", "visible": true },
+                null
+            ],
+            rowCallback: function (row) {
+                $(row).addClass('txtvouchersubsection');
+            },
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "searching": true,
+            language: {
+                search: '',
+                searchPlaceholder: "Search..."
+            },
+            dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"><"col-sm-4"p>>'
+        });
+
+
+        function CallComboSubSectionList() {
+            //alert('callcombosubsectionlist');
+            var subsectionlist;
+            var MyAppUrlSettings = {
+                MyUsefulUrl: '@Url.Action("CallComboSubSectionList1", "Accounts")'
+            }
+
+            //alert('customerserial');
+
+            $.ajax({
+                type: 'POST',
+                url: MyAppUrlSettings.MyUsefulUrl,
+                dataType: 'json',
+                async: false,
+                success: function (subsections) {
+                    subsectionlist = subsections;
+
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+            return subsectionlist;
+
+        };
+
+        $(document).ready(function () {
+            //alert('enter');
+            var createResponseData = CallComboSubSectionList();
+            //console.log(createResponseData);
+            tblvouchersubsection = $('#tblvouchersubsection').DataTable();
+            tblvouchersubsection.MakeCellsEditable({
+                "onUpdate": myCallbackFunction,
+                "inputCss": 'my-input-class',
+                "columns": [6,7,8 ],
+                //"allowNulls": {
+                //    "columns": [3],
+                //    "errorClass": 'error'
+                //},
+                //"confirmationButton": { // could also be true
+                //    "confirmCss": 'my-confirm-class',
+                //    "cancelCss": 'my-cancel-class'
+                //},
+                "inputTypes": [
+                    {
+                        "column": 6,
+                        "type": "text",
+                        "options": null
+                    },
+                    {
+                        "column": 7,
+                        "type": "text",
+                        "options": null
+                    },
+                    {
+                        "column": 8,
+                        "type": "text",
+                        "options": null
+                    }
+                    //{
+                    //    "column": 4,
+                    //    "type": "list",
+                    //    "options": createResponseData
+                    //    //    [
+                    //    //    { "value": "1", "display": "Beaty" },
+                    //    //    { "value": "2", "display": "Doe" },
+                    //    //    { "value": "3", "display": "Dirt" }
+                    //    //]
+                    //},
+                    //{
+                    //    "column": 5,
+                    //    "type": "list",
+                    //    "options": createResponseData
+                    //    //    [
+                    //    //    { "value": "1", "display": "Beaty" },
+                    //    //    { "value": "2", "display": "Doe" },
+                    //    //    { "value": "3", "display": "Dirt" }
+                    //    //]
+                    //}//,
+                    //{
+                    //    "column": 2,
+                    //    "type": "datepicker", // requires jQuery UI: http://http://jqueryui.com/download/
+                    //    "options": {
+                    //        "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                    //    }
+                    //}
+                    // Nothing specified for column 3 so it will default to text
+
+                ]
+            });
+
+        });
+
+
+        function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+            var total=0;
+            var oTable = $("#tblvouchersubcheckno").DataTable().data();
+            var rows = $("#tblvouchersubcheckno").dataTable().fnGetNodes();
+            for (var i = 0; i < rows.length; i++) {
+                // var e = rows[i].cells[3].children[0].value| 0;
+                //console.log(oTable);
+                var e = oTable[i][8]| 0;
+                total += parseFloat(e)|0;
+            }
+            //$("#tblvouchersubcheckno tr").each(function () {
+            //    $(this).children(3).text();
+            //    var amount = parseFloat($('.chAmount', this).text()) | 0;
+            //    total += parseFloat(amount);
+            //});
+            $("#chqtotal").text(total.toLocaleString(2));
+
+            //console.log("The new value for the cell is: " + updatedCell.data());
+            //console.log("The old value for that cell was: " + oldValue);
+            //console.log("The values for each cell in that row are: " + updatedRow.data());
+        }
+
+        $(document).ready(function () {
+            tblvouchersubcheckno = $('#tblvouchersubcheckno').DataTable();
+            tblvouchersubcheckno.MakeCellsEditable({
+                "onUpdate": myCallbackFunction,
+                //"inputCss": 'my-input-class',
+                "columns": [4, 5, 6, 7,8,11],
+                //"allowNulls": {
+                //    "columns": [3],
+                //    "errorClass": 'error'
+                //},
+                //"confirmationButton": { // could also be true
+                //    "confirmCss": 'my-confirm-class',
+                //    "cancelCss": 'my-cancel-class'
+                //},
+                "inputTypes": [
+                    //{
+                    //    "column": 4,
+                    //    "type": "text",
+                    //    "options": null
+                    //},
+                    {
+                        "column": 5,
+                        "type": "datepicker", // requires jQuery UI: http://http://jqueryui.com/download/
+                        "options": {
+                            "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                        }
+                    },
+                    {
+                        "column": 6,
+                        "type": "datepicker-confirm-yymmdd", // requires jQuery UI: http://http://jqueryui.com/download/
+                        "options": {
+                            "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                        }
+                    }
+                    //{
+                    //    "column": 6,
+                    //    "type": "text",
+                    //    "options": null
+                    //},
+                    //{
+                    //    "column": 7,
+                    //    "type": "text",
+                    //    "options": null
+                    //}
+                    // Nothing specified for column 3 so it will default to text
+
+                ]
+            });
+
+        });
+
+        //function destroyTable() {
+        //    if ($.fn.DataTable.isDataTable('#tblvouchersubsection')) {
+        //        tblvouchersubsection.destroy();
+        //        tblvouchersubsection.MakeCellsEditable("destroy");
+        //    }
+        //}
+
+
+        function ShowAllSubSection() {
+            var cbs = document.getElementsByClassName("clickchk");
+            for (var i = 0; i < cbs.length; i++) {
+                cbs[i].checked = false;
+            }
+            //tblvouchersubsection.columns(2).search("").draw();
+            //$('#tblvouchersubsection tbody tr').each(function () {
+
+            //    $(this).show();
+
+            //});
+            tblvouchersubsection.columns(2).search("").draw();
+
+
+        }
+        function ShowAllSubCheckNo() {
+            var cbs = document.getElementsByClassName("clickchk");
+            for (var i = 0; i < cbs.length; i++) {
+                cbs[i].checked = false;
+            }
+
+            //$('#tblvouchersubcheckno tbody tr').each(function () {
+
+            //    $(this).show();
+
+            //});
+            tblvouchersubcheckno.columns(2).search("").draw();
+
+        }
+
+        var tblvouchersubcheckno = $('#tblvouchersubcheckno').DataTable({
+            "aoColumns": [
+                { "sClass": "chVoucherid", "visible": false },
+                { "sClass": "chVouchercheckid", "visible": false },
+                { "sClass": "chAccid", "visible": false },
+                { "sClass": "chRowno", "visible": false },
+                { "sClass": "chCheckNo", "visible": true },
+
+                { "sClass": "chDtcheck", "visible": true },///1
+                { "sClass": "chDtcheckTo", "visible": true },////2
+
+
+                { "sClass": "chRemarks", "visible": true },
+                { "sClass": "chAmount", "visible": true },
+
+
+                { "sClass": "dtChkClear", "visible": false },/////3
+                { "sClass": "isClear", "visible": false },//////4
+                { "sClass": "InterestRate", "visible": true },//////4
+                null
+            ],
+            //columnDefs: [
+            //    {
+            //        'render': function (data, type, row) {
+            //            return '<input class="form-control SL p-0 mb-0 text-center h-25"  data-val="true" value=' + data + '>';
+            //        },
+            //        'targets': 4
+            //    },
+            //    {
+            //        'render': function (data, type, row) {
+            //            return '<input class="form-control SL p-0 mb-0 text-center h-25"  data-val="true" value=' + data + '>';
+            //        },
+            //        'targets': 7
+            //    }
+            //],
+            rowCallback: function (row) {
+                $(row).addClass('txtvouchersubcheckno');
+            },
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "searching": true,
+            "language": {
+
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+            dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"><"col-sm-4"p>>'
+        });
+
+
+        $("#ConvRateSelect,#DebitAmount,#CreditAmount").focusout(function () {
+          //alert('nit');
+            AmtCalc();
+        });
+
+
+        function AmtCalc() {
+
+            var ConvRateSelect = $('#ConvRateSelect').val() || 1;
+            var DebitAmount = $('#DebitAmount').val() || 0;
+            var CreditAmount = $('#CreditAmount').val() || 0;
+
+
+            if ($('#DebitAmount').val().length == 0) {
+                $('#DebitAmount').val(0);
+
+            }
+            if ($('#CreditAmount').val().length == 0) {
+                $('#CreditAmount').val(0);
+
+            }
+
+
+            if (ConvRateSelect.length == 0) {
+                $('#ConvRateSelect').val(1);
+
+            }
+            else if (ConvRateSelect < 1) {
+                $('#ConvRateSelect').val(1);
+            }
+
+            ConvRateSelect = $('#ConvRateSelect').val();
+            if (DebitAmount > 0 || CreditAmount > 0) {
+
+                var x = DebitAmount * ConvRateSelect;
+                var y = CreditAmount * ConvRateSelect;
+
+
+                $('#TKDebitLocal').val(x.toFixed(4));
+                $('#TKCreditLocal').val(y.toFixed(4));
+
+            }
+        };
+
+        function AmountTransfer() {
+            var checked = true;
+            var AccIdCheck = $('#InputAmount').val();
+
+            if ($("#Acc_VoucherType").val()) { };
+
+
+        };
+
+        visiblerows();
+
+        function visiblerows() {
+
+
+            var data_AccId = tblVouchersub.column('AccId:name').data();
+            var data_EmpId = tblVouchersub.column('EmpId:name').data();
+            var data_CustomerId = tblVouchersub.column('CustomerId:name').data();
+            var data_SupplierId = tblVouchersub.column('SupplierId:name').data();
+            var data_VoucherTranGroupIdRow = tblVouchersub.column('VoucherTranGroupIdRow:name').data();
+
+
+
+            for (var i = 0; i < data_AccId.length; i++) {
+
+                //var gridacchead = data_AccId[i];
+
+                var gridempid = data_EmpId[i] || 0;
+
+                var gridcustomerid = data_CustomerId[i] || 0;
+
+                var gridsupplierid = data_SupplierId[i] || 0;
+
+                var gridtrangroupid = data_VoucherTranGroupIdRow[i] || 0;
+
+                //alert(gridsupplierid);
+                //alert(gridempid);
+                //alert(gridcustomerid);
+
+
+
+            //if ($('#EmpId').val() > 0) {
+            //    tblVouchersub.column(9).visible(true);
+
+            //};
+
+            //if ($('#CustomerId').val() > 0) {
+            //    tblVouchersub.column(11).visible(true);
+
+            //};
+
+
+            //if ($('#SupplierId').val() > 0) {
+            //    tblVouchersub.column(13).visible(true);
+
+            //};
+
+
+            //if ($('#VoucherSubNoteOne').length > 0) {
+            //    tblVouchersub.column(15).visible(true);
+
+            //};
+            //if ($('#VoucherSubNoteTwo').length > 0) {
+            //    tblVouchersub.column(16).visible(true);
+
+            //};
+
+
+
+            }
+
+        }
+
+        function getslno() {
+            //{ '.isdelete': false }
+            var d = $("#tblvouchersub").dataTable().fnGetNodes().length;
+            d++;
+            return d|0;
+        };
+
+        function Add() {
+
+
+            AmtCalc();
+
+            var checked = true;
+            var AccIdCheck = $('#Account').val();
+
+            var EmpIdCheck = $('#EmpId').val();
+
+            var CustomerIdCheck = $('#CustomerId').val();
+            var SupplierIdCheck = $('#SupplierId').val();
+            var VoucherTranGroupIdRowCheck = $('#VoucherTranGroupIdRow').val();
+
+
+            tblvouchersub = $('#tblvouchersub').DataTable();
+
+            var flag = 0;
+
+            var dbtamt = $('#DebitAmount').val() || 0;
+            var crdtamt = $('#CreditAmount').val() || 0;
+            var acchead = $('#Account option:selected').val() || 0;
+            var empidhead = $('#EmpId option:selected').val() || 0;
+
+            var customeridhead = $('#CustomerId').val() || 0;
+            var supplieridhead = $('#SupplierId').val() || 0;
+            var trangroupidhead = $('#VoucherTranGroupIdRow').val() || 0;
+
+
+
+            //alert(acchead);
+            if (dbtamt + crdtamt == 0) { alert("Please Input Amount of the Head"); return true; }
+            var tblacchead = $('#tblvouchersub').DataTable();
+            var flag = 0;
+
+            let rows = tblVouchersub.rows({ selected: true });
+            var selectedAccIds = rows.column('AccId:name').data();
+            var selectedEmpId = rows.column('EmpId:name').data();
+
+            var selectedCustomerId = rows.column('CustomerId:name').data();
+            var selectedSupplierId = rows.column('SupplierId:name').data();
+            var selectedVoucherTranGroupIdRow = rows.column('VoucherTranGroupIdRow:name').data();
+
+            var si = selectedAccIds[0];
+            var se = selectedEmpId[0];
+            var sc = selectedCustomerId[0];
+            var ss = selectedSupplierId[0];
+            var stg = selectedVoucherTranGroupIdRow[0];
+
+
+            var data_AccId = tblVouchersub.column('AccId:name').data();
+            var data_EmpId = tblVouchersub.column('EmpId:name').data();
+
+            var data_CustomerId = tblVouchersub.column('CustomerId:name').data();
+            var data_SupplierId = tblVouchersub.column('SupplierId:name').data();
+            var data_VoucherTranGroupIdRow = tblVouchersub.column('VoucherTranGroupIdRow:name').data();
+
+
+
+            for (var i = 0; i < data_AccId.length; i++) {
+
+                var gridacchead = data_AccId[i];
+
+                if ((gridacchead == acchead)) {
+                    //toastr.error('Duplicate account head has added');
+                    //ConfirmDialog('Accounts Head Already Inputed');
+                    //return true;
+                }
+            }
+
+            if (tblVouchersub.rows('.selected').any()) {
+                tblVouchersub
+                    .rows({ selected: true })
+                    .every(function (rowIdx, tableLoop, rowLoop) {
+
+
+                        //tblpurrequisition.cell(rowIdx, 0).data("");
+                        tblVouchersub.cell(rowIdx, 2).data($('#Account option:selected').val());
+                        tblVouchersub.cell(rowIdx, 4).data($('#CountryId option:selected').val());
+
+                        tblVouchersub.cell(rowIdx, 6).data($('#Account option:selected').text());
+                        //tblVouchersub.cell(rowIdx, 7).data($('#AccountParent option:selected').text());
+                        tblVouchersub.cell(rowIdx, 7).data($('#AccountParent').val());
+
+                        tblVouchersub.cell(rowIdx, 8).data($('#EmpId option:selected').val());
+                        tblVouchersub.cell(rowIdx, 9).data($('#EmpId option:selected').text());
+                        tblVouchersub.cell(rowIdx, 10).data($('#CustomerId option:selected').val());
+                        tblVouchersub.cell(rowIdx, 11).data($('#CustomerId option:selected').text());
+                        tblVouchersub.cell(rowIdx, 12).data($('#SupplierId option:selected').val());
+                        tblVouchersub.cell(rowIdx, 13).data($('#SupplierId option:selected').text());
+
+                        tblVouchersub.cell(rowIdx, 14).data($('#Currency').val());
+                        tblVouchersub.cell(rowIdx, 15).data($('#VoucherSubNoteOne').val());
+                        tblVouchersub.cell(rowIdx, 16).data($('#VoucherSubNoteTwo').val());
+
+                        tblVouchersub.cell(rowIdx, 17).data($('#DebitAmount').val());
+                        tblVouchersub.cell(rowIdx, 18).data($('#CreditAmount').val());
+                        tblVouchersub.cell(rowIdx, 19).data($('#CountryId option:selected').text());
+
+                        tblVouchersub.cell(rowIdx, 20).data($('#ConvRateSelect').val());
+
+                        tblVouchersub.cell(rowIdx, 21).data($('#TKDebitLocal').val());
+                        tblVouchersub.cell(rowIdx, 22).data($('#TKCreditLocal').val());
+
+                        tblVouchersub.cell(rowIdx, 27).data($('#VoucherTranGroupIdRow option:selected').val());
+                        tblVouchersub.cell(rowIdx, 28).data($('#VoucherTranGroupIdRow option:selected').text());
+
+
+                    })
+                    .draw();
+                tblVouchersub.$('tr.selected').removeClass('selected');
+
+
+                $("#addBtn").text("Add");
+                $("#Cancel").remove();
+            }
+            else {
+
+                //console.log(IsBankItem);
+                if (parseFloat(IsChkRef) == 1) {
+
+                    $('#tblvouchersub').dataTable().fnAddData([
+
+                    $('#VoucherId').val() || 0,
+                    $('#VoucherSubId').val() || 0,
+
+                    $('#Account').val(),
+                    '@HttpContextAccessor.HttpContext.Session.GetInt32("defaultcurrencyid").ToString()',//$('#CountryId').val(),
+                    $('#CountryId').val(),
+                    0,
+                    $('#Account option:selected').text(),
+                    //$('#AccountParent option:selected').text(),
+                    $('#AccountParent').val(),
+                    $('#EmpId').val() || 0,
+                    $('#EmpId option:selected').text(),
+
+                    $('#CustomerId').val() || 0,
+                    $('#CustomerId option:selected').text(),
+
+                    $('#SupplierId').val() || 0,
+                    $('#SupplierId option:selected').text(),
+
+                    '@HttpContextAccessor.HttpContext.Session.GetString("defaultcurrencyname").ToString()',//$('#CountryId option:selected').text(),
+                    $('#VoucherSubNoteOne').val(),
+                    $('#VoucherSubNoteTwo').val(),
+
+                    //$('#ProductSerial option:selected').text() || '=N/A=',
+
+                    $('#DebitAmount').val(),
+                    $('#CreditAmount').val(),
+                    $('#CountryId option:selected').text(),
+                    $('#ConvRateSelect').val(),
+
+                    $('#TKDebitLocal').val(),
+                    $('#TKCreditLocal').val(),
+
+                    '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+                        '<input type="checkbox" class="clickchk select-checkbox"  onchange ="cbChange(this)">', checked,
+                        getslno(),
+
+                        $('#VoucherTranGroupIdRow').val() || 0,
+                        $('#VoucherTranGroupIdRow option:selected').text()
+                ]);
+                }
+                else {
+                    $('#tblvouchersub').dataTable().fnAddData([
+
+                    $('#VoucherId').val() || 0,
+                    $('#VoucherSubId').val() || 0,
+
+                    $('#Account').val(),
+                    '@HttpContextAccessor.HttpContext.Session.GetInt32("defaultcurrencyid").ToString()',//$('#CountryId').val(),
+                    $('#CountryId').val(),
+                    0,
+                    $('#Account option:selected').text(),
+                    //$('#AccountParent option:selected').text(),
+                    $('#AccountParent').val(),
+                    $('#EmpId').val() || 0,
+                    $('#EmpId option:selected').text(),
+
+                    $('#CustomerId').val() || 0,
+                    $('#CustomerId option:selected').text(),
+
+                    $('#SupplierId').val() || 0,
+                    $('#SupplierId option:selected').text(),
+
+                    '@HttpContextAccessor.HttpContext.Session.GetString("defaultcurrencyname").ToString()',//$('#CountryId option:selected').text(),
+                    $('#VoucherSubNoteOne').val(),
+                    $('#VoucherSubNoteTwo').val(),
+
+                    //$('#ProductSerial option:selected').text() || '=N/A=',
+
+                    $('#DebitAmount').val(),
+                    $('#CreditAmount').val(),
+                    $('#CountryId option:selected').text(),
+                    $('#ConvRateSelect').val(),
+
+                    $('#TKDebitLocal').val(),
+                    $('#TKCreditLocal').val(),
+
+                    '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+                    '', checked,
+                        getslno(),
+                        $('#VoucherTranGroupIdRow').val() || 0,
+                        $('#VoucherTranGroupIdRow option:selected').text()
+
+                ]);
+
+                }
+            }
+
+
+            tblvouchersub.draw();
+
+            var $checkbox = $("#tblvouchersub tbody tr:last .clickchk");
+
+            if (isChequeDetails == true || isVoucherDistributionEntry == true) {
+
+                //$checkbox.click();
+
+            }
+
+
+            myCallbackFunction();
+            TotalAmount();
+
+
+
+            var x = "500.00";
+            var y = $('#tblvouchersub').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            $("html, body").animate({ scrollTop: z }, 500);
+
+            $('#VoucherTranGroupIdRow').val(0).change();
+
+            $('#Account').focus();
+
+        }
+
+
+
+
+        function singleInputs() {
+
+            //alert('singleinputs');
+
+            var singleqty = $("#Qty").val();
+            var singleVoucherprice = $("#UnitPrice").val();
+            var singlevatpercentage = $("#IndVatPercentage").val();
+            var singlevat = 0;//$("#IndVat").val();
+            var singledisper = $("#IndDisPer").val();
+            var singledisamt = $("#IndDisAmt").val();
+            var singleindprice = 0;
+
+
+            ///alert(radioValue);
+            if (radioValue == "percentage") {
+
+                // alert('percentage');
+                singledisamt = ((parseFloat(singleqty) * parseFloat(singleVoucherprice)) * ((parseFloat(singledisper)) / 100));
+                $("#IndDisAmt").text(singledisamt);//---fahad
+                $("#IndDisAmt").val(singledisamt);//---fahad
+
+            }
+            else if (radioValue == "amount") {
+
+
+                singledisper = ((((parseFloat(singledisamt))) / (parseFloat(singleqty) * parseFloat(singleVoucherprice))) * 100);
+
+                $("#IndDisPer").text(singledisper);//---fahad
+                $("#IndDisPer").val(singledisper);//---fahad
+               }
+
+
+
+
+            //alert(singledisamt);
+
+            singlevat = ((parseFloat(singleqty) * parseFloat(singleVoucherprice)) * ((parseFloat(singlevatpercentage)) / 100));
+            singleindprice = (parseFloat(singleqty) * parseFloat(singleVoucherprice)) + ((parseFloat(singleqty) * parseFloat(singleVoucherprice)) * ((parseFloat(singlevatpercentage)) / 100)) - (parseFloat(singledisamt));
+
+            //alert(singleindprice);
+
+
+            $("#IndVat").text(singlevat);//---fahad
+            $("#IndVat").val(singlevat);//---fahad
+
+            $("#IndPrice").text(singleindprice);//---fahad
+            $("#IndPrice").val(singleindprice);//---fahad
+
+
+
+            // alert('unitprice final function');
+
+        }
+
+
+        function cbChange(obj) {
+
+            $('#btnsubsectiongrid').click();
+
+
+            var cbs = document.getElementsByClassName("clickchk");
+            for (var i = 0; i < cbs.length; i++) {
+                cbs[i].checked = false;
+            }
+            obj.checked = true;
+
+
+            var data = null;
+
+            if (obj.checked == true) {
+
+                var table = $('#tblvouchersub').DataTable();
+                data = table.row($('input[type=checkbox]:checked').parents('tr')).data();
+                rownovouchersub = table.row($('input[type=checkbox]:checked').parents('tr')).index();
+                //alert(rownovouchersub);
+                var cell = table.cell(rownovouchersub, 5);
+                cell.data(rownovouchersub);
+
+                accid = data[2];
+                acc_amount_debit = data[17];
+                acc_amount_credit = data[18];
+
+                //alert(data[17]);
+                //alert(data[18]);
+
+                rownovouchersub = data[5];
+                //alert(accid);
+
+                tblvouchersubsection.columns(2).search("^" + accid + "$", true, false).draw();
+                tblvouchersubcheckno.columns(2).search("^" + accid + "$", true, false).draw();
+
+
+                //tblproductserialadd.columns(2).search(AccId).draw();
+                tblvouchersubcheckno.columns(2).search("^" + accid + "$", true, false).draw();
+
+            }
+            else {
+            }
+            //serialQty();
+
+        }
+
+
+        //This function is used for sending data(JSON Data) to VoucherController
+
+        $(document).ready(function () {
+            $("#voucherSave").click(function () {
+
+                //StartSpinner(".spinnerclass");
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+
+                if (isMultiDebitCredit == true) {
+
+                    if ($('#Difference').val() != 0) {
+
+                        //alert("Debit And Credit Amount is Not Same");
+                        toastr.error("Debit And Credit is Not Same");
+                        StopSpinner(".spinnerclass");
+
+
+                        //function StopSpinner(id) {
+                        //if (!$(".spinnerclass").toggleClass('d-none')) {
+
+                        //}
+                        //}
+
+
+                        return false;
+
+
+                    };
+                }
+                else {
+                    var x = $('#AccountMain').val() || 0;
+                    if (x == 0) {
+                        alert("Please Confirm the Opposite Head");
+                        $('#AccountMain').focus();
+                        StopSpinner(".spinnerclass");
+                        return false;
+                    }
+
+
+                };
+
+                var checked = true;
+
+
+                var Acc_VoucherSubSection = { "VoucherId": "", "VoucherSubId": "", "AccId": "", "RowNoSSec": "", "SRowNo": "", "SubSectId": "", "Note1": "", "Note2": "", "Amount": "" };
+
+                var VoucherCheckNo = { "VoucherId": "", "VoucherSubId": "", "AccId": "", "ChkNo": "", "RowNoChk": "", "SRowNo": "", "dtChk": "", "dtChkTo": "", "Remarks": "", "Amount": "", "dtChkClear": "", "isClear": "", "InterestRate": "" };
+
+                var Acc_VoucherSub = {
+                    "VoucherId": "", "VoucherSubId": "", "AccId": "", "EmpId": "", "CustomerId": "", "SupplierId": "", "SRowNo": "", "ccId": "", "CurrencyId": "", "CurrencyForeignId": "", "TKDebit": "", "TKCredit": "", "TKDebitLocal": "", "TKCreditLocal": "", "CurrencyRate": "", "Note1": "", "Note2": "", "SLNo": "",
+
+                    "VoucherTranGroupIdRow": "",
+
+                    "VoucherSubSections": [],
+                    "VoucherSubChecnoes": []
+                };
+
+
+
+
+                // Creating Acc_VoucherMain Json Object
+                var Acc_VoucherMain = {
+                    "VoucherId": "", "VoucherSerialId": "", "AccId": "", "VoucherNo": "", "VoucherDate": "", "VoucherTypeId": "", "VoucherDesc": "",
+
+                    "Referance": "", "ReferanceTwo": "", "ReferanceThree": "",
+                    "CountryId": "", "CountryIdLocal": "", "VAmount": "",
+                    "ConvRateSelect": "", "VAmountLocal": "", "comid": "", "userid": "", "ChkPer": "", "PrdUnitId": "", "DateAdded": "", "VoucherTranGroupArray": "",
+
+                    "VoucherSubs": []
+
+
+
+                };
+
+                ////Acc_VoucherMain.userid = '@HttpContextAccessor.HttpContext.Session.GetString("userid").ToString()';
+
+
+                //if ($('h2').text() == "Voucher Edit") {
+                Acc_VoucherMain.VoucherId = $('#VoucherId').val() || 0;
+                Acc_VoucherMain.VoucherSerialId = $('#VoucherSerialId').val() || 0;
+                Acc_VoucherMain.AccId = $('#AccountMain').val() || 0;
+
+
+                //}
+                //else {
+                //    Acc_VoucherMain.VoucherId = 0;
+                //}
+                // Set Voucher Main Value
+                Acc_VoucherMain.VoucherTypeId = $("#Acc_VoucherType").val();
+                Acc_VoucherMain.VoucherDesc = $("#VoucherDesc").val();
+
+                //Acc_VoucherMain.VoucherId = $("#VoucherId").val();
+                Acc_VoucherMain.VoucherNo = $("#VoucherNo").val();
+                Acc_VoucherMain.Referance = $("#Referance").val();
+                Acc_VoucherMain.ReferanceTwo = $("#ReferanceTwo").val();
+                Acc_VoucherMain.ReferanceThree = $("#ReferanceThree").val();
+                Acc_VoucherMain.VoucherDate = $("#VoucherDate").val();
+                Acc_VoucherMain.CountryId = $("#CountryIdVoucher").val();
+                Acc_VoucherMain.CountryIdLocal = $("#CountryId").val();
+
+                Acc_VoucherMain.ConvRate = $("#ConvRate").val();
+                Acc_VoucherMain.VoucherTranGroupArray = $("#VoucherTranGroupArray").val();
+                Acc_VoucherMain.VoucherTranGroupList = $("#VoucherTranGroupArray").val();
+                Acc_VoucherMain.VoucherTranGroupId = $("#VoucherTranGroupArray").val();
+
+
+
+
+                //Acc_VoucherMain.CurrencyRate = $("#ConvRateSelect").val();
+                Acc_VoucherMain.VAmount = $("#VAmount").val();
+                Acc_VoucherMain.VAmountLocal = $("#VAmountLocal").val();
+
+                //Acc_VoucherMain.Remarks = $("#Remarks").val();
+                //Acc_VoucherMain.ChkPer = checked;
+
+                Acc_VoucherMain.comid = $("#comid").val();
+                Acc_VoucherMain.DateAdded = $("#DateAdded").val();
+                Acc_VoucherMain.userid = $("#userid").val();//'@HttpContextAccessor.HttpContext.Session.GetString("userid").ToString()';
+                Acc_VoucherMain.PrdUnitId = $("#PrdUnitId").val();
+
+
+                ////if multidebit credit is not active then default payment Head
+                ///isMultiCurrency      ,isMultiDebitCredit,isVoucherDistributionEntry, isChequeDetails
+                if (isMultiDebitCredit == false) {
+                    //if ($('h2').text() == "Voucher Edit") {
+                    Acc_VoucherSub.VoucherId = $('#VoucherId').val() || 0;
+                    //}
+                    //else {
+                    //    Acc_VoucherSub.VoucherId = 0;
+                    //}
+
+                    Acc_VoucherSub.VoucherSubId = $("#VoucherSubId").val();
+                    Acc_VoucherSub.AccId = $("#AccountMain").val();
+                    Acc_VoucherSub.CurrencyId = '@HttpContextAccessor.HttpContext.Session.GetInt32("defaultcurrencyid").ToString()';
+                    Acc_VoucherSub.CurrencyForeignId = $("#CountryIdVoucher").val();///countryid foreign
+                    Acc_VoucherSub.SRowNo = -1; //rowno
+                    Acc_VoucherSub.Note1 = $("#Referance").val();
+                    Acc_VoucherSub.Note2 = $("#ReferanceTwo").val();
+                    Acc_VoucherSub.SLNo = 0;
+
+
+
+                    if ($("#Acc_VoucherType").val() == 1 || $("#Acc_VoucherType").val() == 3) {
+                        Acc_VoucherSub.TKDebit = 0;//$("#VAmount").val();
+                        Acc_VoucherSub.TKCredit = $("#VAmount").val();
+                        Acc_VoucherSub.TKDebitLocal = 0;//$("#VAmountLocal").val();
+                        Acc_VoucherSub.TKCreditLocal = $("#VAmountLocal").val();
+
+                    }
+                    if ($("#Acc_VoucherType").val() == 2 || $("#Acc_VoucherType").val() == 4) {
+
+                        Acc_VoucherSub.TKDebit = $("#VAmount").val();
+                        Acc_VoucherSub.TKCredit = 0;
+                        Acc_VoucherSub.TKDebitLocal = $("#VAmountLocal").val();
+                        Acc_VoucherSub.TKCreditLocal = 0;
+
+                    }
+                    else {
+
+
+                        var totalamt = $("#Difference").val();
+                        if (totalamt > 0) {
+                            Acc_VoucherSub.TKDebit = 0;//$("#VAmount").val();
+                            Acc_VoucherSub.TKCredit = $("#VAmount").val();
+                            Acc_VoucherSub.TKDebitLocal = 0;//$("#VAmountLocal").val();
+                            Acc_VoucherSub.TKCreditLocal = $("#VAmountLocal").val();
+                        }
+                        else {
+
+
+
+                            Acc_VoucherSub.TKDebit = $("#VAmount").val();
+                            Acc_VoucherSub.TKCredit = 0;
+                            Acc_VoucherSub.TKDebitLocal = $("#VAmountLocal").val();
+                            Acc_VoucherSub.TKCreditLocal = 0;
+                        }
+
+
+                    }
+
+                    //Acc_VoucherSub.CurrencyRate = $("#ConvRateSelect").val();
+
+                    Acc_VoucherMain.VoucherSubs.push(Acc_VoucherSub);
+                    var Acc_VoucherSub = {
+                        "VoucherId": "", "VoucherSubId": "", "AccId": "", "EmpId": "", "CustomerId": "", "SupplierId": "", "SRowNo": "", "ccId": "", "CurrencyId": "", "CurrencyForeignId": "", "DebitAmount": "", "CreditAmount": "", "TKDebitLocal": "", "TKCreditLocal": "", "Note1": "", "Note2": "", "SLNo": "",
+                        "VoucherTranGroupIdRow": "",
+                        "VoucherSubSections": [],
+                        "VoucherSubChecnoes": []
+                    };
+
+
+                }
+
+
+
+
+
+                ////Voucher subs data
+                var oTablevouchrSub = $('#tblvouchersub').dataTable().fnGetData();
+                var htmlrows = $('#tblvouchersub').dataTable().fnGetNodes();
+
+
+                if (oTablevouchrSub.length == 0) {
+                    alert("Please Fill Necessary Data.");
+
+                    //StopSpinner("#voucherspinner");
+
+                    StopSpinner(".spinnerclass");
+
+
+                    //$(this).prop("disabled", false);
+                    //$(".spinnerclass").spinner({ disabled: false });
+                    //$('.spinnerclass').removeAttr('disabled');
+                    //$('#btnvoucher').prop("disabled", false);
+
+                    //$("#btnvoucher").removeAttr('disabled');
+                    //$("#btnvoucher").removeClass("disabled");
+                    //$('.spinnerclass').removeAttr("disabled");
+                    //document.getElementById("btnvoucher").disabled = false;
+                    //////////document.getElementById('btnvoucher').removeAttribute('disabled');
+                    //////////setTimeout(_ => spinner.addClass('d-none'), 100)
+                    //$(".spinnerclass").spinner({ disabled: false });
+                    //alert('test');
+                    return false;
+
+
+                };
+
+
+                //var allData = table.columns().data();
+                //console.log(allData);
+
+                //var Groupdata = table.columns(['.Group']).data();
+                ////var oTablevouchrSubGroup = table.column('Group:name').data();
+
+                //console.log(Groupdata);
+
+                //alert(allData);
+
+
+
+                //var testdata = tblVouchersub.columns(['.accname']).data();
+                //var table = $('#tblvouchersub').dataTable();
+                //console.log(testdata);
+
+
+
+                //var data_VoucherId = tblVouchersub.column('VoucherId:name').data();
+                var data_VoucherSubId = tblVouchersub.column('VoucherSubId:name').data();
+                var data_AccId = tblVouchersub.column('AccId:name').data();
+
+                var data_EmpId = tblVouchersub.column('EmpId:name').data();
+
+                //alert(data_EmpId);
+
+
+                var data_CustomerId = tblVouchersub.column('CustomerId:name').data();
+                //alert(data_CustomerId);
+
+
+
+                var data_SupplierId = tblVouchersub.column('SupplierId:name').data();
+
+                var data_VoucherTranGroupIdRow = tblVouchersub.column('VoucherTranGroupIdRow:name').data();
+
+
+                //alert(data_SupplierId);
+
+
+
+
+                var data_CurrencyId = tblVouchersub.column('CurrencyId:name').data();
+                var data_CurrencyForeignId = tblVouchersub.column('CurrencyForeignId:name').data();
+
+                var data_Note1 = tblVouchersub.column('Note1:name').data();
+                var data_Note2 = tblVouchersub.column('Note2:name').data();
+
+                var data_TKDebit = tblVouchersub.column('TKDebit:name').data();
+                var data_TKCredit = tblVouchersub.column('TKCredit:name').data();
+
+                var data_CurrencyRate = tblVouchersub.column('CurrencyRate:name').data();
+
+                var data_TKDebitLocal = tblVouchersub.column('TKDebitLocal:name').data();
+                var data_TKCreditLocal = tblVouchersub.column('TKCreditLocal:name').data();
+
+                var data_CCId = tblVouchersub.column('CCId:name').data();
+
+                //alert(data_CCId);
+                var data_SLNo = tblVouchersub.column('SLNo:name').data();
+
+
+                //console.log(data_SLNo);
+
+
+
+
+
+
+
+
+                for (var i = 0; i < oTablevouchrSub.length; i++) {
+
+                    // IF This view is for edit then it will read VoucherId from Hidden field
+                    //if ($('h2').text() == "Voucher Edit") {
+                    Acc_VoucherSub.VoucherId = $('#VoucherId').val() || 0;
+                    //}
+                    //else
+                    //{
+                    //    Acc_VoucherSub.VoucherId = 0;
+                    //}
+
+                    Acc_VoucherSub.VoucherSubId = data_VoucherSubId[i];//oTablevouchrSub[i][1];
+                    Acc_VoucherSub.AccId = data_AccId[i];//oTablevouchrSub[i][2];
+                    //Acc_VoucherSub.EmpId = data_EmpId[i] || 0;//oTablevouchrSub[i][2];
+                    //alert(Acc_VoucherSub.EmpId);
+
+                    //Acc_VoucherSub.CustomerId = data_CustomerId[i] || 0;//oTablevouchrSub[i][2];
+                    //alert(Acc_VoucherSub.CustomerId);
+
+                    //Acc_VoucherSub.SupplierId = data_SupplierId[i] || 0;//oTablevouchrSub[i][2];
+                    //alert(Acc_VoucherSub.SupplierId);
+
+
+
+
+                    if (data_EmpId[i] == null || data_EmpId[i] == "0") {
+
+                    }
+                    else {
+                        Acc_VoucherSub.EmpId = data_EmpId[i];//oTablevouchrSub[i][2];
+                    }
+
+
+                    //alert(Acc_VoucherSub.EmpId);
+
+
+                    if (data_CustomerId[i] == null || data_CustomerId[i] == "0") {
+
+                    }
+                    else {
+                        Acc_VoucherSub.CustomerId = data_CustomerId[i];//oTablevouchrSub[i][2];
+                    }
+                    //alert(Acc_VoucherSub.CustomerId);
+
+
+                    if (data_SupplierId[i] == null || data_SupplierId[i] == "0") {
+                        // alert('null found');
+                    }
+                    else {
+                        Acc_VoucherSub.SupplierId = data_SupplierId[i];//oTablevouchrSub[i][2];
+                    }
+                    //alert(Acc_VoucherSub.SupplierId);
+
+                    if (data_VoucherTranGroupIdRow[i] == null || data_VoucherTranGroupIdRow[i] == "0") {
+                        // alert('null found');
+                    }
+                    else {
+                        Acc_VoucherSub.VoucherTranGroupIdRow = data_VoucherTranGroupIdRow[i];//oTablevouchrSub[i][2];
+                    }
+
+
+
+                    Acc_VoucherSub.CurrencyId = data_CurrencyId[i];
+                    Acc_VoucherSub.CurrencyForeignId = data_CurrencyForeignId[i];//oTablevouchrSub[i][4];///countryid foreign
+                    Acc_VoucherSub.SRowNo = i + 1; //rowno //oTablevouchrSub[i][5];
+                    Acc_VoucherSub.Note1 = data_Note1[i];//oTablevouchrSub[i][9];
+                    Acc_VoucherSub.Note2 = data_Note2[i];//oTablevouchrSub[i][10];
+
+                    //alert(oTablevouchrSub[i][9]);
+                    //alert(Acc_VoucherSub.Note1);
+                    Acc_VoucherSub.TKDebit = data_TKDebit[i];//oTablevouchrSub[i][11];
+                    Acc_VoucherSub.TKCredit = data_TKCredit[i];//oTablevouchrSub[i][12];
+
+                    Acc_VoucherSub.TKDebitLocal = data_TKDebitLocal[i];//oTablevouchrSub[i][11];
+                    Acc_VoucherSub.TKCreditLocal = data_TKCreditLocal[i];//oTablevouchrSub[i][12];
+                    //alert('found');
+                    Acc_VoucherSub.CurrencyRate = data_CurrencyRate[i];//oTablevouchrSub[i][14];
+                    Acc_VoucherSub.ccId = 0;//data_CCId[i];//oTablevouchrSub[i][14];
+                    //alert(data_CCId[i]);
+                    //Acc_VoucherSub.SLNo = data_SLNo[i];
+
+                    //alert(Acc_VoucherSub.SLNo);
+                    if (isMultiCurrency == true) {
+                        Acc_VoucherSub.SLNo = htmlrows[i].cells[16].children[0].value;
+                    }
+                    else {
+                        Acc_VoucherSub.SLNo = htmlrows[i].cells[11].children[0].value;
+                    }
+
+
+                    //Acc_VoucherSub.TKDebitLocal = oTablevouchrSub[i][15];
+                    //Acc_VoucherSub.TKCreditLocal = oTablevouchrSub[i][16];
+
+
+
+
+                    var oTablesubsection = $('#tblvouchersubsection').dataTable().fnGetData();
+                    for (var ii = 0; ii < oTablesubsection.length; ii++) {
+
+                        //alert($('h2').text());
+                        //alert(oTablesubsection[ii][2]);
+                        ///need to check it from here
+
+                        if (Acc_VoucherSub.AccId == oTablesubsection[ii][2]) {
+
+                            // IF This view is for edit then it will read SalesId from Hidden field
+                            //if ($('h2').text() == "Voucher Edit") {
+                            Acc_VoucherSubSection.VoucherId = $('#VoucherId').val() || 0;
+                            //alert('test');
+                            //alert(Vouchersub.TermsId);
+                            //}
+                            //else {
+                            //    Acc_VoucherSubSection.VoucherId = 0;
+                            //}
+
+                            //Serialsub.VoucherId = oTableSerial[ii][0];
+                            //Serialsub.VoucherSubId = oTableSerial[ii][1];
+
+                            Acc_VoucherSubSection.VoucherSubId = oTablesubsection[ii][1];
+                            Acc_VoucherSubSection.AccId = oTablesubsection[ii][2];
+
+                            Acc_VoucherSubSection.SRowNo = oTablesubsection[ii][3];
+                            Acc_VoucherSubSection.RowNoSSec = ii;
+
+                            Acc_VoucherSubSection.SubSectId = oTablesubsection[ii][4];
+                            Acc_VoucherSubSection.Note1 = oTablesubsection[ii][6];
+                            Acc_VoucherSubSection.Note2 = oTablesubsection[ii][7];
+                            Acc_VoucherSubSection.Amount = oTablesubsection[ii][8];
+
+                            // adding to SalesMain.SalesSub List Item
+                            //alert('oknow');
+                            Acc_VoucherSub.VoucherSubSections.push(Acc_VoucherSubSection);
+                            //alert('Acc_VoucherSub');
+
+                            Acc_VoucherSubSection = { "VoucherId": "", "VoucherSubId": "", "AccId": "", "RowNoSSec": "", "SRowNo": "", "SubSectId": "", "Note1": "", "Note2": "", "Amount": "" };
+
+                        }
+                        else {
+
+                        }
+
+                    }
+                    //console.log(Acc_VoucherSub.VoucherSubSections);
+
+                    //alert('check');
+
+
+                    var oTablesubcheckno = $('#tblvouchersubcheckno').dataTable().fnGetData();
+                    for (var ii = 0; ii < oTablesubcheckno.length; ii++) {
+
+                        //alert($('h2').text());
+                        ///need to check it from here
+
+
+                        if (Acc_VoucherSub.AccId == oTablesubcheckno[ii][2]) {
+
+                            // IF This view is for edit then it will read SalesId from Hidden field
+                            //if ($('h2').text() == "Voucher Edit") {
+                            VoucherCheckNo.VoucherId = $('#VoucherId').val() || 0;
+                            //alert('test');
+                            //alert(Vouchersub.TermsId);
+                            //}
+                            //else {
+                            //    VoucherCheckNo.VoucherId = 0;
+                            //}
+
+                            //Serialsub.VoucherId = oTableSerial[ii][0];
+                            //Serialsub.VoucherSubId = oTableSerial[ii][1];
+
+                            //VoucherCheckNo.VoucherSubId = oTablesubsection[ii][1];
+                            //VoucherCheckNo.AccId = oTablesubsection[ii][2];
+                            //VoucherCheckNo.RowNoChk = ii;
+                            //VoucherCheckNo.SRowNo = oTablesubsection[ii][3];
+
+
+                            VoucherCheckNo.VoucherSubId = oTablesubcheckno[ii][1];
+                            VoucherCheckNo.AccId = oTablesubcheckno[ii][2];
+                            VoucherCheckNo.RowNoChk = ii;
+                            VoucherCheckNo.SRowNo = oTablesubcheckno[ii][3];
+
+                            VoucherCheckNo.ChkNo = oTablesubcheckno[ii][4];
+                            VoucherCheckNo.dtChk = oTablesubcheckno[ii][5];
+                            VoucherCheckNo.dtChkTo = oTablesubcheckno[ii][6];
+
+                            VoucherCheckNo.Remarks = oTablesubcheckno[ii][7];
+                            VoucherCheckNo.Amount = oTablesubcheckno[ii][8];
+
+                            VoucherCheckNo.dtChkClear = oTablesubcheckno[ii][9];
+                            VoucherCheckNo.isClear = oTablesubcheckno[ii][10];
+                            VoucherCheckNo.InterestRate = oTablesubcheckno[ii][11];
+
+                            // adding to SalesMain.SalesSub List Item
+                            Acc_VoucherSub.VoucherSubChecnoes.push(VoucherCheckNo);
+
+
+
+                            VoucherCheckNo = { "VoucherId": "", "VoucherSubId": "", "AccId": "", "ChkNo": "", "RowNoChk": "", "SRowNo": "", "dtChk": "", "dtChkTo": "", "Remarks": "", "Amount": "", "dtChkClear": "", "isClear": "", "InterestRate": "" };
+
+                            //alert('vouchercheckno added');
+                            //console.log(Acc_VoucherSub.VoucherCheckNos);
+                        }
+                        else {
+
+                        }
+
+                    }
+
+
+                    // adding to Acc_VoucherMain.Acc_VoucherSub List Item
+                    Acc_VoucherMain.VoucherSubs.push(Acc_VoucherSub);
+                    var Acc_VoucherSub = {
+                        "VoucherId": "", "VoucherSubId": "", "AccId": "", "EmpId": "", "CustomerId": "", "SupplierId": "", "SRowNo": "", "ccId": "", "CurrencyId": "", "CurrencyForeignId": "", "DebitAmount": "", "CreditAmount": "", "TKDebitLocal": "", "TKCreditLocal": "", "Note1": "", "Note2": "",
+                        "VoucherTranGroupIdRow": "",
+                        "VoucherSubSections": [],
+                        "VoucherSubChecnoes": []
+                    };
+
+
+
+
+                }
+
+                console.log(Acc_VoucherMain);
+                //alert('wait');
+
+                //var n = $(Acc_VoucherMain).length;
+                //alert(n);
+
+                //var model = {acc_voucherMain: Acc_VoucherMain};
+                var vouchertype = '@HttpContextAccessor.HttpContext.Session.GetString("vouchertype").ToString()';
+                $.ajax({
+                    //url: '/Voucher/Create',
+                    //url: '@Url.Action("Create", "Acc_Voucher")',
+                    //data: model,
+                    //type: 'POST',
+                    //contentType: 'application/json;',
+                    // dataType: 'json',
+
+                    type: 'POST',
+                    url: '@Url.Action("CreateAccVoucher", "Accounts")',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    dataType: 'json',
+                    async: 'false',
+                    data: { acc_voucherMain: Acc_VoucherMain },
+                    success: function (result) {
+
+                        if (result.Success == "1") {
+                            if (Acc_VoucherMain.VoucherId > 0) {
+                                 toastr.warning('Data Update Successfully');
+                                 window.setTimeout(function () {
+                                     window.location.href = '@Url.Action("AccVoucherList", "Accounts")';
+                                }, 500);
+                            }
+                            else {
+                                toastr.success('Data Save Successfully');
+                                 window.setTimeout(function () {
+                                     window.location.href = '@Url.Action("CreateAccVoucher", "Accounts")?Type=' + vouchertype;
+                                }, 500);
+                            }
+                        }
+                        else {
+                            alert(result.ex);
+                        }
+                        StopSpinner(".spinnerclass");
+                    }, error: function () {
+                        StopSpinner(".spinnerclass");
+                    }
+                });
+
+                //StopSpinner(".spinnerclass");
+
+            @*var model = { Acc_VoucherMain};
+
+            var url = "@Url.Action("Create","Acc_Voucher")";
+
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(model),
+                url: url,
+                contentType: "application/json"
+            }).done(function (res) {
+                //$("#SomeDivToShowTheResult").html(res);
+            });*@
+
+
+                @*var url = "@Url.Action("Create","Acc_Voucher")";
+            @*
+
+
+            $.post(url, model, function(res){
+               //res contains the markup returned by the partial view
+               //You probably want to set that to some Div.
+               //$("#SomeDivToShowTheResult").html(res);
+            });*@
+
+
+                //$.ajax('/Acc_Voucher/Create', {
+                //type: 'POST',  // http method
+                //    data: { acc_voucherMain: Acc_VoucherMain },  // data to submit
+                //    success: function (data, status, xhr) {
+                //        //$('p').append('status: ' + status + ', data: ' + data);
+                //        alert('Success');
+                //    },
+                //    error: function (jqXhr, textStatus, errorMessage) {
+                //            $('p').append('Error' + errorMessage);
+                //    }
+                //});
+
+
+
+        @*var options = {};
+            //options.url = '@Url.Action("Create", "MenuPermission")';
+            options.url= '@Url.Action("Create", "Acc_Voucher")';
+                options.type = "POST";
+                options.dataType = "json";
+                options.data = { Acc_VoucherMain:Acc_VoucherMain };
+                //console.log(Acc_VoucherMain);
+
+                options.success =  function (result) {
+
+                    alert('Data Save Successfully');
+
+                if (result.Success == "1") {
+                    //window.location.href = "/Invoice/index";
+
+                     window.setTimeout(function () {
+
+                            // Move to a new location or you can do something else
+                             window.location.href = '@Url.Action("Index", "Acc_Voucher")';
+                        }, 500);
+
+
+                }
+                else {
+                    alert(result.ex);
+                }
+                };
+                $.ajax(options);*@
+
+
+
+                //};
+
+            });
+
+        });
+
+
+
+
+        var selectedItem;
+
+
+        $('#tblvouchersub tbody').on('click', '.dlttrash', function () {
+            var table = $('#tblvouchersub').DataTable();
+
+            table.row($(this).parents('tr')).remove().draw();
+            var x = "500.00";
+            var y = $('#tblvouchersub').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            $("html, body").animate({ scrollTop: z }, 500);
+
+            TotalAmount();
+            //multInputs();
+        });
+
+        $('#tblvouchersubsection tbody').on('click', '.addsubsection', function () {
+            var tableasdf = $('#tblvouchersubsection').DataTable();
+            //row = tableasdf.row($(this).parents('tr')).index();
+            //col = tableasdf.row($(this).parents('td')).index();
+            //console.log('column: ' + tableasdf.cell(this).index().column);
+            //alert('row enter');
+            row = tableasdf.row(this).index();
+
+            //alert('column enter');
+
+            col = tableasdf.cell(this).index().column;
+
+            //alert(row);
+            //alert(col);
+
+            //$('#tblvouchersubsection tbody').on('click', 'tr', function () {
+            //    var rowData = tableasdf.row(this).data();
+            //    console.log(rowData);
+            //    // ... do something with `rowData`
+            //});
+            //col = $(this).parent().children().index($(this));
+            //row = $(this).parent().parent().children().index($(this).parent());
+            //alert('Row: ' + row + ', Column: ' + col);
+            //var table = $('#tblvouchersub').DataTable();
+
+            ////table.row($(this).parents('tr')).remove().draw();
+            //var x = "500.00";
+            //var y = $('#tblvouchersub').height();
+            //var z = parseFloat(x) + parseFloat(y);
+
+            //$("html, body").animate({ scrollTop: z }, 500);
+            $('#btnaddsubsection').click();
+
+            //multInputs();
+        });
+
+        $('#tblvouchersubsection tbody').on('click', '.dlttrashsubsection', function () {
+            var table = $('#tblvouchersubsection').DataTable();
+
+            table.row($(this).parents('tr')).remove().draw();
+            var x = "500.00";
+            var y = $('#tblvouchersubsection').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            $("html, body").animate({ scrollTop: z }, 500);
+
+
+            //multInputs();
+        });
+
+        $('#tblvouchersubcheckno tbody').on('click', '.dlttrashsubcheckno', function () {
+            var table = $('#tblvouchersubcheckno').DataTable();
+
+            table.row($(this).parents('tr')).remove().draw();
+            var x = "500.00";
+            var y = $('#tblvouchersubcheckno').height();
+            var z = parseFloat(x) + parseFloat(y);
+            myCallbackFunction();
+            $("html, body").animate({ scrollTop: z }, 500);
+
+            myCallbackFunction();
+
+            //multInputs();
+        });
+
+
+        //function TotalAmountCheck() {
+
+        //    var ttlchkamount = 0;
+
+
+        //    $("tr.txtVoucherSubCheckNo").each(function () {
+
+
+        //        var $valcheckamount = $('.chAmount', this).text();
+
+        //        ttlchkamount += parseFloat($valcheckamount);
+        //    });
+
+        //    console.log(ttlchkamount);
+
+        //    $(".chqtotalamount").text(ttlchkamount.toLocaleString(2));
+
+        //}
+
+
+        function TotalAmount() {
+
+            var ttlcountqty = 0;
+            var ttldebit = 0;
+            var ttlcredit = 0;
+            var tkdebitlocal = 0;
+            var tkcreditlocal = 0;
+            //var difference = 0;
+            //var $total = 0;
+            // for each row:
+            $("tr.txtVoucherSub").each(function () {
+                // get the values from this row:
+                ttlcountqty++;
+                var $valdebit = $('.debit', this).text();
+                var $valcredit = $('.credit', this).text();
+                var $valdebitlocal = $('.debitlocal', this).text();
+                var $valcreditlocal = $('.creditlocal', this).text();
+
+                //$('.amount', this).text($total);
+                //$('.amount', this).val($total);
+                //mult += $total;
+                //ttlcountqty += parseFloat(1);
+                //ttlunitprice += parseFloat($val2);
+
+                ttldebit += parseFloat($valdebit);
+                ttlcredit += parseFloat($valcredit);
+                tkdebitlocal += parseFloat($valdebitlocal);
+                tkcreditlocal += parseFloat($valcreditlocal);
+            });
+
+            //console.log(ttldebit);
+            //console.log(ttlcredit);
+
+            //$(".subtotalamount").text(mult);
+
+            $(".vouchersubtotaldebit").text(ttldebit.toLocaleString(4));
+            $(".vouchersubtotalcredit").text(ttlcredit.toLocaleString(4));
+            $(".vouchersubtotaldebitlocal").text(tkdebitlocal.toFixed(4));//---fahad
+            $(".vouchersubtotalcreditlocal").text(tkcreditlocal.toFixed(4));
+            ////need to check if they give decimal amount or decimal amount match problem ahsan call
+
+            $("#ttlCountQty").val(ttlcountqty);//---fahad
+            $("#ttlCountQty").text("");
+            $("#ttlCountQty").append(ttlcountqty);
+
+            //alert(ttlqty);
+            if ($("#Acc_VoucherType").val() == 1 || $("#Acc_VoucherType").val() == 3) {
+                $("#VAmount").val(ttldebit.toFixed(2));//---fahad
+
+                if (isMultiCurrency == true) {
+                    $("#VAmountLocal").val(tkdebitlocal.toFixed(2));//---fahad
+                }
+                else {
+                    $("#VAmountLocal").val(ttldebit.toFixed(2));
+                }
+
+
+            }
+            else if ($("#Acc_VoucherType").val() == 2 || $("#Acc_VoucherType").val() == 4) {
+                $("#VAmount").val(ttlcredit.toFixed(2));//---fahad
+
+
+                if (isMultiCurrency == true) {
+                    $("#VAmountLocal").val(tkcreditlocal.toFixed(2));//---fahad
+                }
+                else {
+                    $("#VAmountLocal").val(ttlcredit.toFixed(2));
+                }
+
+            }
+            else {
+                if (ttldebit.toFixed(2) > 0) {
+                    $("#VAmount").val(ttldebit.toFixed(2));//---fahad
+
+                    if (isMultiCurrency == true) {
+                        $("#VAmountLocal").val(tkdebitlocal.toFixed(2));//---fahad
+                    }
+                    else {
+                        $("#VAmountLocal").val(ttldebit.toFixed(2));
+                    }
+
+                }
+                else {
+                    $("#VAmount").val(ttlcredit.toFixed(2));//---fahad
+
+                    if (isMultiCurrency == true) {
+                        $("#VAmountLocal").val(ttlcredit.toFixed(2));//---fahad
+                    }
+                    else {
+                        $("#VAmountLocal").val(ttlcredit.toFixed(2));
+                    }
+
+                }
+                //console.log(ttldebit.toFixed(2));
+                //console.log(ttlcredit.toFixed(2));
+
+            };
+            //$("#VAmount").text(ttldebit + ttlcredit);//---fahad
+
+            //$("#VAmountLocal").text(tkdebitlocal);//---fahad
+
+            //alert(ttldebit - ttlcredit);
+
+            //$("#Difference").val(ttldebit.toFixed(2) - ttlcredit.toFixed(2));//---fahad
+            var difference = tkdebitlocal.toFixed(4) - tkcreditlocal.toFixed(4);
+
+            $("#Difference").val(difference.toFixed(2));//---fahad
+
+
+            //alert($("#Difference").val());
+
+
+            //alert($("#VAmount").val());
+            //alert($("#VAmountLocal").val());
+
+
+            //var currencyrate = $('#CurrencyRate').val();
+            ////var netamountbdt = $('#mainnetamountbdt').val();
+
+
+
+
+            //var zz = ((parseFloat(y)) * (parseFloat(currencyrate)));
+
+            ////alert(currencyrate);
+            ////alert(zz);
+
+            //$('#NetAmountBDT').val(zz);
+
+
+
+
+        }
+
+        $("#voucherDelete").click(function () {
+            ConfirmDialogDelete("Are you sure ?");
+
+
+        });
+
+        function Voucher_delete() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+             var voucherid = $("#VoucherId").val();
+            //alert(VoucherId);
+             $.ajax({
+                 @*url: '@Url.Action("Delete", "Acc_Voucher")',
+                 data: JSON.stringify({ id: id }),
+                type: 'POST',
+                contentType:false,
+                dataType: false,*@
+
+                 type: 'POST',
+                 headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                url: '@Url.Action("DeleteAccVoucher", "Accounts")',
+                dataType: 'json',
+                async: 'true',
+                data: { id: voucherid },
+
+
+                 //async: 'true',
+                @*url: '@Url.Action("Delete", "Acc_Voucher")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: VoucherId }), //use id here
+                //data: JSON.stringify(Acc_VoucherMain),
+                type: 'POST',
+                async: false,
+
+                dataType: 'json',*@
+                success: function (result) {
+
+                    if (result.Success == "1") {
+
+                        toastr.error('Data Delete Successfully');
+                        window.setTimeout(function () {
+                               window.location.href = '@Url.Action("AccVoucherList", "Accounts")';
+                        }, 500);
+
+
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+
+                    //StopSpinner(".spinnerclass");
+                 },
+                 error: function () {
+                     //StopSpinner(".spinnerclass");
+                 }
+
+            });
+        }
+        var tblsubsectionsearch;
+
+        tblsubsectionsearch = $('#tblsubsectionsearch').DataTable({
+            "aoColumns": [
+                { "sClass": "subsectid", "visible": true },
+                { "sClass": "subsectname", "visible": true }
+            ],
+            "paging": true,
+            // "ordering": true,
+            "searching": true,
+            "language": {
+
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+            "info": false,
+            "iDisplayLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            //"oLanguage": { "sZeroRecords": "", "sEmptyTable": "" },
+            dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"><"col-sm-4"p>>'
+        });
+
+        function myFunctionSearch() {
+
+            $('#myInputSearch').keyup(function () {
+                tblsubsectionsearch.search($(this).val()).draw();
+            })
+
+
+        }
+
+        $('#tblsubsectionsearch tbody').on('click', 'tr', function () {
+
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                //alert('working');
+            }
+            else {
+                tblsubsectionsearch.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+
+            var data = $('#tblsubsectionsearch').DataTable().row('.selected').data();
+            //console.log(data);
+            var selectedsubsectid = data[0];
+            var selectedsubsectname = data[1];
+
+
+            var oTable = $('#tblvouchersubsection').dataTable();//--fahad
+            oTable.fnUpdate(selectedsubsectname, row, col);
+            oTable.fnUpdate(selectedsubsectid, row, col-1);
+            //console.log(oTable.fnGetData());
+
+            //var cell = tblvouchersubsection.cell(row, col);
+            //cell.data(selectedsubsectname);
+            //var cell = tblvouchersubsection.cell(row, col - 1);
+            //cell.data(selectedsubsectid);
+
+
+            //var ids = $.map(tblsubsectionsearch.rows('.selected').data(), function (item) {
+            //    return item[0];
+            //});
+            //console.log(ids)
+            //alert(tblsubsectionsearch.rows('.selected').data().length + ' row(s) selected');
+        });
+
+        //$("#Account").on('change', function () {
+        //    //alert('Accuont Hit');
+
+
+        //});
+
+        $('#Account').select2({})
+        .on("select2:select", function (e) {
+            AccountInfo();
+
+
+            var isDisabledDebit = $('#DebitAmount').prop('disabled');
+            var isDisabledCredit = $('#CreditAmount').prop('disabled');
+
+
+            //alert(isDisabledDebit);
+            //alert(isDisabledCredit);
+
+
+            if (isDisabledDebit = false) {
+                $('#CreditAmount').focus();
+            }
+
+            if (isDisabledDebit = false) {
+                $('#DebitAmount').focus();
+            }
+
+            //alert('focus check.');
+
+
+        });
+
+
+        $("input[type=text]").focus(function () {
+            $(this).select();
+        });
+
+
+        function AccountInfo() {
+
+            var MyAppUrlSettings = {
+                MyUsefulUrl: '@Url.Action("AccountInfo1", "Accounts")'
+            }
+            $.ajax({
+                type: 'POST',
+                url: MyAppUrlSettings.MyUsefulUrl,
+                dataType: 'json',
+                async: false,
+                data: { id: $("#Account").val() },
+                //headers: {
+                //    "__RequestVerificationToken": formForgeryToken
+                //},
+                success: function (accounts) {
+                //console.log(accounts);
+
+               // alert(accounts.ParentID);
+
+                //$("#Qty").val(1).show();
+
+                $('#DebitAmount').val(0);
+                $('#CreditAmount').val(0);
+                $('#TKDebitLocal').val(0);
+                $('#TKCreditLocal').val(0);
+                   // $('#ConvRateSelect').val(1);
+
+                    IsBankItem = accounts.IsBankItem;
+                    IsChkRef = accounts.IsChkRef;
+
+                    //alert(accounts.ParentID);
+
+                    //$("#AccountParent").val(`${accounts.ParentId}`).change();
+                    $("#AccountParent").val(`${accounts.AccountParent}`);
+                    //alert(accounts.CurrencyId);
+                    $("#CountryId").val(`${accounts.CurrencyId}`).change();///////////////fahad currency
+                    //$("#CountryId").val(defaultcurrencyid.toString()).change();
+                    //$("#AccountParent").change();
+                    if ($("#CountryId").val() == 18) {
+                        $('#ConvRateSelect').val(1);
+                        ////$('#ConvRateSelect').attr("disabled", "disabled");
+                    }
+                    else {
+                        //$('#ConvRateSelect').removeAttr("disabled");
+                        //alert($('#ConvRate').val());
+                        $('#ConvRateSelect').val($('#ConvRate').val());
+                        ////$('#ConvRateSelect').attr("disabled", "disabled");
+
+
+                    }
+                    //console.log(isMultiDebitCredit);
+                    //console.log($("#Acc_VoucherType").val());
+                    //console.log(accounts.IsCashItem).val();
+                    //console.log(accounts.IsBankItem).val();
+                    //console.log(accounts.IsCashItem + accounts.IsBankItem);
+                    //alert('Wait and check.');
+
+                    if ($("#Acc_VoucherType").val() == 1 || $("#Acc_VoucherType").val() == 3) {///cash// bank payment /// multi debit credit supported
+
+                        if (isMultiDebitCredit == true) {
+
+
+                            if (accounts.IsCashItem + accounts.IsBankItem == 1) {
+
+                                //alert('found');
+
+                                $('#DebitAmount').attr("disabled", "disabled");
+                                $('#CreditAmount').removeAttr("disabled");
+                                $('#CreditAmount').focus();
+
+
+
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                                //$('#TKCreditLocal').removeAttr("disabled");
+                            }
+                            else if (accounts.IsCashItem + accounts.IsBankItem == 0) {
+                                //$('#CreditAmount').attr("disabled", "disabled");
+                                $('#DebitAmount').removeAttr("disabled");
+                                $('#CreditAmount').removeAttr("disabled");
+
+                                //$('#CreditAmount').attr("disabled", "disabled");
+                                $('#DebitAmount').removeAttr("disabled");
+                                $('#DebitAmount').focus();
+
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+                                //$('#TKDebitLocal').removeAttr("disabled");
+                            }
+                        }
+                        else {      ///cash // bank payment /// Only Debit / Expense Supported
+                            if (accounts.IsCashItem + accounts.IsBankItem == 1) {
+                                $('#DebitAmount').attr("disabled", "disabled");
+                                $('#CreditAmount').removeAttr("disabled");
+                                $('#CreditAmount').focus();
+
+
+
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+                            }
+                            else if (accounts.IsCashItem + accounts.IsBankItem == 0) {
+                                $('#CreditAmount').attr("disabled", "disabled");
+                                $('#DebitAmount').removeAttr("disabled");
+                                $('#DebitAmount').focus();
+
+
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                            }
+                        }
+                    }
+
+                    else if ($("#Acc_VoucherType").val() == 2 || $("#Acc_VoucherType").val() == 4) {
+                        if (isMultiDebitCredit == true) {
+                            //alert($("#Acc_VoucherType").val());
+                            if (accounts.IsCashItem + accounts.IsBankItem == 0) {
+                                $('#DebitAmount').attr("disabled", "disabled");
+                                $('#CreditAmount').removeAttr("disabled");
+                                $('#CreditAmount').focus();
+
+
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                                //$('#TKCreditLocal').removeAttr("disabled");
+                            }
+                            else if (accounts.IsCashItem + accounts.IsBankItem == 1) {
+                                //alert(accounts.IsCashItem);
+                                //alert('enter for cash receipt');
+                                $('#CreditAmount').attr("disabled", "disabled");
+                                $('#DebitAmount').removeAttr("disabled");
+                                $('#DebitAmount').focus();
+
+
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+                                //$('#TKDebitLocal').removeAttr("disabled");
+                            }
+                        }
+                        else {      ///cash // bank payment /// Only Debit / Expense Supported
+                            if (accounts.IsCashItem + accounts.IsBankItem == 0) {
+                                $('#DebitAmount').attr("disabled", "disabled");
+                                $('#CreditAmount').removeAttr("disabled");
+                                $('#CreditAmount').focus();
+
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+
+                            }
+                            else if (accounts.IsCashItem + accounts.IsBankItem == 1) {
+
+                                alert('cash recept');
+                                $('#CreditAmount').attr("disabled", "disabled");
+                                $('#DebitAmount').removeAttr("disabled");
+                                $('#DebitAmount').focus();
+
+                                $('#TKCreditLocal').attr("disabled", "disabled");
+                                $('#TKDebitLocal').attr("disabled", "disabled");
+                            }
+                        }
+                    }
+                    else {
+                        if (isMultiDebitCredit == true) {
+
+                            $('#DebitAmount').removeAttr("disabled");
+                            $('#CreditAmount').removeAttr("disabled");
+
+                            $('#TKDebitLocal').attr("disabled", "disabled");
+                            $('#TKCreditLocal').attr("disabled", "disabled");
+                        }
+                        else {      ///cash // bank payment /// Only Debit / Expense Supported
+                            $('#CreditAmount').removeAttr("disabled");
+                            $('#DebitAmount').removeAttr("disabled");
+
+                            $('#TKCreditLocal').attr("disabled", "disabled");
+                            $('#TKDebitLocal').attr("disabled", "disabled");
+                        }
+                    }
+                    //$("#UnitPrice").val(Productss.CostPrice).show();
+                    //$("#IndPrice").val(0);
+                    //singleInputs();
+
+
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+            return false;
+        };
+
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Dupliacte Found',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        OK: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        function ConfirmDialogDelete(message) {
+
+            StartSpinner(".spinnerclass");
+
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            Voucher_delete();
+                            StopSpinner(".spinnerclass");
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                            StopSpinner(".spinnerclass");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Dupliacte Found',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        OK: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        $('a.toggle-vis').on('click', function (e) {
+        e.preventDefault();
+
+            // Get the column API object
+            var column = tblVouchersub.column($(this).attr('data-column'));
+
+
+        // Toggle the visibility
+            column.visible(!column.visible());
+            tblVouchersub.draw;
+    } );
+
+    </script>
+
+}

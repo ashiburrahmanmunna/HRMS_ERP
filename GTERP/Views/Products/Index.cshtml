@@ -1,0 +1,574 @@
+﻿
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    /*    .select2-container {
+        width: calc(100% - 153px) !important;
+    }*/
+</style>
+
+
+<form action="" method="post">
+    <div class="row mb-2">
+        <div class="col-md-2 col-12">
+            @Html.ActionLink("Product Creation", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+        </div>
+        <div class="col-md-2 col-12 d-block mx-auto">
+            <h2 id="styletext">Product List</h2>
+        </div>
+
+        @*<div class="col-md-1 col-12 px-md-1">
+            <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('PrintAbsoluteItem')">Absolute Item</button>
+        </div>
+        <div class="col-md-1 col-12 px-md-1">
+            <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('PrintSlowMovingItem')">Slow Moving Item</button>
+        </div>
+        <div class="col-md-2 col-12 px-md-1">
+            <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('PrintYearlyInventoryReport')">Yearly Inventory Report</button>
+        </div>*@
+        <div class="col-md-3 col-12 pt-2">
+            <fieldset class="float-right">
+                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="card mb-2 p-2">
+        <div class="row">
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label>From Date</label>
+                        </span>
+                    </div>
+                    @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label>To Date </label>
+                        </span>
+                    </div>
+                    @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                </div>
+            </div>
+            <div class="col-md-1 col-12 px-md-1">
+                <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintProductList')">Master Item List</button>
+            </div>
+            <div class="col-md-1 col-12 px-md-1">
+                <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('PrintLedger')">Product Ledger</button>
+            </div>
+            @*<div class="col-md-1 col-12 px-md-1">
+            <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('KardexCard')">Kardex Card</button>
+        </div>*@
+            <div class="col-md-2 col-12 px-md-1">
+                <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('prdregistervalue')">Product Register With Value</button>
+            </div>
+            <div class="col-md-2 col-12 pl-md-1">
+                <button class="btn btn-sm btn-success mb-1 btn-block rounded-0 mt-md-1" type="button" onclick="ReportPrint('rptPrdAvgRateCalculation')">Product Qty & Rate Calculation</button>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend ">
+                        <span class="input-group-text">
+                            Product Main Group
+                        </span>
+                    </div>
+                    @Html.DropDownList("ProductMainGroupId", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Category
+                        </span>
+                    </div>
+                    @Html.DropDownList("CategoryId", null, "--Select From List--", htmlAttributes: new { @id = "CategoryId", @class = "form-control" })
+                </div>
+            </div>
+            @*<div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Inventory
+                        </span>
+                    </div>
+                    @Html.DropDownList("AccIdInventory", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>*@
+            <!--<div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Consumption
+                        </span>
+                    </div>-->
+                    @*@Html.DropDownList("SupplierList", ViewBag.SupplierList as List<SelectListItem>, "--All Supplier Data--", new { id = "SupplierList", @class = "form-control form-control-sm" })*@
+                    <!--@Html.DropDownList("AccIdConsumption", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>-->
+            @*<div class="col-md-2 col-12 mb-2">
+                <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintInventoryReport')">Inventory Report</button>
+            </div>*@
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Warehouse
+                        </span>
+                    </div>
+                    @Html.DropDownList("WarehouseId", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>
+
+
+
+        </div>
+        <hr />
+
+        <div id="finalpanel" class="p-2">
+            <div class="table-responsive">
+                <table id="tbllist" class="table tbllist table-striped table-bordered text-nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+
+            $('#CategoryId').select2({
+                theme: "bootstrap4",
+            });
+            $('#ProductMainGroupId').select2({
+                theme: "bootstrap4",
+            });
+            $('#WarehouseId').select2({
+                theme: "bootstrap4",
+            });
+            $('#AccIdInventory').select2({
+                theme: "bootstrap4",
+            });
+            $('#AccIdConsumption').select2({
+                theme: "bootstrap4",
+            });
+
+            //$("select").select2({
+            //    theme: "bootstrap4",
+            //});
+
+        //$('#tbllist tbody').on('click', 'tr', function () {
+        //    if ($(this).hasClass('selected')) {
+        //        $(this).removeClass('selected');
+        //    }
+        //    else {
+        //        peopleList.$('tr.selected').removeClass('selected');
+        //        $(this).addClass('selected');
+        //    }
+        //});
+        });
+//        function setSelect2ContainerWidth() {
+//    $( ".select2-container" ).each( function() {
+//        var $this = $( this ),
+//            inputGroup = $this.parents( ".input-group" ),
+//            inputGroupContainerWidth,
+//            inputGroupAddonWidth = 0;
+
+//        if ( inputGroup.length ) {
+//            inputGroupContainerWidth = inputGroup.parents( "[class^='col-']" ).width() || inputGroup.parents( ".form-group" ).width();
+
+//            $this.parents( ".input-group" ).find( ".input-group-addon, .input-group-btn" ).each( function() {
+//                inputGroupAddonWidth += $( this ).outerWidth();
+//            });
+
+//            $this.css({ width: inputGroupContainerWidth - inputGroupAddonWidth });
+//        }
+//    });
+//}
+
+//window.onresize = function( event ) {
+//    setSelect2ContainerWidth();
+//}
+
+//setSelect2ContainerWidth();
+        //var tablefy = $('#tbllist').DataTable();
+        //var oTableFY = $('#tbllist').dataTable();
+        //tablefy.$('tr').click(function () {
+        //    var selectedRow = oTableFY.fnGetData(this);
+        //    $(this).toggleClass('row_selected');
+        //    console.log(selectedRow[0]);
+
+
+        //});
+
+
+
+
+
+
+        var peopleList = $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "Products")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+                select: {
+                    style: 'single',
+                    selector: 'td:nth-child(1),td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(5),td:nth-child(6),td:nth-child(7),td:nth-child(8),td:nth-child(9),td:nth-child(10),td:nth-child(11),td:nth-child(12),td:nth-child(13)'
+                },
+                columns: [
+
+                    { "title": "ProductId", "data": "ProductId", "searchable": true, "visible": false },
+
+                    { "title": "ProducgGroupMain", "data": "ProducgGroupMain" },
+                    { "title": "ProductMainGroupCode", "data": "ProductMainGroupCode" },
+
+                    { "title": "CategoryName", "data": "CategoryName" },
+                    { "title": "Product", "data": "ProductName", "searchable": true },
+
+                    { "title": "Code", "data": "ProductCode", "searchable": true },
+                    { "title": "Barcode", "data": "ProductBarcode", "searchable": true },
+
+                    { "title": "Description", "data": "Description", "searchable": true },
+
+                    { "title": "Cost Price", "data": "CostPrice", "searchable": false },
+                    { "title": "Sale Price", "data": "SalePrice", "searchable": false },
+
+                    //{ "title": "Inv. Code", "data": "COAINV", "searchable": true },
+                    //{ "title": "Cons. Code", "data": "COACON", "searchable": true },
+                    { "title": "Avg.Rate", "data": "SingleCalculatedPrice", "searchable": false },
+
+
+
+                    {
+                        "title": "Folder", "data": "ImagePath", "searchable": false
+                        ,"render": function (data) {
+                            var image = new Image();
+                            if (data != null) {
+                               // console.log(data);
+
+
+                                    image.src = data;
+                                    if (image.width == 0) {
+
+                                        return null;//'<img src="/Content/Img/0.png" class="img-thumbnail" width="20px" >';
+                                    }
+                                    else {
+                                        return '<img src="' + data + '" class="img-thumbnail" width="80px">';
+                                    }
+
+                            }
+                            else {
+                                return '';//'<img src="/Content/Img/0.png" class="img-thumbnail" width="20px" >';
+                            }
+                        }
+                    },
+                    {
+                        "title": "DB Img", "data": "ProductImage", "searchable": false,
+                        render: function (data, type, row) {
+                            //console.log(data);
+                            if (data != null) {
+
+                                var imgBytes = data.toString().split(",");
+                                if (imgBytes != null) {
+                                    return '<img src="data:image/jpeg;base64,' + imgBytes + '" width="40px" height="40px">';
+                                }
+                                else {
+                                    return null;
+                                }
+                            } else {
+                                return null;
+                            }
+                        }
+                    },
+                    {
+                        "title": "Current Stock", "data": "WarehouseList", "searchable": false
+
+                        ,"render": function (data, type, row) {
+                            //console.log(data);
+                            if (data != null) {
+
+                                var output = "";
+                                var totalstock = 0;
+                                var count = 0;
+                                for (var i = 0; i < data.length; i++) {
+                                    output += data[i].WhShortName + ' : ' + data[i].CurrentStock;
+                                    totalstock = totalstock + data[i].CurrentStock
+                                    if (i < data.length - 1) {
+                                        output += ", ";
+                                    }
+                                    count++;
+                                };
+
+                                if (totalstock > 0) {
+                                    if (count > 1) {
+                                        output += ' TOTAL : ' + totalstock;
+                                    }
+                                };
+
+                                //console.log(output);
+                                //console.log(totalstock);
+
+                                return output;
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+
+                    },
+
+
+                    {
+                        "title": "Action",
+                        "data": "ProductId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "Products")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "Products")/' + data;
+                            //var myUrlprint = '@Url.Action("PrintLedger", "Products")/' + data + '?type=pdf';
+
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                            //+ '<span data-toggle="tooltip" title="Product Ledger"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                            //                        return '<a href=\"' + myUrl + '\" class=\"btn btn-default btn-sm\">Edit</a>';
+
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger mr-2',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+            "language": {
+                "processing": "processing... please wait",
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            }
+            });
+
+
+        function ReportPrint(btnvalue) {
+
+            //var tableproductid = $('#tbllist').DataTable();
+
+            var rows = peopleList.rows('.selected').data();
+            //console.log(rows);
+
+
+            console.log(rows.length);
+            console.log(rows);
+
+
+            var productidlist = [];
+            var pid = 0;
+
+            if (rows.length >  0) {
+               pid = rows[0]["ProductId"];
+            }
+            console.log(pid);
+
+            var doctype = "pdf";
+
+            var criteria = "DownloadReport";
+
+
+            ///ok code for array
+            //for (var i = 0; i < rows.length; i++) {
+
+            //    //var rowData = rows[i];
+            //    docid = rows[i]["ProductId"];
+            //    productidlist.push(docid);
+            //}
+
+            //console.log(productidlist);
+
+
+            var CategoryId = $('#CategoryId').val();
+            var ProductMainGroupId = $('#ProductMainGroupId').val();
+            var AccIdInventory = $('#AccIdInventory').val();
+            var AccIdConsumption = $('#AccIdConsumption').val();
+            var reporttype = $("input[name=RptType]:checked").val();
+            var WarehouseId = $('#WarehouseId').val();
+            //var ProductId = $("ProductId").val();
+            var FromDate = $(".FromDate").val();
+            var ToDate = $(".ToDate").val();
+
+
+            //var ProductId = 0;
+            //var rowsProductId = tableproductid.rows('.selected').data();
+            //if (rowsProductId.length > 0) {
+            //    console.log(rowsProductId[0][0]);
+            //    ProductId = rowsProductId[0][0];
+            //}
+
+          //  alert('Hit');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SetSessionProductReport", "Products")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, ProductMainGroupId: ProductMainGroupId, CategoryId: CategoryId, AccIdInventory: AccIdInventory, AccIdConsumption: AccIdConsumption, ProductId: pid, FromDate: FromDate, ToDate: ToDate, WarehouseId: WarehouseId },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+        }
+
+
+
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+
+        }
+
+
+    </script>
+
+
+}

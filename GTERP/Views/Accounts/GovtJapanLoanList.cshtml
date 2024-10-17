@@ -1,0 +1,366 @@
+﻿@model IEnumerable<GTERP.Models.Acc_GovtSchedule_JapanLoan>
+
+<body>
+
+    @using (Html.BeginForm())
+    {
+
+        <div class="container-fluid card">
+            <div class="row text-center my-2">
+                <div class="col-md-3 col-12">
+                    @Html.ActionLink("Japan Loan Schedule Entry", "CreateGovtJapanLoan", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <h2 id="styletext">Japan Loan Schedule List</h2>
+                </div>
+
+                <div class="col-md-6 col-12 text-right pt-2">
+                    @*<div class="panel-body">*@
+
+                    @*<fieldset>*@
+                    <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                    </fieldset>
+                    @*</div>*@
+
+
+                </div>
+
+                <div class="col-md-2 col-12">
+                </div>
+
+            </div>
+            <div class="row text-center my-2">
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date </span>
+                        </div>
+                        @*<input type="text" class="form-control text-center FromDate" placeholder="Select From Date" autocomplete="off" />*@
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date</span>
+                        </div>
+                        @*<input type="text" id="ToDate" class="form-control text-center ToDate" placeholder="Select To Date" autocomplete="off" />*@
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend ">
+                            <span class="input-group-text">
+                                Account`s Head
+                            </span>
+                        </div>
+                        @Html.DropDownList("AccId", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-1 col-12">
+                    <input type="submit" id="btnLoad" value="Load" class="btn btn-success btn-block rounded-0 my-2" />
+                </div>
+                <div class="col-md-1 col-12">
+                    <button class="btn btn-success btn-block rounded-0 my-2" type="button" onclick="ReportPrint()">Report</button>
+                </div>
+            </div>
+            <hr />
+
+            <div class="card p-2 mb-3">
+                <div class="table-responsive p-1">
+                    <table id="tbllist" class="table table-striped table-bordered table-hover text-nowrap" cellspacing="0" width="100%">
+                        <thead class="">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Criteria)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.FromDate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ToDate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.GroupByName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.PortionType)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.vAcc_ChartOfAccount.AccName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DateOfPayment)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.MilestonePortionYen)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.SupplyPortionYen)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.InterestPortionYen)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.PaymentPortionYen)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ExchangeRate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.MilestonePortionTaka)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.SupplyPortionTaka)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.InterestPortionTaka)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.PaymentPortionTaka)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ExchangeLossGainTaka)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.InterestAmountTaka)
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Criteria)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FromDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ToDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.GroupByName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PortionType)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.vAcc_ChartOfAccount.AccName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateOfPayment)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MilestonePortionYen)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SupplyPortionYen)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InterestPortionYen)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PaymentPortionYen)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExchangeRate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MilestonePortionTaka)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SupplyPortionTaka)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InterestPortionTaka)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PaymentPortionTaka)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExchangeLossGainTaka)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InterestAmountTaka)
+                                </td>
+
+
+                                <td>
+
+                                    @if (item.isPost == false)
+                                    {
+
+                                        <span data-toggle="tooltip" title="Edit!">
+                                            @Html.ActionLink(" ", "EditGovtJapanLoan", new { id = item.GovtScheduleId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                        </span>
+                                        <span data-toggle="tooltip" title="Delete!">
+                                            @Html.ActionLink(" ", "DeleteGovtJapanLoan", new { Id = item.GovtScheduleId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                        </span>
+                                    }
+
+                                </td>
+                            </tr>
+                            }
+
+                    </table>
+                </div>
+                <br />
+            </div>
+        </div>
+
+    }
+</body>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+
+              function ReportPrint() {
+
+                var doctype = "pdf";
+                var criteria = "DownloadReport";
+                var reporttype = $("input[name=RptType]:checked").val();
+                var AccId = $('#AccId').val();
+                var FromDate = $('#FromDate').val();
+                var ToDate = $('#ToDate').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SetSessionAccountReportGovtJapanLoan", "Accounts")',
+                    dataType: 'json',
+                    async: true,
+                    data: { rptFormat: reporttype, FromDate: FromDate, ToDate: ToDate, AccId: AccId},
+                    success: function (response) {
+
+                        window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+                });
+
+
+        }
+
+                $(document).ready(function () {
+
+                    $('#tbllist').DataTable({
+                        dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                        //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                        //buttons: [
+                        //    'copy', 'csv', 'excel', 'pdf'
+                        //],
+                        buttons: {
+                            dom: {
+                                button: {
+                                    className: 'btn rounded-0'
+                                }
+                            },
+                            buttons: [
+
+                                {
+                                    extend: 'excel',
+                                    text: '<i class="mdi mdi-file-excel"></i>',
+                                    className: 'btn-success',
+                                    titleAttr: 'Export to excel'
+                                },
+                                {
+                                    extend: 'colvis',
+                                    "columns": ':not(:last-child)',
+                                    text: '<i class="mdi mdi-view-column"></i>',
+                                    className: 'btn-info',
+                                    titleAttr: 'Show / hide columns',
+                                    //collectionLayout: 'fixed two-column'
+
+                                }
+
+                            ]
+                        },
+                        "searching": true,
+                        "paging": false,
+                        "ordering": true,
+                        "info": true,
+                        "iDisplayLength": 20,
+                        "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                        "scrollX": true,
+                        "scrollY": "60vh",
+                        "scrollCollapse": true,
+                        language: {
+                            sLengthMenu: "_MENU_",
+                            search: "",
+                            searchPlaceholder: "Search..."
+                        }
+                        ,
+                        "fixedColumns": {
+                            "leftColumns": 2,
+                            "rightColumns": 1
+
+                        }
+                        //"sScrollXInner": "100%",
+                        //dom: 'Blfrtip',
+                        ////,"fixedHeader": true
+                    });
+                });
+
+                //$(".search_input").addClass('form-control input-lg col-xs-12');
+
+                CurrentDate();
+
+                $(".FromDate").datepicker({
+
+                    dateFormat: "dd-M-y",
+                    changeMonth: true,
+                    changeYear: true
+
+                });
+                $(".ToDate").datepicker({
+
+                    dateFormat: "dd-M-y",
+                    changeMonth: true,
+                    changeYear: true
+
+                });
+
+                function CurrentDate() {
+                    var date = new Date();
+                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+                    if ($(".FromDate").val() == '') {
+                        $(".FromDate").val(val);
+                    }
+                    if ($(".ToDate").val() == '') {
+                        $(".ToDate").val(val);
+                    }
+
+
+                }
+    </script>
+}

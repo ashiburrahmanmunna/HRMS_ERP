@@ -1,0 +1,898 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.Models.ShowVoucherViewModel
+@using GTERP.Models.Common
+@{
+    ViewBag.Title = "General Report";
+
+    UserPermission userPermission = HttpContextAccessor.HttpContext.Session.GetObject<UserPermission>("userpermission");
+}
+<style type="text/css">
+    #tblFY tbody tr td {
+        padding: 4px;
+        vertical-align: middle;
+    }
+
+    .hideAll {
+        visibility: hidden;
+    }
+
+    .well {
+        min-height: 20px;
+        padding: 19px;
+        padding-bottom: 10px;
+        margin-bottom: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <br />
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="card hideAll" id="tabs">
+            <div class="card-header bg-success text-white">
+                <div class="row">
+                    <div class="col-md-6 col-12">General Reports</div>
+                    <div class="col-md-6 col-12 text-right clsRptFormat">
+                        @Html.RadioButton("rptFormat", "PDF", true) PDF
+                        @Html.RadioButton("rptFormat", "EXCEL", false) Excel
+                        @Html.RadioButton("rptFormat", "WORD", false) Word
+                    </div>
+                </div>
+            </div>
+            <div class="card-body py-2">
+                <div class="row">
+                    <div class="col-md-3 col-12 px-1">
+                        @*<div class="well">*@
+                            @{
+                                if (userPermission != null)
+                                {
+                                    if (userPermission.IsAll || userPermission.IsGeneralAccouonts)
+                                    {
+                                                    <div class="well">
+                                                        <label><input type="radio" class="All" name="RptType" checked="checked" value="RP" /> Receipt & Payment</label><br />
+                                                        <label><input type="radio" class="All" name="RptType" value="Tran" /> Transaction Summary</label><br />
+                                                        <label><input type="radio" class="All" name="RptType" value="TranVoucherNo" /> Transaction Voucher</label><br />
+                                                        <label><input type="radio" class="All" name="RptType" value="ledgerD" /> Ledger Details</label><br />
+                                                        <label><input type="radio" class="All" name="RptType" value="ledgerFC" /> Ledger Details With FC</label><br />
+
+                                                        <label><input type="radio" class="All" name="RptType" value="ledgerA" /> Print All Ledger [Process] </label><br />
+
+                                                        <label><input type="radio" class="All" name="RptType" value="GroupS" /> Subsidiary Ledger</label><br />
+                                                        <label><input type="radio" class="All" name="RptType" value="GroupD" /> Group Details</label><br />
+
+                                                        <label><input type="radio" name="RptType" value="BankRecon" /> Bank Reconciliation</label><br />
+                                                        <label><input type="radio" name="RptType" value="CashFlow" /> Cash Flow Statement</label><br />
+                                                        <label><input type="radio" name="RptType" value="FundFlow" /> Fund Flow Statement</label><br />
+                                                        <label><input type="radio" name="RptType" value="FdrList" /> FDR List  &nbsp; &nbsp;  </label><br />
+                                                        <label><input type="radio" name="RptType" value="FdrListV" /> FDR List - Voucher  &nbsp; &nbsp;  </label><br />
+
+                                                        <label><input type="radio" name="RptType" value="CB" /> Cash Book &nbsp; &nbsp;</label>
+
+                                                        <label><input type="radio" name="RptType" value="VC" /> Vat Certificate &nbsp; </label>
+                                                        <label><input type="radio" name="RptType" value="SV" /> Supplier Vat  &nbsp; </label>
+                                                        <label><input type="radio" name="RptType" value="SAIT" /> Supplier AIT  &nbsp;</label>
+                                                        <label><input type="radio" name="RptType" value="ADSUP" /> Advance [Supplier] </label>
+                                                        <label><input type="radio" name="RptType" value="ADEMP" /> Advance [Employee] </label>
+                                                    </div>
+                                    }
+                                    else if (userPermission.IsCashbankMangement)
+                                    {
+                                        <div class="well">
+                                            <label><input type="radio" name="RptType" value="BankRecon" /> Bank Reconciliation</label><br />
+                                            <label><input type="radio" name="RptType" value="CashFlow" /> Cash Flow Statement</label><br />
+                                            <label><input type="radio" name="RptType" value="FundFlow" /> Fund Flow Statement</label><br />
+                                            <label><input type="radio" name="RptType" value="FdrList" /> FDR List  &nbsp; &nbsp;  </label><br />
+                                            <label><input type="radio" name="RptType" value="FdrListV" /> FDR List - Voucher  &nbsp; &nbsp;  </label><br />
+                                            <label><input type="radio" name="RptType" value="CB" /> Cash Book &nbsp; &nbsp;</label>
+                                        </div>
+                                    }
+                                    else if (userPermission.IsBillManagement)
+                                    {
+                    <div class="well">
+                        <label><input type="radio" class="All" name="RptType" value="ledgerD" /> Ledger Details</label><br />
+                        @*<label><input type="radio" class="All" name="RptType" value="ledgerA" /> Print All Ledger [Process] </label><br />*@
+                        <label><input type="radio" name="RptType" value="VC" /> Vat Certificate &nbsp; </label>
+                        <label><input type="radio" name="RptType" value="SV" /> Vat [Supplier/Contractor] &nbsp; </label>
+                        <label><input type="radio" name="RptType" value="SAIT" /> AIT [Supplier/Contractor]  &nbsp;</label>
+                        <label><input type="radio" name="RptType" value="ADSUP" /> Advance [Supplier/Contractor] </label>
+                        <label><input type="radio" name="RptType" value="ADEMP" /> Advance [Employee] </label>
+                    </div>
+                                    }
+                                }
+                            }
+
+                        @*</div>*@
+                                    </div>
+                    <div class="col-md-9 col-12">
+                        <div class="row">
+                            <div class="col-md-2 px-1">
+                                <div class="well" style="height: 120px;">
+                                    <label><input type="radio" name="FY" checked="checked" value="date" /> Date Wise</label><br />
+                                    <label><input type="radio" name="FY" value="fy" /> Fiscal Year</label>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12 px-1" id="divDate">
+                                <div class="well" style="height: 120px;">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.dtFrom, new { @class = "control-label btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.dtFrom, new { @Value = ViewBag.date, @name = "dtFrom", @id = "dtFrom", @class = "form-control" })
+
+                                        @* <input type="text" id="datepicker1" name="DateF" class="form-control btn-block col-md-2" placeholder="From Date" />*@
+
+                                        @Html.ValidationMessageFor(model => model.dtFrom)
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.dtTo, new { @class = "control-label btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.dtTo, new { @Value = ViewBag.date1, @name = "dtTo", @id = "dtTo", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.dtTo)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 col-12 px-1" id="divVoucherNo">
+                                <div class="well" style="height: 120px;">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.VoucherFrom, "Code From :", new { @class = "control-label btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.VoucherFrom, new { Value = "1-0-00-000-00000", @name = "VoucherFrom", @id = "MinAccCode", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.VoucherFrom)
+                                        @Html.HiddenFor(model => model.VoucherFrom)
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.VoucherTo, "To :", new { Value = "5-0-00-000-00000", @class = "control-label btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.VoucherTo, new { @name = "VoucherTo", @id = "MaxAccCode", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.VoucherTo)
+                                        @Html.HiddenFor(model => model.VoucherTo)
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-5 px-1">
+                                <div class="well" style="height: 120px;">
+                                    <div class="input-group mb-2" id="Currency">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.CountryId, new { @class = "control-label btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("CountryId", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CountryId)
+                                    </div>
+                                    <div class="input-group mb-2" id="divPrdUnit">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                Unit
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("PrdUnitId", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PrdUnitId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-12 px-1">
+                                <div class="input-group mb-2" id="divRecPay">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccIdRecPay, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccIdRecPay", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AccIdRecPay)
+                                </div>
+
+
+                                <div class="input-group mb-2" id="divVoucherType">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.VoucherTypeId, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("VoucherTypeId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VoucherTypeId)
+                                </div>
+                                <div class="input-group mb-2" id="divLedger">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccIdLedger, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccIdLedger", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AccIdLedger)
+                                </div>
+
+                                <div class="input-group mb-2" id="divSupplier">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            Supplier / Contractor
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("SupplierId", null, "--Please Select From List--", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SupplierId)
+                                </div>
+
+
+
+                                <div class="input-group mb-2" id="divCustomer">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.CustomerId, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("CustomerId", null, "--Please Select From List--", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CustomerId)
+                                </div>
+
+
+                                <div class="input-group mb-2" id="divEmployee">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.EmployeeId, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("EmployeeId", null, "--Please Select From List--", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.EmployeeId)
+                                </div>
+
+
+
+                                <div class="input-group mb-2" id="divGroup">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccIdGroup, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccIdGroup", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AccIdGroup)
+                                </div>
+
+
+                                <div class="input-group mb-2" id="divNoteCT">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccIdNoteOneCT, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccIdNoteOneCT", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AccIdNoteOneCT)
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="tblFY">
+                                    <thead>
+                                        <tr style="background: gainsboro">
+                                            <th>
+                                                iscal Year Id
+                                            </th>
+                                            <th>
+                                                Fiscal Year
+                                            </th>
+                                            <th>
+                                                Opening Date
+                                            </th>
+                                            <th>
+                                                Close Date
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.FiscalYs.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.FiscalYs[i].FYId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.FiscalYs[i].FYName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.FiscalYs[i].OpDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.FiscalYs[i].ClDate)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer clearfix">
+                <div class="row">
+                    <div class="col-md-10 col-12" id="isLocal">
+                        <label>@Html.CheckBoxFor(model => model.isLocalCurr)&nbsp; Show data in local currency</label>
+                    </div>
+                    <div class="col-md-10 col-12" id="isDetails">
+                        <label>@Html.CheckBoxFor(model => model.isDetailsReport)&nbsp; Details Report</label>
+                    </div>
+                    <div class="col-md-6 col-12" id="isMatrial" style="display: none">
+                        <label>@Html.CheckBoxFor(model => model.isMaterial)&nbsp; Material Consumed</label>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <input type="button" id="btnSave" class="btn btn-success btn-block rounded-0" value="Show" onclick="ReportPrint() " />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script language="javascript" type="text/javascript">
+
+    var tblFY = $('#tblFY').DataTable({
+        select: true,
+        select: 'single',
+        'columnDefs': [
+            {
+                'targets': 0,
+                'visible': false,
+                'className': 'chkAllPostFY'
+
+            }
+        ],
+        'paging': false, 'info': false,
+        'searching': false
+
+    });
+
+    var table = $('#tblFY').DataTable();
+
+
+    $(window).on("load", function () {
+        //$('select').select2();
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+
+        $('#tabs').fadeOut(1);
+        $('#tabs').removeClass('hideAll');
+        $('#tabs').fadeIn(2000);
+
+        $("#divCustomer").hide();
+        $("#divSupplier").hide();
+        $("#divEmployee").hide();
+        $("#divNoteCT").hide();
+        $("#divDate").show();
+        $("#divVoucherNo").hide();
+
+        $("#MinAccCode").val('1-0-00-000-00000');
+        $("#MaxAccCode").val('5-0-00-000-00000');
+
+        
+
+
+
+        $("#divLedger").hide();
+        $("#divGroup").hide();
+        $("#divVoucherType").hide();
+
+        $("#divRecPay").show();
+        $("#isDetails").hide();//ledger details checkbox
+
+        $("#datepicker").datepicker({ dateFormat: 'dd-M-yy' });
+        $("#datepicker1").datepicker({ dateFormat: 'dd-M-yy' });
+
+
+        $('input[name=FY]').click(function () {
+            $("#tblFY").find("*").attr("disabled", "disabled");
+            var a = $("input[name=FY]:checked").val();
+            if (a == "fy") {
+                $("#tblFY").find("*").removeAttr("disabled");
+            }
+        });
+
+        $('input[name=RptType]').click(function () {
+            var a = $("input[name=RptType]:checked").val();
+            if (a == "RP" || a == "CB") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").show();
+                $("#divLedger").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+
+
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+            }
+            else if (a == "Tran") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+
+
+                $("#divGroup").hide();
+                $("#divVoucherType").show();
+                $("#isDetails").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+            else if (a == "TranVoucherNo") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+
+
+                $("#divGroup").hide();
+                $("#divVoucherType").show();
+                $("#isDetails").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+            }
+            else if (a == "ledgerD" || a == "ledgerFC" || a == "ledgerA") {
+
+                if (a == "ledgerA") {
+
+                    $("#divVoucherNo").show();
+                    $("#divCustomer").hide();
+                    $("#divSupplier").hide();
+                    $("#divEmployee").hide();
+                    $("#divDate").hide();
+                    $("#divLedger").hide();
+                }
+                else {
+                    $("#divVoucherNo").hide();
+                    $("#divCustomer").show();
+                    $("#divSupplier").show();
+                    $("#divEmployee").show();
+                    $("#divDate").show();
+                    $("#divLedger").show();
+
+                }
+
+                $("#divNoteCT").hide();
+                $("#divRecPay").hide();
+                
+
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").show();
+
+            }
+            //else if (a == "CB") {
+            //    $("#divRecPay").hide();
+            //    $("#divLedger").show();
+            //    $("#divSupplier").hide();
+            //    $("#divGroup").hide();
+            //    $("#divVoucherType").hide();
+            //}
+
+
+            else if (a == "VC" || a == "SAIT" || a == "SV") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+
+
+                $("#divCustomer").hide();
+                $("#divSupplier").show();
+                $("#divEmployee").hide();
+
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+            else if (a == "GroupD") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+                $("#divGroup").show();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+            else if (a == "GroupS") {
+
+                $("#divNoteCT").show();
+
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+                $("#divGroup").show();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+            else if (a == "BankRecon") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").show();
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+            else if (a == "CashFlow") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").show();
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+            }
+            else if (a == "FundFlow") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").show();
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+            }
+            else if (a == "FdrList" || a == "FdrListV") {
+                $("#divNoteCT").hide();
+
+                $("#divRecPay").hide();
+                $("#divLedger").hide();
+                $("#divGroup").hide();
+                $("#divVoucherType").hide();
+                $("#isDetails").hide();
+
+                $("#divCustomer").hide();
+                $("#divSupplier").hide();
+                $("#divEmployee").hide();
+                $("#divVoucherNo").hide();
+                $("#divDate").show();
+
+
+            }
+
+        });
+
+        $('input[name=RptType]').click(function () {
+            var a = $("input[name=RptType]:checked").val();
+            $("#islocal").show();
+            $("#isMatrial").show();
+
+
+
+            if (a == "NoteRpt") {
+                $("#islocal").hide();
+            } else {
+                $("#isMatrial").hide();
+            }
+        });
+
+
+
+        $(document).ready(function () {
+
+
+
+
+            //$("#datepicker").datepicker({ dateFormat: 'dd-MM-yy' });
+            //$("#datepicker1").datepicker({ dateFormat: 'dd-MM-yy' });
+
+
+
+
+            $("#tblFY").find("*").attr("disabled", "disabled");
+
+
+
+        });
+    });
+
+
+    function ReportPrint(btnvalue) {
+
+        //var criteria = $("input[name='criteria']:checked").val();
+
+        var criteria = $("input[name='FY']:checked").val();
+        var rpttype = $("input[name='RptType']:checked").val();
+        var rptFormat = $("input[name='rptFormat']:checked").val();
+        var PrdUnitId = $('#PrdUnitId').val();
+
+        var dtFrom = $('#dtFrom').val();
+        var dtTo = $('#dtTo').val();
+
+        var AccIdRecPay = $('#AccIdRecPay').val();
+        var AccIdLedger = $('#AccIdLedger').val();
+        var AccIdGroup = $('#AccIdGroup').val();
+
+        var AccIdNoteOneCT = $('#AccIdNoteOneCT').val();
+
+
+        var AccVoucherTypeId = $('#VoucherTypeId').val();
+
+        var SupplierId = $('#SupplierId').val();
+        var CustomerId = $('#CustomerId').val();
+        var EmployeeId = $('#EmployeeId').val();
+
+
+        var MinAccCode = $('#MinAccCode').val();
+        var MaxAccCode = $('#MaxAccCode').val();
+
+
+        var Currency = $('#CountryId').val();
+
+
+        var isLocalCurr=0;
+        var isMaterial=0;
+        var isDetails = 0;
+        if ($("#isLocalCurr").prop('checked') == true) {
+            isLocalCurr = 1;
+        }
+        if ($("#isMaterial").prop('checked') == true) {
+            isMaterial = 1;
+        }
+        if ($("#isDetailsReport").prop('checked') == true) {
+            isDetails = 1;
+
+        }
+
+
+
+        //alert(rpttype);
+        //alert(AccIdRecPay);
+        //alert(AccIdLedger);
+        //alert(AccIdGroup);
+
+
+
+        if (rpttype == "RP") {
+            if (AccIdRecPay == '') {
+                toastr.error('Please Select Account Head');
+                return;
+            }
+        }
+        else if (rpttype == "Tran") {
+
+
+        }
+        else if (rpttype == "ledgerD") {
+            if (AccIdLedger == '') {
+                toastr.error('Please Select Account Head');
+                return;
+            }
+        }
+        else if (rpttype == "ledgerA") {
+            //if (AccIdLedger == '') {
+            //    toastr.error('Please Select Account Head');
+            //    return;
+            //}
+        }
+        else if (rpttype == "GroupD") {
+            if (AccIdGroup == '') {
+                toastr.error('Please Select Account Group');
+                return;
+            }
+        }
+        else if (rpttype == "BankRecon") {
+            if (AccIdLedger == '') {
+                toastr.error('Please Select Account Head');
+                return;
+            }
+        }
+        else if (rpttype == "VC") {
+            if (SupplierId == '') {
+                toastr.error('Please Select Supplier First');
+                return;
+            }
+        }
+
+
+
+
+
+
+        //alert('ok');
+
+        //alert(table.rows('.selected').data().length + ' row(s) selected');
+        var FYId = 0;
+        var rows = table.rows('.selected').data();
+        if (rows.length > 0) {
+            console.log(rows[0][0]);
+            var FYId = rows[0][0];
+        }
+
+
+
+        if (criteria == "date") {
+            if (dtFrom == '' || dtTo == '') {
+                toastr.error('Please Select Voucher Date');
+                return;
+            }
+
+        }
+        else if (criteria == "fy") {
+            if (rows.length == 0) {
+                toastr.error('Please Select Fiscal Year');
+                return;
+            }
+        };
+
+
+        if (rpttype == "ledgerA") {
+            if (rows.length == 0) {
+                toastr.error('Please Select Fiscal Year');
+                return;
+            }
+        }
+
+        //alert('ready for post');
+
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Action("SetSession", "Acc_GeneralReport")',
+        dataType: 'json',
+            async: true,
+            data: {
+                criteria: criteria, rptFormat: rptFormat, rpttype: rpttype, dtFrom: dtFrom, dtTo: dtTo, Currency: Currency, isDetails: isDetails, isLocalCurr: isLocalCurr, isMaterial: isMaterial, FYId: FYId, AccIdRecPay: AccIdRecPay, AccIdLedger: AccIdLedger, AccIdGroup: AccIdGroup, PrdUnitId: PrdUnitId, AccVoucherTypeId: AccVoucherTypeId, SupplierId: SupplierId, CustomerId: CustomerId, EmployeeId: EmployeeId, AccIdNoteOneCT: AccIdNoteOneCT, MinAccCode: MinAccCode, MaxAccCode: MaxAccCode
+            },
+
+
+            success: function (response) {
+
+                //alert(response.Url);
+                window.open(response.Url, '_blank')
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+
+        });
+
+        }
+
+
+
+        function CurrentDate() {
+                //alert('hit');
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+                return val;
+
+            }
+
+            $("#dtFrom").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtFrom").datepicker("option", "dateFormat");
+                //setter
+                $("#dtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+            });
+
+            $("#dtTo").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+            $("#dtFrom").val(CurrentDate());
+
+            $("#dtTo").val(CurrentDate());
+
+            $("#dtFrom").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+            $("#dtTo").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+
+
+
+
+    </script>
+}

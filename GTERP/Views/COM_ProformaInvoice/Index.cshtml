@@ -1,0 +1,445 @@
+﻿@model IEnumerable<GTERP.Models.COM_ProformaInvoice>
+
+
+<form action="" method="post">
+    @*<h2>Index</h2>*@
+
+    @*<input class="form-control" id="myInput" type="text" placeholder="Search..">*@
+
+    <div class="container-fluid card p-4">
+        <div class="row">
+            <div class="col-md-3 col-12">
+                <h4 id="styletext">Proforma Invoice List</h4>
+            </div>
+            <div class="col-md-4 col-12">
+                @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info btn-block" })
+            </div>
+            <div class="col-md-5"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-12">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Supplier</label>
+                    <div class="col-sm-9">
+                        @Html.DropDownList("SupplierId", null, "=Please Select=", htmlAttributes: new { @class = "form-control" })                       
+                    </div>
+                </div>
+                </div>      
+                        @*<div class="col-md-6">
+                        <h4>Proforma Invoice</h4>
+                        <input type="file" id="FileUpload1" />
+                        <input type="button" id="btnUpload" value="Upload Files" />
+                    </div>*@
+
+                        <div class="col-md-5 col-12">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <span class="btn btn-primary" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                                    <input name="uploaded_file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                                </span>
+                                <span class="form-control"></span>
+                                <input type="button" id="btnUpload" value="Upload Files" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User Data--", new { id = "UserList", @class = "form-control form-control-sm" })
+
+                        </div>
+                        @*@Html.ActionLink("Back", "Index", "Sales", null, new { @class = "btn btn-info btn-block" })*@
+
+                    </div>
+                    @*<div class="row text-center">*@
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group row">
+                                <label for="FDate" class="col-sm-3 col-form-label">From Date</label>
+                                <div class="col-sm-9">
+
+                                    @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-12">
+                            <div class="form-group row">
+                                <label for="TDate" class="col-sm-3 col-form-label">To Date </label>
+                                <div class="col-sm-9">
+                                    @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <div class="form-group row">
+                                <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <span class="form-control btn-block">
+                                <a href="COM_MasterLC/Download?file=PIDataUpload.xlsx" target="_blank">Download Sample Format</a>
+                            </span>
+                        </div>
+                    </div>
+                    @*</div>*@
+
+                </div>         
+
+    <div class="container-fluid card p-2 mt-2">
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table table-striped table-bordered table-sm table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("BBLC / Regular")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Group LC")
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PINo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Company.CompanyName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PIDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Currency.CurCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SupplierInformation.SupplierName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ImportPONo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FileNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LCAF)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ItemGroups.ItemGroupName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ItemDescs.ItemDescName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ImportQty)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UnitMasterId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ImportRate)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.TotalValue)
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                        @*<th></th>*@
+                    </tr>
+                <thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+
+                            @foreach (var itembblc in item.COM_BBLC_Details)
+                            {
+                                if (itembblc != null)
+                                {
+                       
+                                   @Html.DisplayFor(modelItem => itembblc.COM_BBLC_Master.BBLCNo)
+                                }
+                                else
+                                {
+                                    foreach (var itemmachinarylc in item.COM_MachinaryLC_Details)
+                                    {
+                                        @Html.DisplayFor(modelItem => itemmachinarylc.COM_MachinaryLC_Master.MachinaryLCNo)
+
+                                    }
+
+
+                                }
+                            }
+
+                            </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.COM_GroupLC_Mains.GroupLCRefName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PINo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Company.CompanyName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PIDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Currency.CurCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SupplierInformation.SupplierName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ImportPONo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FileNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LCAF)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ItemGroups.ItemGroupName)
+                        </td>
+
+        @*<td>
+            @Html.DisplayFor(modelItem => item.ItemDescs.ItemDescName)
+
+        </td>*@
+                        <td>
+
+                            @foreach (var itemgroup in item.COM_ProformaInvoice_Subs)
+                            {
+                      
+                                @Html.DisplayFor(modelItem => itemgroup.ItemDescs.ItemDescName)
+                                <br />
+                                
+                            }
+                            
+
+                        </td>
+
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ImportQty)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UnitMasterId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ImportRate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalValue)
+                        </td>
+                        <td>
+                            <span data-toggle="tooltip" title="Edit!">
+                                @Html.ActionLink(" ", "Edit", new { id = item.PIId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                            </span>
+                            <span data-toggle="tooltip" title="Delete!">
+                                @Html.ActionLink(" ", "Delete", new { Id = item.PIId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                            </span>
+
+
+                        </td>
+                    </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <partial name="~/Views/COM_ProformaInvoice/Create.cshtml" />
+</form>
+
+<script>
+    var tblVouchersub;
+    $('#SupplierId').select2();
+    
+
+    $('#btnUpload').click(function () {
+
+        // Checking whether FormData is available in browser
+        if (window.FormData !== undefined) {
+
+            //alert('clicked');
+            var fileUpload = $("#FileUpload1").get(0);
+            var files = fileUpload.files;
+            // Create FormData object
+            var fileData = new FormData();
+
+
+            //alert(fileData);
+            // Looping over all files and add it to FormData object
+
+                fileData.append(files[0].name, files[0]);
+
+            //alert(fileData);
+
+
+            $.ajax({
+                url: '@Url.Action("UploadFiles", "COM_ProformaInvoice")',
+                type: "Post",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData
+                ,
+                success: function (result) {
+                    if (result.Success == "1") {
+                        //alert('ok');
+                        window.location.href = "@Url.Action("Create", "COM_ProformaInvoice", new {Flag=1,buyerid=0})";
+                   }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+                //error: function (err) {
+                //    alert(err.statusText);
+                //}
+            });
+        } else {
+            alert("FormData is not supported.");
+        }
+    });
+
+
+   // $("#btnload").hide();
+
+    $("#SupplierId").change(function () {
+        $("#btnload").click();
+
+        //TermsLoad();
+    })
+
+
+
+    $(document).ready(function () {
+
+        $('#tbllist').DataTable({
+            dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            ////buttons: [
+            ////    'copy', 'csv', 'excel', 'pdf'
+            ////],
+             buttons: {
+                dom: {
+                    button: {
+                        className: 'btn rounded-0'
+                    }
+                },
+                buttons: [
+                    //'copy', 'csv', 'excel', 'pdf'
+                    //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                    {
+                        extend: 'colvis',
+                        "columns": ':not(:last-child)',
+                        text: '<i class="mdi mdi-view-column"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Show / hide columns',
+                        //collectionLayout: 'fixed two-column'
+
+                    },
+                    {
+                        extend: 'copy',
+                        text: '<i class="mdi mdi-content-copy"></i>',
+                        className: 'btn-primary',
+                        titleAttr: 'Copy to Clipboard'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="mdi mdi-note-outline"></i>',
+                        className: 'btn-secondary',
+                        titleAttr: 'Export to csv'
+
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="mdi mdi-file-excel"></i>',
+                        className: 'btn-success',
+                        titleAttr: 'Export to excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        text: '<i class="mdi mdi-file-pdf"></i>',
+                        className: 'btn-danger',
+                        titleAttr: 'Export to PDF',
+                        //exportOptions: {
+                        //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        //}
+
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="mdi mdi-printer"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Print Table'
+                    }
+
+                ]
+            },    
+            "columnDefs": [                  
+                // Hide second, third and fourth columns
+                { "visible": false, "targets": [3,11] }
+            ],
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                 "scrollY": "60vh",
+                "scrollCollapse": true,
+                  //responsive: true,
+             fixedColumns: {
+                leftColumns: 2,
+                rightColumns: 1
+            }
+        });
+    });
+    //}
+
+
+    $(document).ready(function () {
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+        }
+
+
+    });
+
+</script>
+

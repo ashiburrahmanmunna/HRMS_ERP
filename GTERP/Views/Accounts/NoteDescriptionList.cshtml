@@ -1,0 +1,263 @@
+﻿@*@model IEnumerable<GTERP.Models.NoteDescription>*@
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-3 col-12">
+                @Html.ActionLink("Note Description Creation", "CreateNoteDescription", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-3 col-12">
+                <select id="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYear">
+                    <option value="0"> -- ALL -- </option>
+                </select>
+            </div>
+
+            <div class="col-md-6 col-12">
+                <h2 id="styletext">Note Description List</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <form class="card p-2">
+        <div class="table-responsive">
+            <table id="tbllist" class="table table-striped table-bordered table-hover text-center" cellspacing="0" width="100%">
+                @*<thead class="text-nowrap">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FiscalYearId)
+                        </th>
+                        <th class="text-nowrap">
+                            @Html.DisplayNameFor(model => model.SLNo)
+                        </th>
+                        <th class="text-nowrap">
+                            @Html.DisplayNameFor(model => model.NoteNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NoteDetails)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NoteRemarks)
+                        </th>
+                        <th class="text-nowrap"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td class="text-nowrap">
+                            @Html.DisplayFor(modelItem => item.Acc_FiscalYears.FYName)
+                        </td>
+                        <td class="text-nowrap">
+                            @Html.DisplayFor(modelItem => item.SLNo)
+                        </td>
+                        <td class="text-nowrap">
+                            @Html.DisplayFor(modelItem => item.NoteNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NoteDetails)
+                        </td>
+                        <td class="text-nowrap">
+                            @Html.DisplayFor(modelItem => item.NoteRemarks)
+                        </td>
+                        <td class="text-nowrap">
+                            <span data-toggle="tooltip" title="Edit!">
+                                @Html.ActionLink(" ", "Edit", new { id = item.NoteDescriptionId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                            </span>
+                            <span data-toggle="tooltip" title="Delete!">
+                                @Html.ActionLink(" ", "Delete", new { Id = item.NoteDescriptionId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                            </span>
+
+
+                        </td>
+                    </tr>
+                    }
+                </tbody>*@
+            </table>
+        </div>
+        <br />
+    </form>
+</div>
+
+
+
+@section Scripts {
+<script>
+
+    $(document).ready(function () {
+
+        var FiscalYearId = $("#FiscalYearId").val();
+        var table;
+
+       loaddata(FiscalYearId, 1);
+
+
+
+        function loaddata(FiscalYearId="0", isAll = 1) {
+                //alert(UserId, FromDate, ToDate);
+
+            table = $('#tbllist').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+                                    }
+                                    else {
+                                        loaddata($("#FiscalYearId").val(), 1);
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata($("#FiscalYearId").val(), 1);
+                                    //table.ajax.reload();
+                                })
+                        $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+                    "columnDefs": [
+                        // Hide second, third and fourth columns
+                        { "visible": false, "targets": [] }
+                    ],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+                            //{
+                            //    extend: 'copy',
+                            //    text: '<i class="mdi mdi-content-copy"></i>',
+                            //    className: 'btn-primary',
+                            //    titleAttr: 'Copy to Clipboard'
+                            //},
+                            //{
+                            //    extend: 'csv',
+                            //    text: '<i class="mdi mdi-note-outline"></i>',
+                            //    className: 'btn-secondary',
+                            //    titleAttr: 'Export to csv'
+                            //},
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success',
+                                titleAttr: 'Export to excel'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                orientation: 'landscape',
+                                pageSize: 'LEGAL',
+                                text: '<i class="mdi mdi-file-pdf"></i>',
+                                className: 'btn-danger mr-2',
+                                titleAttr: 'Export to PDF'
+                                //,exportOptions: {
+                                //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                //}
+
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("GetNoteDescription", "Accounts")",
+                        "data": { FiscalYearId: $("#FiscalYearId").val(), isAll: isAll },
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": [
+                        { "title": "NoteDescriptionId", "data": "NoteDescriptionId", "visible": false },
+                        { "title": "SL No", "data": "SLNo", "searchable": true },
+                        { "title": "Note No", "data": "NoteNo", "searchable": true },
+                        { "title": "Note Details", "data": "NoteDetails" },
+                        { "title": "Remarks", "data": "NoteRemarks" },
+                        {
+                            "data": {
+                                NoteDescriptionId: "NoteDescriptionId" //,
+                               //VoucherTypeName:"VoucherTypeName",
+                               //isPosted:"isPosted"
+                           },
+
+                           "render": function (data, type, row) {
+                               var myUrlEdit = '@Url.Action("EditNoteDescription", "Accounts")/' + data.NoteDescriptionId;
+                               var myUrlDelete = '@Url.Action("DeleteNoteDescription", "Accounts")/' + data.NoteDescriptionId;
+
+                               return '<span data-toggle="tooltip" title="Edit!"> <a href=\"' + myUrlEdit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>'
+                                   + '<span data-toggle="tooltip" title="Delete!"> <a href=\"' + myUrlDelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\"></a></span>';
+
+
+                           }
+                        }
+                    ],
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait"
+                    },
+                    "destroy": true
+                });
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+
+    });
+
+</script>
+}  
+

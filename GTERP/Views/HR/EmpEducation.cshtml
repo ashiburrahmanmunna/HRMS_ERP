@@ -1,0 +1,291 @@
+﻿@model GTERP.Models.HR_Emp_Info
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<h4 id="styletext">Education Entry - @ViewBag.Title</h4>
+
+<form method="post" asp-action="EmpEducation" asp-controller="HR" enctype="multipart/form-data">
+    <input type="hidden" asp-for="EmpId" id="EmpId" />
+    <input type="hidden" asp-for="ComId" />
+    <input type="hidden" asp-for="UserId" />
+    <div id="Education">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tblEducation">
+                <thead class="text-center">
+                    <tr>
+                        <th style="display:none">
+                            EmpEduId
+                        </th>
+                        <th>
+                            Exam Name
+                        </th>
+                        <th>
+                            Subject
+                        </th>
+                        <th>
+                            Institute
+                        </th>
+                        <th>
+                            Board
+                        </th>
+                        <th>
+                            Passing Year
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Exam Result
+                        </th>
+                        <th>
+                            Start Date
+                        </th>
+                        <th>
+                            End Date
+                        </th>
+                        @*<th>
+                            File
+                        </th>*@
+                        @*<th>Certificate</th>*@
+                        <th>
+                            <input type="button" class="btn btn-sm btn-info btn-block" id="addEdu" value="Add" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+
+                        foreach (var item in Model.HR_Emp_Educations)
+                        {
+                    <tr>
+                        <td style="display:none">
+                            @*@Html.EditorFor(modelItem => item.EmpEduId)*@
+                            <input type="text" asp-for="@item.EmpEduId" name="@item.EmpEduId" value="@item.EmpEduId" class="form-control" autocomplete="off" />
+                        </td>
+                        <td>
+                                    @Html.DropDownListFor(m => item.ExamName, (SelectList)ViewData["ExamList"], new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @*@Html.EditorFor(modelItem => item.MajorSub)*@
+                            @*<input type="text" asp-for="@item.MajorSub" name="@item.MajorSub" value="@item.MajorSub" class="form-control" autocomplete="off" />*@
+                                    @Html.DropDownListFor(m => item.MajorSub, (SelectList)ViewData["Subjectlist"], new { @class = "form-control" })
+                        </td>
+                        <td>
+                            @*<input type="text" asp-for="@item.InstituteName" name="@item.InstituteName" value="@item.InstituteName" class="form-control" autocomplete="off" />*@
+                                    @Html.DropDownListFor(m => item.InstituteName, (SelectList)ViewData["Institutelist"], new { @class = "form-control" })
+                        </td>
+                        <td>
+                                    @Html.DropDownListFor(m => item.BoardName, (SelectList)ViewData["Boardlist"], new { @class = "form-control" })
+                            @*@Html.EditorFor(modelItem => item.BoardName)*@
+                            @*<input type="text" asp-for="@item.BoardName" name="@item.BoardName" value="@item.BoardName" class="form-control" autocomplete="off" />*@
+                        </td>
+                        <td>
+                                    <input type="text" asp-for="@item.PassingYear" name="@item.PassingYear" value="@item.PassingYear" class="form-control" autocomplete="off" />
+                                    @*@Html.DropDownListFor(m => item.PassingYear, (SelectList)ViewData["YearList"], new { @class = "form-control" })*@
+                            
+                            @*<input type="text" asp-for="@item.PassingYear" name="@item.PassingYear" value="@item.PassingYear" class="form-control" autocomplete="off" />*@
+                        </td>
+                        @*<td>
+
+                             <input type="file" asp-for="@item.Files" name="@item.Files" value="@item.Files" class="form-control" autocomplete="off" />
+                        </td>*@
+                        <td>
+                            @Html.DropDownListFor(m => item.Status, (SelectList)ViewData["Statuslist"], new { @class = "form-control" })
+                        </td>
+                                <td>
+                                    @*@Html.EditorFor(modelItem => item.ExamResult)*@
+                                    <input type="text" asp-for="@item.ExamResult" name="@item.ExamResult" value="@item.ExamResult" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="date" asp-for="@item.dtStart" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="date" asp-for="@item.dtEnd" class="form-control" autocomplete="off" />
+                                </td>
+
+
+                        <td>
+                            <input type="button" class="btn btn-sm btn-danger deleteEdu" value="Remove" />
+                        </td>
+                        
+                    </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row text-center">
+            <span class="col-md-3"></span>
+            <span class="col-md-3 col-12">
+                @if (ViewBag.Title == "Create")
+                {
+                    <input type="button" id="eduSave" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                }
+                else if (ViewBag.Title == "Edit")
+                {
+                    <input type="button" id="eduSave" value="Update" class="btn btn-warning btn-block rounded-0" />
+                }
+
+            </span>
+            <span class="col-md-3 col-12">
+                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+            </span>
+            <span class="col-md-3"></span>
+
+
+        </div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>
+       
+
+    $(document).ready(() => {
+        $("#addEdu").click(function () {
+            //if ($('#EmpId').val() > 0) {
+                $("#tblEducation tbody").append(`
+                                       <tr>
+                    <td style="display:none"><input class="form-control" type="text" name="HR_Emp_Educations[0].EmpEduId" value="0" /></td>
+                    <td>
+                        <select class="form-control" name="HR_Emp_Educations[0].ExamName">
+        @foreach (var examName in (SelectList)ViewData["ExamList"])
+        {
+                                    <option value="@examName.Value">@examName.Text</option>
+        }
+                        </select>
+                    </td>
+                    
+                    <td>
+                        <select class="form-control" name="HR_Emp_Educations[0].MajorSub">
+        @foreach (var majorSub in (SelectList)ViewData["Subjectlist"])
+        {
+                                    <option value="@majorSub.Value">@majorSub.Text</option>
+        }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" name="HR_Emp_Educations[0].InstituteName">
+        @foreach (var institute in (SelectList)ViewData["Institutelist"])
+        {
+                                    <option value="@institute.Value">@institute.Text</option>
+        }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" name="HR_Emp_Educations[0].BoardName">
+        @foreach (var board in (SelectList)ViewData["Boardlist"])
+        {
+                                    <option value="@board.Value">@board.Text</option>
+        }
+                        </select>
+                    </td>
+                    <td><input class="form-control" type="text" name="HR_Emp_Educations[0].PassingYear" value="" /></td>
+                    <td>
+                        <select class="form-control" name="HR_Emp_Educations[0].Status">
+        @foreach (var status in (SelectList)ViewData["Statuslist"])
+        {
+                                    <option value="@status.Value">@status.Text</option>
+        }
+                        </select>
+                    </td>
+                    <td><input class="form-control" type="text" name="HR_Emp_Educations[0].ExamResult" value="" /></td>
+                    <td><input class="form-control" type="date" name="HR_Emp_Educations[0].dtStart" value="" /></td>
+                    <td><input class="form-control" type="date" name="HR_Emp_Educations[0].dtEnd" value="" /></td>
+                    <td><input class="btn btn-danger btn-sm deleteEdu" type="button" value="Remove" /></td>
+                </tr>
+                `);
+           // } else {
+                //alert("Please fill up neccesary field");
+                //document.getElementById("defaultOpen").click();
+            //}
+        });
+
+        // remove row from Education
+        $("#tblEducation").on("click", ".deleteEdu", function () {
+            $(this).closest("tr").remove();
+        });
+
+        var empeducation = {EmpId: 0, EmpEduId: 0, ExamName: "", MajorSub: "", InstituteName: "", BoardName: "",
+                PassingYear: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "", Certificate: "", Status: "", ExamResult: "", dtStart: "", dtEnd: ""
+            }
+
+            var HR_Emp_Educations = [];
+
+            $("#eduSave").click(function () {
+                //HR_Emp_Educations = new Array();
+                HR_Emp_Educations = [];
+                $("#tblEducation tbody tr").each(function (i, el) {
+                    empeducation = {
+                        EmpId: $("#EmpId").val(),
+                        EmpEduId: $(this).find('td').eq(0).find('input[type=text]').val(),
+                        ExamName: $(this).find('td').eq(1).find('select').val(),
+                        MajorSub: $(this).find('td').eq(2).find('select').val(),
+                        InstituteName: $(this).find('td').eq(3).find('select').val(),
+                        BoardName: $(this).find('td').eq(4).find('select').val(),
+                        PassingYear: $(this).find('td').eq(5).find('input[type=text]').val(),
+                        Status: $(this).find('td').eq(6).find('select').val(),
+                        ExamResult: $(this).find('td').eq(7).find('input[type=text]').val(),
+                        dtStart: $(this).find('td').eq(8).find('input[type=date]').val(),
+                        dtEnd: $(this).find('td').eq(9).find('input[type=date]').val(),
+
+                        ComId:'@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                        PcName: '',
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: new Date(),
+                        UpdateByUserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateUpdated: new Date(),
+                        
+                        
+                    }
+                    HR_Emp_Educations.push(empeducation);
+                    console.log(empeducation);
+                    empeducation = { EmpId: 0, EmpEduId: 0, ExamName: "", MajorSub: "", InstituteName: "", BoardName: "", PassingYear: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "", Certificate: "", Status: "", ExamResult: "", dtStart: "", dtEnd: "" }
+                });
+                //console.log(empeducation.Files);
+                //if (HR_Emp_Educations.length < 1) {
+                //    alert("Please fill up necessary field");
+                //    document.getElementById("defaultOpen").click();
+                //    return;
+                //}
+
+
+                //var strfy = JSON.stringify({ HR_Emp_Educations });
+
+                //var formData = new FormData($('form').get(0));
+
+                var formData = new FormData();
+
+                formData.append("HR_Emp_Educations", JSON.stringify(HR_Emp_Educations));
+
+                //$("#tblEducation tbody tr").each(function (i, el) {
+                //    var fileInput = $(this).find('td').eq(7).find('input[type=file]').prop('files')[0];
+                //    formData.append("Files[" + i + "]", fileInput);
+                //});
+
+                
+
+
+                $.ajax({
+                    url: '@Url.Action("EmpEducation", "HR")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // do not process data
+                    contentType: false, // do not force content type
+                    success: function (result) {
+                        customFile('2', result.ex);
+                        window.location.href = '@Url.Action("EmpEducationUpdate","HR")';
+                    },
+                    error: function (ex) {
+                        customFile('3', ex);
+                    }
+                });
+            });
+    })
+
+    </script>
+}

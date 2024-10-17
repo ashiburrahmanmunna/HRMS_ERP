@@ -1,0 +1,1551 @@
+﻿@model GTERP.Models.Cat_Integration_Setting_Main
+
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //var subData = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+    var RequisitionResult = ViewBag.reqsub;
+}
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+</style>
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="card p-2">
+        @*<div class="card-header bg-success text-white">
+                Cost Allocation
+            </div>
+            <br />*@
+        <div class="card-body">
+            <input type="hidden" name="userid" value="" />
+            <input type="hidden" id="mode" value="@ViewBag.Title" />
+
+            @if (Model != null)
+            {
+                <input type="hidden" id="IntegrationSettingMainId" name="IntegrationSettingMainId" value="@Model.IntegrationSettingMainId" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="ComId" name="ComId" value="@Model.ComId" />
+                <input type="hidden" id="DateAdded" name="DateAdded" value="@Model.DateAdded" />
+            }
+            else
+            {
+
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <form>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <!--#region first Div-->
+                            <div class="card col-md-12">
+                                <div class="text-center pt-2">
+                                    <h4>Integration Setting Entry</h4>
+                                </div>
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="IntegrationTableName" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <select asp-for="IntegrationTableName" class="form-control" asp-items="ViewBag.IntegrationTableName">
+                                                @*<option value="">Select Table</option>*@
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="IntegrationSettingName" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="IntegrationSettingName" class="form-control" type="text" />
+                                            <span asp-validation-for="IntegrationSettingName" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="VoucherTypeId" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <select asp-for="VoucherTypeId" class="form-control" asp-items="ViewBag.VoucherTypeId">
+                                                @*<option value="">Select Table</option>*@
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="MainSLNo" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="MainSLNo" class="form-control" type="text" />
+                                            <span asp-validation-for="MainSLNo" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                    <div class=" col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="FromDate" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="FromDate" class="form-control" type="date" />
+                                            <span asp-validation-for="FromDate" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="ToDate" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="ToDate" class="form-control" type="date" />
+                                            <span asp-validation-for="ToDate" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12 col-12 mb-3">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="IntegrationRemarks" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="IntegrationRemarks" class="form-control" type="text" />
+                                            <span asp-validation-for="IntegrationRemarks" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <!-- #endregion -->
+                            <!--#region Details & Distribute Div-->
+                            <div class="card p-3 col-md-12">
+                                <div class="text-center">
+                                    <h4>Create Details Item</h4>
+                                </div>
+                                <hr />
+                                @Html.HiddenFor(m => m.Cat_Integration_Setting_Details.FirstOrDefault().IntegrationSettingDetailsId, new { id = "IntegrationSettingDetailsId" })
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Account Head</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" asp-items="ViewBag.AccId" id="AccId">
+                                                <option value="-1">Select Account</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Column Name</label>
+                                                </span>
+                                            </div>
+
+                                            <select class="form-control" asp-items="ViewBag.SelectColumnNameOne" id="SelectColumnNameOne" multiple="multiple">
+                                                @*<option value="-1">Select Column</option>*@
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-12 mb-3 d-none">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Condition Count</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("ConditionCount", "", new { id = "ConditionCount", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                            
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Name One</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="ColNameOne">
+                                                <option value="">Select Column 1</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col One Value</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("ColNameOneValue", "", new { id = "ColNameOneValue", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Name Two</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="ColNameTwo">
+                                                <option value="">Select Column 2</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Two Value</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("ColNameTwoValue", "", new { id = "ColNameTwoValue", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row d-none">
+                                    <div class=" col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Name Three</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="ColNameThree">
+                                                <option value="">Select Column 3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Three Value</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("ColNameThreeValue", "", new { id = "ColNameThreeValue", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Name Four</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="ColNameFour">
+                                                <option value="">Select Column 4</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Col Four Value</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("ColNameFourValue", "", new { id = "ColNameFourValue", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Is Subtract</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="IsSubtract">
+                                                <option value="No">No</option>
+                                                <option value="Yes">Yes</option>
+                                            </select>
+                                            @*@Html.CheckBox("IsDebit", new { id = "IsDebit", @class = "form-control" })*@
+                                        </div>
+                                    </div>
+
+                                    <div class=" col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Is Debit</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="IsDebit">
+                                                <option value="No">No</option>
+                                                <option value="Yes">Yes</option>
+                                            </select>
+                                            @*@Html.CheckBox("IsDebit", new { id = "IsDebit", @class = "form-control" })*@
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Is Credit</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="IsCredit">
+                                                <option value="No">No</option>
+                                                <option value="Yes">Yes</option>
+                                            </select>
+                                            @*@Html.CheckBox("IsDebit", new { id = "IsDebit", @class = "form-control" })*@
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>SLNo</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("SLNo", "", new { id = "SLNo", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Remarks</label>
+                                                </span>
+                                            </div>
+                                            <textarea id="Remarks" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Select Statement</label>
+                                                </span>
+                                            </div>
+                                            <textarea id="SelectStatement" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Where Condition</label>
+                                                </span>
+                                            </div>
+                                            <textarea id="WhereCondition" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 offset-md-4">
+                                    <span id="detailsspan">
+                                        <button type="button" id="detailsAddBtn" onclick="DetailsAdd()" class="btn btn-primary rounded-0 btn-block">Add</button>
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- #endregion -->
+
+                        </div>
+
+                  
+                
+                            <div class="row my-3">
+
+                                <div class="col-md-12 card">
+                                    <div class="table-responsive text-nowrap p-2">
+                                        <table id="tblIntegrationSettingDetails" class="table tbllist display responsive table-striped table-hover text-center" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th class="d-none">IntegrationSettingMainId</th>
+                                                    <th class="d-none">IntegrationSettingDetailsId</th>
+                                                    <th class="d-none">TableName</th>
+                                                    <th class="d-none">ORDINAL_POSITION</th>
+                                                    <th class="d-none">AccId</th>
+                                                    <th>Acc Code</th>
+                                                    <th>Payroll Column Name</th>
+                                                    <th class="d-none">Condition Count</th>
+                                                    <th>Col Name One</th>
+                                                    <th>Col NameOne Value</th>
+                                                    <th>ColNameTwo</th>
+                                                    <th>colNameTwoValue</th>
+                                                    <th class="d-none">ColNameThree</th>
+                                                    <th class="d-none">colNameThreeValue</th>
+                                                    <th class="d-none">ColNameFour</th>
+                                                    <th class="d-none">colNameFourValue</th>
+                                                    <th>SL No</th>
+                                                    <th>IsSubtract</th>
+                                                    <th>Is Debit</th>
+                                                    <th>Is Credit</th>
+                                                    <th>Remarks</th>
+                                                    <th>Select Statement</th>
+                                                    <th>Where Condition</th>
+                                                    <th></th>
+                                                    <th>IsDelete</th>
+
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                @if (Model != null)
+                                                {
+                                                    if (Model.Cat_Integration_Setting_Details != null)
+                                                    {
+                                                        foreach (var item in Model.Cat_Integration_Setting_Details.OrderBy(x => x.SLNo))
+                                                        {
+                                                            <tr class="txtDetails">
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.IntegrationSettingMainId)
+                                                                </td>
+
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.IntegrationSettingDetailsId)
+                                                                </td>
+                                                                <td class="d-none">
+                                                                </td>
+                                                                <td class="d-none">
+                                                                </td>
+
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.AccId)
+                                                                </td>
+
+                                                                <td>
+                                                                    @item.Acc_ChartOfAccounts.AccName - [ @item.Acc_ChartOfAccounts.AccCode ]
+
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.SelectColumnNameOne)
+                                                                </td>
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.ConditionCount)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.ColNameOne)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.colNameOneValue)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.ColNameTwo)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.colNameTwoValue)
+                                                                </td>
+
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.ColNameThree)
+                                                                </td>
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.colNameThreeValue)
+                                                                </td>
+
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.ColNameFour)
+                                                                </td>
+                                                                <td class="d-none">
+                                                                    @Html.DisplayTextFor(i => item.colNameFourValue)
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.SLNo)
+                                                                </td>
+                                                                @if (item.IsSubtract)
+                                                                {
+                                                                    <td>Yes</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>No</td>
+                                                                }
+                                                                @if (item.IsDebit)
+                                                                {
+                                                                    <td>Yes</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>No</td>
+                                                                }
+
+                                                                @if (item.IsCredit)
+                                                                {
+                                                                    <td>Yes</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>No</td>
+                                                                }
+                                                                <td>@Html.DisplayTextFor(i => item.Remarks)</td>
+                                                                <td>@Html.DisplayTextFor(i => item.SelectStatement)</td>
+                                                                <td>@Html.DisplayTextFor(i => item.WhereCondition)</td>
+
+                                                                <td>
+                                                                    <a class="dlttrash" data-itemId="@item.IntegrationSettingDetailsId" data-html="@item.IntegrationSettingDetailsId" href="#"><i class="fa fa-trash"></i></a>
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayTextFor(i => item.IsDelete)
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+
+                                                }
+                                            </tbody>
+                                            <tfoot>
+
+                                            </tfoot>
+
+                                        </table>
+                                    </div>
+                                    <hr />
+                                    <div class="row text-center my-2">
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-2 col-12">
+
+                                            <button class="btn btn-primary btn-block rounded-0" type="button" onclick="IntegrationSetting_Save(1)">Save & Continue</button>
+
+
+                                        </div>
+                                        @if (ViewBag.Title == "Create")
+                                        {
+                                            <div class="col-md-2 col-12">
+                                                <button class="btn btn-success btn-block rounded-0" type="button" onclick="IntegrationSetting_Save(2)">Save</button>
+
+                                            </div>
+
+                                        }
+                                        else if (ViewBag.Title == "Edit")
+                                        {
+                                            <div class="col-md-2 col-12">
+                                                <button class="btn btn-warning btn-block rounded-0" type="button" onclick="IntegrationSetting_Save(0)">Update</button>
+                                            </div>
+
+                                        }
+                                        else if (ViewBag.Title == "Delete")
+                                        {
+
+                                            <div class="col-md-2 col-12">
+                                                <button class="btn btn-danger rounded-0" type="button" onclick="ConfirmDialogDelete('Are you sure');">Delete</button>
+                                            </div>
+
+
+
+                                        }
+                                        <div class="col-md-2 col-12">
+                                            @Html.ActionLink("Back", "Index", null, null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+                                        </div>
+                                        <div class="col-md-3"></div>
+                                    </div>
+
+
+                                </div>
+
+
+
+                            </div>
+
+                 
+
+
+
+
+                            <div>
+                                
+
+
+
+                            </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+
+@section Scripts
+    {
+    <script>
+
+
+
+        function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            IntegrationSettingDelete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        function IntegrationSettingDelete() {
+           var IntegrationSettingMainId = $('#IntegrationSettingMainId').val();
+
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+             $.ajax({
+
+
+                 headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                type: 'POST',
+                url: '@Url.Action("Delete", "IntegrationSetting")',
+                dataType: 'json',
+                async: 'true',
+                 data: { id: IntegrationSettingMainId },
+
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                        window.location.href = '@Url.Action("Index", "IntegrationSetting")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+        }
+
+        //$('#ReqDate').val(CurrentDate());
+        //$('#BoardMeetingDate').val(CurrentDate());
+        //$('#RequiredDate').val(CurrentDate());
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        //$("#ReqDate,#BoardMeetingDate,#RequiredDate").datepicker({
+        //    onSelect: function (date) {
+        //        // Your CSS changes, just in case you still need them
+        //        $('a.ui-state-default').removeClass('ui-state-highlight');
+        //        $(this).addClass('ui-state-highlight');
+        //        var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+        //        //setter
+        //        $("#ReqDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+        //    }
+        //});
+
+        var tblIntegrationSettingDetails;
+        var tblCostAlloDistribute;
+        var antiForgeryToken;
+        var selectedItem;
+        var isdelete = false;
+
+        function GetColumnName() {
+            $.ajax({
+                url: '@Url.Action("GetTableColumn", "IntegrationSetting")',
+                //headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                type: 'GET',
+                // contentType: 'application/json',
+                data: { tableName: $("#IntegrationTableName").val() },
+                dataType: 'json',
+                success: function (result) {
+                    createSelectList(result);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+            $("#AccId").select2();
+            $("#ColNameOne").select2();
+            $("#ColNameTwo").select2();
+            $("#ColNameThree").select2();
+            $("#ColNameFour").select2();
+            $("#IntegrationTableName").select2();
+            $('#SelectColumnNameOne').select2();
+            $('#VoucherTypeId').select2();
+
+
+
+            $("#IntegrationTableName").change(function () {
+                GetColumnName();
+            });
+
+            var mode = $("#mode").val();
+            if (mode == "Edit" || mode == "Delete") {
+                $("#tblDiv").show();
+                           }
+            else {
+                $("#tblDiv").hide();
+                // $("#UpBtn").hide();
+            }
+
+            tblIntegrationSettingDetails = $('#tblIntegrationSettingDetails').DataTable({
+                "aoColumns": [
+                    { "sClass": "IntegrationSettingMainId", "visible": false },//0
+                    { "sClass": "IntegrationSettingDetailsId", "visible": false },//1
+                    { "sClass": "TableName", "visible": false },//2
+                    { "sClass": "ORDINAL_POSITION", "visible": false },//3
+                    { "sClass": "AccId", "visible": false },//4
+                    { "sClass": "AccCode", "visible": true },//5
+                    { "sClass": "SelectColumnNameOne", "visible": true },//6
+                    { "sClass": "ConditionCount", "visible": false },//7 --1
+                    { "sClass": "ColNameOne", "visible": true },//8   --2
+                    { "sClass": "ColNameOneValue", "visible": true },//9 ---3
+                    { "sClass": "ColNameTwo", "visible": true },//10  ---4
+                    { "sClass": "ColNameTwoValue", "visible": true },//11   ---5
+                    { "sClass": "ColNameThree", "visible": false },//12
+                    { "sClass": "ColNameThreeValue", "visible": false },//13
+                    { "sClass": "ColNameFour", "visible": false },//14
+                    { "sClass": "ColNameFourValue", "visible": false },//15
+                    { "sClass": "SLNo", "visible": true },//16  --6
+                    { "sClass": "IsSubTract", "visible": true },//17  --7
+                    { "sClass": "IsDebit", "visible": true },//18  ---8
+                    { "sClass": "IsCredit", "visible": true },//19  --9
+                    { "sClass": "Remarks", "visible": true },//20 ---10
+                    { "sClass": "SelectStatement", "visible": false },//21
+                    { "sClass": "WhereCondtion", "visible": false },//22
+                    { "sClass": "Action", "visible": true },//23
+                    { "sClass": "IsDelete", "visible": false }//24
+                ],
+                "columnDefs": [
+                     {
+                        "targets": 7,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ConditionCount"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 8,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameOne"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 9,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameOneValue"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 10,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameTwo"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 11,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameTwoValue"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 12,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameThree"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 13,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameThreeValue"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 14,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameFour"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 15,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center ColNameFourValue"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 16,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center SLNo"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 17,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center IsSubTract"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 18,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center IsDebit"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 19,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center IsCredit"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    },
+                     {
+                        "targets": 20,
+                        "render": function (data, type, row) {
+                            return '<input class="form-control form-control-sm text-center Remarks"  type="text" data-val="true" value=' + data + '>';
+                        }
+                    }
+
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtDetails');
+                },
+                select: {
+                    style: 'single',
+                    selector: 'td:nth-child(2)'
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+
+                "scrollX": true,
+                "scrollY": "60vh"
+            }).draw();
+
+            GetColumnName();
+        });
+
+        function createSelectList(selItem) {
+            $('#SelectColumnNameOne,#ColNameOne,#ColNameTwo,#ColNameThree,ColNameFour').empty();
+            $('#ColNameOne,#ColNameTwo,#ColNameThree,ColNameFour').append(new Option("Select Column", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].ColumnName;
+                optionText = selItem[i].ColumnName;
+                $('#SelectColumnNameOne').append(new Option(optionText, optionValue));
+                $('#ColNameOne').append(new Option(optionText, optionValue));
+                $('#ColNameTwo').append(new Option(optionText, optionValue));
+                $('#ColNameThree').append(new Option(optionText, optionValue));
+                $('#ColNameFour').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+
+        function IntegrationSetting_Save(saveandcontinue) {
+
+
+              var Name = $('#IntegrationSettingName').val();
+
+              if (Name.length < 1) {
+
+                //$("#SRNoSpan").text('Fill Requisition No.');
+                  toastr.error('Fill up IntegrationSettingName');
+                return false;
+            }
+
+
+
+
+              var Cat_Integration_Setting_Main = {
+                  "IntegrationSettingMainId": 0, "IntegrationSettingName": "", "IntegrationTableName": "", "MainSLNo": "", "FromDate": "", "ToDate": "", "ComId": "", "UserId": "", "UpdateByUserId": "", "DateAdded": "", "DateUpdated": "", "IntegrationRemarks": "",
+                  "Cat_Integration_Setting_Details": []
+            };
+
+
+              Cat_Integration_Setting_Main.IntegrationSettingMainId = $('#IntegrationSettingMainId').val()||0;
+              Cat_Integration_Setting_Main.IntegrationSettingName = $('#IntegrationSettingName').val().replace(/amp;/ig, '');
+              Cat_Integration_Setting_Main.IntegrationTableName = $('#IntegrationTableName').val();
+              Cat_Integration_Setting_Main.MainSLNo = $('#MainSLNo').val();
+              Cat_Integration_Setting_Main.FromDate = $('#FromDate').val();//.replace(/amp;/ig, '');
+                Cat_Integration_Setting_Main.ToDate = $('#ToDate').val();//.replace(/amp;/ig, '');
+                Cat_Integration_Setting_Main.VoucherTypeId = $('#VoucherTypeId').val();//.replace(/amp;/ig, '');
+                Cat_Integration_Setting_Main.IntegrationRemarks = $('#IntegrationRemarks').val();//.replace(/amp;/ig, '');
+
+
+            
+
+
+              Cat_Integration_Setting_Main.ComId = $('#ComId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                Cat_Integration_Setting_Main.UserId = $('#UserId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                Cat_Integration_Setting_Main.DateAdded = $('#DateAdded').val()||"";
+
+
+            var tblDetails = $('#tblIntegrationSettingDetails').dataTable().fnGetData();
+            var rows = $('#tblIntegrationSettingDetails').dataTable().fnGetNodes();
+
+
+            if (tblDetails.length == 0) {
+                alert('Please Fill Necessary Data.');
+                return false;
+              };
+
+            for (var i = 0; i < tblDetails.length; i++) {
+
+                var Cat_Integration_Setting_Details = {
+                    "IntegrationSettingDetailsId": "", "IntegrationSettingMainId": "", "AccId": "", "SelectColumnNameOne": "","ConditionCount": "",
+                    "ColNameOne": "", "colNameOneValue": "",
+                    "ColNameTwo": "", "colNameTwoValue": "",
+                    "ColNameThree": "", "colNameThreeValue": "",
+                    "ColNameFour": "", "colNameFourValue": "",
+                    "SLNo": "", "IsDelete": "","IsSubtract": "","SelectStatement": "","WhereCondition": "","Remarks": "",
+                    "IsDebit": "", "IsCredit": "", "ComId": "", "PcName": "", "UserId": "", "DateAdded": "", "UpdateByUserId": "","DateUpdated": ""
+                };
+
+
+                Cat_Integration_Setting_Details.IntegrationSettingMainId = $("#IntegrationSettingMainId").val()||0;
+                Cat_Integration_Setting_Details.IntegrationSettingDetailsId = tblDetails[i][1];
+                Cat_Integration_Setting_Details.AccId = tblDetails[i][4];
+                Cat_Integration_Setting_Details.SelectColumnNameOne = tblDetails[i][6],//.replace(/amp;/ig, '');
+                    Cat_Integration_Setting_Details.ConditionCount = tblDetails[i][7] || 0; ///rows[i].cells[1].children[0].value||0;// tblDetails[i][7].replace(/amp;/ig, '');
+                Cat_Integration_Setting_Details.ColNameOne = rows[i].cells[2].children[0].value;// tblDetails[i][8].replace(/amp;/ig, '');
+                Cat_Integration_Setting_Details.colNameOneValue = rows[i].cells[3].children[0].value;//tblDetails[i][9].replace(/amp;/ig, '');
+
+                Cat_Integration_Setting_Details.ColNameTwo = rows[i].cells[4].children[0].value;//tblDetails[i][10].replace(/amp;/ig, '');
+                Cat_Integration_Setting_Details.colNameTwoValue = rows[i].cells[5].children[0].value;// tblDetails[i][11].replace(/amp;/ig, '');
+
+                //Cat_Integration_Setting_Details.ColNameThree = rows[i].cells[7].children[0].value; //tblDetails[i][12].replace(/amp;/ig, '');
+                //Cat_Integration_Setting_Details.colNameThreeValue = rows[i].cells[8].children[0].value; //tblDetails[i][13].replace(/amp;/ig, '');
+
+                //Cat_Integration_Setting_Details.ColNameFour = rows[i].cells[9].children[0].value; // tblDetails[i][14].replace(/amp;/ig, '');
+                //Cat_Integration_Setting_Details.colNameFourValue = rows[i].cells[10].children[0].value; //tblDetails[i][15].replace(/amp;/ig, '');
+
+
+                Cat_Integration_Setting_Details.SLNo = rows[i].cells[6].children[0].value||0;// tblDetails[i][16];
+
+
+                //Cat_Integration_Setting_Details.IsDebit = tblDetails[i][17]=="Yes"?"true":"false";
+                //Cat_Integration_Setting_Details.IsCredit = tblDetails[i][18] == "Yes" ? "true" : "false";
+
+                Cat_Integration_Setting_Details.IsSubtract = rows[i].cells[7].children[0].value == "Yes" ? "true" : "false";
+                Cat_Integration_Setting_Details.IsDebit = rows[i].cells[8].children[0].value == "Yes"?"true":"false";
+                Cat_Integration_Setting_Details.IsCredit = rows[i].cells[9].children[0].value == "Yes" ? "true" : "false";
+                Cat_Integration_Setting_Details.Remarks = rows[i].cells[10].children[0].value;
+
+
+                Cat_Integration_Setting_Details.SelectStatement = tblDetails[i][21];
+                Cat_Integration_Setting_Details.WhereCondition = tblDetails[i][22];
+
+                //Cat_Integration_Setting_Details.IsDebit = tblDetails[i][10];
+                //Cat_Integration_Setting_Details.IsCredit = tblDetails[i][11];
+                Cat_Integration_Setting_Details.ComId = $('#ComId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("comid")';;
+               // Cat_Integration_Setting_Details.PcName = tblDetails[i][8];
+                Cat_Integration_Setting_Details.UserId = $('#UserId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                //Cat_Integration_Setting_Details.DateAdded = tblDetails[i][8];
+               // Cat_Integration_Setting_Details.UpdateByUserId = tblDetails[i][8];
+                //Cat_Integration_Setting_Details.DateUpdated = tblDetails[i][8];
+                Cat_Integration_Setting_Details.IsDelete = tblDetails[i][24];
+                Cat_Integration_Setting_Main.Cat_Integration_Setting_Details.push(Cat_Integration_Setting_Details);
+              };
+
+
+
+            console.log(Cat_Integration_Setting_Main);
+
+
+
+
+                        @*var abcid = result.InvoiceId;
+
+
+                        if (saveandcontinue == 1) {
+
+                            window.setTimeout(function () {
+
+                                window.location.href = '@Url.Action("Edit", "ExportInvoiceMasters", new { id = "xx"})'.replace("xx", abcid);
+
+
+                            }, 500);
+                        }
+                        else if (saveandcontinue == 2) {
+
+                                window.setTimeout(function () {
+
+
+                                    var masterlcids = 0;
+                                    masterlcids = $("#MasterLCId").val();
+                                    window.location.href = "@Url.Action("Create", "ExportInvoiceMasters", new { id = UrlParameter.Optional })" + "?MasterLCId=" + masterlcids;
+
+                                }, 500);
+
+                        }
+                        else {
+
+                            window.setTimeout(function () {
+                                window.location.href = '@Url.Action("Index", "ExportInvoiceMasters")';
+                            }, 500);
+                        }*@
+
+
+
+
+
+
+            $.ajax({
+                url: '@Url.Action("Create", "IntegrationSetting")',
+                type: 'POST',
+                data: { Cat_Integration_Setting_Main: Cat_Integration_Setting_Main},
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+               // contentType: 'application/json',
+                dataType: 'JSON',
+                success: function (result) {
+                   // console.log(result);
+                    //alert('Data Save Successfully');
+
+                    if (result.Success == 1) {
+                        toastr.success("Data Save Successfully")
+
+
+
+                        var abcid = result.data; // $("#IntegrationSettingMainId").val();
+
+
+                        if (saveandcontinue == 1) {
+
+                            window.setTimeout(function () {
+                                window.location.href = '@Url.Action("Edit", "IntegrationSetting", new { id = "xx"})'.replace("xx", abcid);
+                            }, 500);
+                        }
+                        else if (saveandcontinue == 2) {
+                                window.setTimeout(function () {
+                                    //var masterlcids = 0;
+                                    //masterlcids = $("#IntegrationSettingMainId").val();
+                                    window.location.href = '@Url.Action("Create", "IntegrationSetting")';
+
+                                }, 500);
+                        }
+                        else {
+
+                            window.setTimeout(function () {
+                                window.location.href = '@Url.Action("Index", "IntegrationSetting")';
+                            }, 500);
+                        }
+                        //window.location.href = '@Url.Action("Index", "IntegrationSetting")';
+
+
+
+
+                    }
+                    else if (result.Success == 2) {
+                        toastr.success("Data Update Successfully")
+                         var abcid = result.data; // $("#IntegrationSettingMainId").val();
+
+
+                        if (saveandcontinue == 1) {
+
+                            window.setTimeout(function () {
+                                window.location.href = '@Url.Action("Edit", "IntegrationSetting", new { id = "xx"})'.replace("xx", abcid);
+                            }, 500);
+                        }
+                        else if (saveandcontinue == 2) {
+                                window.setTimeout(function () {
+                                    var masterlcids = 0;
+                                    masterlcids = $("#MasterLCId").val();
+                                    window.location.href = '@Url.Action("Create", "IntegrationSetting")';
+
+                                }, 500);
+                        }
+                        else {
+
+                            window.setTimeout(function () {
+                                window.location.href = '@Url.Action("Index", "IntegrationSetting")';
+                            }, 500);
+                        }
+                    }
+                    if (result.Success==3) {
+                        alert(result.ex);
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                    alert(err);
+                }
+            });
+        };
+
+        // details part
+
+        function DetailsAdd() {
+
+            //var qty = $('#ConsumptionQty').val();
+
+            var accId = $('#AccId').val();
+            //if (prdid < 1) {
+            //    toastr.error('Please Select the Item');
+            //    return true;
+            //}
+
+            //if (qty > 0) {
+
+                //$("#tblDiv").show();
+                //$("#QtySpan").text('');
+
+                var tblDetails = $('#tblIntegrationSettingDetails').dataTable().fnGetData();
+
+                if ($.fn.DataTable.isDataTable('#tblIntegrationSettingDetails')) {
+                    var ifExist = false;
+                    var selMulti = $.map($("#SelectColumnNameOne option:selected"), function (el, i) {
+                        return $(el).text();
+                    });
+
+
+                    a = selMulti.join(", ");  ///added by fhad for nawab bhai multi item or desc
+
+                        if (tblIntegrationSettingDetails.rows('.selected').any()) {
+                                //for (var i = 0; i < tblDetails.length; i++) {
+                                //    var item = tblDetails[i][1];
+
+                                //    if (accId == item) {
+                                //        var ind2 = tblIntegrationSettingDetails.row('.selected').index();
+                                //        if (i != ind2) {
+                                //            toastr.error('Multiple Acc Code is not allowed');
+                                //            ifExist = true;
+                                //            return;
+                                //        }
+                                //    }
+
+                                //}
+
+                                if (ifExist == false) {
+
+                                    tblIntegrationSettingDetails
+                                        .rows({ selected: true })
+                                        .every(function (rowIdx, tableLoop, rowLoop) {
+
+                                            //{ "sClass": "IntegrationSettingMainId", "visible": false },/ / 0
+                                            //{ "sClass": "IntegrationSettingDetailsId", "visible": false },//1
+                                            //{ "sClass": "TableName", "visible": false },//2
+                                            //{ "sClass": "ORDINAL_POSITION", "visible": false },//3
+                                            //{ "sClass": "AccId", "visible": false },//4
+                                            //{ "sClass": "AccCode", "visible": true },//5
+                                            //{ "sClass": "SelectColumnNameOne", "visible": true },//6
+                                            //{ "sClass": "ConditionCount", "visible": false },//7
+                                            //{ "sClass": "ColNameOne", "visible": true },//8   --1
+                                            //{ "sClass": "ColNameOneValue", "visible": true },//9 ---2
+                                            //{ "sClass": "ColNameTwo", "visible": true },//10  ---3
+                                            //{ "sClass": "ColNameTwoValue", "visible": true },//11   ---4
+                                            //{ "sClass": "ColNameThree", "visible": false },//12
+                                            //{ "sClass": "ColNameThreeValue", "visible": false },//13
+                                            //{ "sClass": "ColNameFour", "visible": false },//14
+                                            //{ "sClass": "ColNameFourValue", "visible": false },//15
+                                            //{ "sClass": "SLNo", "visible": true },//16  --5
+                                            //{ "sClass": "IsSubTract", "visible": true },//17  --6
+                                            //{ "sClass": "IsDebit", "visible": true },//18  ---7
+                                            //{ "sClass": "IsCredit", "visible": true },//19  --8
+                                            //{ "sClass": "Remarks", "visible": true },//20 ---9
+                                            //{ "sClass": "SelectStatement", "visible": false },//21
+                                            //{ "sClass": "WhereCondtion", "visible": false },//22
+                                            //{ "sClass": "Action", "visible": true },//23
+                                            //{ "sClass": "IsDelete", "visible": false }//24
+                                            tblIntegrationSettingDetails.cell(rowIdx, 4).data($('#AccId').val());
+
+                                            tblIntegrationSettingDetails.cell(rowIdx, 5).data($('#AccId option:selected').text());
+
+                                            tblIntegrationSettingDetails.cell(rowIdx, 6).data(a);
+                                            tblIntegrationSettingDetails.cell(rowIdx, 7).data($('#ConditionCount').val() || 0);
+                                            tblIntegrationSettingDetails.cell(rowIdx, 8).data($('#ColNameOne').val() || '');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 9).data($('#ColNameOneValue').val() || '');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 10).data($('#ColNameTwo').val() || '');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 11).data($('#ColNameTwoValue').val() || '');
+                                            //tblIntegrationSettingDetails.cell(rowIdx, 12).data($('#ColNameThree').val() || '');
+                                            //tblIntegrationSettingDetails.cell(rowIdx, 13).data($('#ColNameThreeValue').val() || '');
+                                            //tblIntegrationSettingDetails.cell(rowIdx, 14).data($('#ColNameFour').val() || '');
+                                            //tblIntegrationSettingDetails.cell(rowIdx, 15).data($('#ColNameFourValue').val() || '');
+
+                                            tblIntegrationSettingDetails.cell(rowIdx, 16).data($('#SLNo').val() || '0');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 17).data($('#IsSubtract').val() || 'No');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 18).data($('#IsDebit').val() || 'Yes');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 19).data($('#IsCredit').val() || 'No');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 20).data($('#Remarks').val() || '');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 21).data($('#SelectStatement').val() || '');
+                                            tblIntegrationSettingDetails.cell(rowIdx, 22).data($('#WhereCondition').val() || '');
+
+                                            //tblIntegrationSettingDetails.cell(rowIdx, 5).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                        })
+
+                                        .draw();
+
+                                    tblIntegrationSettingDetails.$('tr.selected').removeClass('selected');
+
+
+                                    $("#detailsAddBtn").text("Add");
+                                    $("#detailsCancel").remove();
+
+
+                                    toastr.success("Data Updated");
+                                }
+
+                        }
+                        else {
+
+                            //for (var i = 0; i < tblDetails.length; i++) {
+                            //    var item = tblDetails[i][4];
+                            //    //alert(item)
+                            //    if (accId == item) {
+                            //        toastr.error('Multiple ACC Code is not allowed');
+                            //        //ifExist = true;
+                            //        return;
+                            //    }
+
+                            //}
+                            tblIntegrationSettingDetails.draw();
+
+
+                            var i = 0;
+
+
+
+
+                            $('#tblIntegrationSettingDetails').dataTable().fnAddData([
+                                $("#IntegrationSettingMainId").val()||0,
+                                0,
+                                $('#IntegrationTableName').val(),
+                                $('#SelectColumnNameOne').val(),
+                                $('#AccId option:selected').val() || 0,
+                                $('#AccId option:selected').text(),
+                                a,//selMulti,//$('#SelectColumnNameOne option:selected').text(),
+                                $('#ConditionCount').val()||0,
+                                $('#ColNameOne').val() || '',
+                                $('#ColNameOneValue').val() || '',
+                                $('#ColNameTwo').val() || '',
+                                $('#ColNameTwoValue').val() || '',
+                                $('#ColNameThree').val() || '',
+                                $('#ColNameThreeValue').val() || '',
+                                $('#ColNameFour').val() || '',
+                                $('#ColNameFourValue').val() || '',
+                                $('#SLNo').val() || 0,
+                                $('#IsSubtract').val() || 'No',
+                                $('#IsDebit').val() || 'Yes',
+                                $('#IsCredit').val() || 'No',
+                                $('#Remarks').val(),
+                                $('#SelectStatement').val() || '',
+                                $('#WhereCondition').val() || '',
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ',
+                                false
+                            ]);
+
+                            toastr.success("Data Added");
+                            //tblIntegrationSettingDetails = $('#tblIntegrationSettingDetails').DataTable();
+                            //$("#addBtn").text("Add");
+                            //tblIntegrationSettingDetails.draw();
+                        }
+                        tblIntegrationSettingDetails = $('#tblIntegrationSettingDetails').DataTable();
+
+
+                    var abc = $('#SLNo').val();
+                    var xyz = 0;
+                    xyz = parseFloat(abc) + 1;
+
+                    //$('#OtherLinkOne').val("");
+                    //$('#OtherLineTwo').val("");
+                    $('#SLNo').val(xyz);
+                    $('#IsDebit').val("No");
+                    $('#IsCredit').val("No");
+                }
+
+
+            //}
+            //else {
+            //    $("#QtySpan").text('Please Fill Up the Qty.');
+            //    toastr.error('Please Fill Up the Qty.');
+            //}
+        };
+
+        $('#tblIntegrationSettingDetails tbody tr').on('click', '.SelectColumnNameOne', function () {
+            if ($.fn.DataTable.isDataTable('#tblIntegrationSettingDetails')) {
+
+                tblIntegrationSettingDetails
+                    .on('select', function (e, dt, type, indexes) {
+
+                        $("#detailsAddBtn").text("Modify");
+
+                        if ($("#detailsspan").children('#detailsCancel')) {
+
+                            $("#detailsspan").children('#detailsCancel').remove();
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel">Cancel</button>');
+                        }
+                        else {
+
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel">Cancel</button>');
+                        }
+
+
+                        var f = tblIntegrationSettingDetails.rows('.selected').data();
+                        var notes = $('#tblIntegrationSettingDetails').DataTable().rows('.selected').nodes();
+                        console.log(notes);
+
+                        //{ "sClass": "IntegrationSettingMainId", "visible": false },//0
+                        //{ "sClass": "IntegrationSettingDetailsId", "visible": false },//1
+                        //{ "sClass": "TableName", "visible": false },//2
+                        //{ "sClass": "ORDINAL_POSITION", "visible": false },//3
+                        //{ "sClass": "AccId", "visible": false },//4
+                        //{ "sClass": "AccCode", "visible": true },//5
+                        //{ "sClass": "SelectColumnNameOne", "visible": true },//6
+                        //{ "sClass": "ConditionCount", "visible": false },//7
+                        //{ "sClass": "ColNameOne", "visible": true },//8   --2
+                        //{ "sClass": "ColNameOneValue", "visible": true },//9 ---3
+                        //{ "sClass": "ColNameTwo", "visible": true },//10  ---4
+                        //{ "sClass": "ColNameTwoValue", "visible": true },//11   ---5
+                        //{ "sClass": "ColNameThree", "visible": false },//12
+                        //{ "sClass": "ColNameThreeValue", "visible": false },//13
+                        //{ "sClass": "ColNameFour", "visible": false },//14
+                        //{ "sClass": "ColNameFourValue", "visible": false },//15
+                        //{ "sClass": "SLNo", "visible": true },//16  --6
+                        //{ "sClass": "IsSubTract", "visible": true },//17  --7
+                        //{ "sClass": "IsDebit", "visible": true },//18  ---8
+                        //{ "sClass": "IsCredit", "visible": true },//19  --9
+                        //{ "sClass": "Remarks", "visible": true },//20 ---10
+                        //{ "sClass": "SelectStatement", "visible": false },//21
+                        //{ "sClass": "WhereCondtion", "visible": false },//22
+                        //{ "sClass": "Action", "visible": true },//23
+                        //{ "sClass": "IsDelete", "visible": false }//24
+
+                        selectedItem = null;
+                        selectedItem = `${f[0][6]}`;
+                        //alert(selectedItem);
+
+                        //var test = $.trim($("#test").text());
+                        var testArray = selectedItem.split(', ');
+                        //console.log(testArray);
+                        $('#SelectColumnNameOne').val(testArray).change();
+
+                        //$('#multipleSelect').val(testArray);
+
+                        //$('#IntegrationTableName').val(`${f[0][2]}`).change();
+
+                        $('#AccId').val(`${f[0][4]}`).change();
+
+                       // $('#ConditionCount').val(`${notes[0].cells[2].children[0].value}`);
+
+                        $('#ColNameOne').val(`${notes[0].cells[2].children[0].value}`).change();
+
+                        $('#ColNameOneValue').val(`${notes[0].cells[3].children[0].value}`);
+
+                        $('#ColNameTwo').val(`${notes[0].cells[4].children[0].value}`).change();
+
+                        $('#ColNameTwoValue').val(`${notes[0].cells[5].children[0].value}`);
+                        //$('#ColNameThree').val(`${notes[0].cells[7].children[0].value}`).change();
+                        //$('#ColNameThreeValue').val(`${notes[0].cells[8].children[0].value}`);
+                        //$('#ColNameFour').val(`${notes[0].cells[9].children[0].value}`).change();
+                        //$('#ColNameFourValue').val(`${notes[0].cells[10].children[0].value}`);
+
+
+                        $('#SLNo').val(`${notes[0].cells[6].children[0].value}`);
+                        $('#IsSubTract').val(`${notes[0].cells[7].children[0].value}`).change();
+                        $('#IsDebit').val(`${notes[0].cells[8].children[0].value}`).change();
+                        $('#IsCredit').val(`${notes[0].cells[9].children[0].value}`).change();
+                        $('#Remarks').val(`${notes[0].cells[10].children[0].value}`);
+                        $('#SelectStatement').val(`${f[0][21]}`);
+                        $('#WhereCondition').val(`${f[0][22]}`);
+                    })
+                    .on('deselect', function (e, dt, type, indexes) {
+                        selectedItem = null;
+                        $("#detailsAddBtn").text("Add");
+                        $("#detailsspan").children('#detailsCancel').remove();
+                        $(".cancel").trigger("click");
+                        $('#AccId').val("0").change();
+                        $('#SelectColumnNameOne').val("").change();
+
+                        $('#SLNo').val("");
+                        $('#IsDebit').val("false").change();
+                        $('#IsCredit').val("false").change();
+                    });
+            };
+
+
+
+            //if ($(this).hasClass('selected')) {
+            //    //$("#UpBtn").show();
+            //    $("#addBtn").text("Modify");
+            //}
+            //else {
+            //    table.$('tr.selected').removeClass('selected');
+            //    $(this).addClass('selected');
+            //}
+            //if ($(this).hasClass("selected")) {
+
+            //}
+        });
+
+        $('#tblIntegrationSettingDetails tbody').on('click', '.dlttrash', function () {
+            var d = $(this).data();
+            var i = this.parentNode.parentNode;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tblIntegrationSettingDetails.cell(l, 24).data(true);
+                    $(this).parent().parent().hide();
+                }
+                else {
+                    var table = $('#tblIntegrationSettingDetails').DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#detailsspan").children('#Cancel')) {
+                        $("#detailsspan").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $('#tblIntegrationSettingDetails').height();
+                    var z = parseFloat(x) + parseFloat(y);
+                   // $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+                var table = $('#tblIntegrationSettingDetails').DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($("#detailsspan").children('#Cancel')) {
+                    $("#detailsspan").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $('#tblIntegrationSettingDetails').height();
+                var z = parseFloat(x) + parseFloat(y);
+               // $('html, body').animate({ scrollTop: z }, 500);
+            }
+
+            toastr.warning("Data Deleted");
+
+        });
+
+        $(document).on('click','.detailsCancel',function () {
+            if ($.fn.DataTable.isDataTable('#tblIntegrationSettingDetails')) {
+                if (tblIntegrationSettingDetails.rows('.selected').any()) {
+                    $('#tblIntegrationSettingDetails tr.selected').removeClass('selected');
+                }
+                $("#detailsAddBtn").text("Add");
+                $(this).remove();
+                 //$('#CategoryId').val("0").change();
+                       // $('#AccId').val("-1").change();
+                        //$('#ProductBrand').val("");
+                        //$('#ProductModel').val("");
+                        //$('#ConsumptionQty').val("");
+                $('#AccId').val("0").change();
+
+                $('#SLNo').val("");
+                $('#IsDebit').val("No");
+                $('#IsCredit').val("No");
+                $('#SelectColumnNameOne').val("-1").change();
+            }
+
+
+        });
+
+
+
+    </script>
+}

@@ -1,0 +1,725 @@
+﻿@using System.Data
+@using Newtonsoft.Json
+@model GTERP.Models.HR_AttendanceProcess
+@{
+    ViewBag.Title = "Attendance Process";
+    //DataTable tbl = (DataTable)ViewBag.EmpData;
+    var tbl = ViewBag.EmpData;
+    ButtonPermission permission = ViewBag.ButtonPermission;
+
+}
+
+<style>
+    fieldset:hover, .bringshadow:hover {
+        box-shadow: 0 10px 6px -6px #777;
+    }
+
+    .btndisabled {
+        background-color: rgb(138 176 248);
+        border: 0 rgb(138 176 248);
+    }
+
+    .myMessage {
+        position: fixed;
+        top: 150px;
+        left: 35%;
+        z-index: 9999999999999
+    }
+
+    .table-deepsuccess,
+    .table-deepsuccess > td,
+    .table-deepsuccess > th {
+        background-color: #5bd375; /* Your custom color */
+    }
+</style>
+
+@using (Html.BeginForm())
+{ 
+   <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="alert alert-danger" role="alert">
+                    <div class="modal-header">
+
+                        @*<h5 class="modal-title" id="exampleModalLabel">Process Failed..</h5>*@
+                        <h5 class="modal-title text-center" id="exampleModalLabel">Process Failed!!!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="loadSite()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div><h5>Please check network connection and then process again after some times.</h5></div>
+                    <div class="modal-body" id="modal-body">
+                        ...
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="loadSite()">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    if (@ViewBag.loadMsg == "save")
+    {
+        <div class="myMessage" style="width: 30%;">
+            <br /><br /><br /><br />
+            <center>
+                <div class="card bg-primary">
+                    <div class="card-header">Message</div>
+                    <div class="card-body messageDiv">
+                        <p style="color:black !important;">@Html.ValidationMessage("CustomError")</p>
+                    </div>
+                </div>
+            </center>
+        </div>
+
+    }
+    else if (ViewBag.msgErr == "error")
+    {
+        <div class="myMessage" style="width: 30%;">
+            <br /><br /><br /><br />
+            <center>
+                <div class="card bg-primary">
+                    <div class="card-header">Message</div>
+                    <div class="card-body messageDiv">
+                        <p style="color:black !important;">@Html.ValidationMessage("CustomError")</p>
+                    </div>
+                </div>
+            </center>
+        </div>
+    }
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="form-header btn-info">
+                        <i class="fas fa-cogs fa-2x" aria-hidden="true"></i>  ATTENDANCE PROCESS
+                        <div id="loading" style="display: inline;">
+                            <div id="loadingGif" style="display:inline;">
+                                @*<img src="~/Files/loading.gif" style="height:16px;display:inline;" />*@
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body" id="pnlAttPross">
+                        <input type="hidden" id="ViewData" data-value="@JsonConvert.SerializeObject(tbl) " />
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Enter Date To Process
+                                            <i class="far fa-calendar-alt px-1"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="dtProcess" class="form-control" />
+                                </div>
+                                <div class="input-group mb-2 clstoDate d-none">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.dtTo)
+                                            <i class="far fa-calendar-alt px-1"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="dtTo" class="form-control pull-right" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.dtLast)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="dtLast" class="form-control" readonly />
+                                    @Html.ValidationMessageFor(model => model.dtLast)
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+
+                                <div class="bringshadow boxStyle" style="padding-right: 5px; margin-bottom: 5px;padding:14px;border-radius:3px;border:solid 1px rgba(0,0,0,0.15);">
+                                    @Html.LabelFor(model => model.dayType, new { @class = "control-label d-inline" })
+                                    <div class="pl-4 d-inline" style="font-weight: bold; color: black">
+                                        <label><input type="radio" id="regular" name="optSts" checked="checked" value="R" /> Regular Day</label>&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" id="weekly" name="optSts" value="W" /> Weekly Day</label>&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" id="holi" name="optSts" value="H" /> Holi Day</label>&nbsp;&nbsp;&nbsp;
+                                        <label><input type="radio" id="Special" name="optSts" value="S" /> Special Day</label>&nbsp;&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Criteria*@
+                            <div class="col-md-12 col-12">
+                                <div class="row px-3">
+                                    <div class="col-md-4 col-12 hello" style="margin-bottom: 5px;">
+                                        <fieldset class="the-fieldset boxStyle" style="border-radius:3px;border:solid 1px rgba(0,0,0,0.15);padding:8px;padding-left: 20px">
+                                            <legend class="the-legend legendStyle" style="width:auto;font-size:15px;">Criteria</legend>
+                                            @*<p style="height:5px;"></p>*@
+                                            <label><input type="radio" style="margin-bottom:8px;" class="chkType" id="chkAll" name="optCriteria" checked="checked" value="All" />&nbsp;All Employee</label>
+                                            <br />
+                                            <label><input type="radio" style="margin-bottom:8px;" class="chkType" id="chkEmp" name="optCriteria" value="EmpId" /> Employee Code</label>
+                                            <br />
+                                            <label><input type="radio" style="margin-bottom:8px;" class="chkType" id="chkSect" name="optCriteria" value="Sec" /> Section</label>
+                                            <br />
+                                            <label><input type="radio" style="margin-bottom:8px;" class="chkType" id="chkDesig" name="optCriteria" value="Desig" /> Designation</label>
+                                            <br />
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-8 col-12 hello2" style="padding-left: 5px; padding-right: 0px; margin-bottom: 5px;">
+                                        <fieldset class="the-fieldset boxStyle" style="border-radius:3px;border:solid 1px rgba(0,0,0,0.15);padding:8px 35px;">
+                                            <legend class="the-legend legendStyle" style="width:auto;font-size:15px;">Criteria Details</legend>
+                                            @*<p style="height:5px;"></p>*@
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.EmpId)
+                                                    </span>
+                                                </div>
+                                                <select asp-for="EmpId" class="form-control" asp-items="ViewBag.Employee" onchange="EmpDetails()"></select>
+                                                @Html.ValidationMessageFor(model => model.EmpId)
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.EmpName)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.EmpName, new { @id = "name", @class = "form-control", @placeholder = "employee name", @readonly = "readonly" })
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.SectId)
+                                                    </span>
+                                                </div>
+                                                @*@Html.DropDownListFor(model => model.SectId, new SelectList(ViewBag.Section, "Id", "Name"), new { @id = "SectId", @class = "form-control" })*@
+                                                <select asp-for="SectId" class="form-control" asp-items="ViewBag.Section"></select>
+                                                @Html.ValidationMessageFor(model => model.SectId)
+                                            </div>
+
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*monthly Attendance*@
+                            <div class="offset-md-2 col-md-8 col-12">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        @if (ViewBag.UserName == true)
+                                        {
+                                            <label>@Html.CheckBoxFor(model => model.Monthly, new { @id = "chkMonthly" })&nbsp;&nbsp;Monthly Process</label>
+                                            @Html.ValidationMessageFor(model => model.Monthly)
+                                        }
+                                        else
+                                        {
+                                            <label class="d-none">@Html.CheckBoxFor(model => model.Monthly, new { @id = "chkMonthly" })&nbsp;&nbsp;Monthly Process</label>
+                                            @Html.ValidationMessageFor(model => model.Monthly)
+
+                                        }
+
+
+                                    </div>
+                                    <div class="col-md-4 col-12">
+
+                                        <button id="btn" type="button" class="btn btn-primary btnProcess btn-block rounded-0" onclick="fncSubmitForm()">
+                                            <span class="d-none spinner-border spinner-border-sm"
+                                                  role="status" aria-hidden="true"></span> Process
+                                        </button>
+
+
+
+                                        @*<input type="button" class="btn btn-primary btn-block rounded-0" onclick=" fncSubmitForm()" value="Process" />*@
+                                    </div>
+
+                                    <div class="col-md-4 col-12">
+                                        @if (permission == null || permission.IsShowSendEmail == true)
+                                        {
+                                            <button id="IsShowSendEmail" type="button" class="btn btn-warning btnProcess btn-block rounded-0" onclick="sendEmail()">
+                                                @*  <span class="d-none spinner-border spinner-border-sm"
+                                                    role="status" aria-hidden="true"></span>*@ Send Email
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button id="IsShowSendEmail" type="button" class="btn btn-danger btnProcess btn-block rounded-0 d-none" onclick="sendEmail()">
+                                                @*  <span class="d-none spinner-border spinner-border-sm"
+                                                    role="status" aria-hidden="true"></span>*@ Send Email
+                                            </button>
+
+                                        }
+
+
+
+                                        @*<input type="button" class="btn btn-primary btn-block rounded-0" onclick=" fncSubmitForm()" value="Process" />*@
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-10 offset-md-1 ">
+                <div class="card">
+                    <div class="form-header btn-info">
+                       
+                        <i class="fas fa-rocket fa-2x" aria-hidden="true"></i> PROCESS HISTORY
+                    </div>
+
+                    <div class="card-body" id="ProccessDivmain">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Process (from-to) </th>                                    
+                                    <th>Req At</th>
+                                    <th>Start at</th>
+                                    <th>End At</th>
+                                    <th>Status</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="ProccessDiv">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+		function EmpDetails() {
+			var x = $("#EmpId").val();
+			var data1 = $("#ViewData").data("value");
+			var data = JSON.stringify(eval("(" + data1 + ")"));
+			var json = JSON.parse(data);
+			for (var i = 0; i < json.length; i++) {
+				if (json[i].EmpId == x) {
+					$("#name").val(json[i].EmpName.toString());
+				}
+			}
+		}
+		function sendEmail() {
+
+			var dtProcess = $('#dtProcess').val();
+			$.ajax({
+				type: 'POST',
+				url: '@Url.Action("EmailAbsentList", "HR")',
+				dataType: 'json',
+				async: true,
+
+				data: { processDate: dtProcess },
+				success: function (result) {
+
+					if (result.Success == "1") {
+						customFile('1', result.ex);
+
+						window.setTimeout(function () {
+							// Move to a new location or you can do something else
+							window.location.href = '@Url.Action("AttendanceProcessList", "HR")';
+
+						}, 500);
+					}
+					else if (result.Success == "2") {
+						customFile('2', result.ex);
+					}
+					else {
+						toastr.error(result.ex);
+					}
+
+					$(".container").find("*").attr("disabled", false);
+				},
+				error: function (ex) {
+					toastr.error("Sorry, an error occured . . . .");
+
+					$(".container").find("*").attr("disabled", false);
+				}
+
+			});
+		}
+
+		function fncCheck() {
+
+			$('input.chkType').on('click', function (event) {
+				var criteria = $("input[name='optCriteria']:checked").val();
+				//alert($("input[name='optCriteria']:checked").val());
+				$('#SectId').attr('disabled', 'disabled');
+				$('#EmpId').attr('disabled', 'disabled');
+				//$('input#chkAll').on('ifChecked', function () {
+
+				//});
+				//$('input#chkSect').on('ifChecked', function () {
+				//    $('#SectId').removeAttr('disabled');
+				//});
+				//$('input#chkEmp').on('ifChecked', function () {
+				//    $('#EmpId').removeAttr('disabled');
+				//});
+				if (criteria == "EmpId") {
+					$('#EmpId').removeAttr('disabled');
+				}
+				if (criteria == "Sec") {
+					$('#SectId').removeAttr('disabled');
+				}
+
+
+			});
+		}
+
+		function fncProcessParam(param) {
+			$("#EmpId").attr("disabled", "disabled");
+			$("#SectId").attr("disabled", "disabled");
+			$("#Status").attr("disabled", "disabled");
+			if (param == "EmpId") {
+				$("#EmpId").removeAttr("disabled");
+			}
+			else if (param == "Sec") {
+				$("#SectId").removeAttr("disabled");
+			}
+		}
+
+
+		function fncSubmitForm() {
+
+            $("#btn").prop("disabled", true);
+            localStorage.setItem("attInPrc", true);
+            $("#btn").html("Wait ...");
+
+            
+			//$("#btn").addClass('btndisabled');
+			//$(".container").find("*").attr("disabled", true); // disale all child of container
+			if (fncCheckFileName() == true) {
+				return false;
+
+			}
+			//$(this).serialize();
+			//$("form")[0].submit();
+
+			var model = {
+				dtLast: $('#dtLast').val(),
+				dtProcess: $('#dtProcess').val(),
+				dtTo: $('#dtTo').val(),
+				//dayType: $('#dayType').val(),$('input[name="optSts"]:checked').val();
+				dayType: $('input[name="optSts"]:checked').val(),
+				Ramadan: "",
+				Monthly: $('#chkMonthly').is(":checked"),
+				EmpId: $('#EmpId option:selected').val(),
+				EmpName: "",
+				SectId: $('#SectId option:selected').val(),
+				DesigId: "0",
+				optCriteria: $("input[name='optCriteria']:checked").val(),
+			}
+
+
+            StartSpinner(".btnProcess");
+
+			$.ajax({
+				type: 'POST',
+				url: '@Url.Action("AttendanceProcessList", "HR")',
+				dataType: 'json',
+				async: true,
+
+				data: { model: model },
+				success: function (result) {
+                    StopSpinner(".btnProcess");
+                    if (result.Success == "1") {
+                        document.getElementById("ProccessDivmain").scrollIntoView();
+                        GetProcessPendingList();
+                        //$('#modal-body').text(result.ex);
+                        //$('#exampleModal').modal('toggle');
+                       
+						customFile('1', result.ex);
+                        $("#btn").prop("disabled", true);
+                        $("#btn").html("Wait ...");
+                        localStorage.setItem("attInPrc", true);
+                       // $("#btn").removeClass('btndisabled');
+                       // $(".container").find("*").attr("disabled", false); // disale all child of container
+                        
+						// window.setTimeout(function () {
+						// 	// Move to a new location or you can do something else
+						// 	window.location.href = '@Url.Action("AttendanceProcessList", "HR")';
+
+						// }, 500);
+					}
+					else if (result.Success == "2") {
+                      
+                        $("#btn").prop("disabled", false);
+                        $("#btn").html("Proccess");
+                        localStorage.setItem("attInPrc", false);
+                        customFile('2', result.ex);
+					}
+					else {
+                       
+                       // toastr.error(result.ex);
+                        $('#modal-body').text(result.ex);
+                        $('#exampleModal').modal('toggle');
+					}
+					//
+					//$(".container").find("*").attr("disabled", false);
+				},
+				error: function (ex) {
+					toastr.error("Sorry, an error occured . . . .");
+					StartSpinner(".btnProcess");
+					$(".container").find("*").attr("disabled", false);
+				}
+
+			});
+			//StopSpinner(".btnProcess");
+			//StartSpinner(".btnProcess");
+			//$(".container").find("*").attr("disabled", false);
+			// this format not work in server
+		@*var options = {};
+			options.url = "/AttendanceProcess/Index";
+			options.type = "POST";
+			options.dataType = "json";
+			options.data = model;
+			options.success = function (result) {
+			if (result.Success == "1") {
+			customFile('1', result.ex);
+			window.setTimeout(function () {
+			// Move to a new location or you can do something else
+			window.location.href = '@Url.Action("Index", "AttendanceProcess")';
+			}, 500);
+			}
+			else {
+			toastr.error(result.ex);
+			}
+			};
+			options.error = function () {
+			alert("error");
+			};
+			$.ajax(options);*@
+
+
+				}
+		function fncCheckFileName() {
+			if ($("#dtLast").val().length == 0) {
+				alert('Please, provide last process date');
+				$("#dtLast").focus().select();
+				return true;
+			}
+			if ($("#dtProcess").val().length == 0) {
+				alert('Please, provide process date');
+				$("#dtProcess").focus().select();
+				return true;
+			}
+
+			if ($("#chkMonthly").is(':checked')) {
+				if ($("#dtTo").val().length == 0) {
+					alert('Please, provide process to date');
+					$("#dtTo").focus().select();
+					return true;
+				}
+			}
+		}
+		$(document).ready(function () {
+
+            var isInPrc = localStorage.getItem("attInPrc");
+            //console.log("ddddddd",Boolean(isInPrc));
+            if (isInPrc == null || isInPrc == "false") {
+                $("#btn").prop("disabled", false);
+                $("#btn").html("Proccess");
+            } else {
+                $("#btn").prop("disabled", true);
+                $("#btn").html("Wait ...");
+            }
+            GetProcessPendingList();
+            setInterval(GetProcessPendingList, 5000);
+			$("#loading").hide();
+			fncProcessParam('');
+			EmpDetails();
+			fncCheck();
+
+			//Monthly process to date
+			$('#chkMonthly').click(function () {
+				//if ($('#chkMonthly').is(':checked')) {
+				//    $(".clstoDate").show();
+				//}
+				//else {
+				//    $(".clstoDate").hide();
+				//}
+
+				$(".clstoDate").toggleClass('d-none');
+			});
+
+			//
+			$('.myMessage').show().delay(1500).fadeOut();
+
+			$("#dtProcess").datepicker({
+				changeMonth: true,
+				changeYear: true,
+				onSelect: function (date) {
+					// Your CSS changes, just in case you still need them
+					$('a.ui-state-default').removeClass('ui-state-highlight');
+					$(this).addClass('ui-state-highlight');
+					var dateFormat = $("#dtProcess").datepicker("option", "dateFormat");
+					//setter
+					$("#dtProcess").datepicker("option", "dateFormat", 'dd-M-yy');
+				}
+			});
+
+			$("#dtTo").datepicker({
+				changeMonth: true,
+				changeYear: true,
+				onSelect: function (date) {
+					// Your CSS changes, just in case you still need them
+					$('a.ui-state-default').removeClass('ui-state-highlight');
+					$(this).addClass('ui-state-highlight');
+					var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+					//setter
+					$("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+				}
+			});
+
+
+			//$("#dtProcess").datepicker({
+			//    changeMonth: true,
+			//    changeYear: true,
+			//    autoclose: true,
+			//    format: "dd-M-yyyy"
+			//}).datepicker("setDate", new Date());
+
+			//$("#dtTo").datepicker({
+			//    changeMonth: true,
+			//    changeYear: true,
+			//    autoclose: true,
+			//    format: "dd-M-yyyy"
+			//}).datepicker("setDate", new Date());
+
+			$(".the-fieldset:eq(0)").height($(".the-fieldset:eq(1)").height());
+
+		});
+
+         function loadSite() {
+        // Wait for 3 seconds before redirecting
+        window.setTimeout(function () {
+            // Move to a new location or you can do something else
+            window.location.href = '@Url.Action("AttendanceProcessList", "HR")';
+        }, 3000); // 3000 milliseconds = 3 seconds
+    }
+
+        function GetProcessPendingList() {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("PendingProcessList", "HR")?type=att',
+                datatype: "json",
+                data: {},
+                success: function (data) {
+                   
+                    let prclisdiv = $("#ProccessDiv");
+                    let pendingLength = data.filter(x => x.IsExecuted === 0 || x.IsExecuted === 3).length;
+                    if (pendingLength > 0) {
+                        $("#btn").prop("disabled", true);
+                        $("#btn").html("Wait ...");
+                        localStorage.setItem("attInPrc", true);
+
+                    } else {
+                        $("#btn").prop("disabled", false);
+                         $("#btn").html("Proccess");
+                        localStorage.setItem("attInPrc", false);
+                    }
+
+                    let listdgn = data.map(x => {
+                        let status = '';
+                        let colorbg = '';
+                        
+                        if (x.IsExecuted == 0) {
+                            status = 'Pending';
+                            colorbg = 'warning';
+
+                        } else if (x.IsExecuted == 1) {
+                            status = 'Done';
+                            colorbg = 'success';
+                        } else if (x.IsExecuted == 3) {
+                            status = 'Processing';
+                            colorbg = 'info';
+                        }
+                        else if (x.IsExecuted == 4) {
+                            status = `<a id="retry_${x.Id}" onclick="ProcessRetry(${x.Id})" class="text-white" href="javascript:void(0)">Retry</a>`;
+                            colorbg = 'deepsuccess';
+                        }
+
+                        return `<tr class="table-${colorbg}">
+                                              <td> ${x.RequestFrom}:${x.RequestTo}</td>
+                                              <td> ${x.Requesteddate},${x.Requestetime}</td>
+                                              <td>${x.PrcstDate},${x.PrcstTime}</td>
+                                              <td>${x.PrcedDate},${x.PrcedTime}</td>
+                                               <td><span class="badge badge-${colorbg}"> ${status}</span></b>
+                                   </tr>`;
+                    });
+
+                    prclisdiv.html(listdgn.join(''));
+                    GetLastProcessDate();
+                },
+                error: function (err) {
+                    toastr.error("Somthing wrong whene processing");
+
+                }
+            });
+
+        }
+
+        function GetLastProcessDate() {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetLastProcessDate", "HR")',
+                datatype: "json",
+                data: {},
+                success: function (data) {
+
+
+                    $('#dtLast').val(data);
+
+                   
+                },
+                error: function (err) {
+                    toastr.error("Somthing wrong whene processing");
+
+                }
+            });
+        }
+        function ProcessRetry(prcId) {
+            disableRetryLink(`retry_${prcId}`); 
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("RetryProcess", "HR")?prcId=' + prcId,
+                datatype: "json",
+                data: {},
+                success: function (data) {
+
+                    GetProcessPendingList();
+
+
+                },
+                error: function (err) {
+                    toastr.error("Somthing wrong when processing");
+
+                }
+            });
+        }
+        function disableRetryLink(linkId) {
+            var retryLink = document.getElementById(linkId);
+            retryLink.classList.add("disabled");
+            retryLink.removeAttribute("onclick"); 
+        }
+    </script>
+    
+
+}

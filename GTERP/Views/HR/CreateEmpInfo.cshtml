@@ -1,0 +1,2992 @@
+﻿@model GTERP.Models.HR_Emp_Info
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+@*@using (Html.BeginForm("CreateEmpInfo", "HR", FormMethod.Post, new { id = "myForm", enctype = "multipart/form-data" }))
+    {*@
+@{
+    var firstaprv = ViewBag.Status;
+    var finalaprv = ViewBag.FirstApprove;
+    DateTime minDate = new DateTime(1970, 1, 1);
+    DateTime currentDate = DateTime.Now;
+}
+<form asp-controller="HR" asp-action="CreateEmpInfo" method="post" id="myForm" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ComId" />
+    <input type="hidden" asp-for="UserId" />
+    <input type="checkbox" asp-for="IsApprove" hidden />
+    @*@Html.AntiForgeryToken()*@
+
+    @if (Model != null)
+    {
+        @*<input type="hidden" id="EmpId" name="EmpId" value="@Model.EmpId" />*@
+        <input type="hidden" asp-for="EmpId" id="EmpId" />
+    }
+    else
+    {
+        <input type="hidden" asp-for="EmpId" value="0" id="EmpId2" />
+    }
+
+    <div class="container-fluid card">
+        <div class="row">
+
+            <div class="col-md-3 col-12 pt-3 border-right" id="hideIt">
+                <div class="text-center mb-3">
+                    @Html.HiddenFor(model => model.HR_Emp_Image.EmpImage, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.HiddenFor(model => model.HR_Emp_Image.EmpImage, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.HiddenFor(model => model.HR_Emp_Image.EmpImagePath, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.HiddenFor(model => model.HR_Emp_Image.EmpImageExtension, new { htmlAttributes = new { @class = "form-control" } })
+                    @if (Model != null)
+                    {
+                        if (Model.HR_Emp_Image != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="@Model.HR_Emp_Image.EmpImageId" />
+                            if (Model.HR_Emp_Image.EmpImage == null)
+                            {
+                                <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar" multiple />
+                            }
+                            else
+                            {
+                                <img id='image_X' src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.HR_Emp_Image.EmpImage))" class="avatar rounded-circle profile image img-thumbnail" alt="avatar">
+                            }
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="0" />
+                            <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar" multiple />
+                        }
+                        <input type="file" class="image-upload" name="file" id="myFile" />
+                        <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+                    }
+                    else
+                    {
+                        <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar">
+                        <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="0" />
+                        <input type="file" class="image-upload" name="file" id="myFile" />
+                        <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+                        <br />
+                    }
+                    @Html.ValidationMessageFor(model => model.HR_Emp_Image.EmpImage, "", new { @class = "text-danger" })
+                </div>
+
+                <ul class="list-group mb-3">
+                    <li class="list-group-item text-muted text-center">Information <i class="fa fa-dashboard fa-1x"></i></li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Id:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.EmpCode
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Name:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.EmpName
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Department:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.Cat_Department.DeptName
+                        }
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class=""><strong>Designation:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.Cat_Designation.DesigName
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Joining Date:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(Model.DtJoin).ToShortDateString()))
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Mobile No:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.EmpPhone1
+                        }
+
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Email:</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.EmpEmail
+                        }
+
+                    <li class="list-group-item">
+                        <span class=""><strong>Signature: </strong></span>
+                        @Html.HiddenFor(model => model.HR_Emp_Image.EmpSign, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.HR_Emp_Image.EmpSignPath, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.HR_Emp_Image.EmpSignExtension, new { htmlAttributes = new { @class = "form-control" } })
+                        @if (Model != null)
+                        {
+                            if (Model.HR_Emp_Image != null)
+                            {
+                                <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="@Model.HR_Emp_Image.EmpImageId" />
+                                if (Model.HR_Emp_Image.EmpSign == null)
+                                {
+                                    <img id='image_X2' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="" style="height:60px; width:160px;" alt="avatar" multiple />
+                                }
+                                else
+                                {
+                                    <img id='image_X2' src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.HR_Emp_Image.EmpSign))" class="" style="height:60px; width:160px;" alt="avatar">
+                                }
+                            }
+                            else
+                            {
+                                <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="0" />
+                                <img id='image_X2' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="" style="height:60px; width:160px;" alt="avatar" multiple />
+                            }
+                            <input type="file" class="image-upload" name="signfile" id="mysignFile" />
+                            <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+                        }
+                        else
+                        {
+                            <img id='image_X2' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="" style="height:60px; width:160px;" alt="avatar">
+                            <input type="hidden" asp-for="HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="0" />
+                            <input type="file" class="image-upload" name="signfile" id="mysignFile" />
+                            <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+                            <br />
+                        }
+                        @Html.ValidationMessageFor(model => model.HR_Emp_Image.EmpSign, "", new { @class = "text-danger" })
+                    </li>
+                </ul>
+
+            </div><!--/col-3-->
+            <div class="col-md-9 col-12 container pt-3">
+                <div class="row mb-2">
+                    <span class="btn btn-primary col-md-2 col-12 rounded-0 ml-2" id="showHide">show/hide</span>
+                    <span class="text-center col-md-10 col-12" id="styletext">Employee Entry Form</span>
+                </div>
+
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#Personal">Personal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#PersonalInfo">Detalis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Address">Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#BankInfo">Bank Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Family">Family</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Nominee">Nominee</a>
+                    </li>
+                    <li class="nav-item">
+                        @{
+                            if (ViewBag.Title == "Create")
+                            {
+                                <a class="nav-link d-none" asp-action="EmpEducation" asp-controller="HR">Education</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-route-id="@Model.EmpId" asp-action="EmpEducationUpdate" asp-controller="HR" target="_blank">Education</a>
+                            }
+                        }
+                    </li>
+                    <li class="nav-item">
+                        @{
+                            if (ViewBag.Title == "Create")
+                            {
+                                <a class="nav-link d-none" asp-action="EmpExperience" asp-controller="HR">Experience</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-route-id="@Model.EmpId" asp-action="EmpExperienceUpdate" asp-controller="HR" target="_blank">Experience</a>
+                            }
+                        }
+                    </li>
+                    @if(ViewBag.IsCorporate == 1)
+                    {
+                        <li class="nav-item">
+                        @{
+                            if (ViewBag.Title == "Create")
+                            {
+                                    <a class="nav-link d-none" asp-action="EmpDevice" asp-controller="HR">Device</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-route-id="@Model.EmpId" asp-action="EmpDeviceUpdate" asp-controller="HR" target="_blank">Device</a>
+                            }
+                        }
+                    </li>
+                        <li class="nav-item">
+                            @{
+                                if (ViewBag.Title == "Create")
+                                {
+                                    <a class="nav-link d-none" asp-action="EmpProject" asp-controller="HR">Project</a>
+                                }
+                                else
+                                {
+                                    <a class="nav-link" asp-route-id="@Model.EmpId" asp-action="EmpProjectUpdate" asp-controller="HR" target="_blank">Project</a>
+                                }
+                            }
+                        </li>
+                    }               
+                </ul>
+                <div class="tab-content mt-4 needs-validation" novalidate>
+                    <div class="container tab-pane active" id="Personal">
+                        <div class="row">
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.EmpCode)</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"> @Html.LabelFor(model => model.EmpName)</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1"> @Html.LabelFor(model => model.EmpNameB)</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpNameB, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpNameB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="DeptId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="DeptId" class="form-control" asp-items="ViewBag.DeptId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="SectId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="SectId" class="form-control" asp-items="ViewBag.SectId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="SubSectId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="SubSectId" class="form-control" asp-items="@ViewBag.SubSectId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="DesigId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="DesigId" class="form-control" asp-items="ViewBag.DesigId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="UnitId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="UnitId" class="form-control" asp-items="ViewBag.UnitId">
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="FloorId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="FloorId" class="form-control" asp-items="ViewBag.FloorId">
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="LineId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="LineId" class="form-control" asp-items="ViewBag.LineId">
+                                    </select>
+                                </div>
+
+                            </div>
+
+
+                            @{ if (ViewBag.Title == "Edit" || ViewBag.Title == "Delete")
+                                {
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtBirth)
+                                                </span>
+                                            </div>
+                                            <input type="text" asp-for="DtBirth" name="DtBirth" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtBirth, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtJoin)
+                                                </span>
+                                            </div>
+                                            <input type="text" asp-for="DtJoin" name="DtJoin" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtJoin, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtIncrement)
+                                                </span>
+                                            </div>
+                                            <input type="text" asp-for="DtIncrement" name="DtIncrement" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtIncrement, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtPromotion)
+                                                </span>
+                                            </div>
+                                            @*@Html.EditorFor(model => model.DtIncrement, new { htmlAttributes = new { @class = "form-control" } })*@
+                                            <input type="text" asp-for="DtPromotion" name="DtPromotion" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtPromotion, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtConfirm)
+                                                </span>
+                                            </div>
+                                            <input type="text" asp-for="DtConfirm" name="DtConfirm" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtConfirm, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                }
+                                else if (ViewBag.Title == "Create")
+                                {
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtBirth)
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@DateTime.Now.ToString("dd-MMM-yyyy")" asp-for="DtBirth" name="DtBirth" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtBirth, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtJoin)
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@DateTime.Now.ToString("dd-MMM-yyyy")" asp-for="DtJoin" name="DtJoin" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtJoin, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtIncrement)
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@DateTime.Now.ToString("dd-MMM-yyyy")" asp-for="DtIncrement" name="DtIncrement" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtIncrement, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtPromotion)
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@DateTime.Now.ToString("dd-MMM-yyyy")" asp-for="DtPromotion" name="DtPromotion" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtPromotion, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.DtConfirm)
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@DateTime.Now.ToString("dd-MMM-yyyy")" asp-for="DtConfirm" name="DtConfirm" class="form-control" autocomplete="off" />
+                                            @Html.ValidationMessageFor(model => model.DtConfirm, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="EmpTypeId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    @if (ViewBag.Title == "Create")
+
+                                    {
+                                        <select 
+                                            asp-for="EmpTypeId" class="form-control" asp-items="ViewBag.EmpTypeId" >
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        if (ViewBag.permission == true)
+                                        {
+                                            <select 
+                                                asp-for="EmpTypeId" class="form-control" asp-items="ViewBag.EmpTypeId" >
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select 
+                                                asp-for="EmpTypeId" class="form-control" asp-items="ViewBag.EmpTypeId" disabled>
+                                            </select>
+
+                                            <input type="hidden" asp-for="EmpTypeId" />
+                                        }
+                                        
+                                    }                                   
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="ShiftId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="ShiftId" class="form-control" asp-items="ViewBag.ShiftId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="GenderId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="GenderId" class="form-control" asp-items="ViewBag.GenderId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="RelgionId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="RelgionId" class="form-control" asp-items="ViewBag.RelgionId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="BloodId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="BloodId" class="form-control" asp-items="ViewBag.BloodId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            CardNo/FaceId/FingerId
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.FingerId, new { htmlAttributes = new { @class = "form-control",type="number" } })
+                                    @Html.ValidationMessageFor(model => model.FingerId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.NID)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.NID, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.NID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.EmpPhone1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpPhone1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpPhone1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.EmpPhone2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpPhone2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpPhone2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.EmpEmail)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.EmpEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EmpEmail, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.SkillId)
+                                        </span>
+                                    </div>
+                                    <select asp-for="SkillId" asp-items="ViewBag.SkillId" class="form-control">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.SkillId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.Rate)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsInactive)
+                                @Html.CheckBoxFor(model => model.IsInactive, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsInactive, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsAllowOT)
+                                @Html.CheckBoxFor(model => model.IsAllowOT, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsAllowOT, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsCasual)
+                                @Html.CheckBoxFor(model => model.IsCasual, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsCasual, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 col-12 mb-3">
+                                Is Bonus
+                                @Html.CheckBoxFor(model => model.IsIncentiveBns, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsIncentiveBns, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 col-12 mb-3">
+                                Holiday Allow
+                                @Html.CheckBoxFor(model => model.IsHolidayAllow, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsHolidayAllow, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 col-12 mb-3">
+                                Is Night Allow
+                                @Html.CheckBoxFor(model => model.IsNightAllow, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsNightAllow, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                       
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div id="PersonalInfo" class="container tab-pane fade">
+                        <div class="row">
+                            @if (Model != null && Model.HR_Emp_PersonalInfo != null)
+                            {
+                                <input type="hidden" asp-for="HR_Emp_PersonalInfo.EmpPersInfoId" name="HR_Emp_PersonalInfo.EmpPersInfoId" value="@Model.HR_Emp_PersonalInfo.EmpPersInfoId" />
+                                <input type="hidden" asp-for="HR_Emp_PersonalInfo.EmpId" name="HR_Emp_PersonalInfo.EmpId" value="@Model.EmpId" />
+                            }
+                            else
+                            {
+                                <input type="hidden" asp-for="HR_Emp_PersonalInfo.EmpPersInfoId" value="0" />
+                            }
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.NickName)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.NickName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.NickName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.PassportNo)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.PassportNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.BirthCertificate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.BirthCertificate)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.BirthCertificate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.BirthCertificate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_PersonalInfo.WeekDay" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_PersonalInfo.WeekDay" class="form-control" asp-items="ViewBag.WeekDay">
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.TINNo)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.TINNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.TINNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.ChildNo)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.ChildNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.ChildNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.Nationality)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.Nationality, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.Nationality, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.Caste)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.Caste, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.Caste, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.IdentificationSign)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.IdentificationSign, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.IdentificationSign, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.Height)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.Height, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.Height, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.Weight)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.Weight, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.Weight, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Vaccinated
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_PersonalInfo.BId" class="form-control" asp-items="ViewBag.BId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Nature of Work
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.EmpFileNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.EmpFileNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Nature of Work Bangla
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.MedicalBookNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.MedicalBookNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.EmergencyContactName)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.EmergencyContactName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.EmergencyContactName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.EmergencyContactNo)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.EmergencyContactNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.EmergencyContactNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_PersonalInfo.RelationEmerContact)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.RelationEmerContact, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.RelationEmerContact, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Face/FingerId/CardNo Old
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.EmployeeCodeBCIC, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.EmployeeCodeBCIC, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="GradeId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="GradeId" class="form-control" asp-items="ViewBag.GradeId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Service Book No
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_PersonalInfo.PFFileNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.PFFileNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                            @{
+                                if (ViewBag.Title == "Create")
+                                {                                    
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.HR_Emp_PersonalInfo.DtPF)
+                                                </span>
+                                            </div>
+                                            <input type="text" id="DtPF" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control" asp-for="HR_Emp_PersonalInfo.DtPF" />
+                                            @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.DtPF, "", new { @class = "text-danger" })
+                                        </div>
+                                }
+                                else if (ViewBag.Title == "Edit" || ViewBag.Title == "Delete")
+                                {
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    @Html.LabelFor(model => model.HR_Emp_PersonalInfo.DtPF)
+                                                </span>
+                                            </div>
+                                            @{
+                                                var dtPfValue = (Model != null && Model.HR_Emp_PersonalInfo != null && Model.HR_Emp_PersonalInfo.DtPF != null)
+                                                ? Model.HR_Emp_PersonalInfo.DtPF?.ToString("dd-MMM-yyyy")
+                                                : string.Empty;
+                                            }
+
+                                            <input type="text" id="DtPF" name="HR_Emp_PersonalInfo.DtPF" class="form-control" autocomplete="off" value="@dtPfValue" />
+
+                                            @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.DtPF, "", new { @class = "text-danger" })
+                                        </div>
+                                }
+                            }
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label> Category </label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label> Sub Category </label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="SubCategoryId" class="form-control" asp-items="ViewBag.SubCategoryId">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label> Mobile Attendence </label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="MobileAttendence" class="form-control" asp-items="ViewBag.MobileAttendence">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_PersonalInfo.WeekDay2" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_PersonalInfo.WeekDay2" class="form-control" asp-items="ViewBag.WeekDay">
+                                    </select>
+                                </div>
+
+                            </div>                                                      
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.HR_Emp_PersonalInfo.IsAllowPF)
+                                @Html.CheckBoxFor(model => model.HR_Emp_PersonalInfo.IsAllowPF, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.IsAllowPF, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsLunchAllow)
+                                @Html.CheckBoxFor(model => model.IsLunchAllow, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsLunchAllow, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsTrnAllow)
+                                @Html.CheckBoxFor(model => model.IsTrnAllow, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsTrnAllow, "", new { @class = "text-danger" })
+                            </div>                            
+                            <div class="col-md-2 col-12 mb-3">
+                                <label> Is Married </label>
+                                @Html.CheckBoxFor(model => model.HR_Emp_PersonalInfo.MaritalStatus, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.MaritalStatus, "", new { @class = "text-danger" })
+                            </div>
+                             <div class="col-md-3 col-12 mb-3">
+                                <label> Is No Late Deduct </label>
+                                @Html.CheckBoxFor(model => model.HR_Emp_PersonalInfo.IsUsingHouse, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.IsUsingHouse, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsHOD)
+                                @Html.CheckBoxFor(model => model.IsHOD, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsHOD, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsHR)
+                                @Html.CheckBoxFor(model => model.IsHR, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsHR, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsLunchDed)
+                                @Html.CheckBoxFor(model => model.IsLunchDed, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsLunchDed, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsTrnDed)
+                                @Html.CheckBoxFor(model => model.IsTrnDed, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsTrnDed, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                @Html.LabelFor(model => model.IsSalaryHold)
+                                @Html.CheckBoxFor(model => model.IsSalaryHold, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IsSalaryHold, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                <label> Is Police Verify </label>
+                                @Html.CheckBoxFor(model => model.HR_Emp_PersonalInfo.PoliceVerificationStatus, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.HR_Emp_PersonalInfo.PoliceVerificationStatus, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row" style="background-color:rgb(240, 240, 240); padding-top: 6px">
+                            <div class="col-md-4 col-12" id="FirstAprvAppear">
+                                <div class="input-group mb-2">
+                                    <input asp-for="FirstAprvId" type="hidden" id="FirstAprvId" />
+                                    <input asp-for="FirstAprvName" type="text" id="Emp1" class="form-control" placeholder="Select First Approval" />
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="FinalAprvAppear">
+                                    <input asp-for="FinalAprvId" type="hidden" id="FinalAprvId" />
+                                    <input asp-for="FinalAprvName" type="text" id="Emp2" class="form-control" placeholder="Select Final Approval" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3"></div>
+
+                        </div>
+
+                    </div>
+                    <div id="Address" class="container tab-pane fade">
+                        @if (Model != null && Model.HR_Emp_Address != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Address.EmpAddId" name="HR_Emp_Address.EmpAddId" value="@Model.HR_Emp_Address.EmpAddId" />
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Address.EmpAddId" value="0" />
+                        }
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <h5>Current Address</h5>
+                                <hr />
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpCurrDistId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpCurrDistId" onchange="GetPoliceStation('Current')" class="form-control" asp-items="ViewBag.EmpCurrDistId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpCurrPSId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpCurrPSId" onchange="GetPostOffice('Current')" class="form-control" asp-items="ViewBag.EmpCurrPSId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpCurrPOId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpCurrPOId" class="form-control" asp-items="ViewBag.EmpCurrPOId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Present Village
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Address.EmpCurrCityVill, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Address.EmpCurrCityVill, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Present Village Bangla
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Address.EmpRemarksCurr, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Address.EmpRemarksCurr, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <h5>Permanent Address</h5>
+                                <hr />
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpPerDistId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpPerDistId" onchange="GetPoliceStation('Permanent')" class="form-control" asp-items="ViewBag.EmpPerDistId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpPerPSId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpPerPSId" onchange="GetPostOffice('Permanent')" class="form-control" asp-items="ViewBag.EmpPerPSId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <label asp-for="HR_Emp_Address.EmpPerPOId" class="control-label"></label>
+                                        </span>
+                                    </div>
+                                    <select asp-for="HR_Emp_Address.EmpPerPOId" class="form-control" asp-items="ViewBag.EmpPerPOId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Permanent Village
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Address.EmpPerCityVill, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Address.EmpPerCityVill, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Permanent Village Bangla
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Address.EmpRemarksPer, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Address.EmpRemarksPer, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+
+                        </div>
+                    </div>
+                    @* Education *@
+                    <div id="Education" class="container tab-pane fade">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="tblEducation">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th style="display:none">
+                                            EmpEduId
+                                        </th>
+                                        <th>
+                                            Exam Name
+                                        </th>
+                                        <th>
+                                            Exam Result
+                                        </th>
+                                        <th>
+                                            Subject
+                                        </th>
+                                        <th>
+                                            Institute
+                                        </th>
+                                        <th>
+                                            Board
+                                        </th>
+                                        <th>
+                                            Passing Year
+                                        </th>
+                                        <th>
+                                            <input type="button" class="btn btn-sm btn-info btn-block" id="addEdu" value="Add" />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+
+                                        foreach (var item in Model.HR_Emp_Educations)
+                                        {
+                                            <tr>
+                                                <td style="display:none">
+                                                    @*@Html.EditorFor(modelItem => item.EmpEduId)*@
+                                                    <input type="text" asp-for="@item.EmpEduId" name="@item.EmpEduId" value="@item.EmpEduId" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.ExamName)*@
+                                                    <input type="text" asp-for="@item.ExamName" name="@item.ExamName" value="@item.ExamName" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.ExamResult)*@
+                                                    <input type="text" asp-for="@item.ExamResult" name="@item.ExamResult" value="@item.ExamResult" class="form-control" autocomplete="off" />
+                                                </td>
+
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.MajorSub)*@
+                                                    <input type="text" asp-for="@item.MajorSub" name="@item.MajorSub" value="@item.MajorSub" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.InstituteName)*@
+                                                    <input type="text" asp-for="@item.InstituteName" name="@item.InstituteName" value="@item.InstituteName" class="form-control" autocomplete="off" />
+
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.BoardName)*@
+                                                    <input type="text" asp-for="@item.BoardName" name="@item.BoardName" value="@item.BoardName" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.PassingYear)*@
+                                                    <input type="text" asp-for="@item.PassingYear" name="@item.PassingYear" value="@item.PassingYear" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    <input type="button" class="btn btn-sm btn-danger deleteEdu" value="Remove" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row text-center">
+                            <span class="col-md-3"></span>
+                            <span class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="button" id="eduSave" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="button" id="eduSave" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+
+                            </span>
+                            <span class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </span>
+                            <span class="col-md-3"></span>
+
+
+                        </div>
+                    </div>
+                    @* Experience *@
+                    <div id="Experience" class="container tab-pane fade">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="tblExperience">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th style="display:none">
+                                            EmpExpId
+                                        </th>
+                                        <th>
+                                            Compnay
+                                        </th>
+                                        <th>
+                                            Designation
+                                        </th>
+                                        <th>
+                                            Salary
+                                        </th>
+                                        <th>
+                                            From
+                                        </th>
+                                        <th>
+                                            To
+                                        </th>
+                                        <th>
+                                            Experience Year
+                                        </th>
+                                        <th>
+                                            Remarks
+                                        </th>
+                                        <th>
+                                            <input type="button" class="btn btn-sm btn-info btn-block" id="addExp" value="Add" />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+
+                                        foreach (var item in Model.HR_Emp_Experiences)
+                                        {
+                                            <tr>
+                                                <td style="display:none">
+                                                    @*@Html.EditorFor(modelItem => item.EmpExpId, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.EmpExpId" name="@item.EmpExpId" value="@item.EmpExpId" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.PrevCompany, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.PrevCompany" name="@item.PrevCompany" value="@item.PrevCompany" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.PrevDesignation, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.PrevDesignation" name="@item.PrevDesignation" value="@item.PrevDesignation" class="form-control" autocomplete="off" />
+                                                </td>
+
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.PrevSalary, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.PrevSalary" name="@item.PrevSalary" value="@item.PrevSalary" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.DtFromJob, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.DtFromJob" name="@item.DtFromJob" value="@item.DtFromJob" class="form-control dt" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.DtToJob, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.DtToJob" name="@item.DtToJob" value="@item.DtToJob" class="form-control dt" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.ExpYear, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.ExpYear" name="@item.ExpYear" value="@item.ExpYear" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    @*@Html.EditorFor(modelItem => item.Remarks, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    <input type="text" asp-for="@item.Remarks" name="@item.Remarks" value="@item.Remarks" class="form-control" autocomplete="off" />
+                                                </td>
+                                                <td>
+                                                    <input type="button" class="btn btn-sm btn-danger deleteExp" value="Remove" />
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row text-center">
+                            <span class="col-md-3"></span>
+                            <span class="col-md-3">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="button" id="expSave" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="button" id="expSave" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+
+                            </span>
+                            <span class="col-md-3">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </span>
+                            <span class="col-md-3"></span>
+
+
+                        </div>
+                    </div>
+                    <div class="container tab-pane" id="BankInfo">
+                        @if (Model != null && Model.HR_Emp_BankInfo != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_BankInfo.BankInfoId" name="HR_Emp_BankInfo.BankInfoId" value="@Model.HR_Emp_BankInfo.BankInfoId" />
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_BankInfo.BankInfoId" value="0" />
+                        }
+                        <div class="row">
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_BankInfo.PayModeId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_BankInfo.PayModeId" class="form-control" asp-items="ViewBag.PayModeId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_BankInfo.BankId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_BankInfo.BankId" class="form-control" asp-items="ViewBag.BankId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_BankInfo.BranchId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_BankInfo.BranchId" class="form-control" asp-items="ViewBag.BranchId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_BankInfo.RoutingNumber)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="HR_Emp_BankInfo.RoutingNumber" name="HR_Emp_BankInfo.RoutingNumber" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_BankInfo.RoutingNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_BankInfo.AccountNumber)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="HR_Emp_BankInfo.AccountNumber" name="HR_Emp_BankInfo.AccountNumber" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_BankInfo.AccountNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_BankInfo.AccountName)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="HR_Emp_BankInfo.AccountName" name="HR_Emp_BankInfo.AccountName" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_BankInfo.AccountName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label asp-for="HR_Emp_BankInfo.AccTypeId" class="control-label"></label></span>
+                                    </div>
+                                    <select asp-for="HR_Emp_BankInfo.AccTypeId" class="form-control" asp-items="ViewBag.AccTypeId">
+                                        <option value="" selected>--Please Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-2 col-12 mb-3">
+                                @Html.LabelFor(model => model.HR_Emp_BankInfo.IsApproved)
+                                @Html.CheckBoxFor(model => model.HR_Emp_BankInfo.IsApproved, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.HR_Emp_BankInfo.IsApproved, "", new { @class = "text-danger" })
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row text-center mt-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div id="Family" class="container tab-pane fade">
+                        @if (Model != null && Model.HR_Emp_Family != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Family.EmpFamilyId" name="HR_Emp_Family.EmpFamilyId" value="@Model.HR_Emp_Family.EmpFamilyId" />
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Family.EmpFamilyId" value="0" />
+                        }
+                        <div class="row">
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpFather)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpFather, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpFather, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpFatherB)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpFatherB, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpFatherB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpFatherNID)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpFatherNID, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpFatherNID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpFatherMobile)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpFatherMobile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpFatherMobile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpMother)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpMother, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpMother, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpMotherB)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpMotherB, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpMotherB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpMotherNID)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpMotherNID, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpMotherNID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpMotherMobile)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpMotherMobile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpMotherMobile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpSpouse)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpSpouse, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpSpouse, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpSpouseB)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpSpouseB, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpSpouseB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpSpouseNID)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpSpouseNID, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpSpouseNID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpSpouseMobile)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpSpouseMobile, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpSpouseMobile, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildName1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildName1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildName1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildDOB1)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Family.EmpChildDOB1, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Family.EmpChildDOB1" name="HR_Emp_Family.EmpChildDOB1" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildDOB1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildEdu1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildEdu1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildEdu1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildBirthCer1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildBirthCer1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildBirthCer1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildName2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildName2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildName2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildDOB2)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Family.EmpChildDOB2, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Family.EmpChildDOB2" name="HR_Emp_Family.EmpChildDOB2" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildDOB2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildEdu2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildEdu2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildEdu2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildBirthCer2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildBirthCer2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildBirthCer2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildName3)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildName3, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildName3, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildDOB3)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Family.EmpChildDOB3, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Family.EmpChildDOB3" name="HR_Emp_Family.EmpChildDOB3" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildDOB3, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildEdu3)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildEdu3, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildEdu3, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildBirthCer3)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildBirthCer3, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildBirthCer3, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildName4)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildName4, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildName4, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildDOB4)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Family.EmpChildDOB4, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Family.EmpChildDOB4" name="HR_Emp_Family.EmpChildDOB4" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildDOB4, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildEdu4)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildEdu4, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildEdu4, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Family.EmpChildBirthCer4)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Family.EmpChildBirthCer4, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Family.EmpChildBirthCer4, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3"></div>
+
+                        </div>
+
+                    </div>
+                    <div id="Nominee" class="container tab-pane fade">
+                        @if (Model != null && Model.HR_Emp_Nominee != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Nominee.EmpNomId" name="HR_Emp_Nominee.EmpNomId" value="@Model.HR_Emp_Nominee.EmpNomId" />
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Nominee.EmpNomId" value="0" />
+                        }
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <h5>First Nominee Information</h5>
+                                <hr />
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeName1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeName1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeName1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeDOB1)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeDOB1, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Nominee.EmpNomineeDOB1" name="HR_Emp_Nominee.EmpNomineeDOB1" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeDOB1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeJobType1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeJobType1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeJobType1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeMobile1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeMobile1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeMobile1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeNID1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeNID1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeNID1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeRelation1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeRelation1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeRelation1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineePercentage1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineePercentage1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineePercentage1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeAddress1)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeAddress1, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12 col-12">
+                                <h5>Second Nominee Information</h5>
+                                <hr />
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeName2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeName2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeName2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeDOB2)
+                                        </span>
+                                    </div>
+                                    @*@Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeDOB2, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    <input type="text" asp-for="HR_Emp_Nominee.EmpNomineeDOB2" name="HR_Emp_Nominee.EmpNomineeDOB2" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeDOB2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeJobType2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeJobType2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeJobType2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeMobile2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeMobile2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeMobile2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeNID2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeNID2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeNID2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeRelation2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeRelation2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeRelation2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineePercentage2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineePercentage2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineePercentage2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.HR_Emp_Nominee.EmpNomineeAddress2)
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.HR_Emp_Nominee.EmpNomineeAddress2, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.HR_Emp_Nominee.EmpNomineeAddress2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</form>
+
+
+@section Scripts{
+
+    <script>
+
+        var firstaprvValue = @Html.Raw(Json.Serialize(firstaprv));
+        var finalaprvValue = @Html.Raw(Json.Serialize(finalaprv));
+
+        if(firstaprvValue == 0)
+        {
+            $(`#FirstAprvAppear`).hide();
+        }
+        if(finalaprvValue == 0)
+        {
+            $(`#FinalAprvAppear`).hide();
+        }
+
+        function GetPoliceStation(param) {
+
+
+            if (param == "Current") {
+                id = $("#HR_Emp_Address_EmpCurrDistId").val();
+            }
+            else if (param == "Permanent") {
+                id = $("#HR_Emp_Address_EmpPerDistId").val();
+
+            }
+
+            $.ajax({
+
+                type: 'GET',
+                url: '@Url.Action("GetPoliceStation", "HR")',
+                dataType: 'json',
+                // headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                //async: true,
+                data: { id:id },
+                success: function (result) {
+                    if (param == "Current") {
+                        $("#HR_Emp_Address_EmpCurrPSId").html('');
+                        for (var i = 0; i < result.PoliceStation.length; i++) {
+
+                            $("#HR_Emp_Address_EmpCurrPSId").append(`<option value="${result.PoliceStation[i].Id}"> ${result.PoliceStation[i].Name} </option>`);
+                        }
+                        //$("#HR_Emp_Address_EmpCurrPOId").html('');
+                        //for (var i = 0; i < result.PostOffice.length; i++) {
+
+                        //    $("#HR_Emp_Address_EmpCurrPOId").append(`<option value="${result.PostOffice[i].Id}">${result.PostOffice[i].Name}</option>`);
+                        //}
+                    }
+                    else if (param == "Permanent") {
+                        $("#HR_Emp_Address_EmpPerPSId").empty();
+                        for (var i = 0; i < result.PoliceStation.length; i++) {
+
+                            $("#HR_Emp_Address_EmpPerPSId").append(`<option value="${result.PoliceStation[i].Id}">${result.PoliceStation[i].Name}</option>`);
+                        }
+                        //$("#HR_Emp_Address_EmpPerPOId").empty();
+                        //for (var i = 0; i < result.PostOffice.length; i++) {
+
+                        //    $("#HR_Emp_Address_EmpPerPOId").append(`<option value="${result.PostOffice[i].Id}">${result.PostOffice[i].Name}</option>`);
+                        //}
+                    }
+
+                },
+                error: function (ex) {
+
+                    alert("Sorry, Something wrong");
+                }
+            });
+        }
+
+        function GetPostOffice(param) {
+
+
+            if (param == "Current") {
+                id = $("#HR_Emp_Address_EmpCurrPSId").val();
+            }
+            else if (param == "Permanent") {
+                id = $("#HR_Emp_Address_EmpPerPSId").val();
+
+            }
+
+            $.ajax({
+
+                type: 'GET',
+                url: '@Url.Action("GetPostOffice", "HR")',
+                dataType: 'json',
+                // headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                //async: true,
+                data: { id:id },
+                success: function (result) {
+                    if (param == "Current") {
+                        //$("#HR_Emp_Address_EmpCurrPSId").html('');
+                        //for (var i = 0; i < result.PoliceStation.length; i++) {
+
+                        //    $("#HR_Emp_Address_EmpCurrPSId").append(`<option value="${result.PoliceStation[i].Id}"> ${result.PoliceStation[i].Name} </option>`);
+                        //}
+                        $("#HR_Emp_Address_EmpCurrPOId").html('');
+                        for (var i = 0; i < result.length; i++) {
+
+                            $("#HR_Emp_Address_EmpCurrPOId").append(`<option value="${result[i].Id}">${result[i].Name}</option>`);
+                        }
+                    }
+                    else if (param == "Permanent") {
+                        //$("#HR_Emp_Address_EmpPerPSId").empty();
+                        //for (var i = 0; i < result.PoliceStation.length; i++) {
+
+                        //    $("#HR_Emp_Address_EmpPerPSId").append(`<option value="${result.PoliceStation[i].Id}">${result.PoliceStation[i].Name}</option>`);
+                        //}
+                        $("#HR_Emp_Address_EmpPerPOId").empty();
+                        for (var i = 0; i < result.length; i++) {
+
+                            $("#HR_Emp_Address_EmpPerPOId").append(`<option value="${result[i].Id}">${result[i].Name}</option>`);
+                        }
+                    }
+
+                },
+                error: function (ex) {
+
+                    alert("Sorry, Something wrong");
+                }
+            });
+        }
+
+
+
+        $(document).ready(function () {
+            $("#SectId").select2();
+            $("#DeptId").select2();
+            $("#DesigId").select2();
+            $("#UnitId").select2();
+
+            var codeExist = false;
+            var preCode = $("#EmpCode").val();
+
+            $("#EmpCode").keyup(function () {
+                var code = $(this).val();
+                if (preCode != code) {
+                    $.ajax({
+                        url: '@Url.Action("EmpCodeExist", "HR")',
+                        type: 'GET',
+                        data: { code: code },
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result) {
+                                codeExist = true;
+                            } else {
+                                codeExist = false;
+                            }
+                        },
+                        error: function (ex) {
+                            customFile('3', "Could not check Emp code");
+                        }
+                    });
+                }
+            });
+                $('#myForm').on('submit', function () {
+                    if (codeExist) {
+                        toastr.warning($("#EmpCode").val() + " Code Already exist!!");
+                        return false;
+                    }
+
+                });
+            //$("HR_Emp_Address_EmpCurrDistId").change(function () {
+            //    var distId = $("HR_Emp_Address_EmpCurrDistId").val();
+            //    cascadeAddress(distId, "Current");
+            //});
+
+            //$("HR_Emp_Address_EmpCurrDistId").change(function () {
+            //    var distId = $("HR_Emp_Address_EmpPerDistId").val();
+            //    cascadeAddress(distId, "Permanent");
+            //});
+
+                // Date picker
+                $("#DtBirth").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtBirth").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtBirth").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+                //new tab
+                //$(document).ready(function () {
+
+                //    var readURL = function (input) {
+                //        if (input.files && input.files[0]) {
+                //            var reader = new FileReader();
+
+                //            reader.onload = function (e) {
+                //                $('.avatar').attr('src', e.target.result);
+                //            }
+
+                //            reader.readAsDataURL(input.files[0]);
+                //        }
+                //    }
+
+                //    $(".file-upload").on('change', function () {
+                //        readURL(this);
+                //    });
+                //});
+
+                //$('#DtBirth').datepicker({
+                //    locale: 'ru'
+                //});
+
+                $("#DtIncrement").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtIncrement").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtIncrement").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+                $("#DtPromotion").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtPromotion").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtPromotion").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+                $("#DtJoin").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtJoin").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtJoin").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+            $("#DtIncrement").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtIncrement").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtIncrement").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#DtConfirm").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtConfirm").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtConfirm").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+            $("#DtPF").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                       // var dateFormat = $("#DtPF").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtPF").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Family_EmpChildDOB1").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Family_EmpChildDOB1").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Family_EmpChildDOB1").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Family_EmpChildDOB2").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Family_EmpChildDOB2").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Family_EmpChildDOB2").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Family_EmpChildDOB3").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Family_EmpChildDOB3").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Family_EmpChildDOB3").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Family_EmpChildDOB4").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Family_EmpChildDOB4").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Family_EmpChildDOB4").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Nominee_EmpNomineeDOB1").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Nominee_EmpNomineeDOB1").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Nominee_EmpNomineeDOB1").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $("#HR_Emp_Nominee_EmpNomineeDOB2").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#HR_Emp_Nominee_EmpNomineeDOB2").datepicker("option", "dateFormat");
+                        //setter
+                        $("#HR_Emp_Nominee_EmpNomineeDOB2").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+                $(".dt").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1970:c",
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $(".dt").datepicker("option", "dateFormat");
+                        //setter
+                        $(".dt").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+
+            });
+
+            // row add in table education
+            $("#addEdu").click(function () {
+                if ($('#EmpId').val() > 0) {
+                    //alert("hi");
+                    $("#tblEducation tbody").append(`
+                        <tr>
+                                <td style="display:none"><input class="form-control" type="text" asp-for="EmpEduId" value="0" /></td>
+                                <td><input class="form-control" type="text" asp-for="ExamName" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="ExamResult" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="MajorSub" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="InstituteName" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="BoardName" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="PassingYear" value="" /></td>
+                                <td><input class="btn btn-danger btn-sm deleteEdu"  type="button"  value="Remove" /></td>
+
+                        </tr>
+                `);
+                } else {
+                    alert("Please fill up neccesary field");
+                    document.getElementById("defaultOpen").click();
+                }
+            });
+            //<input type="text" name="" value="" class="form-control dt hasDatepicker" autocomplete="off" id="item_DtFromJob">
+            $("#addExp").click(function () {
+                if ($('#EmpId').val() > 0) {
+                    $("#tblExperience tbody").append(`
+                        <tr>
+                                <td style="display:none"><input class="form-control" type="text" asp-for="EmpExpId" value="0" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevCompany" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevDesignation" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="PrevSalary" value="" /></td>
+                                <td><input class="form-control dt"  type="text" asp-for="DtFromJob" value="" /></td>
+                                <td><input class="form-control dt" type="text" asp-for="DtToJob" value="" /></td>
+                                <td><input class="form-control" type="text" asp-for="ExpYear" value="" /></td>
+                                <td><input class="form-control" type="text-area" asp-for="Remarks" value="" /></td>
+                                <td><input class="btn btn-danger btn-sm deleteExp"  type="button"  value="Remove" /></td>
+                        </tr>
+                `);
+                } else {
+                    alert("Please fill up neccesary field");
+                    document.getElementById("defaultOpen").click();
+                }
+
+            });
+
+        $(document).on('focus',".dt", function(){
+
+             $(this).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $(this).datepicker("option", "dateFormat");
+                        //setter
+                        $(this).datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                });
+        });
+
+            // remove row from Education
+            $("#tblEducation").on("click", ".deleteEdu", function () {
+                $(this).closest("tr").remove();
+            });
+
+            $("#tblExperience").on("click", ".deleteExp", function () {
+                $(this).closest("tr").remove();
+             });
+
+            var empeducation = {EmpId: 0, EmpEduId: 0, ExamName: "", ExamResult: "", MajorSub: "", InstituteName: "", BoardName: "",
+                PassingYear: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "" }
+
+            var HR_Emp_Educations = [];
+
+            $("#eduSave").click(function () {
+                //HR_Emp_Educations = new Array();
+                HR_Emp_Educations = [];
+                $("#tblEducation tbody tr").each(function (i, el) {
+                    empeducation = {
+                        EmpId: $("#EmpId").val(),
+                        EmpEduId: $(this).find('td').eq(0).find('input[type=text]').val(),
+                        ExamName:$(this).find('td').eq(1).find('input[type=text]').val(),
+                        ExamResult:$(this).find('td').eq(2).find('input[type=text]').val(),
+                        MajorSub:$(this).find('td').eq(3).find('input[type=text]').val(),
+                        InstituteName:$(this).find('td').eq(4).find('input[type=text]').val(),
+                        BoardName:$(this).find('td').eq(5).find('input[type=text]').val(),
+                        PassingYear: $(this).find('td').eq(6).find('input[type=text]').val(),
+                        ComId:'@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                        PcName: '',
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: new Date(),
+                        UpdateByUserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateUpdated: new Date()
+                    }
+                    HR_Emp_Educations.push(empeducation);
+                    empeducation ={ EmpId:0, EmpEduId:0, ExamName:"", ExamResult:"", MajorSub:"", InstituteName:"", BoardName:"", PassingYear:"", ComId:"", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: ""}
+                });
+
+                //if (HR_Emp_Educations.length < 1) {
+                //    alert("Please fill up necessary field");
+                //    document.getElementById("defaultOpen").click();
+                //    return;
+                //}
+
+
+                var strfy = JSON.stringify({ HR_Emp_Educations });
+
+                var formData = new FormData($('form').get(0));
+
+                formData.append("HR_Emp_Educations", strfy);
+
+                $.ajax({
+                    url: '@Url.Action("EmpEducation", "HR")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // do not process data
+                    contentType: false, // do not force content type
+                    success: function (result) {
+                        customFile('1', result.ex);
+                        window.location.href = '@Url.Action("EmployeeInfoList","HR")';
+                    },
+                    error: function (ex) {
+                        customFile('3', result.ex);
+                    }
+                });
+            });
+
+            var empExperience = {
+                EmpId: 0, EmpExpId: 0, PrevCompany: "", PrevDesignation: "", PrevSalary: "", DtFromJob: "", DtToJob: "", ExpYear: "", Remarks: "",
+                ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: ""
+            }
+
+            var HR_Emp_Experiences = [];
+            $("#expSave").click(function () {
+                HR_Emp_Experiences = [];
+                $("#tblExperience tbody tr").each(function (i, el) {
+                    empExperience = {
+                        EmpId: $("#EmpId").val(),
+                        EmpExpId: $(this).find('td').eq(0).find('input[type=text]').val(),
+                        PrevCompany:$(this).find('td').eq(1).find('input[type=text]').val(),
+                        PrevDesignation:$(this).find('td').eq(2).find('input[type=text]').val(),
+                        PrevSalary:$(this).find('td').eq(3).find('input[type=text]').val(),
+                        DtFromJob:$(this).find('td').eq(4).find('input[type=text]').val(),
+                        DtToJob:$(this).find('td').eq(5).find('input[type=text]').val(),
+                        ExpYear: $(this).find('td').eq(6).find('input[type=text]').val(),
+                        Remarks: $(this).find('td').eq(6).find('input[type=text]').val(),
+                        ComId:'@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                        PcName: '',
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: new Date(),
+                        UpdateByUserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateUpdated:new Date()
+                    }
+                    HR_Emp_Experiences.push(empExperience);
+                    empExperience = {EmpId: 0, EmpExpId: 0, PrevCompany: "", PrevDesignation: "", PrevSalary: "", DtFromJob: "", DtToJob: "", ExpYear: "", Remarks: "",
+                    ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "" }
+                });
+
+                //validation
+                //if (HR_Emp_Experiences.length < 1) {
+                //    alert("Please fill up necessary field");
+                //    document.getElementById("defaultOpen").click();
+                //    return;
+                //}
+
+
+                //console.log(HR_Emp_Experiences);
+                //ajax post data
+                var strfy = JSON.stringify({ HR_Emp_Experiences });
+
+                var formData = new FormData($('form').get(0));
+
+                formData.append("HR_Emp_Experiences", strfy);
+
+                $.ajax({
+                    url: '@Url.Action("EmpExperience", "HR")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // do not process data
+                    contentType: false, // do not force content type
+                    success: function (result)  {
+                        customFile('1', result.ex);
+                        window.location.href = '@Url.Action("EmployeeInfoList","HR")';
+                    },
+                    error: function (ex) {
+                        customFile('3', result.ex);
+                    }
+                });
+            });
+
+
+
+
+        function Employee_delete() {
+            var EmpId = $("#EmpId").val();
+            //alert(SalesId);
+            $.ajax({
+                url: '@Url.Action("DeleteEmpInfo", "HR")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: EmpId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("EmployeeInfoList", "HR")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+
+            $('#myFile').bind('change', function () {
+
+                    //this.files[0].size gets the size of your file.
+
+                    //  alert(this.files[0].size);
+
+                    var a = this.files[0].size;
+
+                    if (a >= 6000000) {
+                        alert('File size is too large!! \n 50 KB maximum');
+                        $('#myFile').val('');
+                        document.getElementById('image_X').src = ''
+                    }
+                    else {
+
+                        previewFile();
+                    }
+                });
+
+            function previewFile() {
+                var preview = document.getElementById("image_X"); //selects the query named img
+                var file = document.querySelector('input[type=file]').files[0]; //sames as here
+                console.log(preview);
+                console.log(file);
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    preview.src = reader.result;
+                }
+
+                if (file) {
+                    reader.readAsDataURL(file); //reads the data as a URL
+                } else {
+                    preview.src = "";
+                }
+            }
+
+        $('#mysignFile').bind('change', function () {
+
+            //this.files[0].size gets the size of your file.
+
+            //alert(this.files[0].size);
+
+            var a = this.files[0].size;
+
+            if (a >= 6000000) {
+                alert('File size is too large!! \n 50 KB maximum');
+                $('#mySignFile').val('');
+                document.getElementById('image_X2').src = ''
+            }
+            else {
+
+                previewsignFile();
+            }
+        });
+        function previewsignFile() {
+            var preview = document.getElementById("image_X2"); //selects the query named img
+            var file = document.querySelector('input[name=signfile]').files[0]; //sames as here
+            console.log(preview);
+            console.log(file);
+            var r = new FileReader();
+            r.onloadend = function () {
+                preview.src = r.result;
+            }
+
+            if (file) {
+                r.readAsDataURL(file); //reads the data as a URL
+            } else {
+                preview.src ="";
+            }
+        }
+
+
+            function openPage(pageName, elmnt, color) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablink");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].style.backgroundColor = "";
+                }
+                document.getElementById(pageName).style.display = "block";
+                elmnt.style.backgroundColor = color;
+            }
+
+
+        //tab section
+        $(".col-md-9 #showHide").click(function () {
+            $("#hideIt").toggle();
+            $(this).parent().toggleClass('col-md-12');
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $("#Emp1").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployeesForHOD", "HR")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp1").val(ui.item.label); // Set the display value in the input field
+                    $("#FirstAprvId").val(ui.item.value); // Set the selected employee's ID in the hidden input field
+                    return false;
+                }
+            });
+
+            $("#Emp1").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    $("#FirstAprvId").val(""); // Set the value to an empty string when the input field is blank
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+
+
+        $(function () {
+            $("#Emp2").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployeesForHOD", "HR")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp2").val(ui.item.label); // Set the display value in the input field
+                    $("#FinalAprvId").val(ui.item.value); // Set the selected employee's ID in the hidden input field
+                    return false;
+                }
+            });
+
+            $("#Emp2").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    $("#FinalAprvId").val(""); // Set the value to an empty string when the input field is blank
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
+
+
+

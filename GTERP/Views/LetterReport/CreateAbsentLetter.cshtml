@@ -1,0 +1,329 @@
+﻿@model GTERP.Models.Hr_Emp_AbsentLetter
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateAbsentLetter", "LetterReport", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 700px;">
+        <div class="py-7 text-center">
+
+            <h1 id="styletext">Absent Letter Entry</h1>
+            <p class="lead"></p>
+        </div>
+
+        @if (Model != null)
+        {
+            <input type="hidden" id="RefId" name="RefId" value="@Model.RefId" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="RefId" value="0" />
+        }
+        <div id="modalbodyfahad" class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Absent Letter @ViewBag.Title</h4>
+
+                <form class="needs-validation card p-4" novalidate>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span asp-for="DtFrom" class="input-group-text">From</span>
+                                    </div>
+                                    <input type="text" asp-for="DtFrom" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+
+                                    <span asp-validation-for="DtFrom" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span asp-for="DtTo" class="input-group-text">To</span>
+                                    </div>
+                                    <input type="text" asp-for="DtTo" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                    <span asp-validation-for="DtTo" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span asp-for="EmpId" class="input-group-text">Employee ID</span>
+                                        </div>
+                                        <select asp-for="EmpId" class="form-select form-control">
+                                            <option value="">--Select Employee--</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="EmpId" asp-items="ViewBag.EmpId" class="text-danger small"></span>
+                                </div>
+                            }
+
+                            @if (ViewBag.Title == "Edit")
+                            {
+                                <div class="col-12">
+
+                                    <div class="input-group-prepend mb-2">
+                                        <span asp-for="EmpId" class="input-group-text">Employee ID</span>
+                                        <select asp-for="EmpId" asp-items="ViewBag.EmpId" class="form-select form-control">
+                                            <option value="">--Select Employee--</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="EmpId" class="text-danger small"></span>
+
+                                </div>
+
+                            }
+
+
+
+                            <div class="col-md-12 col-12">
+
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span asp-for="ShowCauseLetterRef" class="input-group-text">1st Letter Ref. Date</span>
+                                    </div>
+                                    <input type="text" asp-for="ShowCauseLetterRef" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                    <input type="text" asp-for="DtFirst" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                </div>
+                                <span asp-validation-for="ShowCauseLetterRef" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span asp-for="ShowCauseLetterRef" class="input-group-text">2nd Letter Ref. Date</span>
+                                    </div>
+                                    <input type="text" asp-for="SelfDefenceRef" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                    <input type="text" asp-for="DtSecond" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                </div>
+                                <div class="col-4">
+                                    <span asp-validation-for="SelfDefenceRef" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span asp-for="TerminationLetterRef" class="input-group-text">3rd Letter Ref. Date</span>
+                                    </div>
+                                    <input type="text" asp-for="TerminationLetterRef" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea">
+                                    <input type="text" asp-for="DtThird" asp-format="{0:dd-MMM-yyyy}" class="form-control" aria-label="With textarea" data-toggle="datepicker">
+                                </div>
+
+                                <span asp-validation-for="TerminationLetterRef" class="text-danger small"></span>
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="absLetter_delete()">Delete</button>
+                                }
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "AbsentLetterList", "LetterReport", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <script>
+
+
+        $(function () {
+            var $selctemp = $("#EmpId").select2();
+            $selctemp.select2("destroy");
+            $('#EmpId').select2({
+                minimumInputLength: 2, // Adjust this value based on your preference
+                ajax: {
+                    url: '@Url.Action("GetFilteredEmployee", "LetterReport")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            keyword: params.term // User's input
+                        };
+                    },
+                    processResults: function (data) {
+                        // Map each item in the data array to the format expected by Select2
+                        var mappedData = data.map(function (item) {
+                            return {
+                                id: item.Value,
+                                text: item.Text
+                            };
+                        });
+
+                        return {
+                            results: mappedData
+                        };
+                    },
+                    cache: true
+                }
+            });
+            $("#DtFrom").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#DtTo").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#DtFirst").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#DtSecond").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#DtThird").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+        });
+
+        $(function () {
+            function formatDate(date) {
+                var months = [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ];
+                if (date == "") {
+                    date = new Date();
+                } else {
+                    date = new Date(date)
+                }             // Convert date to Date object if it's not already
+                var formattedDate;
+                if (date instanceof Date) {
+                    var day = date.getDate();
+                    var monthIndex = date.getMonth();
+                    var year = date.getFullYear();
+                    formattedDate = day + "-" + months[monthIndex] + "-" + year;
+                } else {
+                    formattedDate = "Invalid Date";
+                }
+
+                return formattedDate;
+            }
+
+            var fromdate = $("#DtFrom").val();
+            var formattedDate = formatDate(fromdate);
+            $("#DtFrom").val(formattedDate);
+
+            var todate = $("#DtTo").val();
+            var formattedDate2 = formatDate(todate);
+            $("#DtTo").val(formattedDate2);
+
+
+            var firstdate = $("#DtFirst").val();
+            var formattedDate3 = formatDate(firstdate);
+            $("#DtFirst").val(formattedDate3);
+
+
+            var seconddate = $("#DtSecond").val();
+            var formattedDate4 = formatDate(seconddate);
+            $("#DtSecond").val(formattedDate4);
+
+
+            var thirddate = $("#DtThird").val();
+            var formattedDate5 = formatDate(thirddate);
+            $("#DtThird").val(formattedDate5);
+
+
+            var showCauseLetter = $("#ShowCauseLetterRef").val();
+            var formattedDate6 = formatDate(showCauseLetter);
+            $("#ShowCauseLetterRef").val(formattedDate6);
+
+
+            var selfDefenceRef = $("#SelfDefenceRef").val();
+            var formattedDate7 = formatDate(selfDefenceRef);
+            $("#SelfDefenceRef").val(formattedDate7);
+
+
+            var terminationLetterRef = $("#TerminationLetterRef").val();
+            var formatteddate8 = formatDate(terminationLetterRef);
+            $("#TerminationLetterRef").val(formatteddate8);
+
+
+        });
+
+
+        // $("#Sectid").select2();
+
+        function absLetter_delete() {
+
+            var RefId = $("#RefId").val();
+            //   alert(Sectid);
+            $.ajax({
+
+                url: '@Url.Action("DeleteAbsentLetter", "LetterReport")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: RefId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("AbsentLetterList", "LetterReport")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+    </script>
+
+   @*  @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    } *@
+}

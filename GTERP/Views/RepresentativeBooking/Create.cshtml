@@ -1,0 +1,751 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.RepresentativeBooking>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+
+<div id="divProformaInvoice" class="row" style="max-width:100%">
+
+
+    <div class="col-md-12 ">
+        <div class="text-center">
+            <H3>Representative Booking @ViewBag.Title</H3>
+        </div>
+
+        <div class="card p-2">
+
+
+            <div class="row mt-3">
+
+
+                <div id="divstyle" class="col-md-3 col-12">
+                    <span class="text-right">
+                        <label>Buffer</label>
+                    </span>
+                    <span class="input-group">
+                        @Html.DropDownList("BufferID", ViewBag.BufferId as List<SelectListItem>, new { id = "BufferId", @class = "form-control form-control-sm" })
+                    </span>
+                </div>
+                <div id="divstyle" class="col-md-3 col-12">
+                    <span class="text-right">
+                        <label>Year</label>
+                    </span>
+                    <span class="input-group">
+                        @Html.DropDownList("FiscalYearId", ViewBag.FiscalYearId as List<SelectListItem>, "Select Year", new { id = "FiscalYearId", @class = "form-control form-control-sm" })
+                        <input type="hidden" id="distqty" />
+                    </span>
+                </div>
+                <div id="divstyle" class="col-md-3 col-12">
+                    <span class="text-right">
+                        <label>Month</label>
+                    </span>
+                    <span class="input-group">
+                        @Html.DropDownList("FiscalMonthId", ViewBag.FiscalMonthId as List<SelectListItem>, "Select Month", new { id = "FiscalMonthId", @class = "form-control form-control-sm" })
+                    </span>
+                </div>
+
+                <div id="divDistAllotment" class="col-md-3 col-12">
+                    <span class="text-right">
+                        <label>Buffer Wise Total Allotment Qty</label>
+                    </span>
+                    <span class="input-group">
+                        @Html.TextBox("BufferAllotmentQty", "", new { id ="BufferAllotmentQty", @class = "form-control form-control-sm" })
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+
+
+                <div class=" text-cente col-md-4 offset-1 col-12">
+                    <h4 class="mt-4">
+                        Total Inputed Allotment Qty:
+                    </h4>
+                </div>
+                <div class="text-cente col-md-3  col-12">
+                    <h4 class="TotalAllotmentQty mt-4">0.00</h4>
+                </div>
+                <div class="text-center col-md-4 col-12">
+
+                    <span>
+                        <button type="button" onclick="btnloadfunction()" id="Load" class="btn btn-primary btn-block mt-4">Load Data</button>
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <br />
+
+
+        @*<div id="finalpanel" class="card p-2">
+
+            <div class="table-responsive text-nowrap">
+                <table id="myTbl" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>*@
+        <div class="card p-4">
+                <div class="table-responsive text-nowrap">
+
+                    <table id="myTbl" class=" table table-striped table-bordered table-sm responsive nowrap table-hover">
+                        <thead>
+                            <tr>
+                                <th>Booking Id</th>
+
+                                <th>Year Id</th>
+                                <th>Month Id</th>
+                                <th>Buffer Id</th>
+                                <th>Representative Id</th>
+                                <th>Buffer Name</th>
+                                <th>Year</th>
+                                <th>Month</th>
+
+                                <th>Representative Code</th>
+                                <th>Representative Name</th>
+                                <th>Allotment Qty</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.RepresentativeBookingId)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.FiscalYearId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.FiscalMonthId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BufferListId)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BufferRepresentativeId)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BufferList.BufferName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.YearName.FYName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.MonthName.MonthName)
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BufferRepresentative.RepresentativeCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.BufferRepresentative.RepresentativeName)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayTextFor(m => item.AllotmentQty)
+                                        </td>
+
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+
+
+                        <tfoot>
+                            <tr>
+
+
+                                <td class="text-right" colspan="10">
+                                    <h4>
+                                        Total Inputed Allotment Qty :
+                                    </h4>
+                                </td>
+                                <td>
+                                    <h4 class="TotalAllotmentQty">0.00</h4>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
+                </div>
+                <div>
+                    @if (ViewBag.Title == "Create")
+                    {
+                        <div class="text-center">
+
+                            <span>
+                                <input type="submit" class="btn btn-warning" id="selectall" name="selectall" value="Select All" />
+                            </span>
+                            <span>
+                                <button type="button" id="save" class="btn btn-primary">Save</button>
+                            </span>
+
+                            <span>
+                                <a asp-action="Index" class="btn btn-info">Back to Booking List</a>
+                            </span>
+                        </div>
+                    }
+
+                </div>
+            </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+
+
+
+    <script>
+
+
+                var tblBookindata;
+                $(document).ready(() => {
+                    tblBookindata = $('#myTbl').DataTable({
+
+                        "aoColumns": [
+                            { "sClass": "RepresentativeBookingId", "visible": false },
+                            { "sClass": "FiscalYearId", "visible": false },
+                            { "sClass": "FiscalMonthId", "visible": false },
+                            { "sClass": "BufferId", "visible": false },
+                            { "sClass": "RepresentativeId", "visible": false },
+                            { "sClass": "BufferName", "visible": true },
+                            { "sClass": "FYName", "visible": true },
+                            { "sClass": "Name", "visible": true },
+
+                            { "sClass": "RepresentativeCode", "visible": true },
+                            { "sClass": "RepresentativeName", "visible": true },
+                            {
+                                "sClass": "AllotmentQty", "visible": true
+                            }
+
+
+
+                        ]
+                        ,columnDefs: [
+
+                            {
+                                'targets': 10,
+                                'render': function (data, type, row) {
+                                    return '<input class="form-control form-control-sm txtAllotmentQty" id="AllotmentQty" name="AllotmentQty" type="text" onClick="this.select();" autocomplete="off" data-val="true" value=' + data + '>'
+
+                                }
+                            }
+
+
+                        ],
+
+                         "scrollY": "400px",
+                        "scrollCollapse": true,
+                        "paging": false,
+                        select: true,
+                        select: 'multi'
+
+                    });
+
+
+
+                    var prevBufferqty = 0.00;
+
+                    $('#BufferAllotmentQty').attr('disabled', true);
+
+                    $('#FiscalMonthId').prop('disabled', true);
+                   // $('#AllotmentQty').attr('disabled', true);
+                    $('#BufferId').prop('disabled', true);
+
+                    $('#FiscalYearId').select2();
+                    $('#FiscalMonthId').select2();
+                    $('#BufferId').select2();
+                    var month = $('#FiscalMonthId option:selected').val();
+                    $('#BufferId').change(function () {
+                        // alert('ok');
+                        var month = $('#FiscalMonthId option:selected').text();
+                        if (month == '--Select Month--') {
+                            alert('Please Select Month First');
+                        }
+
+                    });
+                  
+
+
+                    $('#BufferId').select2({})
+                        .on('select2:select', function (e) {
+                            if ($('#BufferId').val() > 0) {
+                                AllotmentInfo();
+                                BufferWiseBookingQtyCheck($('#BufferId').val())
+
+                            } else {
+                                alert('Please Select Buffer Information First');
+                            }
+                        })
+
+                    $('#myTbl').focusin(function () {
+
+                        bookingDataCalculation();
+                    })
+
+
+                    $('#myTbl').focusout(function () {
+
+                        bookingDataCalculation();
+                    })
+
+
+
+                    $('#FiscalYearId').change(function () {
+
+                        GetMonthByYears();
+                    })
+                    $('#selectall').click(function () {
+
+                        var btn = $('#selectall').val();
+                        if (btn == "Select All") {
+                            $('#myTbl tbody tr').each(function () {
+                                if ($(this).hasClass('selected')) {
+                                    $(this).removeClass('selected');
+                                }
+                                $(this).addClass('selected');
+                            });
+                            $('#selectall').val('DeSelect All');
+                        } else {
+                            $('#myTbl tbody tr').each(function () {
+                                if ($(this).hasClass('selected')) {
+                                    $(this).removeClass('selected');
+                                };
+                            });
+                            $('#selectall').val('Select All');
+                        }
+                    })
+                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    var date = new Date();
+                    var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+
+                    $('#save').click(function () {
+                        $('input[type=search]').val('').change();
+                        //if (Booking > 0) {
+                        Booking_Save();
+                        //} else {
+                        //    alert('Select Record');
+                        //}
+
+                    })
+
+
+                    if ($('#FiscalMonthId').val() > 0) {
+                        $('#BufferId').attr('disabled', false);
+                        $('#FiscalMonthId').attr('disabled', false);
+
+                    };
+
+                    if ($('#FiscalMonthId').val() > 0) {
+                        $('#BufferAllotmentQty').attr('disabled', true);
+                        $('#AllotmentQty').attr('disabled', false);
+                    };
+
+                    if ($('#BufferId').val() > 0) {
+                        AllotmentInfo();
+
+                        BufferWiseBookingQtyCheck($('#BufferId').val())
+
+                    }
+
+                    else {
+                        alert('Please Select Buffer Information First');
+                    };
+
+                });
+
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var date = new Date();
+        var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+                function GetMonthByYears() {
+
+                    var Year = $('#FiscalYearId option:selected').val();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetMonthByYear", "RepresentativeBooking")',
+                        dataType: 'json',
+                        data: { FYId: Year },
+                        success: function (data) {
+                            //console.log(data)
+                            //alert(data);
+                            var html = '<option value="0">Select Month</option>';
+                            for (var i = 0; i < data.length; i++) {
+                                html += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $('#FiscalMonthId').html(html);
+                            $('#FiscalMonthId').attr('disabled', false);
+                        },
+                        error: function (ex) {
+                            toastr.error('Faild' + ex);
+                        }
+                    });
+                    return false;
+                }
+
+                $('#FiscalMonthId').change(function () {
+                    $('#BufferId').attr('disabled', false);
+                })
+
+
+
+
+
+
+
+                function btnloadfunction() {
+                    AllotmentInfo();
+                    DealerLoad();
+
+                }
+
+
+                function DealerLoad() {
+
+
+                    tblBookindata.clear().draw();
+
+                    var Deler = {};
+                    var from = $('#from option:selected').text();
+                    var to = $('#to option:selected').text();
+                    var Year = $('#FiscalYearId option:selected').val();
+                    var Month = $('#FiscalMonthId option:selected').val();
+                    var Bufferid = $('#BufferId option:selected').val();
+                    var allotmentQty = $('#AllotmentQty').val()
+
+
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("RepresentativeByBuffer", "RepresentativeBooking")',
+                        dataType: 'json',
+                        data: { Yearid: Year, Monthid: Month, BufferListId: Bufferid, AllotmentQty: allotmentQty },
+                        async: false,
+                        success: function (data) {
+                            console.log(data.bookingDeliveryChallan);
+                            if (data != 0) {
+
+                                for (var i = 0; i < data.bookingDeliveryChallan.length; i++) {
+                                    $('#myTbl').dataTable().fnAddData([
+                                        data.bookingDeliveryChallan[i].RepresentativeBookingId,
+                                        data.bookingDeliveryChallan[i].FiscalYearId,
+                                        data.bookingDeliveryChallan[i].FiscalMonthId,
+                                        data.bookingDeliveryChallan[i].BufferListId,
+                                        data.bookingDeliveryChallan[i].BufferRepresentativeId,
+                                        data.bookingDeliveryChallan[i].BufferName,
+                                        data.bookingDeliveryChallan[i].Year,
+                                        data.bookingDeliveryChallan[i].Month,
+
+                                        data.bookingDeliveryChallan[i].RepresentativeCode,
+                                        data.bookingDeliveryChallan[i].RepresentativeName,
+                                        data.bookingDeliveryChallan[i].AllotmentQty
+
+
+                                    ])
+                                }
+
+
+                                $('#save').prop('disabled', false);
+                                $('#selectall').prop('disabled', false);
+                                bookingDataCalculation();
+                            }
+                            else {
+                                toastr.error(data.ex);
+                            }
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    })
+                }
+
+
+
+
+
+
+
+
+
+                function bookingDataCalculation() {
+
+                    var buffer = $('#BufferId option:selected').val()
+                    //alert(dist);
+
+                    $('.ttlBooking').text(0.00);
+
+                    var totalbooking = 0.00;
+
+                    var oTable = tblBookindata.rows().nodes();
+                    var rows = tblBookindata.rows().data();
+
+                    console.log("oTable" + oTable)
+
+                    for (var i = 0; i < rows.length; i++) {
+
+
+
+                        var $bookingqty = oTable[i].cells[5].children[0].value;
+
+                        if ($bookingqty > 0) {
+                            var num = parseFloat($bookingqty);
+                            var cleanNum = num.toFixed(2);
+                            console.log(cleanNum)
+                            oTable[i].cells[5].children[0].value = cleanNum;
+
+                            totalbooking += parseFloat($bookingqty);
+
+                        }
+                        else {
+
+
+                            oTable[i].cells[5].children[0].value = "0";
+                        }
+
+                    }
+
+                    $('.ttlBooking').val(totalbooking.toLocaleString());
+                    $('.ttlBooking').text(totalbooking.toLocaleString());
+
+
+
+                    prevBufferqty = $(".PrevAllotmentQty").text() || 0;
+
+                    var totalsumvalue = totalbooking + prevBufferqty;
+                    var totalsumvaluetest = 0.00
+                    totalsumvaluetest = (totalbooking + prevBufferqty).toFixed(2);
+
+
+                    //var distqty = $('#distqty').val();
+                    var Bufferqty = $("#BufferAllotmentQty").val().toLocaleString();
+                    var Bufferqtytest = $("#BufferAllotmentQty").val();
+
+
+
+                    $('.TotalAllotmentQty').text(totalsumvalue.toFixed(2));
+
+                    //var finalsumvalue = totalsumvalue.toFixed(2);
+                    console.log("TotalSum Value : " + totalsumvalue.toFixed(2));
+                    console.log("TotalSumtest Value : " + totalsumvaluetest);
+
+                    console.log("Buffer wise allotment Value : " + Bufferqty);
+
+                    {
+                        if (parseFloat(totalsumvaluetest) > parseFloat(Bufferqtytest)) {
+                            //console.log(totalsumvaluetest);
+                            //console.log(distqtytest);
+
+
+                            //console.log('else condition');
+                            toastr.error('Total Representative Qty Large then Buffer Wise Qty');
+                            $('#save').hide();
+
+                            $(".TotalAllotmentQty").removeClass(" yellow");
+                            $(".TotalAllotmentQty").addClass("important red");
+                            $(".TotalAllotmentQty").css({ 'color': 'yellow', 'font-size': '250%' });
+
+
+                            return false;
+                        }
+                        else {
+                            $('#save').show();
+                            $(".TotalAllotmentQty").removeClass("important red");
+                            $(".TotalAllotmentQty").addClass(" yellow");
+                            $(".TotalAllotmentQty").css({ 'color': 'green', 'font-size': '200%' });
+                        }
+                    };
+
+
+
+
+
+
+                 }
+
+
+
+
+                function BufferWiseBookingQtyCheck(id) {
+                    //alert(dist)
+                    var Year = $('#FiscalYearId option:selected').val();
+                    var Month = $('#FiscalMonthId option:selected').val();
+
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("BufferWiseBookingQtyCheck", "RepresentativeBooking")',
+                        dataTable: 'json',
+                        data: { BufferId: id,Year: Year,Month: Month },
+                        success: function (data) {
+                            if (data.Success == "2") {
+                                customFile("2", data.ex);
+                            } else {
+                                //console.log(data);
+                                $('#BufferAllotmentQty').val(data);
+                            }
+                        }
+                    })
+                }
+
+
+
+
+                function AllotmentInfo() {
+                    prevBufferqty = 0.00;
+                    var MyAppUrlSettings = {
+                        MyUsefulUrl: '@Url.Action("AllotmentInfo", "RepresentativeBooking")'
+                    }
+
+                    var Bufferabc = $('#BufferId option:selected').val();
+                   var yearid = $('#FiscalYearId option:selected').val();
+                    var monthid = $('#FiscalMonthId option:selected').val();
+
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                    data: {  id: Bufferabc, yearid: yearid, monthid: monthid},
+
+                    success: function (allotmentinfo) {
+
+
+
+
+                        $("#BufferAllotmentQty").val(allotmentinfo.Qty.toFixed(2)).show();
+                        //$(".PrevAllotmentQty").val(allotmentinfo.PrevAllotmentQty.toLocaleString()).show();
+                        $(".PrevAllotmentQty").text(allotmentinfo.PrevAllotmentQty.toFixed(2)).show();
+
+                        prevBufferqty = allotmentinfo.PrevAllotmentQty;
+
+
+
+
+
+
+
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+                return false;
+        };
+
+       
+
+            function Booking_Save() {
+
+            bookingDataCalculation();
+
+
+            Booking = [];
+            var Bookings = {
+                RepresentativeBookingId: 0,   FiscalYearId: 0, FiscalMonthId: 0, BufferListId: 0,  AllotmentQty: 0.00, ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "", BufferBookingId: "",BufferRepresentativeId:""
+            };
+
+            var rows = tblBookindata.rows('.selected').nodes().toArray();
+
+            var BookingData = tblBookindata.rows('.selected').data().toArray();
+            console.log(rows);
+            console.log(BookingData);
+
+
+            for (var i = 0; i < BookingData.length; i++) {
+
+                Bookings.AllotmentQty = rows[i].cells[5].children[0].value || 0;
+                if (Bookings.AllotmentQty > -1)
+                {
+                    Bookings.RepresentativeBookingId = BookingData[i][0];
+                    Bookings.FiscalYearId = BookingData[i][1];
+                    Bookings.FiscalMonthId = BookingData[i][2];
+                    Bookings.BufferListId = BookingData[i][3];
+
+                    Bookings.BufferRepresentativeId = BookingData[i][4];
+                    //Bookings.DistWiseBookingId = $('#DistId option:selected').val();
+                    Bookings.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                    Bookings.PcName = "";
+                    Bookings.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    Bookings.DateAdded = today;
+                    @*Bookings.UpdateByUserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    Bookings.DateUpdated = today;*@
+                    Booking.push(Bookings);
+                    var Bookings = {
+                        RepresentativeBookingId: 0, FiscalYearId: 0, FiscalMonthId: 0, BufferListId: 0, AllotmentQty: 0.00, ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: "", BufferBookingId: "", BufferRepresentativeId: ""
+                    };
+                }
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Create", "RepresentativeBooking")',
+                dataType: 'json',
+                async: 'true',
+                data: { booking: Booking },
+                success: function (data) {
+                    //console.log(data);
+                    if (data.Success == "1") {
+                        customFile('2', data.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            //alert('Enter');
+                            window.location.href = '@Url.Action("Index", "RepresentativeBooking")';
+                        }, 500);
+                    }
+
+                    else {
+                        toastr.error(data.ex);
+                    }
+                },
+                error: function (ex) {
+
+                }
+            });
+
+        }
+
+
+
+
+
+
+
+
+    </script>
+
+}

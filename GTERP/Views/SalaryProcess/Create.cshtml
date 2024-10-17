@@ -1,0 +1,658 @@
+﻿@model GTERP.Models.Payroll.SalaryProcess
+@{
+    ViewBag.Title = "Salary Process";
+}
+
+<!-- #region Style -->
+
+<style>
+    /*.set {
+        border-radius: .2em;
+        border: 1px solid #9eb6c1;
+        padding: 5px;
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+
+        .set:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+    .hor-padding {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .modified-well {
+        background-color: white;
+        border: 0px;
+    }
+
+    .form-group {
+        margin-bottom: 0px;
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+    }
+
+        .nav-tabs > li {
+            margin-bottom: -2px;
+        }
+
+    a {
+        color: #fff;
+    }
+
+    #navActive .nav .open > a:focus, #navActive .nav > li > a:hover, #navActive .nav > li > a:active, .nav > li > a:focus {
+        color: #fff !important;
+        background: #1fc1dd !important;
+    }
+
+    #navActive .nav > li > a:active {
+        color: #fff !important;
+        background: #1fc1dd !important;
+    }
+    #navActive .nav-tabs li.active:hover a:after,#navActive .nav-tabs li.active:focus a:after {
+        border-top: 10px solid #1fc1dd;
+    }
+    .content {
+        padding-top: 75px;
+        padding-bottom: 15px;
+        margin-bottom: 10px;
+    }*/
+
+
+</style>
+
+<!-- #endregion -->
+<!-- #region Html -->
+
+<div class="card" style="font-size: 12px">
+    <h4 class="form-header btn-info">
+        <span class="fas fa-dollar-sign pl-2"> </span> Salary Process
+    </h4>
+
+    <dipv class="card-body">
+        @using (Html.BeginForm())
+        {
+
+            if (@ViewBag.loadMsg == "save")
+            {
+                <span id="clsConf">
+                    @Html.ValidationMessage("CustomError")
+                </span>
+            }
+            else if (ViewBag.msgErr == "error")
+            {
+                <div style="padding: 5px; font-weight: bold; text-align: center">
+                    @Html.ValidationMessage("CustomError", new { @class = "btn btn-danger btn-block", @style = "color:#ffffff; font-weight:bold;" })
+                </div>
+            }
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.salDesc, new { @Value = ViewBag.SalDesc })
+            <input type="hidden" id="hidSubmit" name="command" value="" />
+            <div class="row" style="margin-bottom: 10px;">
+                @*<div class="col-lg-3 col-md-3 col-sm-2 col-xs-0"></div>*@
+                <div class="set col-md-offset-3 col-md-6 col-12 boxStyle">
+                    <div class="form-group clssalform-grp row" style="margin-top: 7px">
+                        <div class="col-sm-4">
+                            @Html.LabelFor(model => model.dtPayment, new { @class = "control-label  btn-block" })
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                @Html.TextBoxFor(model => model.dtPayment, new { @class = "form-control pull-right datepicker", @placeholder = "Payment Date" })
+                                @Html.ValidationMessageFor(model => model.dtPayment)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clssalform-grp">
+                        <div class="col-sm-4">
+                            @Html.LabelFor(model => model.dtFirst, new { @class = "control-label btn-block" })
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                @Html.TextBoxFor(model => model.dtFirst, new { @id = "dtSalFirst", @class = "form-control pull-right datepicker", @Value = ViewBag.firstDate })
+                                @Html.ValidationMessageFor(model => model.dtFirst)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group clssalform-grp">
+                        <div class="col-sm-4">
+                            @Html.LabelFor(model => model.dtLast, new { @class = "control-label btn-block" })
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                @Html.TextBoxFor(model => model.dtLast, new { @id = "dtSalLast", @class = "form-control pull-right datepicker", @Value = ViewBag.lastDate })
+                                @Html.ValidationMessageFor(model => model.dtLast)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card with-nav-tabs card-header-info">
+                            <div class="card-header bg-gray white-color" style="padding: 0px 15px">
+                                <ul class="nav nav-tabs" id="navActive">
+                                    <li class="active"><a data-toggle="tab" href="#tabA"><span class="glyphicon glyphicon-book"></span> Full Salary Process</a></li>
+                                    <li><a data-toggle="tab" href="#tabB"><span class="glyphicon glyphicon-book"></span> Partial Salary Process</a></li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div id="tabA" class="tab-pane fade in active">
+                                        <div class="col-md-2 col-sm-2 col-xs-12 col-lg-2" style="margin-bottom: 5px;">
+                                            <div class="form-group">
+                                                <div class="row set boxStyle">
+                                                    <fieldset class="well modified-well" style="height: 197px;">
+                                                        <legend class="the-legend legendStyle" style="width: auto">Salary Process</legend>
+                                                        <div class="form-group clssalform-grp" style="margin-bottom: 5px">
+                                                            <div class="row">
+                                                                <div class="col-md-offset-1 col-md-10" style="margin-top: 45px">
+                                                                    <input type="button" value="Salary Process" id="btnProssSalAct" class="btn btn-primary btn-block" style="width: 115px;" onclick=" fncSalProcess('ProssSalAct') " />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row" style="display: none">
+                                                                <div class="col-md-offset-1 col-md-10" style="margin-top: 20px">
+                                                                    <input type="button" value="Released Salary Process" id="btnProssSalRel" class="btn btn-info btn-block" onclick=" fncSalProcess('ProssSalRel') " />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-10 col-sm-10 col-lg-10 col-xs-12">
+                                            <div class="form-group clssalform-grp col-lg-6 col-sm-6 col-md-6 col-xs-12" style="margin-bottom: 5px;">
+                                                <div class="set boxStyle">
+                                                    <fieldset class="well modified-well clsWellFest clssalform-grp" style="padding-top: 0;">
+                                                        <legend class="the-legend legendStyle" style="width: auto">Festival Bonus Process</legend>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.dtFest, new { @class = "control-label btn-block nowrap" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="input-group date">
+                                                                        <div class="input-group-addon">
+                                                                            <i class="fa fa-calendar"></i>
+                                                                        </div>
+                                                                        @Html.TextBoxFor(model => model.dtFest, new { @id = "dtFest", @class = "form-control pull-right datepicker" })
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.Days, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.TextBoxFor(model => model.Days, new { @id = "Days", @class = "form-control pull-left" })
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.dtFestEffect, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="input-group date">
+                                                                        <div class="input-group-addon">
+                                                                            <i class="fa fa-calendar"></i>
+                                                                        </div>
+                                                                        @Html.TextBoxFor(model => model.dtFestEffect, new { @id = "dtfestEffect", @class = "form-control pull-right datepicker" })
+                                                                        @Html.ValidationMessageFor(model => model.dtFestEffect)
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.EmpType, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.EmpType, new SelectList(ViewBag.EmpType, "Name", "Name"), new { @id = "EmpType", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.EmpType)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.Religion, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.Religion, new SelectList(ViewBag.Religions, "Name", "Name"), new { @id = "Relegion", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.Religion)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.SalType, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.SalType, new SelectList(ViewBag.SalType, "Name", "Name"), new { @id = "SalType", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.SalType)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.FestType, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.FestType, new SelectList(ViewBag.FestType, "Name", "Name"), new { @id = "FestType", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.FestType)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+
+                                                                    <label class="control-label btn-block">Percentage (%):</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.TextBoxFor(model => model.bonusPer, new { @id = "bnsPercent", @class = "form-control pull-right" })
+                                                                    @Html.ValidationMessageFor(model => model.bonusPer)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    <input type="button" value="Delete Process" id="btndltProssFest" class="btn btn-danger btn-block" onclick=" fncSalProcess('dltprossFest') " />
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input type="button" value="Festival Process" id="btnProssFest" class="btn btn-success btn-block" onclick=" fncSalProcess('prossFest') " />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                            <div class="form-group clssalform-grp col-lg-6 col-sm-6 col-md-6 col-xs-12 hor-padding" style="margin-bottom: 5px;">
+                                                <div class="set boxStyle">
+                                                    <fieldset class="well modified-well the-fieldset clsWellFest">
+                                                        <legend class="the-legend legendStyle" style="width: auto">Advance Salary Sheet</legend>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5" style="padding-right: 0">
+                                                                    @Html.LabelFor(model => model.dtSalAdv, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="input-group date">
+                                                                        <div class="input-group-addon">
+                                                                            <i class="fa fa-calendar"></i>
+                                                                        </div>
+                                                                        @Html.TextBoxFor(model => model.dtSalAdv, new { @id = "dtadvSal", @class = "form-control pull-right datepicker" })
+                                                                        @Html.ValidationMessageFor(model => model.dtSalAdv)
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5" style="padding-right: 0">
+                                                                    @Html.LabelFor(model => model.AdvType, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.AdvType, new SelectList(ViewBag.SalType, "Name", "Name"), new { @id = "AdvType", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.AdvType)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5" style="padding-right: 0">
+                                                                    @Html.LabelFor(model => model.AdvFestType, new { @class = "control-label btn-block" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.DropDownListFor(model => model.AdvFestType, new SelectList(ViewBag.FestType, "Name", "Name"), new { @id = "AdvFestType", @class = "form-control" })
+                                                                    @Html.ValidationMessageFor(model => model.AdvFestType)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    <label class="control-label btn-block">Percentage (%):</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    @Html.TextBoxFor(model => model.bonusAdvPer, new { @id = "bnsAdvPercent", @class = "form-control pull-right" })
+                                                                    @Html.ValidationMessageFor(model => model.bonusAdvPer)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    <input type="button" value="Delete Process" id="btndltProssSalAdv" class="btn btn-danger btn-block" onclick=" fncSalProcess('dltprossSalAdv') " />
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input type="button" value="Advance Process" id="btnProssSalAdv" class="btn btn-success btn-block" onclick=" fncSalProcess('prossSalAdv') " />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @*My code*@
+
+                                        <div class="col-md-2 col-sm-2 col-xs-12 col-lg-4" style="margin-bottom: 5px;">
+                                            <div class="form-group">
+                                                <div class="row set boxStyle">
+                                                    <fieldset class="well modified-well" style="height: 197px;">
+                                                        <legend class="the-legend legendStyle" style="width: auto">Earn Leave Process</legend>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.dtELPrcFirst, new { @class = "control-label btn-block nowrap" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="input-group date">
+                                                                        <div class="input-group-addon">
+                                                                            <i class="fa fa-calendar"></i>
+                                                                        </div>
+                                                                        @Html.TextBoxFor(model => model.dtELPrcFirst, new { @id = "dtELPrcFirst", @class = "form-control pull-right datepicker" })
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group clssalform-grp">
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    @Html.LabelFor(model => model.dtELPrcLast, new { @class = "control-label btn-block nowrap" })
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <div class="input-group date">
+                                                                        <div class="input-group-addon">
+                                                                            <i class="fa fa-calendar"></i>
+                                                                        </div>
+                                                                        @Html.TextBoxFor(model => model.dtELPrcLast, new { @id = "dtELPrcLast", @class = "form-control pull-right datepicker" })
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @*<div class="form-group clssalform-grp">
+                                                                <div class="row">
+                                                                    <div class="col-md-7" style="margin-left: 136px;">
+                                                                        <input type="button" value="Earn Lean Process" id="btnProssEarnLeave" class="btn btn-success btn-block" onclick=" fncSalProcess('prossEarnLeave') " />
+                                                                    </div>
+                                                                </div>
+                                                            </div>*@
+                                                        <div class="form-group clssalform-grp" style="margin-bottom: 5px">
+                                                            <div class="row">
+                                                                <div class="col-md-offset-1 col-md-10" style="margin-top: 45px">
+                                                                    <input type="button" value="Earn Lean Process" id="btnProssEarnLeave" class="btn btn-success btn-block" onclick=" fncSalProcess('prossEarnLeave') " />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div id="tabB" class="tab-pane fade">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-3"></div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <div class="row set boxStyle">
+                                                            <fieldset class="well modified-well the-fieldset" style="height: 197px">
+                                                                <legend class="the-legend legendStyle" style="width: auto">Partial salary process</legend>
+                                                                <div class="form-group clssalform-grp" style="margin-bottom: 5px">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4 text-right" style="margin-top: 45px"><label>With OT</label>&nbsp; @Html.CheckBox("ot")</div>
+                                                                        <div class="col-md-7 text-left" style="margin-top: 45px">
+                                                                            <input type="button" value="Process" id="btnProssSal" class="btn btn-info btn-block" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+    </dipv>
+</div>
+
+<!-- #endregion -->
+<!-- #region Script -->
+@*<script src="~/Content/js/plugins/jquery/jquery-2.2.4.min.js"></script>*@
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+
+    function fncBlank(parm) {
+        if (parm === 'ProssSalAct' || parm === 'ProssSalRel') {
+            if ($('#dtPayment').val().length === 0) {
+                alert('Please provide payment date');
+                $('#dtPayment').focus().select();
+                return true;
+            }
+            if ($('#dtSalFirst').val().length === 0) {
+                alert('Please provide month first date');
+                $('#dtSalFirst').focus().select();
+                return true;
+            }
+            if ($('#dtSalLast').val().length === 0) {
+                alert('Please provide month last date');
+                $('#dtSalLast').focus().select();
+                return true;
+            }
+        }
+        else if (parm === 'prossFest') {
+            if ($('#dtFest').val().length === 0) {
+                alert('Please provide festival date');
+                $('#dtFest').focus().select();
+                return true;
+            }
+            if ($('#Days').val() <= 0) {
+                alert('Please provide days');
+                $('#Days').focus().select();
+                return true;
+
+            }
+            if ($('#bnsPercent').val().length === 0) {
+                alert('Please provide bonus percent');
+                $('#bnsPercent').focus().select();
+                return true;
+            }
+
+        }
+        else if (parm === 'dltprossFest') {
+            if ($('#dtFest').val().length === 0) {
+                alert('Please provide festival date');
+                $('#dtFest').focus().select();
+                return true;
+            }
+        }
+        else if (parm === 'prossSalAdv') {
+            if ($('#bnsAdvPercent').val().length === 0) {
+                alert('Please provide bonus percent');
+                $('#bnsAdvPercent').focus().select();
+                return true;
+            }
+            if ($('#dtadvSal').val().length === 0) {
+                alert('Please provide advance salary date');
+                $('#dtadvSal').focus().select();
+                return true;
+            }
+        }
+        else if (parm === 'dltprossSalAdv') {
+
+            if ($('#dtadvSal').val().length === 0) {
+                alert('Please provide advance salary date');
+                $('#dtadvSal').focus().select();
+                return true;
+            }
+        }
+        else if (parm === 'prossEarnLeave') {
+            if ($('#dtELPrcFirst').val().length===0) {
+                alert('Please provide first date');
+                $('#dtELPrcFirst').focus().select();
+                return true;
+            }
+            if ($('#dtELPrcLast').val().length === 0) {
+                alert('Please provide last date');
+                $('#dtELPrcLast').focus().select();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function fncSalProcess(param) {
+        if (fncBlank(param) === true) {
+            return false;
+        }
+        $('#hidSubmit').val(param);
+        $(this).serialize();
+        $("form")[0].submit();
+        return true;
+    }
+
+
+    $(document).ready(function () {
+        //, #dtSalFirst,#dtSalLast
+
+        var date = new Date();
+        var firstDay = new Date(date.getFullYear(), date.getMonth()-1, 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth(),0);
+
+        $('#dtSalFirst').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date(firstDay));
+        $('#dtSalFirst').datepicker('update');
+        $('#dtSalLast').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date(lastDay));
+        $('#dtSalLast').datepicker('update');
+
+        $('#dtELPrcFirst').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date(firstDay));
+        $('#dtELPrcFirst').datepicker('update');
+        $('#dtELPrcLast').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date(lastDay));
+        $('#dtELPrcLast').datepicker('update');
+
+
+
+        $("#dtFest").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            format: "dd-M-yyyy"
+        }).datepicker("setDate", new Date());
+        $('#dtFest').datepicker('update');
+
+        $('#dtadvSal').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date());
+        $('#dtadvSal').datepicker('update');
+
+
+        $('#dtfestEffect').datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date());
+        $('#dtfestEffect').datepicker('update');
+
+        $("#Days").on("change", function () {
+
+            var date = new Date($("#dtFest").val());
+            var days = parseInt($("#Days").val());
+            var dateeffect = new Date(date);
+            dateeffect.setDate(dateeffect.getDate() - days);
+            if (!isNaN(dateeffect)) {
+                $("#dtfestEffect").datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', dateeffect);
+            } else {
+                $("#dtfestEffect").datepicker({ format: "dd-M-yyyy" }).datepicker('setDate', new Date());
+            }
+
+        });
+
+        $("#dtPayment").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            format: "dd-M-yyyy"
+        }).datepicker("setDate", new Date());
+        $('#dtPayment').datepicker('update');
+
+
+        $('#clsConf').show().delay(1500).fadeOut();
+
+
+
+
+        $("form").submit(function (e) {
+            alert('nit');
+            var formData = new FormData($(this)[0]);
+            formData.append('#command', $('#hidSubmit').val());
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("Create", "salaryProcess")",
+                datatype: "json",
+                data: formData,
+                cache: false,
+                async: true,
+                contentType: 'application/json; charset=utf-8',
+                processData: false,
+                success: function (data) {
+                    alert(data);
+                    @*if (data.toUpperCase().contains("Complete".toUpperCase())) {
+                        alert(data);
+                        var url = '@Url.Action("Index", "CFSCLP")';
+                    window.location.href = url;
+                    }*@
+                },
+                error: function (err) {
+                    Console.WriteLine(err.responseText);
+                }
+            });
+        });
+
+    });
+    </script>
+
+}
+<!-- #endregion -->

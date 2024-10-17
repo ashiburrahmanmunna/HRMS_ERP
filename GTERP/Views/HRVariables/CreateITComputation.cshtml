@@ -1,0 +1,175 @@
+﻿@model GTERP.Models.Cat_ITComputationSetting
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateITComputation", "HRVariables", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6  offset-md-3 col-12">
+                @if (Model != null)
+                {
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Id" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 class="mb-3">HR Exp Setting @ViewBag.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="needs-validation p-4" novalidate>
+
+                                <input type="hidden" asp-for="ComId" />
+                                <input type="hidden" asp-for="UserId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="TaxComputation"></label>
+                                                    </span>
+                                                </div>
+                                                <input asp-for="TaxComputation" class="form-control" />
+                                                <span asp-validation-for="TaxComputation" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="Amount"></label>
+                                                    </span>
+                                                </div>
+                                                <input asp-for="Amount" class="form-control" />
+                                                <span asp-validation-for="Amount" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="Rate"></label>
+                                                    </span>
+                                                </div>
+                                                <input asp-for="Rate" class="form-control" />
+                                                <span asp-validation-for="Rate" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="dtFrom"></label>
+                                                    </span>
+                                                </div>
+                                                <input asp-for="dtFrom" class="form-control" />
+                                                <span asp-validation-for="dtFrom" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="HRExpSetting_delete()">Delete</button>
+                                    }
+
+
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "ITComputationList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+
+      
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+  
+    function HRExpSetting_delete() {
+
+        var id = $("#Id").val();
+         //   alert(Sectid);
+            $.ajax({
+
+                url: '@Url.Action("DeleteITComputation", "HRVariables")',
+                data: JSON.stringify({ id: id }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("ITComputationList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,1991 @@
+﻿@model GTERP.Models.Bill_Main
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<style>
+    .card-header {
+        padding: .85rem 1rem 0rem 1rem;
+    }
+    h5 {
+        font-family: 'Roboto Condensed';
+        font-size: 30px;
+        font-weight: 400;
+    }
+    .input-validation-error {
+        border: 2px solid #f00;
+        background: #fee;
+    }
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+
+
+    /*    th {
+        font-size: 14px;
+    }
+
+    td {
+        font-size: 13px;
+    }*/
+
+
+    div.dataTables_length {
+        float: right;
+    }
+    /*.dt-buttons {
+
+        }*/
+    /*div.dataTables_length select {
+            font-size:17px;
+
+        }*/
+    /*div.dataTables_length> label {
+            display: none;
+        }*/
+    div.dataTables_filter {
+        float: left;
+        /*font-size: 17px;*/
+    }
+
+
+    /*div.dataTables_info {
+            float: left;
+        }*/
+
+    div.dataTables_paginate {
+        float: right;
+    }
+
+    div.DTTT {
+        float: left;
+        margin-right: 50px;
+    }
+
+    div.buttons {
+        clear: both;
+    }
+
+    .fas, .far {
+        /*font-size: 10px !important;*/
+    }
+
+
+    table.dataTable tbody td, .sorting {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .sorting_asc {
+        color: green;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .sorting_desc {
+        color: #0932d1;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .table-sm th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+    .select-box {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        font-family: 'Open Sans', 'Helvetica Neue', 'Segoe UI', 'Calibri', 'Arial', sans-serif;
+        font-size: 18px;
+        color: #60666d;
+    }
+
+    #myInputSearch {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+
+    div#DataTables_Table_0_wrapper {
+        width: 100% !important;
+    }
+
+    .tblExportInvoice th:first-child, .tblExportInvoice tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice th:nth-child(2) {
+        position: sticky !important;
+        left: 70px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tbody td:nth-child(2) {
+        position: sticky !important;
+        left: 70px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tbody td:nth-child(3), th:nth-child(3) {
+        position: sticky !important;
+        left: 140px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    table.dataTable.display tbody > tr.selected:hover, table.dataTable.display tbody > tr > .selected:hover {
+        background-color: transparent;
+    }
+</style>
+
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+
+    <div class="text-center">
+        <h2 id="styletext" class="text-center">Bill @ViewBag.Title</h2>
+        @*<p class="lead"></p>*@
+    </div>
+
+
+    <input type="hidden" id="mode" value="@ViewBag.Title" />
+
+    @if (Model != null)
+    {
+        <input type="hidden" asp-for="BillMainId" value="@Model.BillMainId" />
+        <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+        <input type="hidden" asp-for="ComId" value="@Model.ComId" />
+        <input type="hidden" asp-for="DateAdded" value="@Model.DateAdded" />
+        <input type="hidden" asp-for="DateUpdated" value="@DateTime.Now" />
+        <input type="hidden" asp-for="UpdateByUserId" value="@HttpContextAccessor.HttpContext.Session.GetString("userid")" />
+    }
+    else
+    {
+        <input type="hidden" asp-for="BillMainId" value="0" />
+        <input type="hidden" asp-for="UserId" value="@HttpContextAccessor.HttpContext.Session.GetString("userid")" />
+        <input type="hidden" asp-for="ComId" value="@HttpContextAccessor.HttpContext.Session.GetString("comid")" />
+        <input type="hidden" asp-for="DateAdded" value="@DateTime.Now" />
+    }
+
+
+    <form id="modalbodyfahad" class="needs-validation p-3" novalidate>     
+
+        <div class="card">
+            <div class="card-header text-white bg-success">
+                <h5><i class="fas fa-file-pdf btn btn-success fa-lg "></i> Bill Info</h5>
+            </div>
+            <div class="card-body row">
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="BillNo" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="BillNo" class="form-control" />
+                        @Html.ValidationMessageFor(model => model.BillNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="AccId" class="control-label"></label>
+                            </span>
+                        </div>
+                        <select asp-for="AccId" class="form-control" asp-items="ViewBag.AccId">
+                            <option value="">-- Please Select --</option>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.AccId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="SupplierId" class="control-label"></label>
+                            </span>
+                        </div>
+                        <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.SupplierId">
+                            <option value="">-- Please Select --</option>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.BillNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="SupplierName" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input asp-for="SupplierName" class="form-control" />
+                        @Html.ValidationMessageFor(model => model.SupplierName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="BillDate" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input type="date" asp-for="BillDate" class="form-control" />
+                        @Html.ValidationMessageFor(model => model.BillDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalPOQty" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled type="text" asp-for="TotalPOQty" class="form-control" />
+                        @Html.ValidationMessageFor(model => model.TotalPOQty, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalReceiveQty" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalReceiveQty" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalReceiveQty, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="GrossAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="GrossAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.GrossAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalSDAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalSDAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalSDAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalVATAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalVATAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalVATAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalAITAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalAITAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalAITAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalWFAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalWFAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalWFAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalLDAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalLDAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalLDAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalConfessionAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalConfessionAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalConfessionAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalElectricityAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalElectricityAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalElectricityAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalReturnAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="TotalReturnAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalReturnAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalOthersAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input asp-for="TotalOthersAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalOthersAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                 <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="TotalForfeitureAmount" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input asp-for="TotalForfeitureAmount" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.TotalForfeitureAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="Advance" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input asp-for="Advance" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.Advance, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                  <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="NetPayableBill" class="control-label"></label>
+                            </span>
+                        </div>
+                        <input disabled asp-for="NetPayableBill" class="form-control" type="text" />
+                        @Html.ValidationMessageFor(model => model.NetPayableBill, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label asp-for="Remarks" class="control-label"></label>
+                            </span>
+                        </div>
+                        <textarea asp-for="Remarks" class="form-control"></textarea>
+                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            @*<div class="card-header text-white bg-success">
+                <h6 class="text-center">Bill Details Info</h6>
+            </div>*@
+
+            <div class="card-body row ">
+                <div class="table-responsive text-nowrap mb-3">
+                    <table id="tblBillSub" class="table-sm tbl display responsive table-striped table-hover text-center" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="display:none">BillMainId</th>
+                                <th style="display:none">BillSubId</th>
+                                <th style="display:none">ProductId</th>
+                                <th>Product Name</th>
+                                <th>POQty</th>
+                                <th>ReceiveQty</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+
+                                <th>SD %</th>
+                                <th>SD Amt</th>
+                                <th>VAT %</th>
+                                <th>VAT Amt</th>
+                                <th>AIT %</th>
+                                <th>AIT Amt</th>
+
+                                <th>WF Loan %</th>
+                                <th>WF Loan Amt</th>
+                                <th>LD %</th>
+                                <th>LD Amt</th>
+                                <th>Conf. %</th>
+                                <th>Conf. Amt</th>
+
+                                <th>Elect. Amt</th>
+                                <th>Return Amt</th>
+                              
+                                <th>Forfeiture Amt</th>
+                                <th>Others Amt</th>
+
+                                <th>Net Amt</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
+                                <th>IsDelete</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                if (Model.Bill_Subs != null)
+                                {
+                                    foreach (var item in Model.Bill_Subs)
+                                    {
+                                        <tr class="txtDetails">
+                                            <td style="display:none">
+                                                @Html.DisplayTextFor(i => item.BillMainId)
+                                            </td>
+
+                                            <td style="display:none">
+                                                @Html.DisplayTextFor(i => item.BillSubId)
+                                            </td>
+                                            <td style="display:none">
+                                                @Html.DisplayTextFor(i => item.ProductId)
+                                            </td>
+                                           
+                                                @if (item.Product != null)
+                                                {
+                                                    <td>@item.Product.ProductName</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@item.ProductName</td>
+                                                }
+                                                @*@Html.DisplayTextFor(i => item.Acc_ChartOfAccount.AccCode)*@
+
+                                           
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.POQty)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ReceiveQty)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Rate)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Amount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.SDPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.SDAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.VATPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.VATAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.AITPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.AITAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.WFPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.WFAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.LDPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.LDAmount)
+                                            </td>
+                                             <td>
+                                                @Html.DisplayTextFor(i => item.ConfessionPercentage)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ConfessionAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ElectricityAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ReturnAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ForfeitureAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.OthersAmount)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.NetAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Remarks)
+                                            </td>
+                                            <td>
+                                                <a class="dlttrash" data-itemId="@item.BillSubId" data-html="@item.BillSubId" href="#"><i class="fa fa-trash"></i></a>
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.IsDelete)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td style="display:none"></td>
+                                <td><h4>Total Qty & Amount :</h4></td>
+                                <td><h4 class="ttlPOQty">0.00</h4></td>
+                                <td><h4 class="ttlReceiveQty">0.00</h4></td>
+                                <td>@*<h4 class="ttlRate">0.00</h4>*@</td>
+                                <td><h4 class="ttlAmount">0.00</h4></td>
+                                <td>@*<h4 class="ttlSDPercentage">0.00</h4>*@</td>
+                                <td><h4 class="ttlSDAmount">0.00</h4></td>
+                                <td>@*<h4 class="ttlVATPercentage">0.00</h4>*@</td>
+                                <td><h4 class="ttlVATAmount">0.00</h4></td>
+                                <td></td>
+                                <td><h4 class="ttlAITAmount">0.00</h4></td>
+                                <td></td>
+                                <td><h4 class="ttlWFAmount">0.00</h4></td>
+                                <td></td>
+                                <td><h4 class="ttlLDAmount">0.00</h4></td>
+
+                                <td></td>
+                                <td><h4 class="ttlConfessionAmount">0.00</h4></td>
+                                <td><h4 class="ttlElectricityAmount">0.00</h4></td>
+                                <td><h4 class="ttlReturnAmount">0.00</h4></td>
+                                <td><h4 class="ttlForfeitureAmount">0.00</h4></td>
+                                <td><h4 class="ttlOthersAmount">0.00</h4></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+                <div class="col-md-12 col-12">
+                    <div class="row ">
+                        <div class="col-md-3 col-12"></div>
+                        <div class="col-md-3 col-12">
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <button class="btn btn-primary btn-block rounded-0" type="button" onclick="Bill_Save()">Save</button>
+                            }
+                            else if (ViewBag.Title == "Edit")
+                            {
+                                <button class="btn btn-warning btn-block rounded-0" type="button" onclick="Bill_Save()">Update</button>
+
+                            }
+                            else if (ViewBag.Title == "Delete")
+                            {
+                                <button class="btn btn-danger rounded-0 btn-block" type="button" onclick="ConfirmDialogDelete('Are you sure');">Delete</button>
+
+                            }
+                           
+                        </div>
+                        <div class="col-md-3 col-12">                           
+                            @Html.ActionLink("Back", "BillManagementList", "Accounts", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </div>
+               
+            </div>
+
+            @*<div class="card-header text-white bg-success">
+                <h6 class="text-center">Bill Details Create/Update</h6>
+            </div>*@
+
+        <div class="card-body row">
+            <input type="hidden" id="BillSubId" name="BillSubId" />
+
+            <div class="col-md-6 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Product</label>
+                        </span>
+                    </div>
+                    <select class="form-control" asp-items="ViewBag.ProductId" id="ProductId">
+                        <option value="">-- Please Select --</option>
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Product Name</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="ProductName" name="ProductName" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">PO Qty</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" value="1" id="POQty" name="POQty" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Rec. Qty</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" value="1" id="ReceiveQty" name="ReceiveQty" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Rate</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="Rate" name="Rate" />
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">SD %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control"  id="SDPercentage" name="SDPercentage" />
+                    
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">VAT %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control"  id="VATPercentage" name="VATPercentage" />
+                    
+                </div>
+            </div>
+
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">AIT %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control"  id="AITPercentage" name="AITPercentage" />
+                    
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">SD Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="SDAmount" name="SDAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">VAT Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="VATAmount" name="VATAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">AIT Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="AITAmount" name="AITAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">WF %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control"  id="WFPercentage" name="WFPercentage" />
+                    
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">LD %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="LDPercentage" name="LDPercentage" />
+                   
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Confession %</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control"  id="ConfessionPercentage" name="ConfessionPercentage" />
+                   
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">WF Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="WFAmount" name="WFAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">LD Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="LDAmount" name="LDAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Confession Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="ConfessionAmount" name="ConfessionAmount" />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><input type="checkbox" /></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Elect. Amount</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="ElectricityAmount" name="ElectricityAmount" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Return Amount</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="ReturnAmount" name="ReturnAmount" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Forfeiture Amount</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="ForfeitureAmount" name="ForfeitureAmount" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Others Amount</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="OthersAmount" name="OthersAmount" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Amount</label>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="Amount" name="Amount" />
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Net Amount</label>
+                        </span>
+                    </div>
+                    <input disabled type="text" class="form-control" id="NetAmount" name="NetAmount" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label class="control-label">Remarks</label>
+                        </span>
+                    </div>
+                    <textarea id="SubRemarks" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="col-md-12 row ">
+                <div class="col-md-2 offset-md-5 col-12">
+                    <span id="detailsspan" class="row">
+                        <button type="button" id="detailsAddBtn" onclick="DetailsAdd()" class="btn btn-primary btn-block rounded-0 col">Add</button>
+
+                    </span>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        </div>
+    </form>
+</div>
+
+
+
+    @*<div>
+            <a asp-action="Index">Back to List</a>
+        </div>*@
+
+
+    @section Scripts
+    {
+        <script>
+
+            $(":checkbox").click(function () {
+                if ($(this).is(":checked")) {
+                    $(this).closest("div").prev("input").prop("disabled", false);
+                } else {
+                    $(this).closest("div").prev("input").prop("disabled", true);
+                }
+                //console.log($(this).closest("div").prev("input").val());//closest("input"));//.prop("disabled", true);
+
+            });
+
+
+        const NetTotalCalculation = ()=> {
+
+            $('.ttlPOQty').text(0);
+            $('.ttlReceiveQty').text(0);
+            $('.ttlRate').text(0);
+            $('.ttlAmount').text(0);
+            $('.ttlSDPercentage').text(0);
+            $('.ttlSDAmount').text(0);
+            $('.ttlVATPercentage').text(0);
+            $('.ttlVATAmount').text(0);
+            $('.ttlAITAmount').text(0);
+            $('.ttlAITPercentage').text(0);
+
+            $('.ttlWFPercentage').text(0);
+            $('.ttlWFAmount').text(0);
+            $('.ttlLDPercentage').text(0);
+            $('.ttlLDAmount').text(0);
+            $('.ttlConfessionPercentage').text(0);
+            $('.ttlReturnAmount').text(0);
+            $('.ttlForfeitureAmount').text(0);
+            $('.ttlOthersAmount').text(0);
+
+            $('.ttlElectricityAmount').text(0);
+            $('.ttlConfessionAmount').text(0);
+
+            $('.ttlNetAmount').text(0);
+
+            let ttlPOQty = 0;
+            let ttlReceiveQty = 0;
+            let ttlRate = 0;
+            let ttlAmount = 0;
+            let ttlSDPercentage = 0;
+            let ttlSDAmount = 0;
+            let ttlVATPercentage = 0;
+            let ttlVATAmount = 0;
+            let ttlAITPercentage = 0;
+            let ttlAITAmount = 0;
+            let ttlWFPercentage = 0;
+            let ttlWFAmount = 0;
+            let ttlLDPercentage = 0;
+            let ttlLDAmount = 0;
+            let ttlConfessionPercentage = 0;
+            let ttlConfessionAmount = 0;
+
+            let ttlElectricityAmount = 0;
+            let ttlReturnAmount = 0;
+            let ttlForfeitureAmount = 0;
+            let ttlOthersAmount = 0;
+           
+
+            let ttlNetAmount = 0;
+
+            var oTable = $('#tblBillSub').dataTable().fnGetData();
+            //var rows = $('#tblBillSub').dataTable().fnGetNodes();
+            //console.log(rows);
+            //console.log(oTable);
+            for (var i = 0; i < oTable.length; i++) {
+                ttlPOQty += parseFloat(oTable[i][4] || 0);
+                ttlReceiveQty += parseFloat(oTable[i][5]||0);
+                ttlRate = parseFloat(oTable[i][6]||0);
+                ttlAmount += parseFloat(oTable[i][7]||0);
+                ttlSDPercentage += parseFloat(oTable[i][8]||0);
+                ttlSDAmount += parseFloat(oTable[i][9] || 0);
+                ttlVATPercentage += parseFloat(oTable[i][10] || 0);
+                ttlVATAmount += parseFloat(oTable[i][11] || 0);
+                ttlAITPercentage += parseFloat(oTable[i][12] || 0);
+                ttlAITAmount += parseFloat(oTable[i][13] || 0);
+
+                ttlWFPercentage += parseFloat(oTable[i][14] || 0);
+                ttlWFAmount += parseFloat(oTable[i][15] || 0);
+                ttlLDPercentage += parseFloat(oTable[i][16] || 0);
+                ttlLDAmount += parseFloat(oTable[i][17] || 0);
+                ttlConfessionPercentage += parseFloat(oTable[i][18] || 0);
+                ttlConfessionAmount += parseFloat(oTable[i][19] || 0);
+
+                ttlElectricityAmount += parseFloat(oTable[i][20] || 0);
+                ttlReturnAmount += parseFloat(oTable[i][21] || 0);
+                ttlForfeitureAmount += parseFloat(oTable[i][22] || 0);
+                ttlOthersAmount += parseFloat(oTable[i][23] || 0);
+
+                ttlNetAmount += parseFloat(oTable[i][24] || 0);
+            }
+            let ttlamt = ttlReceiveQty * ttlRate;
+            $('.ttlPOQty').text(ttlPOQty.toFixed(2));
+            $('#TotalPOQty').val(ttlPOQty.toFixed(2));
+
+            $('.ttlReceiveQty').text(ttlReceiveQty.toFixed(2));
+            $('#TotalReceiveQty').val(ttlReceiveQty.toFixed(2));
+
+            $('.ttlRate').text(ttlRate.toFixed(2));
+            $('.ttlAmount').text(ttlamt.toFixed(2));
+            $('#GrossAmount').val(ttlamt.toFixed(2));
+
+           // $('.ttlSDPercentage').text(ttlSDPercentage.toFixed(2));
+           // let ttlsdamt = GetPercentage(ttlamt, ttlSDPercentage);
+            $('.ttlSDAmount').text(ttlSDAmount.toFixed(2));
+            $('#TotalSDAmount').val(ttlSDAmount.toFixed(2));
+
+           // $('.ttlVATPercentage').text(ttlVATPercentage.toFixed(2));
+            //let ttlvatamt = GetPercentage(ttlamt, ttlVATPercentage);
+            $('.ttlVATAmount').text(ttlVATAmount.toFixed(2));
+            $('#TotalVATAmount').val(ttlVATAmount.toFixed(2));
+
+           // $('.ttlAITPercentage').text(ttlAITPercentage.toFixed(2));
+            //let ttlaitamt = GetPercentage(ttlamt, ttlAITPercentage);
+            $('.ttlAITAmount').text(ttlAITAmount.toFixed(2));
+            $('#TotalAITAmount').val(ttlAITAmount.toFixed(2));
+
+            $('.ttlWFAmount').text(ttlWFAmount.toFixed(2));
+            $('#TotalWFAmount').val(ttlWFAmount.toFixed(2));
+
+            $('.ttlLDAmount').text(ttlLDAmount.toFixed(2));
+            $('#TotalLDAmount').val(ttlLDAmount.toFixed(2));
+
+            $('.ttlConfessionAmount').text(ttlConfessionAmount.toFixed(2));
+            $('#TotalConfessionAmount').val(ttlConfessionAmount.toFixed(2));
+
+            $('.ttlElectricityAmount').text(ttlElectricityAmount.toFixed(2));
+            $('#TotalElectricityAmount').val(ttlElectricityAmount.toFixed(2));
+
+            $('.ttlReturnAmount').text(ttlReturnAmount.toFixed(2));
+            $('#TotalReturnAmount').val(ttlReturnAmount.toFixed(2));
+
+            $('.ttlForfeitureAmount').text(ttlForfeitureAmount.toFixed(2));
+            $('#TotalForfeitureAmount').val(ttlForfeitureAmount.toFixed(2));
+
+            $('.ttlOthersAmount').text(ttlOthersAmount.toFixed(2));
+            $('#TotalOthersAmount').val(ttlOthersAmount.toFixed(2));
+
+            //let netamt = ttlamt - ttlsdamt - ttlvatamt - ttlaitamt;
+            $('.ttlNetAmount').text(ttlNetAmount.toFixed(2));
+            $('#NetPayableBill').val(ttlNetAmount.toFixed(2));
+
+
+        }    
+
+        function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            CostAlloDelete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+
+        function CostAlloDelete() {
+            var BillMainId = $('#BillMainId').val();
+            //alert(VoucherId);
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+             $.ajax({
+                 @*url: '@Url.Action("Delete", "Acc_Voucher")',
+                 data: JSON.stringify({ id: id }),
+                type: 'POST',
+                contentType:false,
+                dataType: false,*@
+
+
+                 headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+
+
+                type: 'POST',
+                url: '@Url.Action("DeleteBillManagement", "Accounts")',
+                dataType: 'json',
+                async: 'true',
+                 data: { id: BillMainId },
+                success: function (result) {
+                    if (result.Success == "1") {
+                        window.location.href = '@Url.Action("BillManagementList", "Accounts")';}
+                    else {
+                        alert(result.ex);
+                    }
+                 },
+                 error: function (err) {
+                     alert(err);
+                 }
+            });
+        }
+
+        //$('#ReqDate').val(CurrentDate());
+        //$('#BoardMeetingDate').val(CurrentDate());
+        //$('#RequiredDate').val(CurrentDate());
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        //$("#ReqDate,#BoardMeetingDate,#RequiredDate").datepicker({
+        //    onSelect: function (date) {
+        //        // Your CSS changes, just in case you still need them
+        //        $('a.ui-state-default').removeClass('ui-state-highlight');
+        //        $(this).addClass('ui-state-highlight');
+        //        var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+        //        //setter
+        //        $("#ReqDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+        //    }
+        //});
+
+        var tblBillSub;
+        var tblCostAlloDistribute;
+        var antiForgeryToken
+        var selectedItem;
+        var isdelete = false;
+
+        $(document).ready(function () {
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+            $("#SupplierId").select2();
+            $("#AccId").select2();
+            $("#ProductId").select2();
+
+            var mode = $("#mode").val();
+            if (mode == "Edit" || mode == "Delete") {
+                $("#tblDiv").show();
+                           }
+            else {
+                $("#tblDiv").hide();
+                // $("#UpBtn").hide();
+            }
+
+            tblBillSub = $('#tblBillSub').DataTable({
+                "aoColumns": [
+                    { "sClass": "BillMainId", "visible": false },//0
+                    { "sClass": "BillSubId", "visible": false },//1
+                    { "sClass": "ProductId", "visible": false },//2
+                    { "sClass": "ProductName", "visible": true },//3
+                    { "sClass": "POQty", "visible": true },//4
+                    { "sClass": "ReceiveQty", "visible": true },//5
+                    { "sClass": "Rate", "visible": true },//6
+                    { "sClass": "Amount", "visible": true },//7
+                    { "sClass": "SDPercentage", "visible": true },//8
+                    { "sClass": "SDAmount", "visible": true },//9
+                    { "sClass": "VATPercentage", "visible": true },//10
+                    { "sClass": "VATAmount", "visible": true },//11
+                    { "sClass": "AITPercentage", "visible": true },//12
+                    { "sClass": "AITAmount", "visible": true },//13
+
+                    { "sClass": "WFPercentage", "visible": true },//14
+                    { "sClass": "WFAmount", "visible": true },//15
+                    { "sClass": "LDPercentage", "visible": true },//16
+                    { "sClass": "LDAmount", "visible": true },//17
+                    { "sClass": "ConfessionPercentage", "visible": true },//18
+                    { "sClass": "ConfessionAmount", "visible": true },//19
+                    { "sClass": "ElectricityAmount", "visible": true },//20
+                    { "sClass": "ReturnAmount", "visible": true },//21
+                    { "sClass": "ForfeitureAmount", "visible": true },//22
+                    { "sClass": "OthersAmount", "visible": true },//23
+
+                    { "sClass": "NetAmount", "visible": true },//24
+
+                    { "sClass": "Remarks", "visible": true },//25
+                    { "sClass": "Action", "visible": true },//26
+                    { "sClass": "IsDelete", "visible": false }//27
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtDetails');
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: true,
+                select: 'single'
+            }).draw();
+
+
+            $('#ProductId').change(function () {
+                $('#ProductName').val("");
+                var productid = $('#ProductId option:selected').val();
+                $.ajax({
+                    url: '@Url.Action("GetProductInfoBill", "BillManagement")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: productid },
+                    success: function (data, status, xhr) {
+                        if (data != null) {
+                            $('#ProductName').val(data.ProductName);
+                        }
+                    },
+
+                });
+            });
+
+            $("#ReceiveQty,#Rate").keyup(function () {
+                let rec = parseFloat($("#ReceiveQty").val()||0);
+                let rate = parseFloat($("#Rate").val()||0);
+                $("#Amount").val(rec * rate);
+                SDAmount();
+                VATAmount();
+                AITAmount();
+                WFAmount();
+                LDAmount();
+                ConfessionAmount();
+               
+                NetAmount();
+            });
+
+            $("#SDPercentage").keyup(function () {
+                SDAmount();               
+                NetAmount();
+            });
+
+             $("#VATPercentage").keyup(function () {
+                
+                 VATAmount();
+                 NetAmount();
+             });
+
+
+            $("#AITPercentage").keyup(function () {
+              AITAmount();
+              NetAmount();
+            });
+
+            $("#WFPercentage").keyup(function () {
+                 WFAmount();
+              NetAmount();
+            });
+
+            $("#LDPercentage").keyup(function () {
+                 LDAmount();
+              NetAmount();
+            });
+
+            $("#ConfessionPercentage").keyup(function () {
+                ConfessionAmount();
+               NetAmount();
+            });
+
+            $("#ElectricityAmount").keyup(function () {              
+               NetAmount();
+            });
+
+            $("#ReturnAmount").keyup(function () {            
+               NetAmount();
+            });
+            $("#ForfeitureAmount").keyup(function () {            
+               NetAmount();
+            });
+            $("#OthersAmount").keyup(function () {            
+               NetAmount();
+            });
+
+            NetTotalCalculation();
+
+        });
+
+           
+            const SDAmount = () => {
+                let amount = $("#Amount").val();
+                let sdPercent = $("#SDPercentage").val();
+                if (amount > 0)
+                    $("#SDAmount").val(GetPercentage(amount, sdPercent));
+                else
+                    $("#SDAmount").val(0);
+            }
+            const VATAmount = () => {
+                let amount = $("#Amount").val();
+                let sdPercent = $("#VATPercentage").val();
+                if (amount > 0)
+                    $("#VATAmount").val(GetPercentage(amount, sdPercent));
+                else
+                    $("#VATAmount").val(0);
+            }
+            const AITAmount = () => {
+                let amount = $("#Amount").val();
+                let sdPercent = $("#AITPercentage").val();
+                if (amount > 0)
+                    $("#AITAmount").val(GetPercentage(amount, sdPercent));
+                else
+                    $("#AITAmount").val(0);
+
+            }
+            const WFAmount = () => {
+                let amount = $("#Amount").val();
+                let Percent = $("#WFPercentage").val();
+                if (amount > 0)
+                    $("#WFAmount").val(GetPercentage(amount, Percent));
+                else
+                    $("#WFAmount").val(0);
+
+            }
+            const LDAmount = () => {
+                let amount = $("#Amount").val();
+                let Percent = $("#LDPercentage").val();
+                if (amount > 0)
+                    $("#LDAmount").val(GetPercentage(amount, Percent));
+                else
+                    $("#LDAmount").val(0);
+
+            }
+            const ConfessionAmount = () => {
+                let amount = $("#Amount").val();
+                let Percent = $("#ConfessionPercentage").val();
+                if (amount > 0)
+                    $("#ConfessionAmount").val(GetPercentage(amount, Percent));
+                else
+                    $("#ConfessionAmount").val(0);
+
+            }
+
+        const GetPercentage = (value, percent) => (value * percent) / 100;
+
+        const NetAmount = () => {
+            let amount = $("#Amount").val() || 0;
+            if (amount > 0) {
+                 amount -= $("#SDAmount").val() || 0;
+                 amount -= $("#VATAmount").val() || 0;
+                amount -= $("#AITAmount").val() || 0;
+
+                amount -= $("#WFAmount").val() || 0;
+                amount -= $("#LDAmount").val() || 0;
+                amount -= $("#ConfessionAmount").val() || 0;
+                amount -= $("#ElectricityAmount").val() || 0;
+                amount -= $("#ReturnAmount").val() || 0;
+                amount -= $("#ForfeitureAmount").val() || 0;
+                amount -= $("#OthersAmount").val() || 0;
+                $("#NetAmount").val(amount);
+            } else
+                $("#NetAmount").val(0);
+        }
+
+        function createSelectList(selItem) {
+
+            $('#ProductId').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#ProductId').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+
+       // cascadeproduct();
+
+        function cascadeproduct(selItem) {
+
+                    var CategoryId = $('#CategoryId option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("GetProducts", "PurchaseRequisition")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: CategoryId },
+                        success: function (data, status, xhr) {
+                            $("#ProductId option").remove();
+
+                            createSelectList(data.item)
+                            if (selectedItem!=null) {
+                                $("#ProductId").val(selectedItem).change();
+                            }
+                            //selectedItem = null;
+                        }
+
+                    });
+
+        }
+
+
+
+          function Bill_Save() {
+
+
+              var billNo = $('#BillNo').val();
+
+              if (billNo.length < 1) {
+
+                //$("#SRNoSpan").text('Fill Requisition No.');
+                toastr.error('Fill up Bill No');
+                return false;
+            }
+
+
+
+
+              var Bill_Main = {
+                  "BillMainId": 0, "BillNo": "", "BillDate": "", "SupplierId": "",
+                  "SupplierName": "", "AccId": "", "TotalPOQty": "","TotalReceiveQty": "",
+                  "GrossAmount": "", "TotalSDAmount": "", "TotalVATAmount": "","TotalAITAmount": "",
+                  "TotalWFAmount": "", "TotalLDAmount": "","TotalConfessionAmount": "",
+                  "TotalElectricityAmount": "", "TotalReturnAmount": "", "TotalForfeitureAmount": "","TotalOthersAmount": "",
+                  "NetPayableBill": "","Advance": "", "Remarks": "",
+                  "ComId": "", "UserId": "", "UserIdUpdated": "","DateAdded": "", "DateUpdated": "",
+                  "Bill_Subs": []
+            };
+
+
+              Bill_Main.BillMainId = $('#BillMainId').val();
+              Bill_Main.BillNo = $('#BillNo').val().replace(/amp;/ig, '');
+              Bill_Main.BillDate = $('#BillDate').val();
+              Bill_Main.SupplierId = $('#SupplierId').val();
+              Bill_Main.SupplierName = $('#SupplierName').val().replace(/amp;/ig, '');
+              Bill_Main.AccId = $('#AccId').val();
+              Bill_Main.TotalPOQty = $('#TotalPOQty').val().replace(/amp;/ig, '');
+              Bill_Main.TotalReceiveQty = $('#TotalReceiveQty').val().replace(/amp;/ig, '');
+              Bill_Main.GrossAmount = $('#GrossAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalSDAmount = $('#TotalSDAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalVATAmount = $('#TotalVATAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalAITAmount = $('#TotalAITAmount').val().replace(/amp;/ig, '');
+
+              Bill_Main.TotalWFAmount = $('#TotalWFAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalLDAmount = $('#TotalLDAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalConfessionAmount = $('#TotalConfessionAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalElectricityAmount = $('#TotalElectricityAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalReturnAmount = $('#TotalReturnAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalForfeitureAmount = $('#TotalForfeitureAmount').val().replace(/amp;/ig, '');
+              Bill_Main.TotalOthersAmount = $('#TotalOthersAmount').val().replace(/amp;/ig, '');
+             
+              Bill_Main.NetPayableBill = $('#NetPayableBill').val().replace(/amp;/ig, '');
+              Bill_Main.Advance = $('#Advance').val().replace(/amp;/ig, '');
+              Bill_Main.Remarks = $('#Remarks').val().replace(/amp;/ig, '');
+
+              Bill_Main.ComId = $('#ComId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+              Bill_Main.UserId = $('#UserId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+              Bill_Main.DateAdded = $('#DateAdded').val();
+              Bill_Main.DateUpdated = $('#DateUpdated').val();
+              Bill_Main.UserIdUpdated = $('#UserIdUpdated').val();
+
+
+            var tblDetails = $('#tblBillSub').dataTable().fnGetData();
+
+
+            if (tblDetails.length == 0) {
+                alert('Please Fill Necessary Data.');
+                return false;
+              };
+
+            for (var i = 0; i < tblDetails.length; i++) {
+
+                var Bill_Sub = {
+                    "BillMainId": "", "BillSubId": "", "ProductId": "", "ProductName": "", "POQty": "", "ReceiveQty": "",
+                    "Rate": "", "Amount": "", "SDPercentage": "", "SDAmount": "", "VATPercentage": "", "VATAmount": "",
+                    "WFPercentage": "", "WFAmount": "", "LDPercentage": "", "LDAmount": "",
+                    "ConfessionPercentage": "", "ConfessionAmount": "", "ElectricityAmount": "", "ReturnAmount": "",
+                    "AITPercentage": "", "AITAmount": "", "ForfeitureAmount": "","OthersAmount": "","NetAmount": "", "Remarks": "",
+                    "IsDelete": "",
+                     "DateAdded": "", "DateUpdated": ""
+                };
+
+                Bill_Sub.BillMainId = $("#BillMainId").val()||0;
+                Bill_Sub.BillSubId = tblDetails[i][1];
+                Bill_Sub.ProductId = tblDetails[i][2];
+                Bill_Sub.ProductName = tblDetails[i][3];
+                Bill_Sub.POQty = tblDetails[i][4] ||0;
+                Bill_Sub.ReceiveQty = tblDetails[i][5] || 0;
+                Bill_Sub.Rate = tblDetails[i][6] || 0;
+                Bill_Sub.Amount = tblDetails[i][7] || 0;
+                Bill_Sub.SDPercentage = tblDetails[i][8] || 0;
+                Bill_Sub.SDAmount = tblDetails[i][9] || 0;
+                Bill_Sub.VATPercentage = tblDetails[i][10] || 0;
+                Bill_Sub.VATAmount = tblDetails[i][11] || 0;
+                Bill_Sub.AITPercentage = tblDetails[i][12] || 0;
+                Bill_Sub.AITAmount = tblDetails[i][13] || 0;
+                Bill_Sub.WFPercentage = tblDetails[i][14] || 0;
+                Bill_Sub.WFAmount = tblDetails[i][15] || 0;
+                Bill_Sub.LDPercentage = tblDetails[i][16] || 0;
+                Bill_Sub.LDAmount = tblDetails[i][17] || 0;
+                Bill_Sub.ConfessionPercentage = tblDetails[i][18] || 0;
+                Bill_Sub.ConfessionAmount = tblDetails[i][19] || 0;
+                Bill_Sub.ElectricityAmount = tblDetails[i][20] || 0;                
+                Bill_Sub.ReturnAmount = tblDetails[i][21] || 0;
+                Bill_Sub.ForfeitureAmount = tblDetails[i][22] || 0;
+                Bill_Sub.OthersAmount = tblDetails[i][23] || 0;
+                Bill_Sub.NetAmount = tblDetails[i][24] || 0;
+                Bill_Sub.Remarks = tblDetails[i][25];
+                Bill_Sub.IsDelete = tblDetails[i][27] || false;
+                Bill_Main.Bill_Subs.push(Bill_Sub);
+              };
+
+
+
+            console.log(Bill_Main);
+
+            $.ajax({
+                url: '@Url.Action("CreateBillManagement", "Accounts")',
+                type: 'POST',
+                data: { Bill_Main: Bill_Main},
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+               // contentType: 'application/json',
+                dataType: 'JSON',
+                success: function (result) {
+                   // console.log(result);
+                    //alert('Data Save Successfully');
+                    if (result.Success == 1) {
+                        toastr.success("Data Save Successfully")
+                        window.location.href = '@Url.Action("BillManagementList", "Accounts")';
+                    } else if (result.Success == 2) {
+                        toastr.success("Data Update Successfully")
+                         window.location.href = '@Url.Action("BillManagementList", "Accounts")';
+                    }
+                    if (result.Success==3) {
+                        alert(result.ex);
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                    alert(err);
+                }
+            });
+        };
+
+        // details part
+
+        function DetailsAdd() {
+
+            //var qty = $('#ConsumptionQty').val();
+
+            var productId = $('#ProductId').val();
+            //if (prdid < 1) {
+            //    toastr.error('Please Select the Item');
+            //    return true;
+            //}
+
+            //if (qty > 0) {
+
+                //$("#tblDiv").show();
+                //$("#QtySpan").text('');
+
+                var tblDetails = $('#tblBillSub').dataTable().fnGetData();
+
+                if ($.fn.DataTable.isDataTable('#tblBillSub')) {
+                    var ifExist = false;
+                        if (tblBillSub.rows('.selected').any()) {
+                                //for (var i = 0; i < tblDetails.length; i++) {
+                                //    var item = tblDetails[i][2];
+
+                                //    if (productId == item) {
+                                //        var ind2 = tblBillSub.row('.selected').index();
+                                //        if (i != ind2) {
+                                //            toastr.error('Duplicate product is not allowed');
+                                //            ifExist = true;
+                                //            return;
+                                //        }
+                                //    }
+
+                                //}
+
+                                if (ifExist == false) {
+                                    tblBillSub
+                                        .rows({ selected: true })
+                                        .every(function (rowIdx, tableLoop, rowLoop) {
+                                            tblBillSub.cell(rowIdx, 2).data($('#ProductId').val());
+                                            tblBillSub.cell(rowIdx, 3).data($('#ProductName').val());
+                                            tblBillSub.cell(rowIdx, 4).data($('#POQty').val());
+                                            tblBillSub.cell(rowIdx, 5).data($('#ReceiveQty').val());
+                                            tblBillSub.cell(rowIdx, 6).data($('#Rate').val());
+                                            tblBillSub.cell(rowIdx, 7).data($('#Amount').val());
+                                            tblBillSub.cell(rowIdx, 8).data($('#SDPercentage').val());
+                                            tblBillSub.cell(rowIdx, 9).data($('#SDAmount').val());
+                                            tblBillSub.cell(rowIdx, 10).data($('#VATPercentage').val());
+                                            tblBillSub.cell(rowIdx, 11).data($('#VATAmount').val());
+                                            tblBillSub.cell(rowIdx, 12).data($('#AITPercentage').val());
+                                            tblBillSub.cell(rowIdx, 13).data($('#AITAmount').val());
+
+                                            tblBillSub.cell(rowIdx, 14).data($('#WFPercentage').val());
+                                            tblBillSub.cell(rowIdx, 15).data($('#WFAmount').val());
+                                            tblBillSub.cell(rowIdx, 16).data($('#LDPercentage').val());
+                                            tblBillSub.cell(rowIdx, 17).data($('#LDAmount').val());
+                                            tblBillSub.cell(rowIdx, 18).data($('#ConfessionPercentage').val());
+                                            tblBillSub.cell(rowIdx, 19).data($('#ConfessionAmount').val());
+                                            tblBillSub.cell(rowIdx, 20).data($('#ElectricityAmount').val());
+                                            tblBillSub.cell(rowIdx, 21).data($('#ReturnAmount').val());
+                                            tblBillSub.cell(rowIdx, 22).data($('#ForfeitureAmount').val());
+                                            tblBillSub.cell(rowIdx, 23).data($('#OthersAmount').val());
+
+                                            tblBillSub.cell(rowIdx, 24).data($('#NetAmount').val());
+                                            tblBillSub.cell(rowIdx, 25).data($('#SubRemarks').val());
+
+                                            //tblBillSub.cell(rowIdx, 5).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                        })
+
+                                        .draw();
+
+                                    tblBillSub.$('tr.selected').removeClass('selected');
+
+
+                                    $("#detailsAddBtn").text("Add");
+                                    $("#detailsCancel").remove();
+
+                                }
+
+                    }
+                        else {
+                            //for (var i = 0; i < tblDetails.length; i++) {
+                            //    var item = tblDetails[i][2];
+                            //    //alert(item)
+                            //    if (productId == item) {
+                            //        toastr.error('Duplicate Product is not allowed');
+                            //        //ifExist = true;
+                            //        return;
+                            //    }
+
+                            //}
+                            tblBillSub.draw();
+                            var i = 0;
+
+                            $('#tblBillSub').dataTable().fnAddData([
+                                $("#BillMainId").val()||0,
+                                0,
+                                $('#ProductId').val(),
+                                $('#ProductName').val(),
+                                $('#POQty').val()||0,
+                                $('#ReceiveQty').val()||0,
+                                $('#Rate').val()||0,
+                                $('#Amount').val()||0,
+                                $('#SDPercentage').val()||0,
+                                $('#SDAmount').val()||0,
+                                $('#VATPercentage').val()||0,
+                                $('#VATAmount').val() || 0,
+                                $('#AITPercentage').val()||0,
+                                $('#AITAmount').val() || 0,
+                                $('#WFPercentage').val() || 0,
+                                $('#WFAmount').val() || 0,
+                                $('#LDPercentage').val() || 0,
+                                $('#LDAmount').val() || 0,
+                                $('#ConfessionPercentage').val() || 0,
+                                $('#ConfessionAmount').val() || 0,
+                                $('#ElectricityAmount').val() || 0,
+                                $('#ReturnAmount').val() || 0,                              
+                                $('#ForfeitureAmount').val() || 0,                              
+                                $('#OthersAmount').val() || 0,                              
+                                $('#NetAmount').val()||0,
+                                $('#SubRemarks').val(),
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ',
+                                false
+                            ]);
+                            //tblBillSub = $('#tblBillSub').DataTable();
+                            //$("#addBtn").text("Add");
+                            //tblBillSub.draw();
+                        }
+                        tblBillSub = $('#tblBillSub').DataTable();
+
+
+                    $('#ProductName').val("");
+                    $('#POQty').val(``);
+                    $('#ReceiveQty').val(``);
+                    $('#Rate').val(``);
+                    $('#Amount').val(``);
+                    $('#SDPercentage').val(``);
+                    $('#SDAmount').val(``);
+                    $('#VATPercentage').val(``);
+                    $('#VATAmount').val(``);
+                    $('#AITPercentage').val(``);
+                    $('#AITAmount').val(``);
+                    $('#WFPercentage').val(``);
+                    $('#WFAmount').val(``);
+                    $('#LDPercentage').val(``);
+                    $('#LDAmount').val(``);
+                    $('#ConfessionPercentage').val(``);
+                    $('#ConfessionAmount').val(``);
+                    $('#ElectricityAmount').val(``);
+                    $('#ReturnAmount').val(``);                   
+                    $('#ForfeitureAmount').val(``);                   
+                    $('#OthersAmount').val(``);                   
+                    $('#NetAmount').val(``);
+                    $('#SubRemarks').val(``);
+                }
+
+            NetTotalCalculation();
+            //}
+            //else {
+            //    $("#QtySpan").text('Please Fill Up the Qty.');
+            //    toastr.error('Please Fill Up the Qty.');
+            //}
+        };
+
+        $('#tblBillSub tbody').on('click', 'tr', function () {
+            if ($.fn.DataTable.isDataTable('#tblBillSub')) {
+
+                tblBillSub
+                    .on('select', function (e, dt, type, indexes) {
+
+                        $("#detailsAddBtn").text("Modify");
+                        if ($("#detailsspan").children('#detailsCancel')) {
+                            $("#detailsspan").children('#detailsCancel').remove();
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel rounded-0 col">Cancel</button>');
+                        }
+                        else {
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel rounded-0 col">Cancel</button>');
+                        }
+
+
+                        var f = tblBillSub.rows('.selected').data();
+                        //console.log(f[0][2]);
+
+                        selectedItem = `${f[0][2]}`;
+
+                        //$('#CategoryId').val(`${f[0][1]}`).change();
+
+                        $('#ProductId').val(`${f[0][2]}`).change();
+                        $('#ProductName').val(`${f[0][3]}`);
+                        $('#POQty').val(`${f[0][4]}`);
+                        $('#ReceiveQty').val(`${f[0][5]}`);
+                        $('#Rate').val(`${f[0][6]}`);
+                        $('#Amount').val(`${f[0][7]}`);
+                        $('#SDPercentage').val(`${f[0][8]}`);
+                        $('#SDAmount').val(`${f[0][9]}`);
+                        $('#VATPercentage').val(`${f[0][10]}`);
+                        $('#VATAmount').val(`${f[0][11]}`);
+                        $('#AITPercentage').val(`${f[0][12]}`);
+                        $('#AITAmount').val(`${f[0][13]}`);
+                        $('#WFPercentage').val(`${f[0][14]}`);
+                        $('#WFAmount').val(`${f[0][15]}`);
+                        $('#LDPercentage').val(`${f[0][16]}`);
+                        $('#LDAmount').val(`${f[0][17]}`);
+                        $('#ConfessionPercentage').val(`${f[0][18]}`);
+                        $('#ConfessionAmount').val(`${f[0][19]}`);
+                        $('#ElectricityAmount').val(`${f[0][20]}`);
+                        $('#ReturnAmount').val(`${f[0][21]}`);    
+                        $('#ForfeitureAmount').val(`${f[0][22]}`);    
+                        $('#OthersAmount').val(`${f[0][23]}`);    
+                        $('#NetAmount').val(`${f[0][24]}`);
+                        $('#SubRemarks').val(`${f[0][25]}`);
+
+                        //$('#Note').val(f[0][8]);
+                    })
+                    .on('deselect', function (e, dt, type, indexes) {
+                        selectedItem = null;
+                        $("#detailsAddBtn").text("Add");
+                        $("#detailsspan").children('#detailsCancel').remove();
+                        $(".cancel").trigger("click");
+                        $('#ProductName').val("");
+                        $('#POQty').val(``);
+                        $('#ReceiveQty').val(``);
+                        $('#Rate').val(``);
+                        $('#Amount').val(``);
+                        $('#SDPercentage').val(``);
+                        $('#SDAmount').val(``);
+                        $('#VATPercentage').val(``);
+                        $('#VATAmount').val(``);
+                        $('#AITPercentage').val(``);
+                        $('#AITAmount').val(``);
+                        $('#WFPercentage').val(``);
+                        $('#WFAmount').val(``);
+                        $('#LDPercentage').val(``);
+                        $('#LDAmount').val(``);
+                        $('#ConfessionPercentage').val(``);
+                        $('#ConfessionAmount').val(``);
+                        $('#ElectricityAmount').val(``);
+                        $('#ReturnAmount').val(``);  
+                        $('#ForfeitureAmount').val(``);  
+                        $('#OthersAmount').val(``);  
+                        $('#NetAmount').val(``);
+                        $('#SubRemarks').val(``);
+                    });
+            };
+
+
+
+            //if ($(this).hasClass('selected')) {
+            //    //$("#UpBtn").show();
+            //    $("#addBtn").text("Modify");
+            //}
+            //else {
+            //    table.$('tr.selected').removeClass('selected');
+            //    $(this).addClass('selected');
+            //}
+            //if ($(this).hasClass("selected")) {
+
+            //}
+        });
+
+        $('#tblBillSub tbody').on('click', '.dlttrash', function () {
+            var d = $(this).data();
+            var i = this.parentNode.parentNode;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tblBillSub.cell(l, 27).data(true);
+                    $(this).parent().parent().hide();
+                }
+                else {
+                    var table = $('#tblBillSub').DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#detailsspan").children('#Cancel')) {
+                        $("#detailsspan").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $('#tblBillSub').height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+                var table = $('#tblBillSub').DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($("#detailsspan").children('#Cancel')) {
+                    $("#detailsspan").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $('#tblBillSub').height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+
+            NetTotalCalculation();
+
+        });
+
+        $(document).on('click','.detailsCancel',function () {
+            if ($.fn.DataTable.isDataTable('#tblBillSub')) {
+                if (tblBillSub.rows('.selected').any()) {
+                    $('#tblBillSub tr.selected').removeClass('selected');
+                }
+                $("#detailsAddBtn").text("Add");
+                $(this).remove();
+                 //$('#CategoryId').val("0").change();
+                       // $('#AccId').val("-1").change();
+                        //$('#ProductBrand').val("");
+                        //$('#ProductModel').val("");
+                        //$('#ConsumptionQty').val("");
+                $('#ProductName').val("");
+                $('#POQty').val(``);
+                $('#ReceiveQty').val(``);
+                $('#Rate').val(``);
+                $('#Amount').val(``);
+                $('#SDPercentage').val(``);
+                $('#SDAmount').val(``);
+                $('#VATPercentage').val(``);
+                $('#VATAmount').val(``);
+                $('#AITPercentage').val(``);
+                $('#AITAmount').val(``);
+                $('#WFPercentage').val(``);
+                $('#WFAmount').val(``);
+                $('#LDPercentage').val(``);
+                $('#LDAmount').val(``);
+                $('#ConfessionPercentage').val(``);
+                $('#ConfessionAmount').val(``);
+                $('#ElectricityAmount').val(``);
+                $('#ReturnAmount').val(``);  
+                $('#NetAmount').val(``);
+                $('#SubRemarks').val(``);
+            }
+
+            NetTotalCalculation();
+        });
+
+
+
+        </script>
+    }

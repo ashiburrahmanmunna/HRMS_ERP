@@ -1,0 +1,1087 @@
+﻿@model GTERP.Models.COM_MasterLC
+@{
+//ViewBag.Title = "Create";
+}
+<style>
+
+    th {
+        font-size: 12px;
+    }
+
+    td {
+        font-size: 11px;
+    }
+    #styledataload {
+        position: relative;
+        z-index: 0;
+    }
+</style>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    @*<link href="~/Content/DataTables/css/jquery.dataTables.css" rel="stylesheet" />*@
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.js"></script>
+    <link href="~/Content/DataTables/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    @*<script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+    <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/Content/DataTables/css/select.bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Scripts/dataTables.cellEdit.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.select.min.js"></script>
+    <link href="~/Content/DataTables/css/select.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+    <link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+</head>
+
+
+<body>
+    <h2 class="text-center">Master LC @ViewBag.Title</h2>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="container" style="min-width: 1300px;">
+            <div id="modalbodyfahad" class="row">
+                <div class="col-md-12 mb-2">
+                    <form>
+                        <div class="card p-3">
+                            <table class="table table-condensed">
+                                <tr class="row" style="border-top-style:none">
+                                    <td id="divBuyer" class="col">
+                                        <span class="text-right"><label>Company :</label></span>
+                                        <span class="input-group" style="min-width:120px;">
+                                            @Html.DropDownList("CommercialCompanyId", ViewBag.CommercialCompanyId as List<SelectListItem>, new { id = "CommercialCompanyId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+
+
+                                    <td id="divbuyer" class="col">
+                                        <span class="text-right">
+                                            <label>Buyer :</label>
+
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("BuyerID", ViewBag.BuyerID as List<SelectListItem>, new { id = "BuyerID", @class = "form-control form-control-sm form-control form-control-sm-sm" })
+                                            <span class="input-group-append">
+                                                <button id="exportorderload" class="btn btn-danger" type="button" style="font-size: 0.5rem;" onclick="ExportOrder_load()">Load</button>
+
+                                            </span>
+                                        </span>
+                                    </td>
+
+                                    <td id="divlcmargin" class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.BuyerInformations.LCMargin)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.HiddenFor(model => model.MasterLCID)
+
+                                            @Html.EditorFor(model => model.BuyerInformations.LCMargin, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+
+                                    <td id="divSupplier" class="col">
+                                        <span class="text-right"><label>Opening Bank :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("OpeningBankId", ViewBag.OpeningBankId as List<SelectListItem>, new { id = "OpeningBankId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+
+                                    <td id="divSupplier" class="col">
+                                        <span class="text-right"><label>Lien Bank :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("LienBankId", ViewBag.LienBankId as List<SelectListItem>, new { id = "LienBankId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="row">
+                                    <td id="divPurchaseDate" class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCRefNo)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.LCRefNo, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.BuyerLCRef)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.BuyerLCRef, new
+                                            {
+                                                htmlAttributes = new
+                                                {
+                                                    @class = "form-control form-control-sm",@*@placeholder = "Auto Generated", disabled = "disabled"*@}
+                                            })
+
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCType.LCTypeName)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("LCTypeId", ViewBag.LCTypeId as List<SelectListItem>, new { id = "LCTypeId", @class = "form-control form-control-sm " })
+
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCOpenDate)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.LCOpenDate, new { htmlAttributes = new { @class = "form-control form-control-sm datepicker" } })
+                                        </span>
+                                    </td>
+                                    <td id="divPurchaseDate" class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCExpirydate)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.LCExpirydate, new { htmlAttributes = new { @class = "form-control form-control-sm datepicker" } })
+                                        </span>
+                                    </td>
+
+
+                                </tr>
+
+
+
+                                <tr class="row">
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.UnitMaster.UnitName)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("Unit", ViewBag.UnitMasterId as List<SelectListItem>, new { id = "UnitMasterId", @class = "form-control form-control-sm " })
+
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.TotalLCQty)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.TotalLCQty, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCValue)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.LCValue, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+
+                                    <td id="divSupplier" class="col">
+                                        <span class="text-right"><label>Currency :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("CurrencyId", ViewBag.CurrencyId as List<SelectListItem>, new { id = "CurrencyId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCNature.LCNatureName)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("LCNatureId", ViewBag.LCTypeId as List<SelectListItem>, new { id = "LCNatureId", @class = "form-control form-control-sm " })
+
+                                        </span>
+                                    </td>
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.Tenor)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.EditorFor(model => model.Tenor, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+                                </tr>
+
+                                <tr class="row">
+                                    <td class="col">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.TradeTerms.TradeTermName)
+                                        </span>
+                                        <span class="input-group" style="min-width: 120px;">
+
+                                            @Html.DropDownList("TradeTermId", ViewBag.TradeTermId as List<SelectListItem>, new { id = "TradeTermId", @class = "form-control form-control-sm " })
+
+                                        </span>
+                                    </td>
+
+                                    <td id="divportofloading" class="col">
+                                        <span class="text-right"><label>Port of Loading :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("PortOfLoadingId", ViewBag.PortOfLoadingId as List<SelectListItem>, new { id = "PortOfLoadingId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                    <td id="divDestination" class="col">
+                                        <span class="text-right"><label>Destination :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("DestinationId", ViewBag.DestinationId as List<SelectListItem>, new { id = "DestinationId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+
+                                    <td id="divShipModeId" class="col">
+                                        <span class="text-right"><label>Ship Mode :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("ShipModeId", ViewBag.ShipModeId as List<SelectListItem>, new { id = "ShipModeId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                    <td id="divpaymentterms" class="col">
+                                        <span class="text-right"><label>Payment Terms :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("PaymentTermsId", ViewBag.PaymentTermsId as List<SelectListItem>, new { id = "PaymentTermsId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                    <td id="divDays" class="col">
+                                        <span class="text-right"><label>Days :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("DayListId", ViewBag.DayListId as List<SelectListItem>, new { id = "DayListId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                    <td id="divDays" class="col">
+                                        <span class="text-right"><label>LC Status :</label></span>
+                                        <span class="input-group" style="min-width: 120px;">
+                                            @Html.DropDownList("LCStatusId", ViewBag.LCStatusId as List<SelectListItem>, new { id = "LCStatusId", @class = "form-control form-control-sm " })
+                                        </span>
+                                    </td>
+                                </tr>
+
+
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col mb-2">
+                    <form class="card p-1">
+
+                        <br />
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblmasterlc" class="tbl display responsive nowrap table-striped table-hover" cellspacing="0" width="100%">
+
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%;">Export Order Id</th>
+                                        <th style="width:15%;">Buyer PONo</th>
+                                        <th style="width:15%;">PO LineNo</th>
+                                        <th style="width:15%;">Style</th>
+                                        <th style="width:15%;">Po Date</th>
+                                        <th style="width:15%;">Destination</th>
+                                        <th style="width:15%;">Order Qty</th>
+                                        <th style="width:15%;">Unit</th>
+                                        <th style="width:15%;">Rate</th>
+                                        <th style="width:15%;">CM</th>
+                                        <th style="width:15%;">Order Value</th>
+                                        <th style="width:15%;">Ship Mode</th>
+                                        <th style="width:15%;">ExFactory Date</th>
+                                        <th style="width:15%;">Ship Date</th>
+                                        <th style="width:15%;">Export Order Status</th>
+                                        <th style="width:15%;">Export Order Category</th>
+                                        <th style="width:15%;">Company</th>
+                                        @*<th style="width:15%;">action</th>
+        <th style="width:15%;">checkbox</th>*@
+                                        <th style="width:15%;"></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+
+                                    @foreach (var item in ViewBag.exportorder)
+                                    {
+
+
+                                    <tr class="txtMultviewbag">
+                                        <td>
+                                            @item.ExportOrderID
+                                        </td>
+                                        <td>
+                                            @item.BuyerContactPONo
+                                        </td>
+                                        <td>
+                                            @item.POLineNo
+                                        </td>
+                                        <td>
+                                            @item.StyleInformation.StyleName
+                                        </td>
+                                        <td>
+
+                                            @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.PoDate))
+
+                                        </td>
+                                        <td>
+                                            @item.Destination.DestinationName
+                                        </td>
+                                        <td>
+                                            @item.OrderQty
+                                        </td>
+                                        <td>
+                                            @item.UnitMaster.UnitName
+                                        </td>
+                                        <td>
+                                            @item.Rate
+                                        </td>
+                                        <td>
+                                            @item.CM
+                                        </td>
+                                        <td>
+                                            @item.OrderValue
+                                        </td>
+                                        <td>
+                                            @item.ShipModes.ShipModeName
+                                        </td>
+                                        <td>
+
+                                            @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.ExFactoryDate))
+                                        </td>
+                                        <td>
+
+                                            @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.ShipDate))
+                                        </td>
+                                        <td>
+                                            @item.ExportOrderStatus.ExportOrderStatusName
+                                        </td>
+                                        <td>
+                                            @item.ExportOrderCategorys.ExportOrderCategoryName
+                                        </td>
+                                        <td>
+                                            @item.StyleInformation.Company.CompanyName
+                                        </td>
+
+                                        @*<td>
+            <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+        </td>
+        <td>
+            <input type="checkbox" class="clickchk">
+
+        </td>*@
+                                        <td></td>
+
+                                    </tr>
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                   
+                                </tfoot>
+                            </table>
+                        </div>
+                        <br />
+                    </form>
+                </div>
+                <div class="col mb-2">
+                    <form class="card p-1">
+
+                        <br />
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblexportLc" class="tbl display responsive nowrap table-striped table-hover tblexportLc" cellspacing="0" width="100%">
+
+                                <thead>
+                                    <tr>
+                                        <th style="width:15%;">Export Order Id</th>
+                                        <th style="width:15%;">Buyer PONo</th>
+                                        <th style="width:15%;">PO LineNo</th>
+                                        <th style="width:15%;">Style</th>
+                                        <th style="width:15%;">Po Date</th>
+                                        <th style="width:15%;">Destination</th>
+                                        <th style="width:15%;">Order Qty</th>
+                                        <th style="width:15%;">Unit</th>
+                                        <th style="width:15%;">Rate</th>
+                                        <th style="width:15%;">CM</th>
+                                        <th style="width:15%;">Order Value</th>
+                                        <th style="width:15%;">Ship Mode</th>
+                                        <th style="width:15%;">ExFactory Date</th>
+                                        <th style="width:15%;">Ship Date</th>
+                                        <th style="width:15%;">Export Order Status</th>
+                                        <th style="width:15%;">Export Order Category</th>
+                                        <th style="width:15%;">Company</th>
+                                        @*<th style="width:15%;">action</th>
+        <th style="width:15%;">checkbox</th>*@
+                                        <th style="width:15%;">lcid</th>
+
+
+                                        @*<th style="width:15%;">ExportOrderID</th>
+        <th style="width:15%;">ExportOrderStatus</th>
+        <th style="width:15%;">ExportPONo</th>
+        <th style="width:15%;">MasterLCID</th>*@
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.COM_MasterLCExport)
+                                        {
+
+
+                                    <tr class="txtMult">
+
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrderID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.BuyerContactPONo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.POLineNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.StyleInformation.StyleName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.PoDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.Destination.DestinationName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.OrderQty)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.UnitMaster.UnitName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.Rate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.CM)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.OrderValue)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.ShipModes.ShipModeName)
+                                        </td>
+                                        <td>
+                                            @Convert.ToString(string.Format("{0:dd-MMM-yy}", @Html.DisplayTextFor(i => item.ExportOrders.ExFactoryDate)))
+                                        </td>
+                                        <td>
+                                            @Convert.ToString(string.Format("{0:dd-MMM-yy}", @Html.DisplayTextFor(i => item.ExportOrders.ShipDate)))
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.ExportOrderStatus.ExportOrderStatusName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.ExportOrderCategorys.ExportOrderCategoryName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayTextFor(i => item.ExportOrders.StyleInformation.Company.CompanyName)
+                                        </td>
+
+
+                                        @*<td>
+            <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+        </td>
+        <td>
+            <input type="checkbox" class="clickchk">
+        </td>*@
+                                        <td>
+                                            @*@Html.DisplayTextFor(i => item.MasterLCID)*@
+                                        </td>
+                                    </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4"></td>
+                                        <td class="text-right" colspan="2">Total LC Qty & Value :</td>
+                                        <td colspan="1">
+                                            <h4 class="ttlorderqty">0.00</h4>
+                                        </td>
+                                        <td colspan="3"></td>
+                                        <td colspan="1">
+                                            <h4 class="ttlordervalue">0.00</h4>
+                                        </td>
+                                        <td colspan="6"></td>
+
+
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <br/>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row text-center m-2">
+            <br />
+            <div class="col-md-3"></div>
+            @*<div class="col-md-3"><h4>Master LC Entry</h4></div>*@
+            @if (ViewBag.Title == "Create")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+
+                    @*<button type="button" onclick="AddSubSection()" class="form-control form-control-sm btn btn-success mb-2 btn-block">Save</button>*@
+                    <button class="form-control form-control-sm btn btn-success mb-2 btn-block" type="button" onclick="MasterLC_save()">Save</button>
+
+
+                </div>
+            }
+            else if (ViewBag.Title == "Edit")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+                    <button class="form-control form-control-sm btn btn-warning mb-2 btn-block" type="button" onclick="MasterLC_save()">Update</button>
+
+                </div>
+            }
+            else if (ViewBag.Title == "Delete")
+            {
+                <div class="col-md-3 col-xs-12 d-block mx-auto">
+
+                    <button class="form-control form-control-sm btn btn-danger mb-2 btn-block" type="button" onclick="MasterLC_delete()">Delete</button>
+
+                </div>
+            }
+            <div class="col-md-3 col-xs-12 d-block mx-auto">
+                @Html.ActionLink("Back", "Index", "COM_MasterLC", null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+
+            </div>
+            <div class="col-md-3"></div>
+
+        </div>
+
+        @*<div>
+                <table>
+                    <tr>
+                        <td>
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <button class="btn btn-primary btn-lg btn-block" type="button" onclick="MasterLC_save()">Save</button>
+                            }
+                            else if (ViewBag.Title == "Edit")
+                            {
+                                <button class="btn btn-warning btn-lg btn-block" type="button" onclick="MasterLC_save()">Update</button>
+                            }
+                            else if (ViewBag.Title == "Delete")
+                            {
+                                <button class="btn btn-danger btn-lg btn-block" type="button" onclick="MasterLC_delete()">Delete</button>
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("Back", "Index", "COM_CNFBillImportMaster", null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+                        </td>
+                    </tr>
+                </table>
+            </div>*@
+    }
+
+
+
+</body>
+
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    @*<script src="~/Scripts/js/jquery.dataTables.min.js"></script>*@
+<script>
+
+
+        var x = "@ViewBag.BuyerID";
+        if (x > 0) {
+            $('#BuyerID').val("@ViewBag.BuyerID");
+        }
+        else {
+
+        }
+        //alert('1st ok');
+
+
+        function ExportOrder_load() {
+        var buyerids = 0;
+        buyerids = $('#BuyerID').val();
+        //alert(buyerids);
+
+        //$("#custmid").attr("href", "ExportOrders/Create?styleid=" + styleid);
+
+           // ViewBag.Title
+            var y = "@ViewBag.Title";
+            if (y == "Create")
+            {
+        window.location.href ="Create?BuyerID=" + buyerids;
+
+            }
+            else {
+        window.location.href ="?BuyerID=" + buyerids;
+
+            }
+        //window.location.href ="@ViewBag.Title""?BuyerID=" + buyerids;
+
+        @*//'@Url.Action("?styleid=" + styleid, "ExportOrders" )';*@
+
+
+        };
+
+        //alert('2nd ok');
+
+
+
+        ////////function save//////
+        function MasterLC_save() {
+            // Step 1: Read View Data and Create JSON Object
+
+            // Creating Detail Json Object
+            var COM_MasterLCExportT = {"MasterLCID": "", "ExportOrderID": "" };
+
+            var COM_MasterLC = {
+                "MasterLCID": "", "LCRefNo": "", "BuyerLCRef": "",
+                "CommercialCompanyId": "", "LCOpenDate": "", "LCExpirydate": "",
+                "BuyerID": "", "OpeningBankId": "", "LienBankId": "", "TotalLCQty": "", "UnitMasterId": "",
+
+                "LCValue": "", "CurrencyId": "", "Tenor": "", "DestinationId": "", "PortOfLoadingId": "",
+
+                "LCTypeId": "", "LCStatusId": "", "LCNatureId": "", "TradeTermId": "",
+
+                "ShipModeId": "", "PaymentTermsId": "", "DayListId": "",
+                "COM_MasterLCExport": []
+            };
+
+
+
+            // Creating Masters Json Object
+            // Set Invoice Main Value
+            COM_MasterLC.MasterLCID = $("#MasterLCID").val() || 0;
+            COM_MasterLC.LCRefNo = $("#LCRefNo").val();
+            COM_MasterLC.BuyerLCRef = $("#BuyerLCRef").val();
+            COM_MasterLC.CommercialCompanyId = $("#CommercialCompanyId").val();
+            COM_MasterLC.LCOpenDate = $("#LCOpenDate").val();
+            COM_MasterLC.LCExpirydate = $("#LCExpirydate").val();
+
+            COM_MasterLC.BuyerID = $("#BuyerID").val();
+            COM_MasterLC.OpeningBankId = $("#OpeningBankId").val();
+            COM_MasterLC.LienBankId = $("#LienBankId").val();
+            COM_MasterLC.TotalLCQty = $("#TotalLCQty").val();
+
+            COM_MasterLC.UnitMasterId = $("#UnitMasterId").val();
+            COM_MasterLC.LCValue = $("#LCValue").val();
+            COM_MasterLC.CurrencyId = $("#CurrencyId").val();
+
+            COM_MasterLC.Tenor = $("#Tenor").val();
+            COM_MasterLC.DestinationId = $("#DestinationId").val();
+            COM_MasterLC.PortOfLoadingId = $("#PortOfLoadingId").val();
+
+            COM_MasterLC.LCTypeId = $("#LCTypeId").val();
+            COM_MasterLC.LCStatusId = $("#LCStatusId").val();
+            COM_MasterLC.LCNatureId = $("#LCNatureId").val();
+            COM_MasterLC.TradeTermId = $("#TradeTermId").val();
+
+            COM_MasterLC.ShipModeId = $("#ShipModeId").val();
+            COM_MasterLC.PaymentTermsId = $("#PaymentTermsId").val();
+            COM_MasterLC.DayListId = $("#DayListId").val();
+                @*Invoicemain.comid = '@Session["comid"].ToString()';
+            Invoicemain.userid = '@Session["userid"].ToString()';*@
+
+
+            //var table = $('#tblinvoicesub').DataTable();
+            //var column = table.column('#Invoicetypeid');
+            //console.log(column);
+
+            ////Invoice subs data
+            var oTable = $('#tblexportLc').dataTable().fnGetData();
+            for (var i = 0; i < oTable.length; i++) {
+                //var oTableRow = oTable[i];
+                //alert(oTableRow);
+
+                // IF This view is for edit then it will read InvoiceId from Hidden field
+                if ($('h2').text() == "Master LC Edit") {
+                    alert('edit found');
+                    COM_MasterLCExportT.MasterLCID = $('#MasterLCID').val();
+
+                }
+                else {
+                    COM_MasterLCExportT.MasterLCID = 0;
+                }
+
+
+                //ExportLc.MasterLCID = oTable[i][2];
+                COM_MasterLCExportT.ExportOrderID = oTable[i][0];
+                //alert(ExportLc);
+
+
+                COM_MasterLC.COM_MasterLCExport.push(COM_MasterLCExportT);
+
+
+
+
+
+                COM_MasterLCExportT = { "MasterLCID": "", "ExportOrderID": "" };
+         
+
+            //    var ExportLc = {
+            //    "ExportPONo": "", "ExportOrderStatus": "","MasterLCID": "", "ExportOrderID": ""
+
+            //};
+
+            }
+            ////Invoice terms data
+
+
+            console.log(COM_MasterLC);
+
+
+            // Step 1: Ends Here
+           // alert('4');
+            //console.log(MasterLc);
+
+            //alert('4th ok');
+
+
+            // Set 2: Ajax Post
+            // Here i have used ajax post for saving/updating information
+            $.ajax({
+                //url: '/COM_MasterLC/Create',
+                url: '@Url.Action("Create", "COM_MasterLC")',
+
+                data: JSON.stringify(COM_MasterLC),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    alert('success');
+
+                    if (result.Success == "1") {
+                        //window.location.href = "/Invoice/index";
+                         window.location.href = '@Url.Action("Index", "COM_MasterLC")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+
+
+
+        }
+        ////////function save//////
+
+        //alert('5th ok');
+
+
+
+    $(document).ready(function () {
+       
+            ///problem
+            var tblDetails = $('#tblexportLc').dataTable({
+                "aoColumns": [
+
+                    //{ "name": "ExportPONo", "sClass": "ExportPONo", "visible": true, "targets": 1 },
+                    //{ "name": "ExportOrderStatus", "sClass": "ExportOrderStatus", "visible": true },
+                    //{ "name": "MasterLCID", "sClass": "ExpenseHeadID", "visible": true },
+                    //{ "name": "ExportOrderID", "sClass": "purchasesubid", "visible": true },
+
+                    { "sClass": "ExportOrderID", "visible": false },
+                    { "sClass": "BuyerContactPONo", "visible": true },
+                    { "sClass": "POLineNo", "visible": true },
+                    { "sClass": "StyleName", "visible": true },
+                    { "sClass": "PoDate", "visible": true },
+                    { "sClass": "DestinationName", "visible": true },
+                    { "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                    { "sClass": "UnitName", "visible": true },
+                    { "sClass": "Rate", "visible": true },
+                    { "sClass": "CM", "visible": true },
+                    { "sClass": "OrderValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                    { "sClass": "ShipMode", "visible": true },
+                    { "sClass": "ExFactoryDate", "visible": true },
+                    { "sClass": "ShipDate", "visible": true },
+                    { "sClass": "ExportOrderStatus", "visible": true },
+                    { "sClass": "ExportOrderCategory", "visible": true },
+                    { "sClass": "CompanyName", "visible": true },
+                    //null,
+                    //null,
+                    { "sClass": "LCId", "visible": true }
+
+                ],
+
+
+                "dom": 'T<"clear">lfrtip',
+
+                "tableTools": {
+                    "sRowSelector": "td:not(:first-child)"
+                },
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+
+
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                //"retrieve": true,
+                rowCallback: function (row) {
+                    $(row).addClass('txtMult');
+                }, select: "multi",
+                columnDefs: [{
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'><=</button>"
+                    }
+                }],
+                dom: 'tBfip',
+                buttons: [{
+                    extend: "selectRows",
+
+                    text: 'Detach From Master LC',
+                    action: function (e, sourceTable, button, config) {
+
+                        var selectedRows = sourceTable.rows(".selected");
+                        var mData = selectedRows.data();
+                        // I tried making a copy of the entire data object using JSON but it
+                        // gave me a circular reference error so I am doing it row at a time.
+                        // remove the seleted rows
+                        selectedRows.remove().draw();
+                        targetTable = $("#tblmasterlc").DataTable();
+                        $.each(mData, function (idx, item) {
+                            targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                            //targetTable.addClass('txtMult');
+
+                        })
+                        //$this.addClass('yourClass');
+                        targetTable.draw();
+                        //$('.tblexportLc tr:last').addClass('txtMult');
+                        multInputs();
+                    }
+                }],
+                initComplete: function () {
+                    $("#tblexportLc button").on("click", function (evt) {
+
+                        var t1 = $("#tblexportLc").DataTable();
+                        var t2 = $("#tblmasterlc").DataTable();
+                        var tr = $(this).closest("tr");
+                        var row = t1.row(tr);
+                        var data = JSON.parse(JSON.stringify(row.data()));
+                        //alert(data[0]);
+
+                        ///alert('hit');
+                        row.remove().draw();
+                        t2.row.add(data).draw();
+
+                        multInputs();
+                    });
+                }
+            })
+      
+
+
+            var masterlcasdf = $('#tblmasterlc').dataTable({
+
+                "aoColumns": [
+
+                    { "sClass": "ExportOrderID", "visible": false },
+                    { "sClass": "BuyerContactPONo", "visible": true },
+                    { "sClass": "POLineNo", "visible": true },
+                    { "sClass": "StyleName", "visible": true },
+                    { "sClass": "PoDate", "visible": true },
+                    { "sClass": "DestinationName", "visible": true },
+                    { "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                    { "sClass": "UnitName", "visible": true },
+                    { "sClass": "Rate", "visible": true },
+                    { "sClass": "CM", "visible": true },
+                    { "sClass": "OrderValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                    { "sClass": "ShipMode", "visible": true },
+                    { "sClass": "ExFactoryDate", "visible": true },
+                    { "sClass": "ShipDate", "visible": true },
+                    { "sClass": "ExportOrderStatus", "visible": true },
+                    { "sClass": "ExportOrderCategory", "visible": true },
+                    { "sClass": "CompanyName", "visible": true },
+                    //null,
+                    null,
+                    //{ "sClass": "LCId", "visible": true }
+
+                ],
+                //"dom": 'T<"clear">lfrtip',
+
+                //"tableTools": {
+                //    "sRowSelector": "td:not(:first-child)"
+                //},
+                //select: {
+                //    style: 'os',
+                //    selector: 'td:first-child'
+                //},
+
+
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                rowCallback: function (row) {
+                    $(row).addClass('txtMultviewbag');
+                }, select: "multi",
+                columnDefs: [{
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'>=></button>"
+                    }
+                }],
+                dom: 'tBfip',
+                buttons: [{
+                    extend: "selectRows",
+
+                    text: 'Attach To Master LC',
+                    action: function (e, sourceTable, button, config) {
+
+                        var selectedRows = sourceTable.rows(".selected");
+                        var mData = selectedRows.data();
+                        // I tried making a copy of the entire data object using JSON but it
+                        // gave me a circular reference error so I am doing it row at a time.
+                        // remove the seleted rows
+                        selectedRows.remove().draw();
+                        targetTable = $("#tblexportLc").DataTable();
+                        $.each(mData, function (idx, item) {
+                            targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                            //targetTable.addClass('txtMult');
+                          
+                        })
+                        //$this.addClass('yourClass');
+                        targetTable.draw();
+                        //$('.tblexportLc tr:last').addClass('txtMult');
+                        multInputs();
+                    }
+                }],
+                initComplete: function () {
+                    $("#tblmasterlc button").on("click", function (evt) {
+
+                        var t1 = $("#tblmasterlc").DataTable();
+                        var t2 = $("#tblexportLc").DataTable();
+                        var tr = $(this).closest("tr");
+                        var row = t1.row(tr);
+                        var data = JSON.parse(JSON.stringify(row.data()));
+                        //alert(data[0]);
+                        
+                        ///alert('hit');
+                        row.remove().draw();
+                        t2.row.add(data).draw();
+
+                        multInputs();
+                    });
+                }
+        }) //
+
+        multInputs();
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+        $("#LCOpenDate").val(CurrentDate());
+        $("#LCExpirydate").val(CurrentDate());
+
+
+        $("#LCOpenDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#LCOpenDate").datepicker("option", "dateFormat");
+                //setter
+                $("#LCOpenDate").datepicker("option", "dateFormat", 'dd-M-y');
+            }
+        });
+        $("#LCExpirydate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#LCExpirydate").datepicker("option", "dateFormat");
+                //setter
+                $("#LCExpirydate").datepicker("option", "dateFormat", 'dd-M-y');
+            }
+        });
+        //$('#tblmasterlc').DataTable({
+        //    select: {
+        //        style: 'multi'
+        //    }
+        //});
+
+        //alert('final');
+
+
+    
+
+    function multInputs() {
+
+        var totalorderqty = 0;
+        var totalordervalue = 0;
+
+
+
+        // for each row:
+
+        $("tr.txtMult").each(function () {
+            // get the values from this row:
+            var $val1 = $('.OrderQty', this).text().replace(/[\$,]/g, '');
+            var $val2 = $('.OrderValue', this).text().replace(/[\$,]/g, '');
+
+            //alert($val1);
+            //alert($val2);
+
+            //var $val2 = $('.Amount', this).text();
+            //var $total = ($val1 * $val2);
+
+            //$('.amount', this).text($total);
+            //$('.amount', this).val($total);
+            totalorderqty += parseFloat($val1);
+            totalordervalue += parseFloat($val2);
+            //ttlqty += $val1;
+
+        });
+        //alert(totalorderqty);
+        //$(".subtotalamount").text(mult);
+        $(".ttlorderqty").val(totalorderqty.toLocaleString());
+        $(".ttlorderqty").text(totalorderqty.toLocaleString());
+      
+
+        //alert(ttlqty);
+        $(".ttlordervalue").val(totalordervalue.toLocaleString());//---fahad
+        $(".ttlordervalue").text(totalordervalue.toLocaleString());//---fahad
+
+        $("#TotalLCQty").val(totalorderqty);//---fahad
+        $("#TotalLCQty").text(totalorderqty);//---fahad
+
+        $("#LCValue").val(totalordervalue);//---fahad
+        $("#LCValue").text(totalordervalue);//---fahad
+        
+    };
+
+</script>
+
+
+}

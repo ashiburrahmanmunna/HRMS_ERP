@@ -1,0 +1,325 @@
+﻿@model GTERP.Models.Recruitment.Exam_Module
+@{
+    ViewData["Title"] = "Quiz";
+
+
+
+
+
+}
+
+
+
+
+
+
+
+<div class="container-fluid pt-4 px-4">
+
+
+
+
+
+    <div class="col-sm-12 col-xl-12 m-2">
+        <div class="bg-light rounded h-100 p-4">
+            <h3 class="box-title text-wrap"> Create Quiz </h3>
+            <div class="row ">
+
+                <div class="input-group  mt-4  ">
+                    <span class="input-group-text col-md-04">Module</span>
+                    <select asp-for="ModuleId" class="input-group-text " id="ModuleMenu" asp-items="ViewBag.moduleid"></select>
+                </div>
+                <div class="input-group  mt-4 ">
+                    <span class="input-group-text col-md-04">Authorized By:</span>
+                    <input id="auth" class="input-group-text " type="text" />
+                </div>
+                <div class="input-group  mt-4 ">
+                    <span class="input-group-text ">Pass Mark:</span>
+                    <input id="pass" class="input-group-text col-md-04" type="number" />
+                </div>
+                <div class="input-group  mt-4 ">
+                    <span class="input-group-text ">Time:</span>
+
+                    <select id="Ddlh" class="input-group-text " aria-label="Default select example">
+
+                        @for (var i = 0; i <= 24; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                    <span class="input-group-text ">Hours</span>
+
+                    <select id="Ddlm" class="input-group-text  " aria-label="Default select example">
+
+                        @for (var i = 0; i <= 60; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                    <span class="input-group-text ">minutes</span>
+                    <select id="Ddls" class="input-group-text " aria-label="Default select example">
+
+                        @for (var i = 0; i <= 60; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                    <span class="input-group-text ">Seconds</span>
+
+                </div>
+
+
+
+            </div>
+            <br />
+            <table class="table table-bordered">
+                <tbody id="entity">
+                    <tr id="tr_1">
+                        <td id="qa">
+                            <div class="mx-auto" justify-content-center">
+                                <div class="d-flex mb-3" id="ques">
+                                    Question &nbsp <sapn id="qno" value='1'>1</sapn>: <input id="quiz_1" type="text" size="50"><span>
+                                        <select id="type_1" onchange="chageType('1')">
+                                            <option>checkbox</option>
+                                            <option>radio</option>
+                                            <option>text</option>
+                                        </select>
+                                    </span>
+                                </div>
+                                <div id="all_ans">
+                                    <span>Answer:</span> <br />
+
+                                    <div id="ans_1">
+                                        <input class="CheckType mb-3" name="CheckType_1" id="Check_1" type="checkbox" value="1" /><input id='ansOption_1_1' type='text' /> <button id="first_button_1" type="button" class="btn btn-default" onclick="addAns('1','1')"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="">
+                            <button type="button" id="add_row_1" class="btn btn-default mb-3" onclick="addRow('1')"><i class="fas fa-plus"></i></button>
+                            <span> <button type="button" id="remove_row_1" class="btn btn-default mb-3" onclick="removeRow('1')"><i class="fas fa-minus"></i></button></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="saveQuiz" class="btn btn-outline-success" type="button">Save</button>
+
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@section Scripts{
+
+    <script>
+
+
+
+        function addAns(row_id, ans_id) {
+
+            var type = $(`#type_${row_id}`).val();
+
+            let count = parseInt(ans_id) + 1;
+            let count1 = parseInt(count) - 1;
+            //let CountRow = parseInt(row_id) + 1;
+            if (type == 'text') {
+                var html = ` <div class="d-flex" id="ans_${count}">
+                                                                                                                                <input class="CheckType mb-3" name="CheckType_${row_id}"  id='ansOption_${row_id}_${count}' type="${type}"/><span id="row${row_id}_ans${ans_id}"> <button id="first_button_${count}" type="button"  class="btn btn-default" onclick="addAns('${row_id}','${count}')"><i class="fas fa-plus"></i></button></span>
+                                                                <button type="button" id="add_ans" class="btn btn-default" onclick="removeAns('${row_id}','${count}')"><i class="fas fa-minus"></i></button></span>
+                                                                  </div>`;
+            }
+            else {
+                //let ansoptionval = $(`#ansOption_${count}`).val();
+                var html = ` <div class="d-flex" id="ans_${count}">
+                                                                                                            <input class="CheckType mb-3" name="CheckType_${row_id}" id="Check_${count}" type="${type}" value="${count}"/><input id='ansOption_${row_id}_${count}' type='text'/><span> <button type="button" id="row${row_id}_ans${ans_id}" class="btn btn-default" onclick="addAns('${row_id}','${count}')"><i class="fas fa-plus"></i></button></span>
+                                                                     <span> <button type="button" id="add_ans" class="btn btn-default" onclick="removeAns('${row_id}','${count}')"><i class="fas fa-minus"></i></button></span>
+                                                                     </div>`;
+            }
+            $(`#first_button_${count1}`).hide();
+
+            //$(`#btnpl_row${row_id}_ans${ans_id}`).hide();
+            
+           
+            $(`#row${row_id}_ans${ans_id}`).hide();
+            $(`#tr_${row_id} td:first #ans_${ans_id}`).after(html);
+        }
+
+
+        function addRow(row_id) {
+
+            var quesNo = parseInt($('#qno').html())
+
+
+
+            let countRow = parseInt(row_id) + 1
+            var html = `<tr id="tr_${countRow}">
+                                                                  <td  id="qa">
+                                                               <div >
+                                                                <div class="d-flex mb-3" id="ques">
+                                                                          Question &nbsp <sapn id="qno" value='${countRow}'>${countRow}</sapn>: <input id="quiz_${countRow}" type="text" ><span >
+                                                                                         <select id="type_${countRow}" onchange="chageType('${countRow}')">
+                                                                                               <option>checkbox</option>
+                                                                                                                       <option>radio</option>
+                                                                                                                       <option>text</option>
+                                                                                                                     </select></span>
+                                                                                                                </div>
+                                                                                                               <span>Answer:</span> <br/>
+                                                                                                               <div id="all_ans">
+                                                                                                                   <div id="ans_1">
+                                                                                                       <input class='CheckType mb-3' name="CheckType_${countRow}" id="Check_1" type="checkbox"/><input id='ansOption_${countRow}_1' type='text'/> <button id="first_button_1" type="button" class="btn btn-default" onclick="addAns('${countRow}','1')"><i class="fas fa-plus"></i></button>
+                                                                            </div>
+                                                                                                                </div>
+                                                                                                            </div></td>
+                                                                                                            <td style="">
+                                                                                                                <button type="button" id="add_row_${countRow}" class="btn btn-default" onclick="addRow('${countRow}')"><i class="fas fa-plus"></i></button>
+                                                                                                                 <span> <button type="button" id="remove_row_${countRow}" class="btn btn-default" onclick="removeRow('${countRow}')"><i class="fas fa-minus"></i></button></span>
+
+                                                                                                            </td>
+                                                                                                        </tr>`;
+
+            $(`#entity`).append(html);
+            $(`#remove_row_${row_id}`).show();
+            $(`#add_row_${row_id}`).hide();
+        }
+
+        function removeAns(row_id, ans_id) {
+
+            $(`#tr_${row_id} td:first #ans_${ans_id}`).remove();
+            if (ans_id == 2) { $(`#first_button_1`).show(); }
+
+        }
+
+
+        function removeRow(row_id) {
+            let countRow = parseInt(row_id) - 1
+            $(`#entity #tr_${row_id}`).remove();
+            if (row_id == 2) { $(`#add_row_${countRow}`).show(); }
+
+        }
+
+        function chageType(row_id) {
+            var ntype = $(`#type_${row_id}`).val();
+            if (ntype == 'text') {
+                $(`#tr_${row_id} td:first .CheckType`).hide()
+            }
+            $(`#tr_${row_id} td:first .CheckType`).attr("type", ntype)
+        }
+
+        let question = {
+            id: 0,
+            quiz: '',
+            Answer: [],
+            ModuleId: 0,
+            passMark: 0,
+            preparedBy: '',
+            timer: 0,
+            hoursdd: 0,
+            minutedd: 0,
+            secondsdd: 0,
+        }
+
+        let answer = {
+            id: 0,
+            optionType: '',
+            quizid: 0,
+            ans: '',
+            isRight: false,
+
+        }
+
+
+        $('#saveQuiz').click(function () {
+            //$('#saveQuiz').off('click')
+            //alert("clicked.");
+            let x = $('#entity');
+            quesAns = [];
+
+
+            var eh = document.getElementById("Ddlh");
+            var valueh = eh.value;
+            var texth = eh.options[eh.selectedIndex].text;
+
+            var em = document.getElementById("Ddlm");
+            var valuem = em.value;
+            var textm = em.options[em.selectedIndex].text;
+
+            var es = document.getElementById("Ddls");
+            var values = es.value;
+            var texts = es.options[es.selectedIndex].text;
+
+
+            $('#entity>tr').each(function (index, tr) {
+
+                let count = index + 1;
+
+                question.quiz = $(`#quiz_${count}`).val();
+                question.ModuleId = $(`#ModuleMenu`).val();
+                question.passMark = $(`#pass`).val();
+                question.preparedBy = $(`#auth`).val();
+                question.timer = $(`#time`).val();
+                question.hoursdd = texth;
+                question.minutedd = textm;
+                question.secondsdd = texts;
+
+                $(`#tr_${count} #all_ans div`).each(function (key, div) {
+
+                    let countAns = key + 1;
+                    answer.optionType = $(`#type_${count}`).val();
+                    answer.ans = $(`#ansOption_${count}_${countAns}`).val();
+                    if ($(`#Check_${countAns}`).is(':checked')) {
+                        answer.isRight = true;
+                    }
+
+                    question.Answer.push(answer);
+                    answer = {
+                        id: 0,
+                        optionType: '',
+                        quizid: 0,
+                        ans: '',
+                        isRight: false,
+
+                    }
+                })
+                quesAns.push(question);
+                question = {
+                    id: 0,
+                    quiz: '',
+                    Answer: [],
+                    ModuleId: 0,
+                    passMark: 0,
+                    preparedBy: '',
+                    timer: 0,
+                    hoursdd: 0,
+                    minutedd: 0,
+                    secondsdd: 0,
+                }
+            })
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveQuiz", "Posts")',
+                data: {
+                    ques: quesAns
+                    //ans: ansArry
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.res == true) {
+                        alert("Quiz successfully saved")
+                    }
+                }
+            })
+
+
+
+        })
+
+
+    </script>
+
+
+
+}

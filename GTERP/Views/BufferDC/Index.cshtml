@@ -1,0 +1,460 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.BufferDelChallan>
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+    div#ui-datepicker-div{
+        z-index:9999!important;
+    }
+    div#tbllist_filter input.form-control.form-control-sm {
+        /* margin-top: 1px; */
+        padding-top: 1px;
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="row my-2 text-center">
+        <div class="col-md-3 col-12">
+            @Html.ActionLink("Delivery Challan Entry", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+        </div>
+
+        <div class="col-md-9 col-12">
+            <h2 id="styletext">Delivery Challan List</h2>
+        </div>
+       
+    </div>
+    <div class="card p-2">
+        <div class="row">
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            From Date
+                        </span>
+                    </div>
+                    <input id="fromdate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3 col-md-2 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            To Date
+                        </span>
+                    </div>
+                    <input id="todate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+
+                @*<button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintDeliveryOrderDateWiseReport')">Delivery Challan Date Wise</button>
+
+            <button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintBankDipositrDateWiseReport')">Bank Diposit Date Wise</button>*@
+                <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintrptDeliveryChallanDateWiseBankSummaryReport')">Delivery Challan - Date Wise Bank Summary</button>
+
+                @* <button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintDailyDateWiseSalesSummaryReport')">Daily Date WiseSales Summary</button>*@
+
+            </div>
+            <div class="col-md-2 col-12">
+                <fieldset class="text-right">
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+            @*<div class="col-md-4 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Representative
+                        </span>
+                        <select class="form-control" asp-items="ViewBag.RepresentativeId" id="RepresentativeId">
+                            <option value="0"> --Select Representative--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>*@
+
+
+            <div class="col-md-3 col-12">
+                <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintrptDeliveryChallanRepresentativeWise')">Receiver Person Wise Challan Report</button>
+            </div>
+            <div class="col-md-5"></div>
+        </div>
+    </div>
+
+
+    <div id="finalpanel" class="card p-2 my-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts{
+
+    <script>
+        $('#fromdate,#todate').datepicker({
+          
+            dateFormat: 'd-M-y',
+            changeMonth: true,
+            changeYear: true
+        });
+
+        CurrentDate();
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString().substr(-2);
+
+
+            if ($("#fromdate").val() == '') {
+                $("#fromdate").val(val);
+            }
+            if ($("#todate").val() == '') {
+                $("#todate").val(val);
+            }
+        }
+
+
+        function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+            var DistId = $('#DistId').val();
+            var YearNameId = $('#YearNameId').val();
+            var fromchallanno = $('#fromchallanno option:selected').text();
+            var tochallanno = $('#tochallanno option:selected').text();
+            var reporttype = $("input[name=RptType]:checked").val();
+            var reporttype = $("input[name=RptType]:checked").val();
+            var RepresentativeId = $('#RepresentativeId option:selected').val();
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, District: DistId, FromDate: FromDate, ToDate: ToDate, Year: YearNameId, FromChallanNo: fromchallanno, ToChallanNo: tochallanno, RepresentativeId: RepresentativeId },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+        }
+
+
+         var table;
+
+        $(document).ready(function () {
+
+
+            $('#RepresentativeId').select2();
+            //var x = $("#ToDate").val();
+            //alert(x);
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+            //var userlist = $("#UserList").val();
+            //var CustomerList = $("#CustomerList").val();
+            var fromdate;
+            var todate;
+            var fromchallanno;
+            var tochallanno;
+            //alert(fromchallanno);
+            //var fromchallanno = $('#fromchallanno').text();
+            //var tochallanno = $('#tochallanno').text();
+
+
+            loaddata(null, null, null, null ,'Search');
+
+            function getDateString(dateObj) {
+
+                if (dateObj == null) { return ''; };
+
+                var date = new Date(parseInt(dateObj.substr(6)));
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+                var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                //alert(val);
+
+
+                return formatdate;
+
+                //return dateObj.toDateString();
+            }
+
+            function loaddata(FromDate = "", ToDate = "", fromchallanno = "", tochallanno = ""  , Criteria = "") {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tbllist').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        //alert('search value');
+                                        //alert(input.val());
+                                        self.search(input.val()).draw();
+                                        //loaddata(null, null, null, null, "Search");
+                                        //alert('ok');
+                                        //alert(input.val());
+
+                                    }
+                                    else {
+                                        //alert('search else');
+                                        loaddata(null, null, null, null , "Search");
+
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                    .click(function () {
+                                    //alert('clear');
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                                $DOButton = $('<button class="btn rounded-0 btn-info ml-1 btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="DC NO Wise Load"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('DC NO Wise Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert('do no');
+                                    //alert(FromDate);
+                                    tochallanno = $('#tochallanno option:selected').text();
+                                    fromchallanno = $('#fromchallanno option:selected').text();
+
+                                    //alert(tochallanno);
+
+
+                                    loaddata(null, null, fromchallanno, tochallanno, "ChallanNo");
+                                    //table.ajax.reload();
+                                })
+                        $DateButton = $('<button class="btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Date Wise Load"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Date Wise Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert('Date Wise');
+
+                                    todate = $("#todate").val();
+                                    fromdate = $("#fromdate").val();
+
+                                    //alert(fromdate);
+                                    loaddata(fromdate, todate, null, null, "Date");
+                                    //table.ajax.reload();
+                                })
+
+                        $('.dataTables_filter').append($DOButton,$DateButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, 200], [5, 10, 20, 50, "All"]],
+
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success mr-1',
+                                titleAttr: 'Export to excel'
+                            }
+
+                        ]
+                    },
+                    "ajax": {
+                        "url": "@Url.Action("Get", "BufferDC")",
+                        "data": { FromDate: FromDate, ToDate: ToDate, fromchallanno: fromchallanno, tochallanno: tochallanno, Criteria: Criteria },
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                      columns: [
+
+                    { "title": "DeliveryChallanId", "data": "DeliveryChallanId", "searchable": true, "visible": false },
+                          { "title": "ChallanNo", "data": "ChallanNo", "searchable": true },
+                      { "title": "Delivery Date", "data": "DeliveryDate", "searchable": false  },
+                    { "title": "Buffer", "data": "Buffer" , "searchable": false  },
+                   
+                    { "title": "DO No", "data": "DeliveryOrderNo", "searchable": true },
+                    { "title": "DO Qty", "data": "DeliveryOrderQty", "searchable": false },
+                    { "title": "Delivery Challan Qty", "data": "DeliveryChallanQty", "searchable": false },
+                    { "title": "Balance Qty", "data": "RemainingQty", "searchable": false },
+
+                    {
+                        "title": "Gate Pass No", "data": "GatePassList", "searchable": true
+
+                        , "render": function (data, type, row) {
+                            //console.log(data);
+                            if (data != null) {
+
+                                var output = "";
+                                var totalstock = 0;
+                                var count = 0;
+                                for (var i = 0; i < data.length; i++) {
+                                    output += data[i].GatePassNo;
+
+                                    if (i < data.length - 1) {
+                                        output += ", ";
+                                    }
+                                    count++;
+                                };
+
+                                //console.log(output);
+                                //console.log(totalstock);
+
+                                return output;
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+
+                    },
+                          { "title": "Fiscal Year", "data": "FiscalYear", "searchable": true  },
+                          { "title": "Fiscal Month", "data": "FiscalMonth", "searchable": true   },
+
+                          { "title": "Representative Code", "data": "RepresentativeCode", "searchable": true   },
+
+                          { "title": "Representative", "data": "Representative", "searchable": true   },
+
+                    {
+                        "title": "Action",
+                        "data": { DeliveryChallanId: "DeliveryChallanId" },
+
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "BufferDC")/' + data.DeliveryChallanId;
+                            var myUrldelete = '@Url.Action("Delete", "BufferDC")/' + data.DeliveryChallanId;
+                            var myUrlprint = '@Url.Action("Print", "BufferDC")/' + data.DeliveryChallanId + '?type=pdf';
+                            var isgatepassdone = data.GatePassList.length;
+
+                                //console.log(data.DeliveryChallanList.length);
+
+                            if (isgatepassdone > 0) {
+                                return '<span data-toggle="tooltip" title="Delivery Challan Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+                            else {
+
+
+                                return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delivery Challan Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                            }
+
+
+
+
+                        }
+
+                    }
+
+                ],
+                    //"order": [1, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+
+                    "destroy": true
+                });
+
+
+                //$('#tbllist_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+
+        });
+
+    </script>
+}

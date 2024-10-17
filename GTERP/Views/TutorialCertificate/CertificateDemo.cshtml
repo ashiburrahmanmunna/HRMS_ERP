@@ -1,0 +1,138 @@
+﻿@using ZXing
+@{
+    var moduleName = ViewBag.moduleName;
+    var certificateID = ViewBag.certificateID;
+    
+}
+<link href="~/css/certificate.css" rel="stylesheet">
+
+
+<div class="container mt-5" >
+    <div id="Certificate" class="d-flex align-items-center justify-content-center">
+        <div class="row lr-size">
+            <div class="col-md-7">
+                <span class="p-logo d-block">
+                    <img src="~/filesforcertificates/images/gtr-logo.png" class="img-fluid" alt="gtr logo">
+
+                </span>
+                <span class="d-block blue-text fonts-Montserrat fw-500 f-small">Issue Date: 11-May-2023</span>
+                <span class="d-block fonts-Montserrat f-small-m">This is to certify that</span>
+                <span class="fw-bold f-m d-block">@ViewBag.fullName</span>
+                <p class="s-small-l">
+                    <span class="blue-text f-small-m fonts-Montserrat">Email: </span><span class="fonts-MyriadPro">@ViewBag.userEmail</span>
+                </p>
+                <span class="d-block f-small-m2 fonts-Montserrat">has completed the course</span>
+                <span class="d-block fonts-Montserrat f-m2 blue-text">@ViewBag.moduleName</span>
+                <span class="f-small-m3 d-block">@ViewBag.Authorized</span>
+                <span class="d-block f-s">@ViewBag.Designation</span>
+                <span class="c-border"></span>
+                <span class="light-blue-text d-block fonts-Montserrat f-s fw-bold pt-2">AUTHORIZE BY</span>
+                <div class="parent">
+                    <img class="image1" src="~/filesforcertificates/images/gtrSeal.png" />
+                    <img class="image2" src="@Url.Content(ViewBag.imgUrl)" />
+                </div>
+                <p class="f-s light-gray-text fonts-Montserrat pt-3">
+                    <span class="divider">www.gtrbd.com</span><span>info@gtrbd.com</span>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <p class="text-center cp-text fonts-Cambria">
+                    <span class="d-block cp-small">Certificate Of</span>
+                    <span class="d-block cp-m">Compleation</span>
+                </p>
+                <div class="text-right pt-qr">
+                    <p>
+                        <span class="blue-text fonts-Montserrat f-s fw-bold pe-3">Verify:</span><span>
+                            <img src="data:image/png;base64,@ViewBag.barcode" class="img-fluid qr-img" alt="QR Code">
+                        </span>
+                    </p>
+                    <p class="fonts-Montserrat text-qr">
+                        <span>Certificate Id:</span> <span class="blue-text ">
+                            <a class="text-decoration-none" href="#" id="pdf_download">@ViewBag.certificateID</a>
+                        </span>
+                    </p>
+                    <div class="light-gray-text fonts-Montserrat f-s">
+                        <span class="d-block">
+                            GTR has confirmed the identity of this individual and their
+                            participation in the course.
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+@section Scripts
+{
+    
+    <script>
+     
+        var specialElementHandlers = {
+            '#elementH': function(element, renderer) {
+                return true;
+            }
+        };
+        window.jsPDF = window.jspdf.jsPDF;
+        document.getElementById('pdf_download').addEventListener('click', function () {
+            var element = document.getElementById('Certificate');
+            var pdfWidth = 600.25; // A4 width in points
+            var pdfHeight = 480.56; // A4 height in points
+            var margin = 10; // Margin size in points
+
+            // Create a new jsPDF instance
+            var doc = new jsPDF({
+                orientation: "lanscape",
+                unit: "pt",
+                format: [pdfWidth, pdfHeight],
+            });
+
+            // Calculate the inner width and height considering the margins
+            var innerWidth = pdfWidth - 2 * margin;
+            var innerHeight = pdfHeight - 2 * margin;
+
+            // Convert the parentDiv to canvas using html2canvas
+            html2canvas(element)
+                .then(function (canvas) {
+                    // Convert the canvas to an image data URL
+                    var imageData = canvas.toDataURL("image/jpeg");
+
+                    // Calculate the positioning of the content within the PDF
+                    var x = margin;
+                    var y = margin;
+                    var width = innerWidth;
+                    var height = (innerWidth / canvas.width) * canvas.height;
+
+                    // If the height exceeds the inner height, scale down the height
+                    if (height > innerHeight) {
+                        height = innerHeight;
+                        width = (innerHeight / canvas.height) * canvas.width;
+
+                        // Calculate the horizontal positioning for center alignment
+                        x = margin + (innerWidth - width) / 2;
+                    }
+
+                    // Add the image to the PDF
+                    doc.addImage(imageData, "WevP", x, y, width, height);
+
+                    // Save or display the PDF
+                    var pdfDataUrl = doc.save("datauristring");
+                    var pdfIframe = document.getElementById("Certificate");
+                    pdfIframe.src = pdfDataUrl;
+                })
+                .catch(function (error) {
+                    console.error("Error occurred while generating PDF:", error);
+                });
+        });
+
+
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    <script src="~/html2pdf.js/html2pdf.bundle.js"></script>
+   
+
+ }

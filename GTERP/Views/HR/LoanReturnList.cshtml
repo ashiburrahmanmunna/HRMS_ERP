@@ -1,0 +1,518 @@
+﻿
+@model GTERP.Models.HR_Loan_Return
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .mCustomScrollbar {
+        height: 300px;
+        overflow: hidden;
+    }
+</style>
+
+@using (Html.BeginForm("LoanReturnList", "HR", FormMethod.Post))
+{
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="fas fa-plus-square"></i> Loan Return
+            <div id="loading" style="display: inline;">
+                <div id="loadingGif" style="display: inline;">
+                    @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                </div>
+            </div>
+        </h4>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 col-12 card">
+                    <div id="monthLoadDiv">
+                        <fieldset id="fieldsetDate" class="pt-2 border-bottom">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.HiddenFor(m => m.LoanReturnId)
+                                        @Html.LabelFor(m => m.DtInput, new { @class = "control-label" })
+                                    </span>
+                                </div>
+                                <input type="text" id="DtMonth" class="form-control formInput" />
+                                <div class="input-group-append">
+                                    <button id="loadButton" class="btn btn-primary" style="margin-top: 0;">
+                                        <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load List
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    @*<div id="tableDiv">
+                            <fieldset id="fieldsetSect">
+                                <div id="LoanReturnGrid" class="mCustomScrollbar">
+                                    <partial name="_LoanReturnGrid" />
+                                </div>
+                            </fieldset>
+                        </div>*@
+                    <div class="table-responsive my-2">
+                        <table id="loanReturnTable" class="table table-sm table-striped trow table-hover text-nowrap" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="d-none">LoanReturnId</th>
+                                    <th>Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th>Join Date</th>
+                                    <th>Section</th>
+                                    <th>Designation</th>
+                                    <th>Amount</th>
+                                    <th>Input Date</th>
+                                    <th>Loan Type</th>
+                                    <th class="d-none">EmpId</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="formDiv" class="col-md-4 col-12">
+                    <fieldset id="fieldsetForm" class="card p-3">
+                        <div id="formTable">
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(m => m.EmpId)
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(x => x.EmpId, new SelectList((IEnumerable<SelectListItem>
+                                                   )ViewBag.EmpId, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "EmpId" })
+
+                                    @*@Html.DropDownList("EmpId", ViewBag.EmpId, "--Please Select--", htmlAttributes: new { @class = "form-control" })*@
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Name
+                                        </span>
+                                    </div>
+                                    <input type="text" id="EmpName" class="form-control formInput" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(m => m.DtJoin)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="DtJoin" name="DtJoin" class="form-control formInput" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(m => m.DtInput)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="DtInput" class="form-control formInput" />
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(m => m.Amount)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.Amount, new { @class = "form-control formInput" })
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(m => m.LoanType)
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(x => x.LoanType, new SelectList((IEnumerable<SelectListItem>
+                                                   )ViewBag.LoanType, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "LoanType" })
+
+                                    @*@Html.DropDownList("LoanType", ViewBag.LoanType, "--Please Select--", htmlAttributes: new { @class = "form-control" })*@
+                                </div>
+                            </div>
+                        </div>
+                        <div id="buttonDiv">
+                            <p class="text-center">
+                                <button id="saveButton" type="submit" class="btn btn-primary rounded-0">
+                                    <i class="fa fa-floppy-o"></i> Save
+                                </button>
+                                <button id="updateButton" class="btn btn-success rounded-0">
+                                    <i class="fa fa-pencil-square"></i> Update
+                                </button>
+                                <button id="resetButton" class="btn btn-warning rounded-0">
+                                    <i class="fa fa-refresh"></i> Reset
+                                </button>
+
+                                <button id="deleteButton" class="btn btn-danger rounded-0">
+                                    <i class="fa fa-trash-o"></i> Delete
+                                </button>
+                            </p>
+
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+
+    <script>
+        var empName, LoanReturnId, dtInput, empId,empCode, joinDt, locOfJoin, locOfName, empIdAndJoinDt, empCodeAndEmpName,remarks,amount;
+
+        var empInfos=@Html.Raw(Json.Serialize(ViewBag.EmpInfo));
+        var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var table;
+        $(document).ready(function () {
+
+            $("#JoinDate").prop("disabled", true);
+            $("#EmpId").select2();
+             $("#DtInput").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function (date) {
+                            // Your CSS changes, just in case you still need them
+                            $('a.ui-state-default').removeClass('ui-state-highlight');
+                            $(this).addClass('ui-state-highlight');
+                            var dateFormat = $("#DtInput").datepicker("option", "dateFormat");
+                            //setter
+                            $("#DtInput").datepicker("option", "dateFormat", 'dd-M-yy');
+                        }
+             });
+
+            $("#DtMonth").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function (date) {
+                            // Your CSS changes, just in case you still need them
+                            $('a.ui-state-default').removeClass('ui-state-highlight');
+                            $(this).addClass('ui-state-highlight');
+                            var dateFormat = $("#DtMonth").datepicker("option", "dateFormat");
+                            //setter
+                            $("#DtMonth").datepicker("option", "dateFormat", "dd-M-yy");
+                        }
+                });
+
+            $("#updateButton").prop("disabled", true);
+            $("#deleteButton").prop("disabled", true);
+            $("#EmpId").change(function () {
+                var selectedEmp = empInfos.find(serachEmp);
+                if (selectedEmp != null) {
+                    var dFormat = new Date(selectedEmp.DtJoin);
+                    $("#DtJoin").val(`${dFormat.getDate()}-${month[dFormat.getMonth()]}-${dFormat.getFullYear()}`);
+                    $("#EmpName").val(selectedEmp.EmpName);
+                }
+            });
+            $("#loading").css("display", "none");
+
+            table = $('#loanReturnTable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                columns: [
+                    { 'sClass': 'LoanReturnId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { "sClass": "DtJoin", 'visible': true },
+                    { 'sClass': 'Section', 'visible': true },
+                    { 'sClass': 'Designation', 'visible': true },
+                    { 'sClass': 'Amount', 'visible': true },
+                    { 'sClass': 'DtInput', 'visible': true },
+                    { 'sClass': 'LoanType', 'visible': true },
+                    { 'sClass': 'EmpId', 'visible': false }
+                ],
+                select: true,
+                select: 'single',
+                'paging': false,
+                'info': false,
+                //"scrollX": true,
+                //"scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+            });
+
+        });
+
+        // search employee
+        function serachEmp(empInfos) {
+            var empId = $("#EmpId option:selected").val();
+            if (empId == "")
+                return;
+            return empInfos.EmpId == empId;
+        }
+
+        //save button click function
+        $("#saveButton").click(function () {
+            var LoanReturn = {
+                LoanReturnId: $("#LoanReturnId").val() || 0,
+                EmpId: $("#EmpId option:selected").val(),
+                DtInput: $("#DtInput").val(),
+                DtJoin: $("#DtJoin").val(),
+                LoanType: $("#LoanType option:selected").val(),
+                Amount: $("#Amount").val(),
+                ComId: "",
+                PcName:"",
+                UserId:"",
+                UpdateByUserId:"",
+                DateAdded:"",
+                DateUpdated:""
+            };
+
+            if (LoanReturn.EmpId !== "" && LoanReturn.Amount !== 0 && LoanReturn.DtInput!=="" && LoanReturn.Amount!=="") {
+
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateLoanReturn", "HR")',
+                dataType: 'json',
+
+                data: {  LoanReturn: LoanReturn},
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('1', result.ex);
+                        location.reload();
+                    }
+                    else
+                        toastr.error(result.ex);
+                },
+                error: function (ex) {
+                           toastr.error("Sorry, an error occured . . . .");
+                       }
+
+                });
+
+                ClearTextBoxes();
+            } else {
+
+                if (aLoanReturn.Amount === "" || aLoanReturn.Amount===0) {
+                    $("#Amount").css("border-color", "red");
+                }
+
+                if (aLoanReturn.DtInput === "" || aLoanReturn.DtInput === "=N/A=") {
+                    $("#DtInput").css("border-color", "red");
+                }
+
+                if (aLoanReturn.EmpName === "" || aLoanReturn.EmpName === "N/A") {
+                    $("#EmpName").css("border-color", "red");
+                }
+
+
+                $(".messageBody").html("Please Provide all the required fields");
+                $(".divforfull").css("display", "block");
+                $(".myMessage").css("display", "block");
+                setTimeout(function () {
+                    $(".myMessage").fadeOut(500);
+                    $(".divforfull").fadeOut(500);
+
+                }, 2000);
+            }
+
+
+        });
+        //save button click function end
+
+        //update salary Deduction function ajax
+        $("#updateButton").click(function () {
+            var LoanReturn = {
+                LoanReturnId: $("#LoanReturnId").val() || 0,
+                EmpId: $("#EmpId option:selected").val(),
+                DtInput: $("#DtInput").val(),
+                DtJoin: $("#DtJoin").val(),
+                LoanType: $("#LoanType option:selected").val(),
+                Amount: $("#Amount").val(),
+                ComId: "",
+                PcName:"",
+                UserId:"",
+                UpdateByUserId:"",
+                DateAdded:"",
+                DateUpdated:""
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateLoanReturn", "HR")',
+                dataType: 'json',
+
+                data: {  LoanReturn: LoanReturn},
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('1', result.ex);
+                        location.reload();
+                    }
+                    else
+                        toastr.error(result.ex);
+                },
+                error: function (ex) {
+                           toastr.error("Sorry, an error occured . . . .");
+                       }
+
+                });
+
+
+                ClearTextBoxes();
+        });
+
+        //clear textboxes and reset buttons
+        function ClearTextBoxes() {
+            $("#EmpId").val("").change();
+            $("#EmpName").val("");
+            $("#Amount").val("");
+            $("#LoanType").val("");
+            //$('#EmpId').select2({
+            //    allowClear: true
+            //});
+            $("#DtInput").val("");
+            $("#DtJoin").val("");
+
+            $("#updateButton").prop("disabled", true);
+            $("#deleteButton").prop("disabled", true);
+
+            $("#saveButton").prop("disabled", false);
+
+            $("input").css("border-color", "");
+        }
+
+        //reset button click function
+        $("#resetButton").click(function() {
+
+            ClearTextBoxes();
+            var date = new Date();
+            $(".datepicker").val("");
+            //himu change
+            //$("#DtMonth").val(monthNames[date.getMonth()] + '-' + date.getFullYear());
+
+        });
+
+
+        //load salary Deduction information of a month
+        $("#loadButton").click(function () {
+            var text = $("#DtMonth").val();
+            //var position = text.indexOf("-");
+            //var month = text.substring(0, position);
+            //var year = text.substring(position + 1, text.strlen);
+            //var date = '1' + '-' + month + '-' + year;
+            @*$("#loanReturnTable").html('');
+            $("#loanReturnTable").load('@Url.Action("LoadLoanReturnPartial", "LoanReturn")' + '?date=' + text, function () {
+
+            });*@
+
+            table.rows().remove().draw();
+             $.ajax({
+                type: 'POST',
+                url: '@Url.Action("LoadLoanReturnPartial", "HR")',
+                dataType: 'json',
+                // headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: {date: text},
+                success: function (result) {
+                    initializeGrid(result);
+                    StopSpinner("#loadButton");
+               },
+                 error: function (ex) {
+                     StopSpinner("#loadButton");
+                   alert("Sorry, an error occured . . . .");
+               }
+             });
+        });
+
+        function initializeGrid(data) {
+                var arrays = [];
+                for (var i = 0; i < data.length; i++) {
+                    arrays.push([
+                        data[i].LoanReturnId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].DtJoin,
+                        data[i].Section,
+                        data[i].Designation,
+                        data[i].Amount,
+                        data[i].DtInput,
+                        data[i].LoanType,
+                        data[i].EmpId
+                    ]);
+                }
+                table.rows.add(arrays).draw(false);
+
+            };
+
+        //table row double click function
+        $(document).on("click", "#loanReturnTable tr", function () {
+            var rowData = table.row(".selected").data();
+            //console.log(rowData);
+            $("#LoanReturnId").val(rowData[0]);
+            $("#EmpId").val(`${rowData[9]}`).change();
+            $("#EmpName").val(rowData[2]);
+            $("#DtJoin").val(rowData[3]);
+            $("#DtInput").val(rowData[7]);
+            $("#Amount").val(rowData[6]);
+            $("#LoanType").val(`${rowData[8]}`);
+
+
+            $("#updateButton").prop("disabled", false);
+            $("#deleteButton").prop("disabled", false);
+            $("#saveButton").prop("disabled", true);
+        });
+
+        //update salary Deduction ajax function end
+
+        //delete salary Deduction ajax function
+        $("#deleteButton").click(function() {
+
+            if ($("#LoanReturnId").val() == "") {
+                alert("Select Some entry");
+            }
+            else {
+                var r = confirm("Are you sure to delete Loan return?");
+                if (!r) {
+                    event.preventDefault();
+                } else {
+                     $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteLoanReturnAjax", "HR")',
+                dataType: 'json',
+                         data: { DedId: $("#LoanReturnId").val()},
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('1', result.ex);
+                        location.reload();
+                    }
+
+                    else
+                        toastr.error(result.ex);
+                },
+                error: function (ex) {
+                           toastr.error("Sorry, an error occured . . . .");
+                       }
+
+                });
+
+
+                    @*$("#loanReturnTable tbody").html("");
+                    $("#loanReturnTable").load('@Url.Action("LoadLoanReturnPartial", "LoanReturn")', function () { });*@
+
+                }
+            }
+            ClearTextBoxes();
+        });
+
+        //delete salary Deduction ajax function end
+        $(document).on("click", ".table tbody tr", function () {
+            $(this).addClass("clicked").siblings().removeClass("clicked");
+        });
+
+    </script>
+
+}

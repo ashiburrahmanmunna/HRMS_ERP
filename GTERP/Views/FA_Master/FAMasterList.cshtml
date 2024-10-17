@@ -1,0 +1,671 @@
+﻿
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+</style>
+
+@model IEnumerable<GTERP.Models.FA_Master>
+
+<div action="" method="post">
+    <div class="row mb-2">
+
+        <div class="col-md-2 col-12">
+            @Html.ActionLink("Create Asset Group", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+        </div>
+
+        <div class="col-md-6 col-12 d-block mx-auto">
+            <h2 id="styletext">Asset Group List</h2>
+        </div>
+
+        <div class="col-md-4 col-12 round pt-2">
+            @*<div class="panel-body">*@
+
+            @*<fieldset>*@
+            <fieldset class="float-right">
+                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+            </fieldset>
+        </div>
+    </div>
+
+
+
+
+
+    <div id="finalpanel" class="card p-2 table-responsive">
+        @Html.AntiForgeryToken()
+        <table id="tblAsset_List" class="table tbllist table-striped table-bordered" cellspacing="0" width="100%">
+            @*<thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AssetCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Percentage)
+                        </th>
+                        <th>
+                            Dep. Exp. Code
+                        </th>
+                        <th>
+                            Dep. Exp. Acc.
+                        </th>
+                        <th>
+                            Accu. Dep. Code.
+                        </th>
+                        <th>
+                            Accu. Dep. Acc.
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ComId)
+                        </th>
+                        <th>
+                            Dep. Method
+                        </th>
+                        <th>
+                            Asset Name
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DepreciationFrequency.Title)
+                        </th>
+                        <th>Action To Do</th>
+                    </tr>
+                </thead>*@
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+            loaddata();
+        });
+
+
+        function loaddata() {
+        table = $('#tblAsset_List').DataTable({
+                    initComplete: function () {
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+
+                                    }
+                                    else {
+                                        loaddata();
+
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                })
+                            ,
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata();
+                                    //table.ajax.reload();
+
+
+                                })
+                        $('.dataTables_filter').append( $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                    "language": {
+
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+
+                    "columnDefs": [
+                        // Hide second, third and fourth columns
+                        { "visible": false, "targets": [] }
+                    ],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+                            //{
+                            //    extend: 'copy',
+                            //    text: '<i class="mdi mdi-content-copy"></i>',
+                            //    className: 'btn-primary',
+                            //    titleAttr: 'Copy to Clipboard'
+                            //},
+                            //{
+                            //    extend: 'csv',
+                            //    text: '<i class="mdi mdi-note-outline"></i>',
+                            //    className: 'btn-secondary',
+                            //    titleAttr: 'Export to csv'
+                            //},
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success',
+                                titleAttr: 'Export to excel'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                orientation: 'landscape',
+                                pageSize: 'LEGAL',
+                                text: '<i class="mdi mdi-file-pdf"></i>',
+                                className: 'btn-danger mr-2',
+                                titleAttr: 'Export to PDF'
+                                //,exportOptions: {
+                                //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                //}
+
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("Get", "FA_Master")",
+                        //"data": { UserList: $("#UserList").val(), FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), CustomerList: $("#CustomerList").val(), isAll: isAll },
+
+                        //"url": "/Cities/GetListViewModel",
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+            "columns": [
+
+                { "title": "AssetCode", "data": "AssetCode", "visible": true },
+                { "title": "Percentage", "data": "Percentage", "visible": true },
+                { "title": "DepreciationCode", "data": "DepreciationCode", "visible": false },
+                { "title": "Acc Dep. Code", "data": "AccDepreciationCode", "visible": true },
+                { "title": "AccDepreciationAccountName", "data": "AccDepreciationAccountName", "visible": false },
+                //{ "title": "AccumulatedDepreciationHead", "data": "AccumulatedDepreciationHead", "visible": true },
+                { "title": "ComId", "data": "ComId", "visible": false },
+                { "title": "DMName", "data": "DMName", "visible": true },
+                { "title": "ProductName", "data": "ProductName", "visible": true },
+                { "title": "Title", "data": "Title", "visible": false },
+                {
+                    "title": "Action",
+                            "data": {
+                                FA_MasterId: "FA_MasterId"
+                                //,
+                                //IsInProcess:"IsInProcess"
+                            },
+                           "render": function (data) {
+
+                        var myUrledit = '@Url.Action("Edit", "FA_Master")?type=master&id='+data.FA_MasterId;
+                        var myUrldelete = '@Url.Action("Delete", "FA_Master")?type=master&id=' + data.FA_MasterId;
+                       // var myUrlprint = '@Url.Action("FA_Master_Accu_Dep", "FA_Master")/' + data.FA_MasterId + '?type=pdf';
+                        var myUrlprint = '@Url.Action("Print", "FA_Master")/' + data.FA_MasterId + '?type=pdf';
+
+
+                               if (data.IsInProcess == true) {
+
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\"  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block  disabled\" name=\"master\" value=\"' + FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block disabled\" name=\"master\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span>';
+                        }
+                        else {
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\"  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block \" name=\"master\" value=\"' + data.FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block \" name=\"master\" value=\"' + data.FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span>';
+                        }
+                        }
+                        }
+                 ],
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    "destroy": true
+                });
+        }
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+
+        var antiForgeryToken;
+
+       // $(document).ready(function () {
+            //antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+            ///
+
+
+            /// old table
+                    @*tblassetlist = $('#tblAsset_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "ProductCode", "visible": true },
+                    { "sClass": "Percentage", "visible": true },
+                    { "sClass": "AccId_DepreciationExpense", "visible": false },
+                    { "sClass": "DepreciationHead", "visible": true },
+                    { "sClass": "AccId_AccumulatedDepreciation", "visible": false },
+                    { "sClass": "AccumulatedDepreciationHead", "visible": true },
+                    { "sClass": "ComId", "visible": false },
+                    { "sClass": "DMName", "visible": true },
+                    { "sClass": "ProductName", "visible": true },
+                    { "sClass": "Title", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+                ],
+                columnDefs:[ {
+                        "render": function (data) {
+
+                        var myUrledit = '@Url.Action("Edit", "FA_Master")?type=master&id='+data.FA_MasterId;
+                        var myUrldelete = '@Url.Action("Delete", "FA_Master")?type=master&id=' + data.FA_MasterId;
+                       // var myUrlprint = '@Url.Action("FA_Master_Accu_Dep", "FA_Master")/' + data.FA_MasterId + '?type=pdf';
+                        var myUrlprint = '@Url.Action("Print", "FA_Master")/' + data.FA_MasterId + '?type=pdf';
+
+                        //{ IsInProcess: d[i].IsInProcess, FA_MasterId: d[i].FA_MasterId }
+                       // console.log()
+                        if (data.IsInProcess == true) {
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\"  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block  disabled\" name=\"master\" value=\"' + FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block disabled\" name=\"master\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span>';
+                        }
+                        else {
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\"  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block \" name=\"master\" value=\"' + data.FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block \" name=\"master\" value=\"' + data.FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span>';
+                        }
+                    },
+                    targets: 10
+                        }],
+                        buttons: {
+                            dom: {
+                                button: {
+                                    className: 'btn rounded-0'
+                                }
+                            },
+                            buttons: [
+                                //'copy', 'csv', 'excel', 'pdf'
+                                //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                                {
+                                    extend: 'colvis',
+                                    "columns": ':not(:last-child)',
+                                    text: '<i class="mdi mdi-view-column"></i>',
+                                    className: 'btn-info',
+                                    titleAttr: 'Show / hide columns',
+                                    //collectionLayout: 'fixed two-column'
+
+                                },
+                                //{
+                                //    extend: 'copy',
+                                //    text: '<i class="mdi mdi-content-copy"></i>',
+                                //    className: 'btn-primary',
+                                //    titleAttr: 'Copy to Clipboard'
+                                //},
+                                //{
+                                //    extend: 'csv',
+                                //    text: '<i class="mdi mdi-note-outline"></i>',
+                                //    className: 'btn-secondary',
+                                //    titleAttr: 'Export to csv'
+
+                                //},
+                                {
+                                    extend: 'excel',
+                                    text: '<i class="mdi mdi-file-excel"></i>',
+                                    className: 'btn-success',
+                                    titleAttr: 'Export to excel'
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    orientation: 'landscape',
+                                    pageSize: 'LEGAL',
+                                    text: '<i class="mdi mdi-file-pdf"></i>',
+                                    className: 'btn-danger mr-2',
+                                    titleAttr: 'Export to PDF',
+                                    //exportOptions: {
+                                    //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                    //}
+
+                                }
+
+                            ]
+                        },
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                //"bLengthChange": true,
+                "bFilter": true,
+                //"bSort": true,
+                "bInfo": true,
+                "paging": true,
+                "language": {
+                            "processing": "processing... please wait",
+                            sLengthMenu: " _MENU_",
+                            search: "",
+                            searchPlaceholder: "Search..."
+                        },
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+                    }).draw();
+                    getAssetList();
+        });*@
+
+
+
+                @*$(document).on('click', '.edit', function () {
+
+            var name = $(this).attr('name');
+            var id = $(this).attr('value');
+            if (name == 'master') {
+                    //window.setTimeout(function () {
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id,type:name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+                                $('#mode').val('Edit');
+                                $("#btnadd").trigger('click');
+                                var d = data.list;
+                                productid = d.ProductId;
+                                $('#FA_MasterId').val(`${d.FA_MasterId}`).change();
+                                $('#ProductId option:selected').val(d.ProductId).change();
+                                $('#ProductCode').val(d.ProductCode);
+                                $('#DMId').val(d.DMId).change();
+                                $('#Percentage').val(d.Percentage);
+                                $('#AccId_DepreciationExpense').val(d.AccId_DepreciationExpense).change();
+                                $('#AccId_AccumulatedDepreciation').val(d.AccId_AccumulatedDepreciation).change();
+                                $('#FoD').val(d.FoD).change();
+
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+            if (name == 'details') {
+                $('#mode').val('Edit');
+                $("#divAsset_Item_List").hide();
+                $("#divshowproducinfo").hide();
+                $("#divAsset_Item_List").hide();
+                //window.setTimeout(function () {
+                $("#btnassign").trigger('click');
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id, type: name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+
+                                var d = data.list;
+                               // console.log(d);
+
+                                $("#FA_DetailsIdp").val(d.FA_DetailsId);
+                                $('#FA_MasterIdp').val(d.FA_MasterId).change();
+                                $('#AssetItem').val(d.AssetItem);
+                                $('#IssuNo').val(d.IssuNo);
+                                $('#PurchaseDate').val(dateformat(d.PurchaseDate));
+                                $('#IssueDate').val(dateformat(d.IssueDate));
+                                $('#AssignTo').val(d.AssignTo).change();
+                                $('#AssignToDept').val(d.AssignToDept).change();
+                                $('#EVAULife').val(d.EVAULife);
+
+                                $('#WrittenDownValue').val(d.WrittenDownValue);
+                                $('#PurchaseValue').val(d.PurchaseValue);
+
+
+
+                                $('#RemainingYear').val(d.RemainingYear);
+                                $('#RemainingMonth').val(d.RemainingMonth);
+                                $('#UsefullLife').val(d.UsefullLife);
+
+
+
+
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+            if (name == 'sale') {
+                    //window.setTimeout(function () {
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id, type: name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+
+                                var d = data.list;
+                                $('#FA_SellId1').val(d.FA_SellId);
+                                $('#FA_MasterId1').val(d.FA_MasterId);
+                                $('#FA_DetailsId1').val(d.FA_DetailsId);
+                                $('#SellsPrice1').val(d.SellsPrice);
+                                $('#Description1').val(d.Description);
+
+
+                                $('#mode').val('Edit');
+                                $("#btnsell").trigger('click');
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+                });*@
+
+                @*$(document).on('click', '.delete', function () {
+                    //var name = $(this).attr('name');
+                    var id = $(this).attr('value');
+                    alert(id);
+                    //window.setTimeout(function () {
+                    if (confirm("Are you sure to delete this record?")) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "FA_Master")',
+                            type: 'GET',
+                            dataType: 'json',
+                            data: { type: "master", id: id},
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                            contentType: 'application/json',
+                            success: function (data, status, xhr) {
+                                if (data.result == 1) {
+
+                                    $('#tblAsset_List').DataTable().clear().draw();
+                                    getAssetList();
+                                    toastr.success("Record delete success.")
+                                } else {
+                                    toastr.error("Error occured during delete.");
+                                }
+                            }
+                        });
+                    }
+                    //}, 200);
+                });*@
+
+                function getAssetList() {
+                $.ajax({
+                    url: '@Url.Action("Index", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            $('#tblAsset_List').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            //console.log(d);
+
+                            for (var i = 0; i < d.length; i++) {
+
+                                var DepreciationCode;
+                                var DepreciationAccountName;
+                                var AccDepreciationCode;
+                                var AccDepreciationAccountName;
+
+
+
+                                if (d[i].DepreciationHead != null) {
+                                    DepreciationCode = d[i].DepreciationHead.AccCode;
+                                    DepreciationAccountName = d[i].DepreciationHead.AccName;
+
+                                } else {
+                                    DepreciationCode = '=N/A=';
+                                    DepreciationAccountName = '=N/A=';
+                                }
+
+
+                                if (d[i].AccumulatedDepreciationHead != null) {
+                                    AccDepreciationCode = d[i].AccumulatedDepreciationHead.AccCode;
+                                    AccDepreciationAccountName = d[i].AccumulatedDepreciationHead.AccName;
+
+                                } else {
+                                    AccDepreciationCode = '=N/A=';
+                                    AccDepreciationAccountName = '=N/A=';
+                                }
+
+
+
+                                $('#tblAsset_List').dataTable().fnAddData([
+                                    d[i].AssetCode,
+                                    d[i].Percentage,
+                                    DepreciationCode,
+                                    DepreciationAccountName,
+                                    AccDepreciationCode,
+                                    AccDepreciationAccountName,
+                                    d[i].ComId,
+                                    d[i].DepreciationMethod.DMName,
+                                    d[i].Product.ProductName,
+                                    d[i].DepreciationFrequency.Title,
+                                    { IsInProcess: d[i].IsInProcess, FA_MasterId: d[i].FA_MasterId }
+
+                                    //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                                ]);
+                            }
+
+                            toastr.success('Data loaded Successfully');
+                        };
+                    },
+                });
+            };
+
+                function Refresh() {
+                    var url = '@Url.Action("FAMasterList", "FA_Master")';
+                    window.location.href = url;
+                }
+                $.LoadingOverlaySetup({
+                    background: "rgba(0, 0, 0, 0.5)",
+                    //fontawesome: "fas fa-cog fa-spin",
+                    imageAnimation: "1.5s fadein",
+                    imageColor: "#DCDCDC"
+                });
+                //$(document).ajaxStart(function () {
+                //    $.LoadingOverlay("show");
+
+                //});
+                //$(document).ajaxStop(function () {
+                //    $.LoadingOverlay("hide");
+                //});
+    </script>
+}

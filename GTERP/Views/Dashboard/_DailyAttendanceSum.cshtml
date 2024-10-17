@@ -1,0 +1,121 @@
+﻿@using System.Collections
+@*@using GTERP.Controllers.HR.DashboardController*@
+@model IEnumerable<GTERP.ViewModels.DailyAttendanceSum>
+@{ 
+    var ttlpresent = 0;
+}
+@using (Html.BeginForm("Index", "Dashboard", FormMethod.Post))
+{
+    <div class="card mb-4 p-3">
+        <div class="box-header card card-header-style pal-kyoo-gradient">
+            <div class="row">
+                <div class="col-md-8 col-12">
+                    <h3 class="box-title">Daily Attendance Summary</h3>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+        </div>
+        <div class="card-body pt-3">
+            <div class="row">
+                @*<div class="row">*@
+                @if (Model != null)
+                {
+                    IEnumerable<GTERP.ViewModels.DailyAttendanceSum> listOfAtt = ViewBag.ListOfAtt;
+                    <div class="table-responsive">
+                        <table class="text-center table table-hover table-striped border p-3">
+                            <thead>
+                                <tr>
+                                    <td>Department</td>
+                                    <td>Employee</td>
+                                    <td>Male</td>
+                                    <td>Female</td>
+                                    <td>Present</td>
+                                    <td>Present %</td>
+                                    <td>Late</td>
+                                    <td>Late %</td>
+                                    <td>Absent</td>
+                                    <td>Absent %</td>
+                                    <td>Leave</td>
+                                    <td>Leave %</td>
+                                    <td>OffDay</td>
+                                    <td>OffDay %</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (GTERP.ViewModels.DailyAttendanceSum da in listOfAtt)
+                                {
+                                    //{
+                                    //    ttlpresent += Convert.ToInt32(da.Present);
+                                    //}
+                                <tr>
+                                    <td>
+                                        <a target="_blank" asp-action="GetDepartmentWiseData" asp-controller="Dashboard"
+                                           asp-route-Date="@ViewBag.DtLoad" asp-route-sectName="@da.SectName">@da.SectName</a>
+                                    </td>
+                                    <td>@da.TotalEmployee</td>
+                                    <td>@da.Male</td>
+                                    <td>@da.Female</td>
+                                    <td>@da.Present</td>
+                                    <td>@da.PresentPercent%</td>
+                                    <td>@da.Late</td>
+                                    <td>@da.LatePercent%</td>
+                                    <td>@da.Absent</td>
+                                    <td>@da.AbsentPercent%</td>
+                                    <td>@da.Leave</td>
+                                    <td>@da.LeavePercent%</td>
+                                    <td>@da.OffDay</td>
+                                    <td>@da.OffDayPercent%</td>
+                                </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr style="font-weight:bold">
+                                    <td>Grand Total:</td>
+                                    <td>Total Employee: @listOfAtt.Sum(a => a.TotalEmployee)</td>
+                                    <td>Total Male: @listOfAtt.Sum(a => a.Male)</td>
+                                    <td>Total Female: @listOfAtt.Sum(a => a.Female)</td>
+                                    <td>Total Present: @listOfAtt.Sum(a => a.Present)</td>
+                                    <td></td>
+                                    <td>Total Late: @listOfAtt.Sum(a => a.Late)</td>
+                                    <td></td>
+                                    <td>Total Absent: @listOfAtt.Sum(a => a.Absent)</td>
+                                    <td></td>
+                                    <td>Total Leave: @listOfAtt.Sum(a => a.Leave)</td>
+                                    <td></td>
+                                    <td>Total OffDay: @listOfAtt.Sum(a => a.OffDay)</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                }
+                else
+                {
+                    <center>
+                        <h3>No data to show</h3>
+                    </center>
+                }
+
+            </div>
+            <div id="dailyAttSumChart"></div>
+
+
+            @* </div>@***End of second info row*@
+            @*</div>*@@**End of info body*@
+            <div class="offset-md-1 col-md-3 col-12">
+                <div id="donutchart"></div>
+
+                @*style="width: 40em; height: 340px;"**@
+            </div>@**End of chart body*@
+        </div>
+    </div>
+    
+
+}
+
+
+
+
+

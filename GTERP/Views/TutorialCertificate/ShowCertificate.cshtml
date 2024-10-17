@@ -1,0 +1,105 @@
+﻿@using ZXing
+@{
+    var moduleName = ViewBag.moduleName;
+    var certificateID = ViewBag.certificateID;
+    //Layout = null;
+
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="~/css/certificate.css" rel="stylesheet">
+
+
+<div class="container mt-5">
+    <div id="Certificate">
+        <div class="row lr-size">
+            <div class="col-md-7">
+                <span class="p-logo d-block">
+                    <img src="~/filesforcertificates/images/gtr-logo.png" class="img-fluid" alt="gtr logo">
+
+                </span>
+                <span class="d-block blue-text fonts-Montserrat fw-500 f-small">Issue Date: 11-May-2023</span>
+                <span class="d-block fonts-Montserrat f-small-m">This is to certify that</span>
+                <span class="fw-bold f-m d-block">@ViewBag.fullName</span>
+                <p class="s-small-l">
+                    <span class="blue-text f-small-m fonts-Montserrat">Email: </span><span class="fonts-MyriadPro">@ViewBag.userEmail</span>
+                </p>
+                <span class="d-block f-small-m2 fonts-Montserrat">has completed the course</span>
+                <span class="d-block fonts-Montserrat f-m2 blue-text">@ViewBag.moduleName</span>
+                <span class="f-small-m3 d-block">@ViewBag.Authorized</span>
+                <span class="d-block f-s">@ViewBag.Designation</span>
+                <span class="c-border"></span>
+                <span class="light-blue-text d-block fonts-Montserrat f-s fw-bold pt-2">AUTHORIZE BY</span>
+                <div class="parent">
+                    <img class="image1" src="~/filesforcertificates/images/gtrSeal.png" />
+                    <img class="image2" src="@Url.Content(ViewBag.imgUrl)" />
+                </div>
+                <p class="f-s light-gray-text fonts-Montserrat pt-3">
+                    <span class="divider">www.gtrbd.com</span><span>info@gtrbd.com</span>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <p class="text-center cp-text fonts-Cambria">
+                    <span class="d-block cp-small">Certificate Of</span>
+                    <span class="d-block cp-m">Compleation</span>
+                </p>
+                <div class="text-right pt-qr">
+                    <p>
+                        <span class="blue-text fonts-Montserrat f-s fw-bold pe-3">Verify:</span><span>
+                            <img src="data:image/png;base64,@ViewBag.barcode" class="img-fluid qr-img" alt="QR Code">
+                        </span>
+                    </p>
+                    <p class="fonts-Montserrat text-qr">
+                        <span>Certificate Id:</span> <span class="blue-text ">
+                            <a class="text-decoration-none" href="#" id="pdf_download">@ViewBag.certificateID</a>
+                        </span>
+                    </p>
+                    <div class="light-gray-text fonts-Montserrat f-s">
+                        <span class="d-block">
+                            GTR has confirmed the identity of this individual and their
+                            participation in the course.
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <!-- Load jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Load jsPDF and html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#pdf_download').click(function (event) {
+                event.preventDefault();
+
+                var element = document.getElementById('Certificate');
+                var totalHeight = element.offsetHeight;
+                element.style.height = totalHeight + 'px';
+
+                var fullName = '@ViewBag.fullName';
+                var sanitizedFullName = fullName.replace(/\s+/g, '_');
+                var filename = "Certificate_Of_" + sanitizedFullName + ".pdf";
+
+                var opt = {
+                    margin: [65, 120, 65, 50], // Adjust the top margin to add space
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3 },
+                    jsPDF: { unit: 'pt', format: 'a4', orientation: 'landscape', compress: true }
+                };
+
+                setTimeout(function () {
+                    html2pdf().set(opt).from(element).save();
+                }, 1000);
+            });
+        });
+    </script>
+}
+

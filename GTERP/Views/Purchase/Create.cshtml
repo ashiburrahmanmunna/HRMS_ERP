@@ -1,0 +1,3733 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@Html.AntiForgeryToken()
+@model GTERP.Models.PurchaseMain
+
+<style>
+
+    /*Maintaining txtarea or text box height when cell is going to be edited by fahad*/
+    button, input, optgroup, select, textarea, text {
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        width: 100%;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    #myInput {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 80%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        /*font-size: 16px;
+        margin-bottom: 12px;*/
+    }
+
+    #myInputSearch {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+    .cards tbody tr {
+        float: left;
+        width: 15.3%; /*15.9rem;*/
+        margin: 0.5rem;
+        border: 0.0625rem solid rgba(0,0,0,.125);
+        border-radius: .25rem;
+        box-shadow: 0.25rem 0.25rem 0.5rem rgba(0,0,0,0.25);
+    }
+
+    .cards tbody td {
+        display: block;
+    }
+
+    /*.table tbody label {
+        display: none;
+    }*/
+
+    .cards tbody label {
+        display: inline;
+        position: relative;
+        font-size: 85%;
+        top: -0.5rem;
+        float: left;
+        color: #808080;
+        min-width: 4rem;
+        margin-left: 0;
+        margin-right: 1rem;
+        text-align: left;
+    }
+
+    tr.selected label {
+        color: #404040;
+    }
+
+    .table .fa {
+        font-size: 2.5rem;
+        text-align: center;
+    }
+
+    .cards .fa {
+        /*font-size: 7.5rem;*/
+        font-size: 1.5rem;
+    }
+
+    #tblproductsearch img {
+        height: 160px !important;
+    }
+
+    /*    #tblproductsearch .searchproductimage img:hover {
+        -moz-transform: scale(1.1) rotate(.01deg);
+        -webkit-transform: scale(1.1) rotate(.01deg);
+        transform: scale(1.1) rotate(.01deg);
+    }*/
+
+    table tr:hover {
+        cursor: pointer;
+    }
+    /* For all tables*/
+    table.sortable tr:hover {
+        cursor: pointer;
+    }
+
+    .input-validation-error {
+        border: 2px solid #f00;
+        background: #fee;
+    }
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+
+    /*
+    th {
+        font-size: 11px;
+    }
+
+    td {
+        font-size: 11px;
+    }*/
+
+
+    div.dataTables_length {
+        float: right;
+    }
+
+    div.dataTables_filter {
+        float: left;
+        /*font-size: 17px;*/
+    }
+
+
+    /*div.dataTables_info {
+            float: left;
+        }*/
+
+    div.dataTables_paginate {
+        float: right;
+    }
+
+    div.DTTT {
+        float: left;
+        margin-right: 50px;
+    }
+
+    div.buttons {
+        clear: both;
+    }
+
+    .fas, .far {
+        font-size: 10px !important;
+    }
+
+
+    table.dataTable tbody td, .sorting {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .sorting_asc {
+        color: green;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .sorting_desc {
+        color: #0932d1;
+        vertical-align: middle;
+        text-align: center;
+        font-style: oblique;
+    }
+
+    .table-sm th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    /* only for this one*/
+</style>
+
+
+
+
+
+@*<body class="bg-white">*@
+@*@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))*@
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div>
+        <div class="container-fluid">
+            <div class="card mb-2">
+                <div class="card-header  bg-success text-white">
+                    <h6 class="text-center">Purchase @ViewBag.Title</h6>
+                </div>
+
+
+                <div id="dialog" title="Basic dialog">
+                    <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+                </div>
+
+                @if (Model != null)
+                {
+
+                    <input type="hidden" id="PurchaseId" name="PurchaseId" value="@Model.PurchaseId" />
+                    <input type="hidden" id="PurchaseNo" name="PurchaseNo" value="@Model.PurchaseNo" />
+                    <input type="hidden" id="Chkper" name="Chkper" value="@Model.ChkPer" />
+                    @Html.HiddenFor(model => model.userid)
+                    @Html.HiddenFor(model => model.comid)
+                    @Html.HiddenFor(model => model.useridUpdate)
+                    @Html.HiddenFor(model => model.DateAdded)
+                    @Html.HiddenFor(model => model.DateUpdated)
+
+                }
+                else
+                {
+                    <input type="hidden" id="comid" name="comid" value="" />
+                }
+                <div class="card-body p-2">
+                    <div id="modalbodyfahad" class="row">
+
+                        <div class="col-md-9 mb-2">
+                            <form>
+                                <div class="card p-4">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2" id="divPurchaseDate">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PurchaseDate)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PurchaseDate, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PurchaseNo)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PurchaseNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Auto Generated", disabled = "disabled" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ReferenceNo)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.ReferenceNo, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PurchasePerson)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PurchasePerson, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2" id="divSupplier">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        Supplier
+                                                    </span>
+                                                </div>
+                                                @Html.DropDownList("Supplier", ViewBag.Supplier as List<SelectListItem>, new { id = "Supplier", @class = "form-control" })
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text bg-info">
+                                                        <button type="button" onclick="SupplierInfo()">Load</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12 d-none">
+                                            <div class="input-group mb-2" id="divSupplierName">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        Name
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.SupplierName, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.EmailId)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PhoneNo)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.City)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PostalCode)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                                                @*@Html.ValidationMessageFor(model => model.PostalCode, "", new { @class = "text-danger" })*@
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.PrimaryAddress)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.PrimaryAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.SecoundaryAddress)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.SecoundaryAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="card">
+                                <div id="testtarget">
+                                    <div class="card-header">
+                                        <h6 class="text-center">Total</h6>
+                                    </div>
+                                    <div class="row p-2 mb-1">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlCountQty)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlCountQty, new { @id = "ttlCountQty", name = "MainttlCountQty", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlSumQty)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlSumQty, new { name = "MainttlSumQty", @id = "ttlSumQty", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlUnitPrice)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlUnitPrice, new { name = "MainttlUnitPrice", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlIndVat)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlIndVat, new { name = "MainttlIndVat", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlIndDisAmt)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlIndDisAmt, new { name = "MainttlIndDisAmt", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlIndPrice)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlIndPrice, new { name = "MainttlIndPrice", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.ttlSumAmt)
+                                                    </span>
+                                                </div>
+                                                @Html.TextBoxFor(model => model.ttlSumAmt, new { name = "MainttlSumAmt", disabled = "disabled", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 order-md-1 mb-2">
+                    <div class="card p-4">
+
+                        <div class="table-responsive">
+                            <table id="tbl" class="table tbl display table-striped table-hover text-nowrap table-bordered" cellspacing="0" width="100%">
+
+
+                                <thead>
+                                    <tr>
+                                        <th>Category Id</th>
+                                        <th>Product Id</th>
+                                        <th>Barcode Id</th>
+                                        <th>Purchase Sub Id</th>
+                                        <th>Warehouse Id</th>
+                                        <th>Product</th>
+                                        <th>Barcode</th>
+                                        <th>Description</th>
+                                        <th>Store</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Ind. Vat Per.</th>
+                                        <th>Ind. Vat</th>
+                                        <th>Ind. Dis Per.</th>
+                                        <th>Ind Dis. Amt.</th>
+                                        <th>Ind. Price</th>
+                                        <th>Amount</th>
+                                        <th>Check Percentage</th>
+                                        <th>Size</th>
+                                        <th>Carton</th>
+                                        <th>PCTN</th>
+                                        <th></th>
+                                        <th>Check Box</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.PurchaseSubs)
+                                        {
+                                            <tr class="txtMult">
+
+                                                <td>
+                                                    @*class="d-none"*@
+                                                    @Html.DisplayTextFor(i => item.vProductName.CategoryId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ProductId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ProductId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PurchaseSubId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.WarehouseId)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.vProductName.ProductName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.vProductName.ProductBarcode)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.ProductDescription)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.vWarehouse.WhName)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Qty)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.UnitPrice)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.IndVatPer)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.IndVat)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.IndDisPer)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.IndDisAmt)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.IndPrice)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Amount)
+                                                </td>
+                                                <td>
+                                                    @*@if (item.IndChkPer == true)
+                                                        {
+
+                                                        }
+                                                        else
+                                                        {
+
+                                                        }*@
+                                                    @Html.DisplayTextFor(i => item.IndChkPer)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Size)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Carton)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PCTN)
+                                                </td>
+
+                                                <td>
+                                                    <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" class="clickchk" onchange="cbChange(this)">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+
+
+
+                                        @*<td colspan="5"></td>*@
+
+                                        <td class="text-right" colspan="5">
+                                            <h4>Total : </h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalqty">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalunitprice">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalindvatper">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalindvat">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalinddisper">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalinddisamt">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalindprice">0.00</h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="subtotalamount">0.00</h4>
+                                        </td>
+                                        <td colspan="1">   </td>
+
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+                        </div>
+                        <br />
+
+                    </div>
+
+                </div>
+            </div>  @*Datatable Initializer*@
+
+            <div class="row">
+                <div class="col order-md-1 mb-2">
+                    <div class="card p-2">
+                        <div class="mb-2">
+                            <input type="text" id="myInputSearch" class="form-control" onmouseover="this.focus();" placeholder="Search for Serial.." title="Type in a name">
+                        </div>
+
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblproductserialadd" class="table tbl display table-striped table-hover no-footer text-center" cellspacing="0" width="100%">
+
+                                <thead>
+                                    <tr>
+                                        <th>PurchaseId</th>
+                                        <th>PurchaseSubId</th>
+                                        <th>ProductId</th>
+                                        <th>SerialId</th>
+                                        <th>SerialNO/IMEI</th>
+                                        <th>Remarks</th>
+                                        <th>Quantity</th>
+                                        <th>UnitPrice</th>
+                                        <th>Amount</th>
+                                        <th>Warrenty</th>
+                                        <th>Action</th>
+
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.PurchaseSubs)
+                                        {
+                                            foreach (var itemSerial in item.ProductSerials)
+                                            {
+                                                <tr class="txtMultserial">
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.PurchaseId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.PurchaseSubId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.ProductId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.ProductSerialId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.ProductSerialNo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.Remarks)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.Qty)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.UnitPrice)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.Amount)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => itemSerial.WarrentyId)
+                                                    </td>
+                                                    <td>
+                                                        <a class="dlttrashserial" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+
+                                        <td class="text-right" colspan="2">
+                                            <h4>Total : </h4>
+                                        </td>
+                                        <td colspan="1">
+                                            <h4 class="serialaddsubtotalqty">0.00</h4>
+                                        </td>
+                                        <td></td>
+
+                                        <td colspan="1">
+                                            <h4 class="serialaddsubtotalunitprice">0.00</h4>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 col-12 mb-2">
+                                <button type="button" onclick="AddSerial()" class="btn btn-success btn-block rounded-0">Add</button>
+                            </div>
+                            <div class="col-md-6 col-12 mb-2">
+                                <button type="button" onclick="ShowAll()" class="btn btn-info btn-block rounded-0">Show All</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>  @*Datatable Initializer tblproductserialadd*@
+
+            <div class="row">
+                <div class="col order-md-1 mb-2">
+                    <div class="card p-2">
+                        <div class="input-group input-group-lg mb-2">
+                            <div class="input-group-prepend">
+                                <button id="btToggleDisplay" class="btn btn-primary">
+                                    <i class="fa fa-table fa-lg" aria-hidden="true"></i> <i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i> <i class="fa fa-id-card-o fa-lg" aria-hidden="true"></i>
+                                </button>
+                            </div>
+
+                            <input type="text" id="myInput" class="form-control" onkeyup="myFunction()" onmouseover="this.focus();" placeholder="Search for names.." title="Type in a name">
+
+                        </div>
+                        <div class="table-responsive">
+                            <table id="tblproductsearch" class="tbl display table-striped table-hover no-footer text-center" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>ProductImage</th>
+                                        <th>CategoryId</th>
+                                        <th>ProductId</th>
+                                        <th>Product</th>
+                                        <th>Barcode</th>
+                                        <th>SerialNO/IMEI</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var item in ViewBag.ProductSearch)
+
+
+                                    {
+                                        <tr>
+                                            <td id="uploadPhoto" class="">
+
+                                                @if (@item.ProductImage == null)
+                                                {
+                                                    <img src="@Url.Content("uploads/" + 0 + ".png")" class="img-thumbnail mx-auto d-block" multiple />
+                                                }
+                                                else
+                                                {
+                                                    <img src="data:image/jpeg;base64,@(Convert.ToBase64String(@item.ProductImage))" class="img-thumbnail mx-auto d-block">
+
+                                                }
+                                            </td>
+                                            <td>
+                                                @item.CategoryId
+                                            </td>
+                                            <td>
+                                                @item.ProductId
+                                            </td>
+                                            <td>
+                                                @* <label>Name:</label>*@
+
+                                                @item.ProductName
+                                            </td>
+
+                                            <td>
+                                                @item.ProductBarcode
+                                            </td>
+                                            <td>
+                                                <span>=N/A=</span>
+                                                @*@foreach (var itemserial in ViewBag.ProductSerialSearch)
+                                                    {
+                                                        if (@item.ProductId == @itemserial.ProductId)
+                                                        {
+                                                            @itemserial.ProductSerialNo
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>=N/A=</span>
+                                                        }
+
+                                                    }*@
+
+                                            </td>
+                                            <td>
+                                                <a class="btnaddtocart" data-itemId="0" href="#"><i class="fa fa-plus"></i></a>
+                                            </td>
+
+                                        </tr>
+                                    }
+
+
+                                </tbody>
+
+
+                            </table>
+                        </div>
+                        <br />
+
+                    </div>
+
+                </div>
+            </div>  @*Datatable Initialize tblproductsearch*@
+
+            <difv class="row">
+
+                <div class="col-md-9 order-md-1 mb-2">
+                    <div class="card p-4">
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divType">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Type
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("PurchaseType", ViewBag.PurchaseType as List<SelectListItem>, new { id = "PurchaseType", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divCategory">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Category
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("Category", ViewBag.Category as List<SelectListItem>, new { id = "Category", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 d-none">
+                                <div class="input-group mb-2" id="divProduct">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Product
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("Product", ViewBag.Product as List<SelectListItem>, new { id = "Product", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 d-none">
+                                <div class="input-group mb-2" id="divBarcode">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Barcode
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("Barcode", ViewBag.Barcode as List<SelectListItem>, new { id = "Barcode", @class = "form-control form-control-sm" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divStore">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Store
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("Warehouse", null, htmlAttributes: new { @class = "form-control custom-select", @id = "Warehouse" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divPrdDesc">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Description
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("ProductDescription", "=N/A=", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2" id="divQty">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Qty
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("Qty", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divUnitPrice">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Purchase Price
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("UnitPrice", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button type="button" onclick="Add()" class="btn btn-success mb-2 btn-block rounded-0">Add</button>
+
+                                @*<button type="button" onclick="DeleteRow()" class="btn btn-success mb-2 btn-block" id="btnDelete" value="Delete"/>*@
+
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divIndVatPer">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Individual Vat Per.
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("IndVatPercentage", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divIndVat">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Individual Vat
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("IndVat", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-12">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="custom-control custom-radio">
+                                            <input id="percentage" name="paymentMethod" type="radio" class="custom-control-input" value="percentage" checked required>
+                                            <label class="custom-control-label" for="percentage">%</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="custom-control custom-radio">
+                                            <input id="amount" name="paymentMethod" type="radio" class="custom-control-input" value="amount" required>
+                                            <label class="custom-control-label" for="amount">Amount</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2" id="divIndDisPer">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Ind. Dis %
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("IndDisPer", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 col-12">
+                                <div class="input-group mb-2" id="divIndDisamt">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Ind Dis Amt.
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("IndDisAmt", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divIndPrice">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Ind Price
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("IndPrice", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divCurrency">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.CountryId)
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("Country", null, htmlAttributes: new { @class = "form-control custom-select", @id = "CountryId" })
+                                    @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divCurrencyRate">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.CurrencyRate)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.CurrencyRate, new { @class = "form-control", @name = "maincurrencyrate" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divNetAmountBDT">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.NetAmountBDT)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.NetAmountBDT, new { @class = "form-control", @name = "mainnetamountbdt" })
+                                    @*  @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })*@
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="col-md-3 order-md-2 mb-2">
+                    <div class="card p-2 my-1">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="row">
+                                    <div class="col-md-2 col-12">
+                                        <div class="custom-control custom-radio">
+                                            <input id="totalpercentage" name="totalpaymentMethod" type="radio" class="custom-control-input" value="totalpercentage" checked required>
+                                            <label class="custom-control-label" for="totalpercentage">%</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"></span>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.DisPer, new { @class = "form-control", id = "maindisper" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <div class="custom-control custom-radio">
+                                            <input id="totalamount" name="totalpaymentMethod" type="radio" class="custom-control-input" value="totalamount" required>
+                                            <label class="custom-control-label" for="totalamount">Amount</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-12">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.DisAmt)
+                                                </span>
+                                            </div>
+                                            @Html.TextBoxFor(model => model.DisAmt, new { @class = "form-control", id = "maindisamt" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.ServiceCharge)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.ServiceCharge, new { @class = "form-control number", id = "mainservicecharge" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.TotalVat)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.TotalVat, new { @class = "form-control", id = "mainvat" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.NetAmount)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.NetAmount, new { @class = "form-control", id = "mainnetamount" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.PaidAmt)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.PaidAmt, new { @class = "form-control", id = "mainpaidamount" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group input-group-sm mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.DueAmt)
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.DueAmt, new { @class = "form-control", id = "maindueamount" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        @if (ViewBag.Title == "Entry")
+                                        {
+                                            <button class="btn btn-primary btn-block rounded-0 btn-sm" type="button" onclick="Purchase_save()">checkout</button>
+                                        }
+                                        else if (ViewBag.Title == "Edit")
+                                        {
+                                            <button class="btn btn-warning rounded-0 btn-block btn-sm" type="button" onclick="Purchase_save()">Update</button>
+                                        }
+                                        else if (ViewBag.Title == "Delete")
+                                        {
+                                            <button class="btn btn-danger rounded-0 btn-block btn-sm" type="button" onclick="Purchase_delete()">Delete</button>
+                                        }
+
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        @Html.ActionLink("Back", "Index", "Purchase", null, new { @class = "btn btn-info btn-block rounded-0 btn-sm", @id = "btnBack" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </difv>
+
+            <div class="row mb-2">
+                <div class="col-md-12 order-md-1">
+                    <div class="card p-4">
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblterms" class="table tblterms display table-striped table-hover" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Purchase Id</th>
+                                        <th>Terms</th>
+                                        <th>Description</th>
+                                        <th>Row No</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.PurchaseTermsSubs)
+                                        {
+                                            <tr class="txtMultTerms">
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PurchaseId)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Terms)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Description)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.RowNo)
+                                                </td>
+                                                <td>
+                                                    <a class="dlttrashterms" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+
+
+                            </table>
+                        </div>
+
+                        <div class="row my-2">
+                            <div class="col-md-10 col-12">
+                                <div class="input-group mb-2" id="divPurchaseTerms">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Terms & Condition
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("PurchaseTerms", ViewBag.PurchaseTerms as List<SelectListItem>, new { id = "PurchaseTerms", @class = "form-control form-control-sm" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button type="button" onclick="TermsLoad()" class="btn btn-success btn-block rounded-0">Load</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>  @*Terms and Condition Initializer*@
+
+
+            <div class="row">
+                <div class="col-md-12 order-md-1">
+                    <div class="card p-4">
+                        <div class="table-responsive text-nowrap">
+                            <table id="tblpayments" class="table tblpayments display table-striped table-hover" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+
+                                        <th>Sales Payment Id</th>
+                                        <th>Payment Type Id</th>
+                                        <th>Payment Type</th>
+                                        <th>AccId</th>
+                                        <th>Accounts Head</th>
+                                        <th>Amount</th>
+                                        <th>Card No</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model.PurchasePaymentSubs)
+                                        {
+                                            <tr class="txtMultPayments">
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PurchasePaymentSubId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PaymentTypeId)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.vPaymentType.TypeShortName)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.AccId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.vChartofAccounts.AccName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.Amount)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayTextFor(i => item.PaymentCardNo)
+                                                </td>
+                                                <td>
+                                                    <a class="dlttrashpayments" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+
+
+                            </table>
+                        </div>
+
+                        <div class="row my-2">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divSalesPayments">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Payment Type
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("PaymentTypes", ViewBag.PaymentTypes as List<SelectListItem>, new { id = "PaymentTypes", @class = "form-control form-control-sm" })
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2" id="divSalesPayments">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Referance
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccountHead", ViewBag.AccountHead as List<SelectListItem>, new { id = "AccountHead", @class = "form-control form-control-sm" })
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12">
+                                <div class="input-group mb-2" id="divPaymentAmount">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Amount
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("PaymentAmount", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-12">
+                                <div class="input-group mb-2" id="divPaymentCardNo">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Card No
+                                        </span>
+                                    </div>
+                                    @Html.TextBox("PaymentCardNo", "0", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button type="button" onclick="AddPayments()" class="btn btn-success btn-block rounded-0">Add</button>
+                                @*<button type="button" onclick="DeleteRow()" class="btn btn-success mb-2 btn-block" id="btnDelete" value="Delete"/>*@
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div> @*customer payment grid and datatable Initializer*@
+
+
+        </div>
+
+    </div>
+}
+
+@section Scripts{
+    <script type="text/javascript">
+
+        var isBarcodeSearch = '@HttpContextAccessor.HttpContext.Session.GetString("isBarcodeSearch")'.toLowerCase() == 'true';
+        var isProductSearch = '@HttpContextAccessor.HttpContext.Session.GetString("isProductSearch")'.toLowerCase() == 'true' ;
+        var isIMEISearch = '@HttpContextAccessor.HttpContext.Session.GetString("isIMEISearch")'.toLowerCase() == 'true' ;
+
+        $('#myInput').attr('autocomplete', 'off');
+        $('#myInputSearch').attr('autocomplete', 'off');
+        $("#dialog").hide();
+
+        var tblpurchasesub; //= $('#tbl').DataTable();
+        var tblproductsearch;
+        var tblproductserialadd;
+        var productid;
+        var productdescription;
+        var warehouseid;
+        var SerialUnitPrice;
+
+
+
+    $('#myform').submit(function () {
+        $('select').removeAttr('disabled');
+        //alert('ok');
+    });
+
+
+        tblproductserialadd = $('#tblproductserialadd').DataTable({
+            dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+            //dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"><"col-sm-4"p>>',
+            "aoColumns": [
+                { "sClass": "addpurchaseid", "visible": false },
+                { "sClass": "addpurchasesubid", "visible": false },
+                { "sClass": "addproductid", "visible": false },
+                { "sClass": "addproductserialid", "visible": false },
+                { "sClass": "addproductserialserial", "visible": true },
+                { "sClass": "addproductremarksline", "visible": true },
+                { "sClass": "addproductqty", "visible": true },
+                { "sClass": "addproductprice", "visible": true },
+                { "sClass": "addproductamount", "visible": true },
+                { "sClass": "addproductwarrentyid", "visible": true },
+                null
+            ],
+            "paging": true,
+            // "ordering": true,
+            "searching": false,
+            "info": true,
+            "iDisplayLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "language": {
+                sLengthMenu: "_MENU_",
+
+            },
+            //"oLanguage": { "sZeroRecords": "", "sEmptyTable": "" },
+            rowCallback: function (row) {
+                $(row).addClass('txtMultserial');
+            },
+
+        });
+
+
+
+        // here i have used datatables.js (jQuery Data Table)
+        tblpurchasesub = $('#tbl').dataTable({
+            "aoColumns": [
+                { "name": "categoryid", "sClass": "categoryid", "visible": false, "targets": 1 },
+                { "name": "productid", "sClass": "productid", "visible": false },
+                { "name": "barcodeid", "sClass": "barcodeid", "visible": false },
+                { "name": "purchasesubid", "sClass": "purchasesubid", "visible": false },
+                { "name": "warehouseid", "sClass": "warehouseid", "visible": false },  ////5
+                { "name": "productname", "sClass": "productname", "visible": true },
+                { "name": "barcode", "sClass": "barcode", "visible": isBarcodeSearch },////////   6
+                { "name": "description", "sClass": "description", "visible": true },/////  7
+                //{ "name": "serialimei", "sClass": "serialimei", "visible": isIMEISearch },/////   8
+                { "name": "store", "sClass": "store", "visible": true },   ////      9
+                { "name": "quantity", "sClass": "quantity", "visible": true }, ////      10
+                { "name": "indunitprice", "sClass": "indunitprice", "visible": true }, ///  11
+                { "name": "indvatper", "sClass": "indvatper", "visible": true }, ///  12
+                { "name": "indvat", "sClass": "indvat", "visible": true },    ////    13
+                { "name": "inddisper", "sClass": "inddisper", "visible": true }, //////  14
+                { "name": "inddisamt", "sClass": "inddisamt", "visible": true }, //////  15
+                { "name": "indprice", "sClass": "indprice", "visible": true }, ///////  16
+                { "name": "amount", "sClass": "amount", "visible": true }, //////////  17
+                { "name": "indchkper", "sClass": "indchkper", "visible": false }, //////////  18
+                { "name": "size", "sClass": "size", "visible": false }, //////////  19
+                { "name": "carton", "sClass": "carton", "visible": false }, //////////  20
+                { "name": "pctn", "sClass": "pctn", "visible": false }, //////////  21
+                null,
+                null
+            ],
+            "dom": 'T<"clear">lfrtip',
+
+            "tableTools": {
+                "sRowSelector": "td:not(:first-child)"
+            },
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+
+
+            "bLengthChange": true,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": false,
+            "paging": false,
+            "language": {
+                sLengthMenu: " _MENU_",
+            },
+            //"retrieve": true,
+            rowCallback: function (row) {
+                $(row).addClass('txtMult');
+            }
+        });
+
+        function cbChange(obj) {
+            var cbs = document.getElementsByClassName("clickchk");
+            for (var i = 0; i < cbs.length; i++) {
+                cbs[i].checked = false;
+            }
+            obj.checked = true;
+
+
+            var data = null;
+
+            if (obj.checked == true) {
+
+                var table = $('#tbl').DataTable();
+                data = table.row($('input[type=checkbox]:checked').parents('tr')).data();
+                productid = data[2];
+                productdescription = data[7];
+                warehouseid = data[3];
+                SerialUnitPrice = data[10];
+                //alert(productid);
+
+
+                //tblproductserialadd.columns(2).search(productid).draw();
+                tblproductserialadd.columns(2).search("^" + productid + "$", true, false).draw();
+
+
+                /////need to code here
+                //$('#tblproductserialadd tbody tr').each(function () {
+
+                //    //alert($.trim($(this).find('.addproductid').text()));
+                //    //alert(productid);
+                //    var x = tblproductserialadd.row(this).data()[2];
+                //    alert(x);
+
+
+                //    if ($.trim($(this).find('.addproductid').text()) == productid) { // if V is selected, hide
+                //        $(this).show();
+                //    }
+                //    else {
+                //        $(this).hide();
+                //    }
+                //});
+            }
+            else {
+            }
+            serialQty();
+
+        }
+
+
+        function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+
+            console.log("The new value for the cell is: " + updatedCell.data());
+            console.log("The old value for that cell was: " + oldValue);
+            console.log("The values for each cell in that row are: " + updatedRow.data());
+            console.log("The values One cell in that row are: " + updatedRow.data()[10]);
+            console.log("The values One cell in that row are: " + updatedRow.data()[11]);
+
+
+            var quantity = updatedRow.data()[11];
+            var unitprice = updatedRow.data()[12];
+
+            $(document).ready(function () {
+                $(".txtMult").keyup(multInputs);
+
+
+                $(".input").focus(function () {
+                    $(this).parent().addClass("focus");
+                })
+
+            });
+
+
+        }
+
+        var tableedit = $('#tbl').DataTable();
+        tableedit.MakeCellsEditable({
+            "onUpdate": myCallbackFunction,
+            "inputCss": 'my-input-class',
+            "columns": [7, 9,10,12, 15, 16],
+            "allowNulls": {
+                "columns": [7,9,10,12, 15, 16],
+                "errorClass": 'error'
+            },
+            "inputTypes": [
+                {
+                    "column": 7,
+                    "type": "text",
+                    "options": null
+                },
+                {
+                    "column": 9,
+                    "type": "text",
+                    "options": null
+                },
+                {
+                    "column": 10,
+                    "type": "text",
+                    "options": null
+                },
+                {
+                    "column": 12,
+                    "type": "int",
+                    "options": null
+                },
+                {
+                    "column": 13,
+                    "type": "int",
+                    "options": null
+                },
+                {
+                    "column": 15,
+                    "type": "int",
+                    "options": null
+                },
+                {
+                    "column": 16,
+                    "type": "int",
+                    "options": null
+                }
+            ]
+        });
+        tableedit.draw(true);
+
+
+
+
+        function AddSerial() {
+
+            var check = $('#tbl').find('input[type=checkbox]:checked').length;
+            var Qty = $('#tbl').find('input[type=checkbox]:checked').length;
+            if (check > 0) {
+
+            }
+            else {
+                alert("At least One Row Should Be Selected");
+                e.preventDefault();
+            }
+
+            var newserial = $('#myInputSearch').val() || '=N/A=';
+            //alert(productid);
+            var SerialRemarks = '=N/A=';
+            var SerialQty = '1';
+            var SerialAmount = parseFloat(SerialQty) * parseFloat(SerialUnitPrice);
+            var WarrentyId = '0'
+
+
+
+            $('#tblproductserialadd').dataTable().fnAddData([0, 0, productid, null, newserial, SerialRemarks, SerialQty, SerialUnitPrice, SerialAmount, WarrentyId, '<a data-itemId="0" href="#" class="dlttrashserial deleteItem"> <i class="fa fa-trash"></i></a>']);
+
+            $('#myInputSearch').val();
+            serialQty();
+            //alert('addSerial');
+        }
+
+        function ShowAll() {
+            var cbs = document.getElementsByClassName("clickchk");
+            for (var i = 0; i < cbs.length; i++) {
+                cbs[i].checked = false;
+            }
+            tblproductserialadd.columns(2).search("").draw();
+
+
+
+            //$('#tblproductserialadd tbody tr').each(function () {
+
+            //    $(this).show();
+
+            //});
+
+        }
+
+
+        $(window).bind('keydown', function (event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
+                        //alert('ctrl-s');
+                        Purchase_save();
+                        break;
+                    case 'd':
+                        event.preventDefault();
+                        //alert('ctrl-s');
+                        Purchase_delete();
+                        break;
+                    case 'n':
+                        event.preventDefault();
+                        //alert('ctrl-n');
+                         window.location.href = '@Url.Action("Create", "Purchase")';
+                        break;
+                    case 'r':
+                        event.preventDefault();
+                        //alert('ctrl-r');
+                            window.location.href = '@Url.Action("Create", "Purchase")';
+                        break;
+                    case 'b':
+                        event.preventDefault();
+                        //alert('ctrl-b');
+                         window.location.href = '@Url.Action("Index", "Purchase")';
+                        //$('#btnBack').click(function () {
+                        //    ///Code
+                        //});
+                    break;
+                }
+            }
+        });
+
+
+        $('#myInput').focus();
+
+
+
+        tblproductsearch = $('#tblproductsearch').DataTable({
+            @*"ajax": {
+                url: '@Url.Action("tblproductsearch", "Purchase")',
+                "type": "post",
+                "datatype":"json"
+            },*@
+            "aoColumns": [
+                { "sClass": "searchproductimage", "visible": true },
+                { "sClass": "searchcategoryid", "visible": false },
+                { "sClass": "searchproductid", "visible": false },
+                { "sClass": "searchproductname", "visible": true },
+                { "sClass": "searchproductbarcode", "visible": true },
+                { "sClass": "searchproductserial", "visible": true },
+                null
+
+
+            ],
+            columns: [
+                {   /* created column to show a picture just to make this demo look better */
+                    orderable: false, data: 'Photo', name: 'Photo', orderable: false, defaultContent: '', title: 'Photo',
+                    visible: true, className: 'text-center', width: '20px',
+
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        var $ctl = $('<i class="fa fa-user fa-fw"></i>').css('color', colors[Math.round(Math.random() * colors.length) + 1])
+                        $(td).append($ctl);
+                    }
+                },
+                /* I added a label to the column for the field name which will show up in the card display */
+                {
+                    data: "searchcategoryid", name: "searchcategoryid", title: "CategoryId", visible: true,
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                },
+                {
+                    data: "searchproductid", name: "searchproductid", title: "ProductId", visible: true,
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                },
+                {
+                    data: "searchproductname", name: "searchproductname", title: "Product", visible: true, class: 'text-right',
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                },
+                {
+                    data: "searchproductbarcode", name: "searchproductbarcode", title: "Barcode", visible: true, class: 'text-right',
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                },
+                {
+                    data: "searchproductserial", name: "searchproductserial", title: "Seria No", visible: true, class: 'text-right',
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                },
+                {
+                    data: "searchproductaddcart", name: "searchproductaddcart", title: "Add to Cart", visible: true, class: 'text-right',
+                    render: function (data, type, full, meta) { var title = $('#tblproductsearch').DataTable().column(meta.col).header(); return '<label>' + $(title).html() + ':</label>' + data; }
+                }
+            ],
+            "paging": true,
+            "ordering": true,
+            "searching": true,
+            "language": {
+                sLengthMenu: " _MENU_",
+            },
+            //"info": true,
+            dom: '<"float-left">rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>'
+        });
+
+
+
+
+
+
+        function myFunction() {
+
+            ///var oTable = $('#tblproductsearch').DataTable();   //pay attention to capital D, which is mandatory to retrieve "api" datatables' object, as //Lionel said
+            $('#myInput').keyup(function(){
+                tblproductsearch.search($(this).val()).draw() ;
+
+            })
+
+
+        }
+
+
+
+
+
+        $(document).ready(function () {
+
+
+            $("#tblproductsearch").toggleClass('cards');
+            $("#tblproductsearch thead").toggle();
+
+
+            $('#btToggleDisplay').on('click', function () {
+                event.preventDefault();
+                $("#tblproductsearch").toggleClass('cards');
+                $("#tblproductsearch thead").toggle();
+                //e.preventDefault();
+
+            })
+
+
+
+
+
+            $('#tblproductsearch tbody').on('click', 'tr', function () {
+
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    //alert('working');
+                }
+                else {
+                    tblproductsearch.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+
+
+            $('#myInputSearch').on('keypress', function (e) {
+
+                var code = e.keyCode || e.which;
+                if (code == 13) {
+
+                    //alert('working');
+                    var totaltextlength = $('#myInputSearch').val().length;
+
+
+                    //tblproductserialadd.$('tr.selected').removeClass('selected');
+
+                    if (totaltextlength > 3) {
+
+
+                        AddSerial();
+                        $('#myInputSearch').val('');
+
+                    }
+                    else {
+
+                    };
+
+
+
+
+                    e.preventDefault();
+
+                }
+            });
+
+
+            $('#myInput').on('keypress', function (e) {
+                var code = e.keyCode || e.which;
+                if (code == 13) {
+
+                    var totalvisibleRows = $('#tblproductsearch tbody tr:visible').length;
+                    tblproductsearch.$('tr.selected').removeClass('selected');
+                    if (totalvisibleRows == 1) {
+
+                        $.each($('#tblproductsearch tr'), function () { //Loop through rows
+
+                            //$("#Product").val()
+
+                            if ($(this).children('td:visible').length > 1) { //If this row has more than one visible column
+                                $(this).addClass('selected');
+
+
+
+                                //var x = $.trim($(this).find(".searchproductid").text());
+                                //var y = $.trim($(this).find(".searchcategoryid").text());
+
+                                var y = tblproductsearch.row(this).data()[1];
+                                var x = tblproductsearch.row(this).data()[2];
+                                //var z = tblproductserialadd.row(this).data()[1];
+                                //alert(z);
+                                //$(document).ready(function () {
+
+                                //});
+
+
+                                // Handler for .ready() called.
+                                $('#Category').val(y);
+                                //$('#Category').change();
+                                $('#Product').val(x);//.change();
+
+
+                                    //$('#Product').change();
+                                   // Add();
+
+
+                                //alert($('#Category').val());
+                                //alert($('#Product').val());
+
+
+                                //e.preventDefault();
+                                $.when(ProductInfo()).then(BarcodeSearch()).then(Add());
+                                ///$('#ProductSerial').val(z);//.change();
+
+                                //alert($('#ProductSerial').val());
+                                $('#myInput').val('');
+
+
+                            }
+
+                        })
+                    }
+                    else {
+
+                    };
+
+
+
+
+                    e.preventDefault();
+
+
+                }
+            });
+
+
+
+
+            //$('#button').click(function () {
+            //    table.row('.selected').remove().draw(false);
+            //});
+        });
+
+
+
+
+        ///alert($("#PurchaseId").val());
+        if ($("#PurchaseId").val() > 0) {
+
+        }
+        else {
+            CurrentDate();
+
+            SupplierInfo();
+
+
+
+        }
+
+
+
+      function SupplierInfo() {
+        var MyAppUrlSettings = {
+            MyUsefulUrl : '@Url.Action("SupplierInfo", "Purchase")'
+        }
+          //alert('test');
+        $.ajax({
+            type: 'POST',
+             url: MyAppUrlSettings.MyUsefulUrl,
+            dataType: 'json',
+            data: { id: $("#Supplier").val()}, //, saleid: $("#PurchaseId").val()
+            success: function (Supplierss) {
+                //alert('working');
+
+                $("#SupplierName").val(Supplierss.SupplierName).show();
+
+                //alert($("#Supplier").val());
+                //alert($('#Supplier option:selected').text());
+
+
+                if ($('#Supplier option:selected').text() == "Walk in Supplier")
+                {
+                    $('#divSupplierName').show();
+                    $("#SupplierName").val("").show();
+                    $("#PrimaryAddress").attr('disabled', false);
+                    $("#SecoundaryAddress").attr('disabled', false);
+                    $("#PhoneNo").attr('disabled', false);
+                    $("#City").attr('disabled', false);
+                    $("#PostalCode").attr('disabled', false);
+                    $("#EmailId").attr('disabled', false);
+
+
+                }
+                else {
+                    $('#divSupplierName').hide();
+                    $("#PrimaryAddress").attr('disabled', true);
+                    $("#SecoundaryAddress").attr('disabled', true);
+                    $("#PhoneNo").attr('disabled', true);
+                    $("#City").attr('disabled', true);
+                    $("#PostalCode").attr('disabled', true);
+                    $("#EmailId").attr('disabled', true);
+
+                }
+                $("#EmailId").val(Supplierss.EmailId).show();
+                $("#PrimaryAddress").val(Supplierss.PrimaryAddress).show();
+                $("#SecoundaryAddress").val(Supplierss.SecoundaryAddress).show();
+                $("#PhoneNo").val(Supplierss.PhoneNo).show();
+
+
+                $("#City").val(Supplierss.City).show();
+                $("#PostalCode").val(Supplierss.PostalCode).show();
+                $("#ReferenceNo").val("=N/A=").show();
+                $("#PurchasePerson").val("=N/A=").show();
+
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+          });
+        return false;
+        };
+
+
+
+        function BarcodeSearch() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getBarcode", "Purchase")',
+                dataType: 'json',
+                async: false,
+                data: { id: $("#Product").val() },
+                success: function (data) {
+                    var s = '';
+                    //'<option value="0">=N/A=</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $("#Barcode").html(s);
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+        return false;
+        };
+
+
+
+
+
+
+        function ProductSearch() {
+
+        //alert('prdsearch');
+        $("#Product").empty();
+        $("#ProductDescription").val("=N/A=");
+        $("#UnitPrice").val(0);
+        $("#Qty").val(1);
+        $("#IndVat").val(0);
+        $("#IndDisPer").val(0);
+        $("#IndDisAmt").val(0);
+        $("#IndPrice").val(0);
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getProduct", "Purchase")',
+                dataType: 'json',
+                async: false,
+                data: { id: $("#Category").val() },
+                success: function (data) {
+                    var s = '';//'<option value="-1">Please Select Product</option>';
+                    //$.each(data, function (i, data) {
+                    //    $("#Product").append('<option value="'+ data.Value + '">'
+                    //        + data.Text + '</option>');
+                    //});
+                    for (var i = 0; i < data.length; i++) {
+                        s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $("#Product").html(s);
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+            return false;
+        };
+
+
+       function AccountSearch() {
+
+        //alert('prdsearch');
+             $("#AccountHead").empty();
+        //$("#ProductDescription").val("=N/A=");
+        //$("#UnitPrice").val(0);
+        //$("#Qty").val(1);
+             var paymenttypesname = $('#PaymentTypes option:selected').text();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getAccountHead", "Sales")',
+                dataType: 'json',
+                async: false,
+                data: { id: paymenttypesname }, //$("#PaymentTypes").val()
+                success: function (data) {
+                    var s = '';//'<option value="-1">Please Select Product</option>';
+                    //$.each(data, function (i, data) {
+                    //    $("#Product").append('<option value="'+ data.Value + '">'
+                    //        + data.Text + '</option>');
+                    //});
+                    for (var i = 0; i < data.length; i++) {
+                        s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $("#AccountHead").html(s);
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+            return false;
+        };
+
+
+        function BarcodeInfo() {
+
+        var MyAppUrlSettings = {
+            MyUsefulUrl : '@Url.Action("BarcodeInfo", "Purchase")'
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: MyAppUrlSettings.MyUsefulUrl,
+            dataType: 'json',
+            async: false,
+            data: { id: $("#Product").val() },
+            success: function (Barcodes) {
+                //alert('working');
+                $("#Barcode").val(Barcodes.ProductId).show();
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+        });
+        return false;
+    };
+
+
+    function ProductInfo() {
+
+        var MyAppUrlSettings = {
+            MyUsefulUrl : '@Url.Action("ProductInfo", "Purchase")'
+        }
+
+        $.ajax({
+            type: 'POST',
+             url: MyAppUrlSettings.MyUsefulUrl,
+            dataType: 'json',
+            async: false,
+            data: { id: $("#Product").val() },
+            //headers: {
+            //    "__RequestVerificationToken": formForgeryToken
+            //},
+            success: function (Productss) {
+                //alert('working');
+
+
+                $("#Qty").val(1).show();
+                $("#ProductDescription").val("=N/A=").show();
+
+                $("#UnitPrice").val(Productss.CostPrice).show();
+                //$("#Barcode").$(this).val().show();
+                //$("#IndVat").text(Productss.ProductBarcode).show();
+                $("#Barcode").val(Productss.ProductId).show(); //need when necessary -fahad plz dont delete
+                //$("#Barcode").text(Productss.ProductBarcode).show();
+                $("#IndDisPer").val(Productss.vatPercentage).show();
+                $("#IndDisAmt").val(0);
+
+                $("#IndVatPercentage").val(Productss.vatPercentage);
+                $("#IndVat").val(Productss.vatAmount).show();
+
+                ////need calculatin here.
+                $("#IndPrice").val(0);
+
+
+                singleInputs();
+
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+        });
+        return false;
+    };
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            $("#PurchaseDate").val(val);
+
+        }
+        function radiobutton() {
+            $("input[type='radio']").click(function () {
+
+                var radioValue = $("input[name='paymentMethod']:checked").val();
+
+                //alert(radioValue);
+
+                if (radioValue == "percentage") {
+
+                    //alert('percentage');
+                    $("#IndDisPer").prop("readonly", false);
+                    $("#IndDisAmt").prop("readonly", true);
+                    $("#IndDisPer").val(0);
+                    $("#IndChkPer").val(true);
+
+                }
+                else if (radioValue == "amount") {
+
+                    $("#IndDisPer").prop("readonly", true);
+                    $("#IndDisAmt").prop("readonly", false);
+                    $("#IndDisPer").val(0);
+                    $("#IndChkPer").val(false);
+                }
+
+            });
+
+        }
+
+        function radiobuttontotal() {
+            $("input[type='radio']").click(function () {
+
+                var radioValue = $("input[name='totalpaymentMethod']:checked").val();
+
+                //alert(radioValue);
+
+                if (radioValue == "totalpercentage") {
+
+                    //alert('percentage');
+                    $("#maindisper").prop("readonly", false);
+                    $("#maindisamt").prop("readonly", true);
+                    $("#maindisper").val(0);
+                    $("#ChkPer").val(true);
+
+
+
+                }
+                else if (radioValue == "totalamount") {
+
+                    $("#maindisper").prop("readonly", true);
+                    $("#maindisamt").prop("readonly", false);
+                    $("#maindisper").val(0);
+                    $("#ChkPer").val(false);
+                }
+
+            });
+
+        }
+
+
+
+        $(document).ready(function () {
+
+        @*var ControllerAction = '@ViewBag.Title';
+        alert(val);*@
+
+            $('input.number').keyup(function (event) {
+
+                // skip for arrow keys
+                if (event.which >= 37 && event.which <= 40) return;
+
+                // format number
+                $(this).val(function (index, value) {
+                    return value
+                        .replace(/\D/g, "")
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        ;
+                });
+            });
+            //$('#mainservicecharge').html(Number(price1).toLocaleString('en'));
+
+
+
+            $('#Product').select2();
+            $('#Category').select2();
+            $('#Warehouse').select2();
+            $("#Supplier").select2();
+            $("#Barcode").select2();
+            //$('#Barcode').append('<option value="" disabled selected>Please Select</option>');
+
+            $("#Country").select2();
+            $("#PaymentTypes").select2();
+            $("#AccountHead").select2();
+
+            //alert($('h2').text());
+            if ($('h2').text() == "Purchase Entry") {
+                //alert('enter');
+                $("#CurrencyRate").val(1);
+                $("#maindisper").val(0);
+                $("#mainservicecharge").val(0);
+                $("#mainvat").val(0);
+                $("#mainpaidamount").val(0);
+            }
+
+        var userid = '@HttpContextAccessor.HttpContext.Session.GetString("userid").ToString()';
+        var comid = '@HttpContextAccessor.HttpContext.Session.GetString("comid").ToString()';
+
+        $("#userid").val(userid);
+        $("#comid").val(comid);
+
+
+
+
+        //SupplierInfo();
+
+        $("#IndDisAmt").prop("readonly", true);
+        $("#maindisamt").prop("readonly", true);
+
+        radiobutton();
+        radiobuttontotal();
+
+
+
+        if (isBarcodeSearch == true)
+        {
+            //alert(isBarcodeSearch);
+            $('#divBarcode').show();
+        }
+        else
+        {
+            $('#divBarcode').hide();
+        }
+
+        if (isProductSearch == true)
+        {
+            $('#divProduct').show();
+            $('#divIMEI').show();
+
+        } else
+        {
+            //alert('fake');
+            $('#divProduct').hide();
+            $('#divIMEI').hide();
+        }
+
+
+        if (isIMEISearch == true) {
+
+            $('#divIMEI').show();
+
+
+        }
+        else {
+            $('#divIMEI').hide();
+        }
+
+
+
+
+
+            //ProductSearch();
+        $("#Category").change(function () {
+            ProductSearch();
+        })
+
+            $("#PaymentTypes").change(function () {
+                AccountSearch();
+            })
+
+
+        $("#UnitPrice").change(function () {
+
+            singleInputs();
+
+        })
+
+        $("#mainpaidamount").focusout(function () {
+
+            //alert('hit');
+            var x = $("#mainpaidamount").val();
+            var y = $('#mainnetamount').val();
+            var z = y - x;
+
+            //alert(x, y, z);
+
+            $('#maindueamount').val(z);
+            $('#maindueamount').text(z);
+
+
+        })
+
+        $("#mainservicecharge").focusout(function () {
+
+            multInputs();
+        })
+
+        $("#IndDisPer").focusout(function () {
+
+            singleInputs();
+        })
+        $("#IndDisAmt").focusout(function () {
+
+            singleInputs();
+        })
+
+        $("#maindisper").focusout(function () {
+
+            multInputs();
+        })
+        $("#maindisamt").focusout(function () {
+
+            multInputs();
+        })
+
+
+
+        //$('#pro1,#pro2,#pro3')
+
+
+
+        $("#Product").change(function () {
+            ProductInfo();
+            BarcodeSearch();
+
+        })
+
+
+
+
+
+
+        $('#tblterms').dataTable({
+            "aoColumns": [
+                { "sClass": "purchasetermsid", "visible": false },
+                { "sClass": "purchaseterms", "visible": true },
+                { "sClass": "purchasetermsdescription", "visible": true },/////  7
+                { "sClass": "purchasetermsrowno", "visible": true }, //////////  16
+                null
+            ],
+            "dom": 'T<"clear">lfrtip',
+            "tableTools": {
+                "sRowSelector": "td:not(:first-child)"
+            },
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "order": [[3, "asc"]],
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": true,
+            "bInfo": false,
+            "paging": false
+        })
+
+        function AddTerms() {
+            $('#tblterms').dataTable().fnAddData(['','','', '','<a data-itemId="0" href="#" class="dlttrashterms deleteItem"> <i class="fa fa-trash"></i></a >']);
+
+        }
+
+
+
+            $('#tblpayments').dataTable({
+                "aoColumns": [
+                    { "sClass": "SalesPaymentSubId", "visible": false },
+                    { "sClass": "PaymentTypeId", "visible": false },
+                    { "sClass": "TypeShortName", "visible": true },
+                    { "sClass": "AccId", "visible": false },
+                    { "sClass": "AccName", "visible": true },
+                    { "sClass": "Amount", "visible": true },
+                    { "sClass": "PaymentCardNo", "visible": true },
+
+                    null
+                ],
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sRowSelector": "td:not(:first-child)"
+                },
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                "order": [[1, "asc"]],
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": true,
+                "bInfo": false,
+                "paging": false
+            })
+
+            var tblpayments = $('#tblpayments').DataTable();
+            tblpayments.MakeCellsEditable({
+                "onUpdate": myCallbackFunction,
+                "inputCss": 'my-input-class',
+                "columns": [5, 6],
+                "allowNulls": {
+                    "columns": [5, 6],
+                    "errorClass": 'error'
+                },
+                "inputTypes": [
+                    {
+                        "column": 5,
+                        "type": "text",
+                        "options": null
+                    },
+                    {
+                        "column": 6,
+                        "type": "text",
+                        "options": null
+                    }
+
+                ]
+            });
+
+
+            multInputs();
+            //table.MakeCellsEditable({
+            //    "onUpdate": myCallbackFunction
+            //});
+
+
+
+
+                var tableterms = $('#tblterms').DataTable();
+                tableterms.MakeCellsEditable({
+                    "onUpdate": myCallbackFunction,
+                    "inputCss": 'my-input-class',
+                    "columns": [1,2],
+                    "allowNulls": {
+                        "columns": [1, 2],
+                        "errorClass": 'error'
+                    },
+                    "inputTypes": [
+                        {
+                            "column": 1,
+                            "type": "text",
+                            "options": null
+                        },
+                        {
+                            "column": 2,
+                            "type": "text",
+                            "options": null
+                        }
+
+                    ]
+                });
+
+
+
+
+
+
+
+
+        $('#btnDelete').click(function () {
+            var table = $('#tbl').DataTable();
+            table.row('.selected').remove().draw(false);
+        });
+
+
+
+
+
+            $('#tblproductsearch tbody').on('dblclick', 'tr', function () {
+
+
+                var y = tblproductsearch.row(this).data()[1];
+                var x = tblproductsearch.row(this).data()[2];
+
+
+                // Handler for .ready() called.
+                $('#Category').val(y);
+                //$('#Category').change();
+                $('#Product').val(x);//.change();
+                //$('#Product').change();
+                $.when(ProductInfo()).then(BarcodeSearch()).then(Add());
+
+
+            });
+
+
+            //$('#tblproductserialadd tbody').on('click', 'tr', function () {
+
+            //    var z = tblproductserialadd.row(this).data()[1];
+            //    //alert(z);
+
+            //    var totalvisibleRowsx = $('#tblproductsearch tbody tr.selected').length;
+            //    //tblproductsearch.$('tr.selected').removeClass('selected');
+            //    if (totalvisibleRowsx == 1) {
+
+            //        $.each($('#tblproductsearch tr.selected'), function () { //Loop through rows
+
+            //            //$("#Product").val()
+
+            //            var y = tblproductsearch.row(this).data()[1];
+            //            //alert(y);
+
+            //            var x = tblproductsearch.row(this).data()[2];
+            //            //alert(x);
+
+
+
+            //                // Handler for .ready() called.
+            //                $('#Category').val(y);
+            //                //$('#Category').change();
+            //                $('#Product').val(x);//.change();
+
+            //                //alert(z);
+
+
+            //                //e.preventDefault();
+            //                $.when(ProductInfo()).then(BarcodeSearch()).then(Add());
+
+            //                //alert($('#ProductSerial').val());
+            //                $('#myInputSearch').val('');
+
+
+
+
+            //        })
+            //    }
+
+            //});
+
+
+
+
+        $('#tbl tbody').on('click', '.dlttrash', function () {
+            var table = $('#tbl').DataTable();
+
+            table.row($(this).parents('tr')).remove().draw();
+            //if ($(this).hasClass('selected')) {
+            //    $(this).removeClass('selected');
+            //}
+            //else {
+            //    table.$('tr.selected').removeClass('selected');
+            //    $(this).addClass('selected');
+            //}
+
+            //table.row().remove().draw(false);
+            //var x = $('#modalbodyfahad').height();
+            var x = "500.00";
+            var y = $('#tbl').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            $("html, body").animate({ scrollTop: z }, 500);
+
+
+            multInputs();
+            });
+
+
+
+            $('#tblterms tbody').on('click', '.dlttrashterms', function () {
+                var table = $('#tblterms').DataTable();
+
+                table.row($(this).parents('tr')).remove().draw();
+                var x = "500.00";
+                var y = $('#tblterms').height();
+                var z = parseFloat(x) + parseFloat(y);
+
+                $("html, body").animate({ scrollTop: z }, 500);
+
+            });
+
+
+            $('#tblpayments tbody').on('click', '.dlttrashpayments', function () {
+                var table = $('#tblpayments').DataTable();
+
+                table.row($(this).parents('tr')).remove().draw();
+                var x = "1300.00";
+                var y = $('#tblpayments').height();
+                var z = parseFloat(x) + parseFloat(y);
+
+                $("html, body").animate({ scrollTop: z }, 1300);
+
+            });
+
+
+            $('#tblproductserialadd tbody').on('click', '.dlttrashserial', function () {
+                //var table = $('#tblterms').DataTable();
+
+                tblproductserialadd.row($(this).parents('tr')).remove().draw();
+                var x = "500.00";
+                var y = $('#tblproductserialadd').height();
+                var z = parseFloat(x) + parseFloat(y);
+
+                $("html, body").animate({ scrollTop: z }, 500);
+                serialQty();
+            });
+
+
+
+        $("#PurchaseDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#PurchaseDate").datepicker("option", "dateFormat");
+                //setter
+                $("#PurchaseDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+            }
+            });
+        //var oTable = $('#tbl').dataTable();
+
+        });
+
+
+        function TermsLoad() {
+
+            var table = $('#tblterms').DataTable();
+            table
+                .clear()
+                .draw();
+
+
+            table.row($(this).parents('tr')).remove().draw();
+
+
+
+              $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getTerms", "Purchase")',
+                  dataType: 'json',
+                  async: false,
+                  data: { id: $("#PurchaseTerms").val() },
+                success: function (data) {
+
+                    for (var i = 0; i < data.length; i++) {
+
+
+
+                        $('#tblterms').dataTable().fnAddData([0, data[i].Value, data[i].Text, i, '<a data-itemId="0" href="#" class="dlttrashterms deleteItem"> <i class="fa fa-trash"></i></a >']);
+
+                        //s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+
+
+                    }
+                    //$("#Product").html(s);
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+
+        }
+
+        function AddPayments() {
+
+            //var productcheck = $('#Product').val();
+            //var descriptioncheck = $("#ProductDescription").val();
+            //var serialcheck = $("#ProductSerial").val() || 0;
+            //var qtycheck = $("#Qty").val();
+            //var tblpayments = $('#tblpayments').DataTable();
+
+            //if (flag == 1) {
+
+            //    multInputs();
+            //    return;
+            //}
+
+            $('#tblpayments').dataTable().fnAddData([
+                "0",
+                $('#PaymentTypes').val(),
+                $('#PaymentTypes option:selected').text(),
+                $('#AccountHead').val(),
+                $('#AccountHead option:selected').text(),
+
+                $('#PaymentAmount').val(),
+                $('#PaymentCardNo').val(),
+                //$('#ProductSerial option:selected').text() || '=N/A=',
+                '<a data-itemId="0" href="#" class="dlttrashpayments deleteItem"> <i class="fa fa-trash"></i></a >']);
+
+            $('#PaymentAmount').val("0");
+            $('#PaymentCardNo').val("=N/A=");
+            //$('#PaymentTypes').val("0");
+            //$('#AccountHead').val("0");
+            //$('#PaymentTypes').text("");
+            //$('#AccountHead').text("");
+
+
+            //multInputs();
+
+            //var x = $('#modalbodyfahad').height();
+            //var y = $('#tbl').height();
+            //var z = parseFloat(x) + parseFloat(y);
+
+            //$("html, body").animate({ scrollTop: z }, 50);
+
+        }
+
+
+    // this function is used to add item to list table
+        function Add() {
+
+            var checked = true;
+            var radioValue = $("input[name='paymentMethod']:checked").val();
+            //alert(radioValue);
+            if (radioValue == "percentage") {
+                checked = 1
+                //"<input type='checkbox' class='indchkper' id=item_IndChkPer name=item.IndChkPer checked = 'checked' value = 'true' />"
+            }
+            else {
+                checked = 0
+                //"<input type='checkbox' class='indchkper' id=item_IndChkPer name=item.IndChkPer/>"
+            }
+
+
+
+            var productcheck = $('#Product').val();
+            var descriptioncheck = $("#ProductDescription").val();
+            var qtycheck = $("#Qty").val();
+
+
+
+            //alert(productcheck);
+            //alert(descriptioncheck);
+            //alert(serialcheck);
+
+
+
+            var tbl = $('#tbl').DataTable();
+
+
+
+
+            var flag = 0;
+            tbl.rows().every(function () {
+                var productidtd = this.data()[2];
+                var descriptiontd = this.data()[9];
+                var serialtd = this.data()[4];
+                //var quantitytd = this.data()[12];
+                //var finalqty = parseFloat(qtycheck) + parseFloat(quantitytd);
+
+                //tbl.row.fnUpdate(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+               // alert(productidtd, descriptiontd, serialtd);
+                //alert('productid' + productidtd);
+                //alert(serialcheck);
+                //alert(serialtd);
+
+
+                if ((productcheck == productidtd) && (descriptioncheck == descriptiontd) && (serialcheck == serialtd)) {
+
+
+
+                    //alert(this.index());
+                    flag = 1;
+
+                    //var tblhtml = document.getElementById('tbl');
+                    //var columnindex = $('#tbl th:contains("Quantity")').index();
+                    //var columnquantity = tblhtml.rows[this.index() + 1].cells[columnindex].firstChild.data;
+
+
+
+                    if (parseFloat(serialtd) > 0)
+                    {
+                        //alert('Serial Already Inputed');
+                        $(function () {
+                            $("#dialog").text('Serial Already Inputed');
+                            $("#dialog").dialog();
+                            //$('#myInput').focus();
+                        });
+                        return;
+                    }
+                   // e.preventDefault();
+                    flag = 1;
+
+
+                    var cell = tbl.cell(this.index(), 12);
+                    var prevqty = cell.data();
+                    cell.data(parseFloat(prevqty) + parseFloat(qtycheck));
+
+//                    cell.data(parseFloat(columnquantity) + parseFloat(qtycheck));
+
+
+                    //alert('update done')
+                    //alert(columnquantity);
+                    //alert(columnindex);
+
+
+                }
+
+
+
+
+
+            });
+
+
+            if (flag == 1) {
+                //alert('not allowed');
+
+                //var oTable = $('#tbl').dataTable();
+                //oTable.fnUpdate('tbl update', 0, 0); // Single cell
+                //oTable.fnUpdate(['a', 'b', 'c', 'd', 'e'], 1); // Row
+
+
+
+
+                multInputs();
+
+
+
+                return;
+            }
+
+            //else {
+            //    //$('#test').append('<tr><td>' + test + '</td><td>' + sample + '</td></tr>');
+            //    alert('should work');
+
+            //}
+
+
+
+                //console.log('Data in id: ' + id + ' index: ' +  ' is: ' + data);
+            //});
+
+
+
+
+            $('#tbl').dataTable().fnAddData([
+                $('#Category').val(),
+                $('#Product').val(),
+                $('#Barcode').val(),
+                //$('#ProductSerial').val(),
+                $('#PurchaseSubId').val() || 0,
+                $('#Warehouse').val(),
+                $('#Product option:selected').text(),
+                $('#Barcode option:selected').text(),
+                $('#ProductDescription').val(),
+                //$('#ProductSerial option:selected').text() || '=N/A=',
+                $('#Warehouse option:selected').text(),
+
+                $('#Qty').val(), $('#UnitPrice').val(), parseFloat($('#IndVatPercentage').val()).toFixed(2), $('#IndVat').val(),
+                parseFloat($('#IndDisPer').val()).toFixed(2)
+                , $('#IndDisAmt').val(),
+                $('#IndPrice').val(),
+
+
+                $('#Qty').val() * $('#UnitPrice').val(), checked,
+                '=N/A=', '=N/A=', '=N/A=',
+                //$('#Size').val(),
+                //$('#Carton').val(),
+                //$('#PCTN').val(),
+
+                //'<a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>'
+                '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+                '<input type="checkbox" class="clickchk"  onchange ="cbChange(this)">']);
+
+
+
+            //tbl = $('#tbl').DataTable();
+            //alert(tbl.data().length);
+            //alert('checkbox');
+            var $checkbox = $("#tbl tbody tr:last .clickchk");
+
+            //$('#yourtableid tr:last').attr('id');
+            ///alert('checkbox 1');
+
+
+            $checkbox.click();
+
+            //alert('checkbox 2');
+
+
+//            var obj = tbl.row(tbl.data().length - 1);
+
+            //cbChange(obj);
+            //"ProductId": "", "WarehouseId": "", "Qty": "", "UnitPrice": "",
+            //"IndVat": "", "IndDisPer": "", "IndDisAmt": "", "IndPrice": "",
+            //"Amount": ""
+
+
+            $('#Qty').val("1");
+            $('#ProductDescription').val("=N/A=");
+            $('#UnitPrice').val("0");
+            $('#IndVat').val("0");
+            $('#IndDisPer').val("0");
+            $('#IndDisAmt').val("0");
+            //$('#IndPrice').val("");
+            multInputs();
+
+            var x = $('#modalbodyfahad').height();
+            var y = $('#tbl').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            //alert(x);
+            //alert(y);
+            //alert(z);
+
+            $("html, body").animate({ scrollTop: z }, 50);
+
+        }
+
+        function singleInputs() {
+
+            //alert('singleinputs');
+
+            var singleqty = $("#Qty").val();
+            var singlepurchaseprice = $("#UnitPrice").val();
+            var singlevatpercentage = $("#IndVatPercentage").val();
+            var singlevat = 0;//$("#IndVat").val();
+            var singledisper = $("#IndDisPer").val();
+            var singledisamt = $("#IndDisAmt").val();
+            var singleindprice = 0;
+
+            //alert(singleqty);
+            //alert(singlepurchaseprice);
+            //alert(singlevatpercentage);
+            //alert(singlevat);
+            //alert(singledisper);
+
+
+
+            var radioValue = $("input[name='paymentMethod']:checked").val();
+
+            ///alert(radioValue);
+            if (radioValue == "percentage") {
+
+                // alert('percentage');
+                singledisamt = ((parseFloat(singleqty) * parseFloat(singlepurchaseprice)) * ((parseFloat(singledisper)) / 100));
+                $("#IndDisAmt").text(singledisamt);//---fahad
+                $("#IndDisAmt").val(singledisamt);//---fahad
+
+                //alert('percentage');
+                //$("#IndDisPer").prop("readonly", false);
+                //$("#IndDisAmt").prop("readonly", true);
+                //$("#IndDisPer").val(0);
+
+            }
+            else if (radioValue == "amount") {
+                //alert('amount');
+                //alert(singleqty);
+                //alert(singlepurchaseprice);
+                //alert(singledisamt);
+
+                singledisper = ((((parseFloat(singledisamt))) / (parseFloat(singleqty) * parseFloat(singlepurchaseprice))) * 100);
+
+                $("#IndDisPer").text(singledisper);//---fahad
+                $("#IndDisPer").val(singledisper);//---fahad
+                //$("#IndDisPer").prop("readonly", true);
+                //$("#IndDisAmt").prop("readonly", false);
+                //$("#IndDisPer").val(0);
+            }
+
+
+
+
+            //alert(singledisamt);
+
+            singlevat = ((parseFloat(singleqty) * parseFloat(singlepurchaseprice)) * ((parseFloat(singlevatpercentage)) / 100));
+            singleindprice = (parseFloat(singleqty) * parseFloat(singlepurchaseprice)) + ((parseFloat(singleqty) * parseFloat(singlepurchaseprice)) * ((parseFloat(singlevatpercentage)) / 100)) - (parseFloat(singledisamt));
+
+            //alert(singleindprice);
+
+
+            $("#IndVat").text(singlevat);//---fahad
+            $("#IndVat").val(singlevat);//---fahad
+
+            $("#IndPrice").text(singleindprice);//---fahad
+            $("#IndPrice").val(singleindprice);//---fahad
+
+
+
+            // alert('unitprice final function');
+
+        }
+
+        function serialQty() {
+
+            var serialttlqty = 0;
+            var serialttlamount = 0;
+
+            //var serial = 0;
+            //alert('serialqty');
+
+            // for each row:
+
+            $("tr.txtMultserial").each(function () {
+                //alert('serail in');
+                // get the values from this row:
+                var $addproductqty = $('.addproductqty', this).text();
+                //alert($addproductqty);
+                var $addproductprice = $('.addproductprice', this).text();
+                //alert($addproductprice);
+                var $addproductamount = parseFloat($addproductqty) * parseFloat($addproductprice);
+                //alert($addproductamount);
+
+
+                //alert('serail running');
+
+
+                $('.addproductpriceamount', this).text($addproductamount);
+                $('.addproductpriceamount', this).val($addproductamount);
+
+
+                serialttlqty += parseFloat($addproductqty);
+                serialttlamount += parseFloat($addproductamount);
+
+
+
+
+            });
+            $(".serialaddsubtotalqty").val(serialttlqty);//---fahad
+            $(".serialaddsubtotalqty").text(serialttlqty);//---fahad
+
+            //alert(ttlqty);
+            $(".serialaddsubtotalunitprice").val(serialttlamount);//---fahad
+            $(".serialaddsubtotalunitprice").text(serialttlamount);//---fahad
+            if (serialttlqty == 0) { return};
+
+
+
+
+            var table = $('#tbl').DataTable();
+
+            var rowIndex = table.row($('input[type=checkbox]:checked').parents('tr')).index();
+
+            //var indexasdf = row.index();
+            //alert(indexasdf);
+            //var cell = row.cell(12);
+            //console.log(cell);
+            //alert('3');
+
+            var cellqty = table.cell(rowIndex, 9);
+            var cellunitprice = table.cell(rowIndex, 10);
+
+            cellqty.data(serialttlqty);
+            cellunitprice.data(parseFloat(serialttlamount) / parseFloat(serialttlqty));
+
+
+            multInputs();
+            //alert('finally ok');
+
+            //var tbl = $('#tbl').DataTable();
+            //tbl.rows().every(function () {
+            //    var productidtd = this.data()[2];
+            //    var descriptiontd = this.data()[9];
+            //    var warerehouse = this.data()[4];
+
+            //    if ((productcheck == productidtd) && (descriptioncheck == descriptiontd) && (serialcheck == serialtd))
+            //    {
+            //        var cell = tbl.cell(this.index(), 12);
+            //        var prevqty = cell.data();
+            //        cell.data(parseFloat(prevqty) + parseFloat(qtycheck));
+            //    }
+            //})
+
+
+        }
+
+
+
+        function multInputs() {
+
+            var mult = 0;
+            var ttlqty = 0;
+            var ttlcountqty = 0;
+            var ttlunitprice = 0;
+            var ttlvat = 0;
+            var ttldisper = 0;
+            var ttldisamt = 0;
+            var ttlindprice = 0;
+            var $total = 0;
+
+            // for each row:
+
+            $("tr.txtMult").each(function () {
+                // get the values from this row:
+                var $val1 = $('.quantity', this).text();
+                var $val2 = $('.indunitprice', this).text();
+                var $val3 = $('.indvat', this).text();
+                var $val4 = $('.inddisper', this).text();
+                var $val5 = $('.inddisamt', this).text();
+                var $val6 = $('.indprice', this).text();
+
+
+                //alert($('.indchkper').text());
+                var valcheck = $('.indchkper', this).text();
+                //alert(valcheck);
+                //var valcheck = $("input[type='checkbox']:checked").val();
+                //console.log(valcheck);
+                //alert(valcheck);
+
+                //if ($('#check_id').is(":checked")) {
+                //    // it is checked
+                //}
+                //alert(valcheck);
+
+
+
+                // var isindchkper = valcheck === "1";
+
+                //alert(isindchkper);
+
+                //if ($.trim(valcheck) == '1')
+                //{
+                //alert('Checked');
+                var x = ((($val2 * $val4) / 100) * ($val1));
+                //alert(x);
+                $('.inddisamt', this).text(x);
+                $('.inddisamt', this).val(x);
+                //alert('Checked');
+                //alert(isindchkper);
+
+                //}
+                //else if (valcheck == false){
+                //    //alert('notChecked');
+                //    //alert(isindchkper);
+                //}
+
+                //alert($val1);
+                //alert($val2);
+
+                var $IndTotalVat = ($val1 * (($val2 * 15) / 100));
+                //var $IndTotalDiscount = ($val1 * (($val2 * 15) / 100));
+
+                $total = ($val1 * 1) * ($val2 * 1);
+
+
+                $('.indvat', this).text($IndTotalVat);
+                $('.indvat', this).val($IndTotalVat);
+
+
+                $('.amount', this).text($total);
+                $('.amount', this).val($total);
+
+
+                mult += $total;
+
+
+                ttlqty += parseFloat($val1);
+
+
+                ttlcountqty += parseFloat(1);
+
+                ttlunitprice += parseFloat($val2);
+                ttlvat += parseFloat($val3);
+                ttldisper += parseFloat($val4);
+                ttldisamt += parseFloat($val5);
+                ttlindprice += parseFloat($val6);
+
+
+            });
+            //$(".subtotalamount").text(mult);
+            $(".subtotalamount").text(mult);
+
+
+
+
+            //alert(ttlunitprice);
+            //alert(ttlvat);
+            //alert(ttldisper);
+            //alert(ttldisamt);
+            //alert(ttlindprice);
+
+
+
+            $(".subtotalqty").text(ttlqty);
+            $(".subtotalcountqty").text(ttlcountqty);//---fahad
+            $(".subtotalunitprice").text(ttlunitprice);
+            $(".subtotalindvat").text(ttlvat);
+            $(".subtotalinddisper").text(ttldisper);
+            $(".subtotalinddisamt").text(ttldisamt);
+            $(".subtotalindprice").text(ttlindprice);
+
+
+
+            //alert(ttlqty);
+            $("#ttlSumQty").val(ttlqty);//---fahad
+            $("#ttlSumQty").text(ttlqty);//---fahad
+
+            $("#ttlCountQty").val(ttlcountqty);//---fahad
+            $("#ttlCountQty").text(ttlcountqty);//---fahad
+
+            $("#ttlUnitPrice").val(ttlunitprice);//---fahad
+            $("#ttlUnitPrice").text(ttlunitprice);//---fahad
+
+            $("#ttlIndVat").val(ttlvat);//---fahad
+            $("#ttlIndVat").text(ttlvat);//---fahad
+
+            $("#ttlIndDisAmt").val(ttldisamt);//---fahad
+            $("#ttlIndDisAmt").text(ttldisamt);//---fahad
+
+            $("#ttlIndPrice").val(ttlindprice);//---fahad
+            $("#ttlIndPrice").text(ttlindprice);//---fahad
+
+            $("#ttlSumAmt").val(mult);//---fahad
+            $("#ttlSumAmt").text(mult);//---fahad
+
+            if (parseFloat(ttlvat) > 0) {
+                $("#mainvat").val(ttlvat);//---fahad
+                $("#mainvat").text(ttlvat);//---fahad
+            }
+
+
+
+
+
+            var disper = $('#maindisper').val();
+            var disamt = $('#maindisamt').val();
+
+            //var myStr = 'this,is,a,test';
+            //var newStr = myStr.replace(/,/g, '-');
+            //alert(newStr);
+
+            //var myStr = $('#mainservicecharge').val().replace(/,/g, '');
+            //var newStr = myStr.replace(/,/g, '');
+            //alert(myStr);
+
+
+            var servicecharge = $('#mainservicecharge').val().replace(/,/g, '');
+            //alert(servicecharge);
+            var vat = $('#mainvat').val();
+            //var netamount = $('#mainnetamount').val();
+            //var paidamount = $('#mainpaidamount').val();
+            var dueamount = $('#maindueamount').val();
+            var currencyrate = $('#CurrencyRate').val();
+            //var netamountbdt = $('#mainnetamountbdt').val();
+
+
+            var radioValue = $("input[name='totalpaymentMethod']:checked").val();
+
+            //alert(radioValue);
+            if (radioValue == "totalpercentage") {
+
+                //alert('totalpercentage');
+                var x = ((mult * disper) / 100);
+                $('#maindisamt').val(x);
+
+
+            }
+            else if (radioValue == "totalamount") {
+                //alert('totalamount');
+                var totaldisper = (parseFloat(disamt) / (parseFloat(mult))) * 100;
+
+                //alert(mult);
+                //alert(totaldisper);
+                //alert(disamt);
+                $("#maindisper").text(totaldisper);//---fahad
+                $("#maindisper").val(totaldisper);//---fahad
+
+
+            }
+
+            var y = (parseFloat(mult) - parseFloat(disamt)) + (parseFloat(servicecharge)) + (parseFloat(vat));
+
+
+
+
+
+            $('#mainnetamount').val(y);
+
+
+            $("#mainpaidamount").text(y);//---fahad
+            $("#mainpaidamount").val(y);//---fahad
+
+
+            var paidamount = $('#mainpaidamount').val();
+
+
+            var z = (parseFloat(y) - parseFloat(paidamount));
+
+            $('#maindueamount').val(z);
+
+            //tested
+
+            //alert(z);
+
+
+
+
+            var zz = ((parseFloat(y)) * (parseFloat(currencyrate)));
+
+            //alert(currencyrate);
+            //alert(zz);
+
+            $('#NetAmountBDT').val(zz);
+
+
+
+
+        }
+
+
+        function Purchase_delete() {
+            var PurchaseId = $("#PurchaseId").val();
+            //alert(PurchaseId);
+            $.ajax({
+
+                  url: '@Url.Action("Delete", "Purchase")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: PurchaseId }), //use id here
+                //data: JSON.stringify(PurchaseMain),
+                type: 'POST',
+                async: false,
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                window.location.href = '@Url.Action("Index", "Purchase")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+        }
+
+
+    //This function is used for sending data(JSON Data) to PurchaseController
+    function Purchase_save() {
+        // Step 1: Read View Data and Create JSON Object
+
+
+
+        if (!$("#myform").valid()) {
+            toastr.error('Please Fill Up All Necessary Information Correctly.');
+            $("html, body").animate({ scrollTop: 0 }, 500);
+            return false;
+        }
+
+        var checked = true;
+        var radioValue = $("input[name='totalpaymentMethod']:checked").val();
+        //alert(radioValue);
+        if (radioValue == "totalpercentage") { checked = true }
+        else {
+            checked = false
+        }
+        //ProductSerialId
+        // Creating PurchaseSub Json Object
+        var Serialsub = { "PurchaseId": "", "PurchaseSubId": "", "ProductId": "", "ProductSerialId": "", "ProductSerialNo": "", "Remarks": "", "Qty": "", "UnitPrice": "", "Amount": "", "WarrentyId": ""  };
+
+        var PurchaseSub = { "SalesTypeId": "", "PurchaseId": "", "PurchaseSubId":"", "ProductId": "", "WarehouseId": "", "ProductDescription": "", "Qty": "", "UnitPrice": "", "IndVatPer": "", "IndVat": "", "IndDisPer": "", "IndDisAmt": "", "IndPrice": "", "Amount": "", "IndChkPer": "", "Size": "", "Carton": "", "PCTN": "","RowNo":"","ProductSerials": []  };
+        var PurchaseTermsSub = { "PurchaseId": "", "Terms": "", "Description": "", "RowNo": "", "ComId": "" };
+        var PurchasePaymentSub = { "PurchaseId": "", "PurchasePaymentSubId": "", "PaymentTypeId": "", "AccId": "", "Amount": "", "PaymentCardNo": "", "comid": "", "userid": "", "RowNo": "" };
+
+
+
+        // Creating PurchaseMain Json Object
+        var PurchaseMain = {
+            "PurchaseId": "", "PurchaseNo": "", "ReferenceNo": "", "PurchaseDate": "", "PurchasePerson": "",
+
+            "SupplierId": "", "SupplierName": "","PrimaryAddress": "", "SecoundaryAddress": "", "PhoneNo": "", "EmailId": "", "City": "", "PostalCode": "",
+
+
+            "ttlCountQty": "", "ttlSumQty": "", "ttlUnitPrice": "", "ttlIndVat": "", "ttlIndDisAmt": "",
+            "ttlIndPrice": "", "ttlSumAmt": "", "DisPer": "", "DisAmt": "",
+
+
+            "ServiceCharge": "", "TotalVat": "", "NetAmount": "", "PaidAmt": "", "DueAmt": "", "CountryId": "",
+            "CurrencyRate": "", "NetAmountBDT": "", "Remarks": "", "comid": "", "userid": "", "ChkPer": "",
+
+            "PurchaseSubs": [],
+            "PurchaseTermsSubs": [],
+            "PurchasePaymentSubs": []
+
+        };
+
+        // Set Purchase Main Value
+        PurchaseMain.PurchaseId = $("#PurchaseId").val();
+        PurchaseMain.PurchaseNo = $("#PurchaseNo").val();
+        PurchaseMain.ReferenceNo = $("#ReferenceNo").val();
+        PurchaseMain.PurchaseDate = $("#PurchaseDate").val();
+        PurchaseMain.PurchasePerson = $("#PurchasePerson").val();
+
+        PurchaseMain.SupplierId = $("#Supplier").val();
+        PurchaseMain.SupplierName = $("#SupplierName").val();
+
+        PurchaseMain.PrimaryAddress = $("#PrimaryAddress").val();
+        PurchaseMain.SecoundaryAddress = $("#SecoundaryAddress").val();
+        PurchaseMain.PhoneNo = $("#PhoneNo").val();
+        PurchaseMain.EmailId = $("#EmailId").val();
+        PurchaseMain.City = $("#City").val();
+        PurchaseMain.PostalCode = $("#PostalCode").val();
+
+
+        PurchaseMain.ttlCountQty = $("#ttlCountQty").val();
+        PurchaseMain.ttlSumQty = $("#ttlSumQty").val();
+        PurchaseMain.ttlUnitPrice = $("#ttlUnitPrice").val();
+        //PurchaseMain.ttlIndVatPer = $("#MainttlIndVatPer").val();
+        PurchaseMain.ttlIndVat = $("#ttlIndVat").val();
+
+        PurchaseMain.ttlIndDisAmt = $("#ttlIndDisAmt").val();
+        PurchaseMain.ttlIndPrice = $("#ttlIndPrice").val();
+        PurchaseMain.ttlSumAmt = $("#ttlSumAmt").val();
+
+        PurchaseMain.DisPer = $("#maindisper").val();
+        PurchaseMain.DisAmt = $("#maindisamt").val();
+        /////$('#mainservicecharge').val();//ServiceCharge
+        PurchaseMain.ServiceCharge = $("#mainservicecharge").val().replace(/,/g, '');
+        PurchaseMain.TotalVat = $("#mainvat").val();
+        PurchaseMain.NetAmount = $("#mainnetamount").val();
+        PurchaseMain.PaidAmt = $("#mainpaidamount").val();
+        PurchaseMain.DueAmt = $("#maindueamount").val();
+        PurchaseMain.CountryId = $("#Country").val();
+        PurchaseMain.CurrencyRate = $("#maincurrencyrate").val();
+        PurchaseMain.NetAmountBDT = $("#mainnetamountbdt").val();
+        PurchaseMain.Remarks = $("#Remarks").val();
+        PurchaseMain.ChkPer = checked;
+
+
+        PurchaseMain.comid = $("#comid").val();
+        @*PurchaseMain.userid = $("#userid").val();
+        PurchaseMain.comid = '@HttpContextAccessor.HttpContext.Session.GetString("comid").ToString()';;*@
+        PurchaseMain.userid = '@HttpContextAccessor.HttpContext.Session.GetString("userid").ToString()';
+
+        //console.log(column);
+
+        ////purchase subs data
+        var oTable = $('#tbl').dataTable().fnGetData();
+        for (var i = 0; i < oTable.length; i++) {
+            //var oTableRow = oTable[i];
+            //alert(oTableRow);
+            PurchaseSub.RowNo = i + 1;
+            // IF This view is for edit then it will read PurchaseId from Hidden field
+            if ($('h2').text() == "Purchase Edit") {
+                PurchaseSub.PurchaseId = $('#PurchaseId').val();
+
+            }
+            else {
+                PurchaseSub.PurchaseId = 0;
+            }
+
+
+            PurchaseSub.SalesTypeId = 1;
+            PurchaseSub.ProductId = oTable[i][2];
+
+
+            //PurchaseSub.barcode = oTable[i][2];
+
+            //PurchaseSub.ProductSerialId = oTable[i][4];
+            PurchaseSub.PurchaseSubId = oTable[i][3];
+
+            PurchaseSub.WarehouseId = oTable[i][4];
+
+            PurchaseSub.ProductDescription = oTable[i][7];
+
+            PurchaseSub.Qty = oTable[i][9];
+            PurchaseSub.UnitPrice = oTable[i][10];
+
+            PurchaseSub.IndVatPer = oTable[i][11];
+            PurchaseSub.IndVat = oTable[i][12];
+            PurchaseSub.IndDisPer = oTable[i][13];
+            PurchaseSub.IndDisAmt = oTable[i][14];
+            PurchaseSub.IndPrice = oTable[i][15];
+
+
+            PurchaseSub.Amount = oTable[i][9] * oTable[i][15];
+
+            //alert(oTable[i][17]);
+            PurchaseSub.IndChkPer = oTable[i][17];
+
+            PurchaseSub.Size = oTable[i][18];
+            PurchaseSub.Carton = oTable[i][19];
+            PurchaseSub.PCTN = oTable[i][20];
+
+
+
+                var oTableSerial = $('#tblproductserialadd').dataTable().fnGetData();
+            for (var ii = 0; ii < oTableSerial.length; ii++) {
+
+                //alert($('h2').text());
+                ///need to check it from here
+
+
+
+
+                if (PurchaseSub.ProductId == oTableSerial[ii][2]) {
+
+                    // IF This view is for edit then it will read SalesId from Hidden field
+                    if ($('h2').text() == "Purchase Edit") {
+                        Serialsub.PurchaseId = $('#PurchaseId').val();
+                        //alert('test');
+                        //alert(purchasesub.TermsId);
+                    }
+                    else {
+                        Serialsub.PurchaseId = 0;
+                    }
+
+
+
+
+                    //Serialsub.PurchaseId = oTableSerial[ii][0];
+                    Serialsub.PurchaseSubId = oTableSerial[ii][1];
+
+                    Serialsub.ProductId = oTableSerial[ii][2];
+                    Serialsub.ProductSerialId = oTableSerial[ii][3];
+                    Serialsub.ProductSerialNo = oTableSerial[ii][4];
+                    Serialsub.Remarks = oTableSerial[ii][5];
+
+                    Serialsub.Qty = oTableSerial[ii][6];
+                    Serialsub.UnitPrice = oTableSerial[ii][7];
+                    Serialsub.Amount = oTableSerial[ii][8];
+                    Serialsub.WarrentyId = oTableSerial[ii][9];
+
+
+
+
+                    // adding to SalesMain.SalesSub List Item
+                    PurchaseSub.ProductSerials.push(Serialsub);
+
+
+
+                    Serialsub = { "PurchaseId": "", "PurchaseSubId": "", "ProductId": "","ProductSerialId": "", "ProductSerialNo": "", "Remarks": "", "Qty": "", "UnitPrice": "", "Amount": "", "WarrentyId": "" };
+
+
+                }
+                else {
+
+
+                }
+
+            }
+                // adding to PurchaseMain.PurchaseSub List Item
+                PurchaseMain.PurchaseSubs.push(PurchaseSub);
+                    PurchaseSub = {
+                        "SalesTypeId": "", "PurchaseId": "", "PurchaseSubId": "","ProductId": "", "ProductSerialId": "", "WarehouseId": "", "ProductDescription": "" , "Qty": "", "UnitPrice": "",
+                    "IndVatPer": "","IndVat": "", "IndDisPer": "", "IndDisAmt": "", "IndPrice": "",
+                    "Amount": "", "IndChkPer": "", "Size": "", "Carton": "", "PCTN": "","RowNo" :"", "ProductSerials": []
+                    };
+
+                    console.log(PurchaseMain);
+
+
+
+        }
+
+
+        ////purchase terms data
+        var oTableTerms = $('#tblterms').dataTable().fnGetData();
+        for (var i = 0; i < oTableTerms.length; i++) {
+
+            // IF This view is for edit then it will read PurchaseId from Hidden field
+            if ($('h2').text() == "Purchase Edit") {
+                PurchaseTermsSub.PurchaseId = $('#PurchaseId').val();
+
+            }
+            else {
+                PurchaseTermsSub.PurchaseId = 0;
+            }
+
+
+            PurchaseTermsSub.Terms = oTableTerms[i][1];
+            PurchaseTermsSub.Description = oTableTerms[i][2];
+            PurchaseTermsSub.RowNo = oTableTerms[i][3];
+            PurchaseTermsSub.ComId = $("#comid").val();
+
+
+            // adding to PurchaseMain.PurchaseSub List Item
+            PurchaseMain.PurchaseTermsSubs.push(PurchaseTermsSub);
+
+            var PurchaseTermsSub = { "PurchaseId": "", "Terms": "", "Description": "", "RowNo": "", "ComId": "" };
+
+        }
+
+
+        //////payment types added by fahad last update and modification
+        var oTablePayment = $('#tblpayments').dataTable().fnGetData();
+        for (var i = 0; i < oTablePayment.length; i++) {
+
+            // IF This view is for edit then it will read SalesId from Hidden field
+            if ($('h2').text() == "Purchase Edit") {
+                PurchasePaymentSub.PurchaseId = $('#PurchaseId').val();
+
+            }
+            else {
+                PurchasePaymentSub.PurchaseId = 0;
+            }
+
+
+            PurchasePaymentSub.SalesPaymentSubId = oTablePayment[i][0];
+            PurchasePaymentSub.PaymentTypeId = oTablePayment[i][1];
+
+            PurchasePaymentSub.AccId = oTablePayment[i][3];
+            PurchasePaymentSub.Amount = oTablePayment[i][5];
+            PurchasePaymentSub.comid = $("#comid").val();
+            PurchasePaymentSub.userid = $("#userid").val();
+            PurchasePaymentSub.RowNo = i;
+
+
+            PurchasePaymentSub.PaymentCardNo = oTablePayment[i][6];
+
+
+
+
+            // adding to SalesMain.SalesSub List Item
+            PurchaseMain.PurchasePaymentSubs.push(PurchasePaymentSub);
+
+            PurchasePaymentSub = { "PurchaseId": "", "PurchasePaymentSubId": "", "PaymentTypeId": "", "AccId": "", "Amount": "", "PaymentCardNo": "", "comid": "", "userid": "", "RowNo": "" };
+
+
+        }
+
+
+        console.log(PurchaseMain);
+        //// Step 1: Ends Here
+
+
+        // Set 2: Ajax Post
+        // Here i have used ajax post for saving/updating information
+        $.ajax({
+            type: 'POST',
+
+                //url: '/Sales/Create',
+            url: '@Url.Action("Create", "Purchase")',
+            dataType: 'json',
+            async: 'true',
+
+               // data: JSON.stringify(salesmain),
+            data: { purchasemain: PurchaseMain },
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                        //window.location.href = "/Sales/index";
+                        window.location.href = '@Url.Action("Index", "Purchase")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+
+
+
+        }
+
+    </script>
+}
+
+
+
+
+
+

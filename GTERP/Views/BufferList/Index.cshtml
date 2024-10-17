@@ -1,0 +1,241 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.BufferList>
+
+<div class="container-fluid">
+    <div class="row text-center mb-2">
+        <div class="col-md-3 col-12">
+            @Html.ActionLink("Buffer Creation", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+        </div>
+
+        <div class="col-md-3 col-12">
+            <h2 id="styletext">Buffer  List</h2>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-4 col-12">
+
+            @*<button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintDeliveryOrderDateWiseReport')">Delivery Challan Date Wise</button>
+
+            <button class="btn btn-success rounded-0" type="button" onclick="ReportPrint('PrintBankDipositrDateWiseReport')">Bank Diposit Date Wise</button>*@
+            <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintBufferWiseSDeallerList')">Buffer Wise DealerList</button>
+
+        </div>
+
+        <div class="col-md-4 col-12">
+            <button class="btn btn-success btn-block rounded-0" type="button" onclick="ReportPrint('PrintNameOfBuffer')">
+                Name Of Buffer
+            </button>
+        </div>
+        <div class="col-md-3 col-12">
+            <fieldset class="text-right">
+                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+            </fieldset>
+        </div>
+    </div>
+
+
+    <form class="card p-2">
+        <div class="table-responsive">
+            <table id="tbllist" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                <thead class="">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.BufferCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.BufferName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.BufferNameBangla)
+                        </th>
+                        @*<th>
+                        @Html.DisplayNameFor(model => model.DistictBuffer.)
+                        </th>
+                        <th>
+                        @Html.DisplayNameFor(model => model.BufferRepresentativeL)
+                        </th>*@
+
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BufferCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BufferName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BufferNameBangla)
+                            </td>
+                            @*<td>
+                        @Html.DisplayFor(modelItem => item.DistictBuffer.)
+                        </td>
+
+                        <td>
+                        @Html.DisplayFor(modelItem => item.BufferRepresentative.RepresentativeName)
+                        </td>*@
+                            <td>
+
+                                <span data-toggle="tooltip" title="Edit!">
+                                    @Html.ActionLink(" ", "Create", new { id = item.BufferListId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                </span>
+                                <span data-toggle="tooltip" title="Delete!">
+                                    @Html.ActionLink(" ", "Delete", new { Id = item.BufferListId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                </span>
+
+
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function() {
+
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                //responsive: true,
+                // fixedColumns: {
+                //    leftColumns: 2,
+                //    rightColumns: 1
+                //},
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+                ////"fixedColumns": {
+                ////    "leftColumns": 2,
+
+                ////},
+                //"sScrollXInner": "100%",
+                //dom: 'Blfrtip',
+                ////,"fixedHeader": true
+            });
+        });
+
+        function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+            var DistId = $('#DistId').val();
+            var YearNameId = $('#YearNameId').val();
+            var fromchallanno = $('#fromchallanno option:selected').text();
+            var tochallanno = $('#tochallanno option:selected').text();
+            var reporttype = $("input[name=RptType]:checked").val();
+
+            var RepresentativeId = $('#RepresentativeId option:selected').val();
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("BufferListReport", "BufferList")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, District: DistId, FromDate: FromDate, ToDate: ToDate, Year: YearNameId, FromChallanNo: fromchallanno, ToChallanNo: tochallanno, RepresentativeId: RepresentativeId },
+                success: function(response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function(ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+        }
+                                    //$(".search_input").addClass('form-control input-lg col-xs-12');
+
+    </script>
+}
+
+

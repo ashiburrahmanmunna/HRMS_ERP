@@ -1,0 +1,461 @@
+﻿@using GTERP.Controllers.HR
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<GTERP.EF.HRProcessedDataSalVM>
+
+@{
+    ViewBag.Title = "Manual Salary Edit";
+    var employees = ViewBag.EmployeeInfo;
+    List<Cat_Shift> shifts = ViewBag.Shift;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i> Salary Edit - <small>(Its not standard to edit salary info. Please try to avoid it.)</small>
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            Pross Type
+                                        </span>
+                                    </div>
+                                    <select asp-items="@ViewBag.ProssType" id="prossType">
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-12">
+                                <button type="button" id="btnLoad" class="ahsan rounded-0 btn btn-warning btn-block">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load
+                                </button>
+
+                            </div>
+
+
+                            <div class="col-md-3 col-12">
+
+                                <button type="button" id="btnSave" class="rounded-0 btn btn-primary btn-block">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+                                </button>
+                            </div>
+
+
+                        </div>
+                        <hr />
+                        <div class="table-responsive">
+                            <table id="tblEmp" class="table table-hover table-striped text-nowrap" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>EmpId</th>
+                                        <th>Emp Code</th>
+                                        <th>Emp Name</th>
+                                        <th>GS</th>
+                                        <th>BS</th>
+                                        <th>Month Days</th>
+                                        <th>Present</th>
+                                        <th>Absent</th>                                       
+                                        <th> CL </th>
+                                        <th> SL </th>
+                                        <th> EL</th>
+                                        <th> ML </th>
+                                        <th>Hday</th>
+                                        <th>Wday</th>
+                                        <th>Pday</th>
+                                        <th>EL (Pay)</th>
+                                        <th>OTHour</th>
+                                        <th>IsEdited</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        @foreach (var item in ViewBag.OTFCList)
+                                        {
+                                          
+                                            <tr>
+                                                <td>@item.EmpId</td>
+                                                <td>@item.EmpCode</td>
+                                                <td>@item.EmpName</td>
+                                                <td>@item.Gs</td>
+                                                <td>@item.Bs</td>
+                                                <td>@item.WorkingDays</td>
+                                                <td>@item.Present</td>
+                                                <td>@item.Absent</td>
+                                                <td>@item.Cl</td>
+                                                <td>@item.Sl</td>
+                                                <td>@item.El</td>
+                                                <td>@item.Ml</td>
+                                                <td>@item.Hday</td>
+                                                <td>@item.Wday</td>
+                                                <td>@item.Pday</td>
+                                                <td>@item.CurrEl</td>
+                                                <td>@item.OthrTtl</td>                                               
+                                                <td>@item.IsManual</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+
+
+
+        var table;
+        $('#prossType').select2();
+
+        $(document).ready(function () {
+            var message = "Salary Edit";
+
+            table = $("#tblEmp").DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            visible: false
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            messageTop: message,
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13],
+                                format: {
+                                    body: function (data, row, column, node) {
+
+                                        if (column == 8 || column == 9) {
+                                            return $(data).val();
+                                        }
+                                        else {
+                                            return data;
+                                        }
+
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info mr-1',
+                            titleAttr: 'Print Table',
+                            messageTop: message,
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        if (column == 8 || column == 9) {
+                                            return $(data).val();
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    ]
+                },
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'Gs', 'visible': true },
+                    { 'sClass': 'Bs', 'visible': true },
+                    { 'sClass': 'WorkingDays', 'visible': true },
+                    { 'sClass': 'Present', 'visible': true },
+                    { 'sClass': 'Absent', 'visible': true },
+                   
+                    { 'sClass': 'Cl', 'visible': true },
+                    { 'sClass': 'Sl', 'visible': true },
+                    { 'sClass': 'El', 'visible': true },
+                    { 'sClass': 'Ml', 'visible': true },
+                    { 'sClass': 'Hday', 'visible': true },
+                    { 'sClass': 'Wday', 'visible': true },
+                    { 'sClass': 'Pday', 'visible': true },
+                    { 'sClass': 'CurrEl', 'visible': true },
+                    { 'sClass': 'OthrTtl', 'visible': true },
+                    { 'sClass': 'IsManual', 'visible': true },
+
+                ],
+                'columnDefs': [
+
+                    {
+                        'targets': [6, 7, 8, 9, 10, 14, 15 , 16], 'render': function (data, type, row) {
+                            return `<input class="form-control" type="text" data-val="true" value="${data}">`;
+                        }
+                    }
+
+                ],
+                'lengthMenu': [5, 10, 20,50, 100, 500,1000], // Assign specific page lengths
+                'paging': true,
+                'info': true,
+                'pageLength': 5, // Set the default page length to 5
+                language: {
+                    sLengthMenu: " _MENU_",
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+                select: {
+                    style: 'Multi',
+                    selector: 'td:nth-child(1),td:nth-child(2),td:nth-child(3),td:nth-child(4)'
+                }
+                
+            });
+
+            ///test 
+
+            $("#btnLoad").click(function () {
+                //console.log("ok");
+                SalaryGet();
+            });
+
+            function SalaryGet() {
+                //alert("ok");
+                //debugger;
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+                let prossType = $("#prossType option:selected").val();
+                let tableName = $("#table option:selected").val();
+
+
+                table.rows().remove().draw();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SearchProssData", "Payroll")',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                    data: {
+                        prossType: prossType,
+                        tableName: tableName
+                    },
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            if (data.result == null) {
+                                toastr.info("Data not found!!");
+                            }
+                            
+                            else {
+                                initializeGrid(data.result);
+                            }
+
+                            
+                        }
+                        else {
+                            toastr.error(result.ex);
+                        }
+                        StopSpinner("#btnLoad");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#btnLoad");
+                    }
+                });
+
+            };
+
+            //var message = "Salary Settlement Entry";
+
+
+
+            $('#tblEmp').change(function () {
+                TotalOTSum();
+            });
+
+            TotalOTSum();
+            function TotalOTSum() {
+
+                var totalot = 0;
+                var totalshiftnight = 0;
+
+
+                var rows = $("#tblEmp").dataTable().fnGetNodes();
+
+
+                for (var i = 0; i < rows.length; i++) {
+                    console.log(rows[i].cells);
+                    var ttlotrow = rows[i].cells[9].children[0].value;//.replace(/[\$,]/g, '');
+                    var ttlshiftnightrow = rows[i].cells[9].children[0].value;//.replace(/[\$,]/g, '');
+                    //rows[i].cells[9].innerText=ttlshiftnightrow;
+
+                    totalot += parseFloat(ttlotrow);
+                    totalshiftnight += parseFloat(ttlshiftnightrow);
+
+                }
+
+
+                $(".totalot").text(totalot.toLocaleString());
+                $(".totalshiftnight").text(totalshiftnight.toLocaleString());
+
+                //$("#TotalGRRValue").val(totalgrr.toLocaleString());
+
+            };
+
+
+         
+            function initializeGrid(data) {
+                var table = $('#tblEmp').DataTable();
+                table.clear().draw();
+
+                for (var i = 0; i < data.length; i++) {
+                    var isManual = data[i].IsManual === 1 ? 'Yes' : 'No';
+
+                    table.row.add([
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].Gs,
+                        data[i].Bs,
+                        data[i].WorkingDays,
+                        data[i].Present,
+                        data[i].Absent,
+                        data[i].Cl,
+                        data[i].Sl,
+                        data[i].El,
+                        data[i].Ml,
+                        data[i].Hday,
+                        data[i].Wday,
+                        data[i].Pday,
+                        data[i].CurrEl,
+                        data[i].OthrTtl,
+                        isManual
+                    ]);
+                }
+
+                table.draw();
+            }
+
+
+            $("#btnSave").click(function () {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var ProssType = $("#prossType ").val();
+                var criteria = $("#Criteria:checked").val();
+                var hrProcessedDataSals = [];
+
+                var data = table.rows('.selected').nodes();
+
+                var data1 = table.rows('.selected').data();
+
+
+                var HR_SalarySettlement = {
+                    EmpId: "", EmpCode: "", Gs: "", Bs: "", WorkingDays: "", Present: "", Absent: "", Cl: "", Sl: "", El: "", Ml: "", Hday: "", Wday: "", Pday: "", CurrEl: "", OthrTtl: "", IsManual: "",
+                    ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: CurrentDate(), UpdateByUserId: CurrentDate(), DateUpdated: CurrentDate()
+                };
+
+                for (var i = 0; i < data.length; i++) {
+                    HR_SalarySettlement.EmpId = data1[i][0];
+                    HR_SalarySettlement.EmpCode = data1[i][1];
+                    HR_SalarySettlement.Gs = data1[i][3];
+                    HR_SalarySettlement.Bs = data1[i][4];
+                    HR_SalarySettlement.WorkingDays = data1[i][5];
+                    
+                    HR_SalarySettlement.Present = data[i].cells[5].children[0].value;
+                    HR_SalarySettlement.Absent = data[i].cells[6].children[0].value;
+                    HR_SalarySettlement.Cl = data[i].cells[7].children[0].value; 
+                    HR_SalarySettlement.Sl = data[i].cells[8].children[0].value;
+                    HR_SalarySettlement.El = data[i].cells[9].children[0].value;
+                    HR_SalarySettlement.Ml = data1[i][10];//data[i].cells[10].children[0].value;
+                    HR_SalarySettlement.Hday = data1[i][11];//data[i].cells[11].children[0].value;
+                    HR_SalarySettlement.Wday = data1[i][12];//data[i].cells[12].children[0].value;
+                    HR_SalarySettlement.Pday = data[i].cells[13].children[0].value;
+                    HR_SalarySettlement.CurrEl = data[i].cells[14].children[0].value;
+
+                    HR_SalarySettlement.OthrTtl = data[i].cells[15].children[0].value;
+                    
+                    HR_SalarySettlement.IsManual = data1[i][15];
+                   
+                    hrProcessedDataSals.push(HR_SalarySettlement);
+
+
+
+                    HR_SalarySettlement = {
+                        EmpId: "", EmpCode: "", Gs: "", Bs: "", WorkingDays: "", Present: "", Absent: "", Cl: "", Sl: "", El: "", Ml: "", Hday: "", Wday: "", Pday: "", CurrEl: "", OthrTtl: "", IsManual: "",
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(), UpdateByUserId: CurrentDate(), DateUpdated: CurrentDate()
+                    };
+
+                };
+
+
+                console.log(hrProcessedDataSals);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SalaryEdit", "Payroll")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                    data: { hrProcessedDataSals: hrProcessedDataSals, ProssType: ProssType },
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            table.clear().draw();
+                        }
+                        else
+                            toastr.error(data.ex);
+
+                        StopSpinner("#btnSave");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#btnSave");
+                    }
+                });
+            });
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+
+
+    </script>
+}

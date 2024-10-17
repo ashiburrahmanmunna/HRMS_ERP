@@ -1,0 +1,1317 @@
+﻿@model GTERP.ViewModels.ProdGrid
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Employee Released Info";
+    var section = ViewBag.AllEmployee;
+}
+
+<style>
+    .dataTables_scrollBody {
+        border-bottom: none !important;
+    }
+
+    .set {
+        border-radius: .2em;
+        border: 1px solid #cccccc;
+        padding: 10px;
+        margin-bottom: 2px;
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+
+        .set:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+    .loading {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-top: -50px;
+        margin-left: -50px;
+    }
+
+    .selectedRow {
+        background: #c6b99f;
+    }
+
+    .editable {
+        color: black;
+        border: solid 1px white;
+        border-radius: 4px;
+    }
+
+    .inp {
+        text-align: center;
+    }
+
+    .myMessage {
+        position: fixed;
+        display: none;
+        left: 50%;
+        top: 50%;
+        margin-top: -100px;
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        min-width: 200px;
+        width: 30%;
+        text-align: center;
+        z-index: 100;
+    }
+
+
+    #fixAttGridhd, #fixAttGrid {
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+        #fixAttGrid th, #fixAttGrid td, #fixAttGridhd th, #fixAttGridhd td {
+            text-align: center;
+            overflow: visible;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #fixAttGridhd th {
+            font-weight: bold;
+            height: 25px;
+        }
+
+        #fixAttGridhd tbody td {
+            text-align: center;
+            height: 25px;
+            padding-left: 1px;
+            padding-right: 1px;
+        }
+
+    .pane-hScroll {
+        overflow: auto;
+        width: 100%;
+    }
+
+    .pane-vScroll {
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 60vh;
+    }
+    /* Newly added */
+    .input-group .form-control {
+        position: relative;
+        z-index: 2;
+        float: left;
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .form-control {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+
+    button, input, select, textarea {
+        font-family: inherit;
+    }
+
+    button, input, optgroup, select, textarea {
+        margin: 0;
+        font: inherit;
+    }
+
+    .panel-body {
+        padding: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 0px;
+    }
+
+    .content {
+        padding-top: 75px;
+        padding-bottom: 15px;
+        margin-bottom: 10px;
+    }
+</style>
+
+
+<div class="card" style="font-size: 10px">
+    <h4 class="form-header">
+        <span class="glyphicon glyphicon-wrench"> </span> Production
+    </h4>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12 leftDiv">
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="set">
+
+                        <div class="set" style="padding: 5px">
+                            <table style="width: 100%">
+                                <colgroup>
+                                    <col style="width: 40%" />
+                                    <col style="width: 60%" />
+                                </colgroup>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(model => model.DtFrom, new { @class = "control-label" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.DtFrom, new { @class = "form-control" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        @Html.ValidationMessageFor(model => model.DtFrom, "", new { @style = "color:red" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.LabelFor(model => model.DtTo, new { @class = "control-label" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.DtTo, new { @class = "form-control" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        @Html.ValidationMessageFor(model => model.DtTo, "", new { @style = "color:red" })
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <input type="hidden" name="totalShowLimit" id="totalShowLimit" />
+                        <div class="set" style="text-align: center">
+                            <div class="d-inline-block">
+                                <button type="button" id="refreshBtn" class="btn btn-warning rounded-0">
+                                    <span class="glyphicon glyphicon-refresh"> </span> Refresh List
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="set" style="padding: 10px">
+
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Criteria, new { @class = "control-label col-md-12 col-lg-12 col-sm-12", @style = "text-align:left;" })
+                                    <div class="col-md-12 col-lg-12 col-sm-12" style="font-size: 11px;">
+                                        @Html.RadioButtonFor(m => m.Criteria, "All", new { @checked = "checked" })
+                                        All Employee
+                                        @Html.RadioButtonFor(m => m.Criteria, "EmpID")
+                                        Employee ID<br />
+                                        @Html.RadioButtonFor(m => m.Criteria, "Sec")
+                                        Section
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="set">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="empIdSelect" class="control-label col-lg-4 col-sm-4">Emp Id:</label>
+                                    <div class="col-lg-8 col-sm-8">
+                                        <select id="empIdSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.EmpId"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sectSelect" class="control-label col-lg-4 col-sm-4">Section:</label>
+                                    <div class="col-lg-8 col-sm-8">
+                                        <select id="sectSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.Sections"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="styleSelect" class="control-label col-lg-4 col-sm-4">Style:</label>
+                                    <div class="col-lg-8 col-sm-8">
+                                        <select id="styleSelect" data-val="false" class="form-control" name="EmpId" disabled="disabled" asp-items="@ViewBag.Style"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div> @*Left option container end*@
+
+            <div class="col-sm-12 col-lg-6 col-md-6 set">
+                <div id="fixAttGridDiv">
+                    @*<partial name="_FixAttendancGrid" />*@
+                    <div class="pane pane--table1" id="scrollDiv">
+                        <div class="pane-hScroll" id="scrollXDiv" onscroll="scrolled(this)">
+                            <table id="fixAttGridhd" class="table">
+                                <colgroup>
+                                    @*<col style="width: 30px;" />*@
+                                    <col style="width: 100px;" />
+                                    <col style="width: 120px;" />
+                                    <col style="width: 120px;" />
+                                    <col style="width: 100px;" />
+                                    <col style="width: 100px;" />
+                                    <col style="width: 150px;" />
+                                    <col style="width: 150px;" />
+                                    <col style="width: 100px;" />
+                                    <col style="width: 100px;" />
+                                    <col style="width: 100px;" />
+                                </colgroup>
+                                <thead style="font-weight: bold; text-align: center;">
+                                    <tr>
+                                        <th class="d-none">Emp Id</th>
+
+                                        <th>Emp Code</th>
+                                        <th>Employee Name</th>
+                                        <th>StyleName</th>
+                                        <th>Pro Date</th>
+                                        <th>Quantity</th>
+                                        <th>Remarks</th>
+                                        <th>Sect Name</th>
+                                        <th>Designation</th>
+                                        <th>Dept Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.listOfProd != null)
+                                    {
+                                        foreach (var item in ViewBag.listOfProd)
+                                        {
+                                            <tr>
+                                                @*<td>@item.IsChecked</td>*@
+                                                <td style="display: none;">@item.EmpId</td>
+                                                <td>@item.EmpCode</td>
+                                                <td>@item.EmpName</td>
+                                                <td>@item.StyleName</td>
+                                                <td>@item.dtPunchDate</td>
+                                                <td>@item.Quantity</td>
+                                                <td>@item.Remarks</td>
+                                                <td>@item.SectName</td>
+                                                <td>@item.DesigName</td>
+                                                <td>@item.DeptName</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                            <p style="height: 4px;"></p>
+                            <div class="pane-vScroll" id="scrollYDiv" onscroll="scrolled(this)">
+                            </div>
+                        </div>
+                        <hr style="margin-bottom: 2px; margin-top: 5px; border-color: gray" />
+                    </div>
+                </div>
+            </div>@*Grid container end*@
+
+            <div class="col-md-3 col-12">
+
+                <div class="set">
+                    <div class="set" id="leaveSetup" style="margin: 5px 0 5px 0;">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="dtPunchDate" class="control-label col-sm-5">Date:</label>
+                                <div class="col-sm-7 input-group bootstrap-datetimepicker-widget datepicker" id="divTime" style="padding: 0px 10px 0px 10px">
+                                    <input type="text" class="editable inp form-control" id="dtPunchDate" />
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" id="dtPunchDateChk" name="dtPunchDateChk">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="timeOut" class="control-label col-sm-5">Amount:</label>
+                                <div class="col-sm-7 input-group bootstrap-timepicker timepicker" id="divTime" style="padding: 0px 10px 0px 10px">
+                                    <input type="text" class="editable inp form-control" id="timeOut" />
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" id="timOutChk" name="timeOutChk">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="statusSelectrt" class="control-label col-sm-5">Style:</label>
+                                <div class="col-sm-7 input-group" style="padding: 0px 10px 0px 10px">
+                                    <select class="form-control" asp-items="@ViewBag.Style" asp-for="StyleId">
+                                    </select>
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" id="statusChk" name="statusChk">
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="allCheckedDiv" class="form-group">
+                                <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                <div class="col-lg-8 col-md-8 col-sm-8" style="padding: 0px 10px 0px 10px">
+                                    <input type="checkbox" id="allChecked" name="allChecked"> All checked<br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="set">
+                        <button type="button" id="fillDatabtn" class="btn btn-warning rounded-0">
+                            <span class="glyphicon glyphicon-retweet"> </span> Fill Data
+                        </button>
+                        <button type="submit" id="updateBtn" name="updateBtn" class="btn btn-success rounded-0">
+                            <span class="glyphicon glyphicon-check"> </span> Update
+                        </button>
+                    </div>
+                </div>
+
+
+            </div> @*Right option container end*@
+        </div> @*Options Container end*@
+    </div> @*Panel Body end*@
+</div>  @*Panel end*@
+
+@*Modal*@
+<div class="myMessage">
+    <div id="msgDivWrapper" class="panel panel-primary">
+        <div id="msgDivHeader" class="panel-heading"><h4 style="padding:0px; margin: 0px;">Message</h4></div>
+        <div class="panel-body ajaxMessage"></div>
+        <div id="msgDivFooter" class="panel-footer" style="padding: 5px 15px;">
+            <button id="okBtn" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-remove"> </span> Close
+            </button>
+        </div>
+    </div>
+</div>
+@*Appears during ajax call*@
+<div id="progress" class="modal">
+    <div class="center loading">
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var editMode = "Selective";   //"All" or "Selective" : whether all of the data is to be updated or not, All will not be used in this form
+        function initScroller() {
+            $('.pane-hScroll').scroll(function () {
+                $('.pane-vScroll').width($('.pane-hScroll').width() + $('.pane-hScroll').scrollLeft());
+            });
+        }
+
+        function TryParseInt(str, defaultValue) {
+            var retValue = defaultValue;
+            if (str !== null) {
+                if (str.length > 0) {
+                    if (!isNaN(str)) {
+                        retValue = parseInt(str);
+                    }
+                }
+            }
+            return retValue;
+        }
+
+        function uncheckAllCheckBox() {
+            $("input:checkbox[name=check_list]").prop('checked', false);
+
+            $("input:checkbox[id=statusChk]").attr('checked', false);
+            $("input:checkbox[id=timeOutChk]").attr('checked', false);
+            $("input:checkbox[id=dtPunchDateChk]").attr('checked', false);
+
+            $(".icheckbox_minimal-blue").attr("aria-checked", "false");
+            $(".icheckbox_minimal-blue").removeClass("checked");
+        }
+
+        function initDatePicker() {
+            $("#DtTo").datepicker({
+                format: 'dd-M-yy',
+                date: new Date(),
+                autoclose: true
+            }).datepicker("setDate", new Date());
+            $("#DtFrom").datepicker({
+                format: 'dd-M-yy',
+                date: new Date(),
+                autoclose: true
+            }).datepicker("setDate", new Date());
+        }
+
+        var compare = function (filter, value, id) {
+            var sign = $("#" + id).val();
+            filter = TryParseInt(filter, filter);
+            value = TryParseInt(value, value);
+            if (sign === "=") {
+                return value === filter ? 0 : -1;
+            } else if (sign === ">") {
+                return value > filter ? 0 : -1;
+            } else if (sign === "<") {
+                return value < filter ? 0 : -1;
+            } else if (sign === ">=") {
+                return value >= filter ? 0 : -1;
+            } else if (sign === "<=") {
+                return value <= filter ? 0 : -1;
+            }
+            return value;
+        }
+
+        function initDynamicTimePickers() {
+
+            $("#searchTimeIn").datepicker({ showMeridian: false }).on('hide.datepicker', function (e) {
+                mySearchFunction(this, "dtPunchDate", compare);
+            });
+            $("#searchTimeout").timepicker({ showMeridian: false }).on('changeTime.timepicker', function (e) {
+                mySearchFunction(this, "TimeOut", compare);
+            });
+
+            $("input[id*='inpTimeOut']").timepicker({ showMeridian: false });
+            $("input[id*='inpdtPunchDate']").timepicker({ showMeridian: false });
+        }
+
+        function modal(message, type) {
+            if (type === "success") {
+                $("#msgDivWrapper").css("border-color", "rgb(76, 181, 81)");
+                $("#msgDivHeader").css("background-color", "#8fd045").css("border-color", "rgb(76, 181, 81)");
+                $("#msgDivFooter").css("border-color", "#efefef");
+            } else if (type === "error") {
+                $("#msgDivWrapper").css("border-color", "#ff4500");
+                $("#msgDivHeader").css("background-color", "rgb(241, 58, 36)").css("border-color", "#ff4500");
+                $("#msgDivFooter").css("border-color", "#f4f4f4");
+            } else {
+                $("#msgDivWrapper").css("border-color", "#337ab7");
+                $("#msgDivHeader").css("background-color", "#337ab7").css("border-color", "#337ab7");
+                $("#msgDivFooter").css("border-color", "#f5f5f5");
+            }
+            $(".myMessage").show();
+            $(".ajaxMessage").text(message);
+            $("#okBtn").focus();
+            $("#okBtn").on("click", function () {
+                $(".myMessage").fadeOut(500);
+            });
+            $(document).mouseup(function (e) {
+                var container = $(".myMessage");
+                // if the target of the click isn't the container nor a descendant of the container
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    container.fadeOut(500);
+                }
+            });
+        }
+
+        //$("#refreshBtn").click(function () {
+        //    $("#totalShowLimit").val(totalShowLimit);
+        //});
+
+        /******************************************************/
+        /*----------------------------------------------------*/
+        /*Loading related codes start*/
+
+        var gtable; //new
+        var totalShowLimit = 30; //new
+        var empArr = [];
+        var empArrLen;
+        var prevFilter = "";
+        var resultShowLimit = 30;
+        var resultShowCount;
+        var resultArr = [];
+        var resultArrLen;
+        var isResult = false; //whether only results or all employees to show
+        var visible = 0;
+        var remain = 0;
+        var AllStatus;
+
+        function addRow(index) {     //into tbody
+            var isCheck, EmpId, EmpCode, EmpName, IsChecked, Quantity, Remarks, SectName, StyleId, dtPunchDate;
+            if (isResult) {
+                IsChecked = resultArr[index].IsChecked;
+                EmpId = resultArr[index].EmpId;
+                EmpCode = resultArr[index].EmpCode;
+                EmpName = resultArr[index].EmpName;
+                StyleId = resultArr[index].StyleId;
+                dtPunchDate = resultArr[index].dtPunchDate;
+                Quantity = resultArr[index].Quantity;
+                Remarks = resultArr[index].Remarks;
+                SectName = resultArr[index].SectName;
+            }
+            else {
+                IsChecked = resultArr[index].IsChecked;
+                EmpId = resultArr[index].EmpId;
+                EmpCode = resultArr[index].EmpCode;
+                EmpName = resultArr[index].EmpName;
+                StyleId = resultArr[index].StyleId;
+                dtPunchDate = resultArr[index].dtPunchDate;
+                Quantity = resultArr[index].Quantity;
+                Remarks = resultArr[index].Remarks;
+                SectName = resultArr[index].SectName;
+            }
+            var checked = IsChecked ? "checked" : " ";
+            var select = '<select id="inpStyle_' + EmpId + '" data-val="false" style="width: 100%; text-align-last:center; text-align:center;" class="editable inp style">';
+            for (var j = 0; j < AllStyle.length; j++) {
+                if (AllStyle[j] === Status) {
+                    select += '<option value="' + AllStyle[j] + '" selected="selected">' + AllStyle[j] + '</option>';
+                } else {
+                    select += '<option value="' + AllStyle[j] + '">' + AllStyle[j] + '</option>';
+                }
+
+            }
+            select += '</select>';
+            //console.log(index);
+            //console.log(resultArr[index]);
+            $("#fixAttGridhd").children("tbody").append("<tr id='tr_" + EmpId + "'>" +
+                "<td><input id='myCheckBox_" + index + "' name='check_list' class='myCheckBox' type='checkbox' " + checked + "/></td>"
+                + "<td id='tblEmpId' style='display: none;'>" + EmpId + "</td>"
+                + "<td id='tblEmpCode'>" + EmpCode + "</td>"
+                + "<td id='tblEmpName'>" + EmpName + "</td>"
+                + "<td id='tblStyle'>" + select + "</td>"
+                //+ "<td id='tbldtPunch'>" + dtPunchDate + "</td>"
+                + "<td id='tbldtPunch'><div class='input-group bootstrap-datetimeoicker datepicker' style='width: 100%;'>" +
+                "<input type='text' value='" + dtPunchDate + "' class='editable inp dtPunchDate' id='inpTimeIn_" + index + "'/></div></td>"
+                + "<td id='tblOtHour'>" + Quantity + "</td>"
+                
+                + "<td id='tblSectName'>" + SectName + "</td>"
+                + "<td id='tblRemarks'><input type='text' value='" + Remarks + "' class='editable inp remarks' id='inpRemarks_" + EmpId + "'/></td>"
+                + "</tr>"
+            );
+        }
+
+        function updateArr(id, key, val) {
+            for (var i = 0; i < empArrLen; i++) {
+                if (empArr[i].EmpId.toString() === id.toString()) {
+                    empArr[i][key] = val;
+                    console.log(empArr[i][key] + ", Id : " + empArr[i].EmpId + ", Name: " + empArr[i].EmpName);
+                    break;
+                }
+            }
+        }
+
+        function updateFullArr(key, val) {
+            for (var i = 0; i < empArrLen; i++) {
+                empArr[i][key] = val;
+                //if(i<20)
+                console.log(key + " : " + empArr[i][key] + ", Id : " + empArr[i].EmpId + ", Name: " + empArr[i].EmpName);
+            }
+        }
+
+        function clearSearchFields(obj) {
+            var txt = $(obj).val();
+            //console.log(obj);
+            $("input[id^='search']").val("");
+            $(obj).val(txt);
+            if (obj.id === "searchStatus" || obj.id === "compareOtHour") {
+                $("#searchStatus").val(txt).one("click");
+            } else {
+                $("#searchStatus").val("").one("click");
+            }
+        }
+
+
+
+        $(document).on("change", ".myCheckBox", function () {
+
+            var txt = $(this).attr('id');
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            if (this.checked) {
+                updateArr(id, "IsChecked", true);
+            } else {
+                updateArr(id, "IsChecked", false);
+            }
+        });
+
+        $(document).on("change", ".dtPunchDate", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "dtPunchDate", this.value);
+        });
+
+        //$(document).on("change", ".timeOut", function () {
+        //    var txt = this.id;
+        //    var id = txt.match(/\d/g);
+        //    id = id.join("");
+        //    updateArr(id, "TimeOut", this.value);
+        //});
+
+        $(document).on("change", ".quantity", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "Quantity", this.value);
+        });
+
+        $(document).on("change", ".style", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "StyleId", this.value);
+        });
+
+        $(document).on("change", ".remarks", function () {
+            var txt = this.id;
+            var id = txt.match(/\d/g);
+            id = id.join("");
+            updateArr(id, "Remarks", this.value);
+        });
+        function deleteRow(rowid) {
+            var row = document.getElementById('tr_' + rowid);
+            try {
+                row.parentNode.removeChild(row);
+            } catch (ex) {
+                alert('An error has occurred: ' + ex.message);
+            }
+        }
+
+        function emptyTableTbody() {
+            $("#fixAttGrid").children("tbody").html("");
+        }
+
+        function showMessage(visible, total) {
+            $("#showMessage").html("Showing " + visible + " out of " + total + " results.").show();
+        }
+
+        function initSearchArray(gridData, allStatus) {
+            gtable = document.getElementById("fixAttGrid");
+            empArr = gridData;
+            //console.log(empArr);
+
+            //console.log(gtable);
+            empArrLen = Object.keys(empArr).length;
+            visible = empArrLen < totalShowLimit ? empArrLen : totalShowLimit;
+
+            remain = empArrLen - visible;
+            isResult = false;
+            showMessage(visible, empArrLen);
+            AllStatus = allStatus;
+            console.log(AllStatus);
+        }
+
+        function fillTable() {
+            var newTbody = document.createElement('tbody');
+            var oldTbody = gtable.getElementsByTagName('tbody');
+            gtable.replaceChild(newTbody, oldTbody[0]);
+
+            //empArrLen = Object.keys(empArr).length;
+            for (var i = 0; i < totalShowLimit && i < empArrLen; i++) {
+                addRow(i);
+            }
+
+            visible = totalShowLimit < empArrLen ? totalShowLimit : empArrLen;
+            remain = empArrLen - visible;
+            isResult = false;
+            showMessage(visible, empArrLen);
+            //scrollToTop();
+            //resetEmpTable();
+            //console.log("fill : scrollTop: " + div.scrollTop);
+        }
+        //Testing needed
+        function scrollToTop() {
+            //var div = document.getElementById('#fixAttGrid');
+            //div.style.display = 'none';
+            //setTimeout(function () { div.style.display = 'block'; }, 10);
+
+            $("#scrollYDiv").animate({ scrollTop: 0 });
+
+        }
+
+        function showNextContents(callback) {
+            var n, i;
+            console.log('Inside the show next content');
+            totalShowLimit = empArrLen;
+            if (!isResult && remain > 0) {
+                n = (visible + totalShowLimit) < empArrLen ? (visible + totalShowLimit) : empArrLen;
+                for (i = visible; i < n; i++) {
+                    addRow(i);
+                }
+                visible = n;
+                remain = remain - totalShowLimit;
+                showMessage(visible, empArrLen);
+            }
+            else if (isResult && remain > 0) {
+                n = (visible + resultShowLimit) < resultArrLen ? (visible + resultShowLimit) : resultArrLen;
+                for (i = visible; i < n; i++) {
+                    addRow(i);
+                }
+                visible = n;
+                remain = remain - resultShowLimit;
+                showMessage(visible, resultArrLen);
+            }
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function () {
+                var context = this, args = arguments;
+                var later = function () {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
+        function setTimeoutWrapper(l, filter, chunkSize, delayTime, colName, comp) {
+            setTimeout(function () {
+                var i, n = empArrLen < (l + chunkSize) ? empArrLen : (l + chunkSize);
+                var searchVal;
+                //console.log("compare" + colName);
+                for (i = l; i < n; i++) {
+                    searchVal = empArr[i][colName].toString().toUpperCase();
+                    if (searchVal) {
+                        if (typeof comp === "function") {
+                            if (comp(filter, searchVal, "compare" + colName) > -1) {
+                                resultArr.push(empArr[i]);
+                                //console.log("compare" + colName + " : ",filter, searchVal, resultArr[resultShowCount]);
+                                if (resultShowCount < resultShowLimit) {
+                                    addRow(resultShowCount);
+                                }
+                                resultShowCount++;
+                            }
+                        }
+                        else if (searchVal.indexOf(filter) > -1) {
+                            resultArr.push(empArr[i]);
+                            if (resultShowCount < resultShowLimit) {
+                                addRow(resultShowCount);
+                            }
+                            resultShowCount++;
+                        }
+                    }
+                }
+            }, delayTime);
+        }
+
+        var mySearchFunction = debounce(function (obj, colName, comp) {
+            clearSearchFields(obj);
+            var id = obj.id;
+            var input, filter, i, delayTime;
+            input = document.getElementById(id);
+            //console.log(obj, colName, comp, input);
+            filter = input.value.toUpperCase();
+
+            //var searchtype = searchType(filter);
+            //if (searchtype === 0) { return; }
+            resultArr = [];
+            resultShowCount = 0;
+            if (!filter) {
+                isResult = false;
+                fillTable();
+                return;
+            }
+            //console.log(filter);
+            isResult = true;
+
+            emptyTableTbody();
+
+            var chunkSize = 1000;
+            //console.log(comp);
+            // Loop through all table rows chunk by chunk
+            for (i = 0, delayTime = 0; i < empArrLen; i += chunkSize, delayTime++) {
+                setTimeoutWrapper(i, filter, chunkSize, delayTime, colName, comp);
+            }
+
+            //first row selected and scrollbar back to top and showig message
+            setTimeout(function () {
+                scrollToTop();
+                var showing = resultShowLimit > resultShowCount ? resultShowCount : resultShowLimit;
+                showMessage(showing, resultShowCount);
+                visible = showing;
+                remain = resultShowCount - visible;
+                resultArrLen = Object.keys(resultArr).length;
+            }, delayTime + 20);
+
+        }, 500);
+
+        function scrolled(div) {
+            //bottom
+            //visible height + pixel scrolled = total height
+            if (div.offsetHeight + div.scrollTop === div.scrollHeight) {
+                showNextContents(function () {
+                    setTimeout(initDynamicTimePickers(), 10);
+                });
+                //div.scrollTop = 0;
+                //if (remain <= 0) {
+                //    setTimeout($(div).animate({ scrollTop: 0 }, 600), 20);
+                //}
+            }
+            //right end
+            if (div.offsetWidth + div.scrollLeft === div.scrollWidth) {
+                //console.log("End");
+                //alert(div.id);
+                //div.scrollLeft = 0;
+            }
+        }
+
+
+        $(document).ready(function () {
+
+            $('#fixAttGridhd').DataTable({
+                select: {
+                    style: 'multi'
+                }
+
+            });
+            $('#fixAttGridhd tbody').on('click', 'tr', function () {
+                $(this).toggleClass('selected');
+
+            });
+
+            //    $('#button').click(function () {
+            //        alert(table.rows('.selected').data().length + ' row(s) selected');
+            //    });
+            //}
+            $('input[name="Criteria"]').on('ifClicked', function (event) { //radio button change code
+                var selectedValue = this.value;
+                switch (selectedValue) {
+                    case 'EmpID':
+                        $("#empIdSelect").prop('disabled', false);
+                        $("#sectSelect").prop('disabled', false);
+                        break;
+                    case 'Sec':
+                        $("#empIdSelect").prop('disabled', false);
+                        $("#sectSelect").prop('disabled', false);
+                        break;
+                    default:    // 'All' and 'Missing'
+                        $("#empIdSelect").prop('disabled', false);
+                        $("#sectSelect").prop('disabled', false);
+                        break;
+                }
+
+                //$(document).ajaxStop(function () {
+                //    alert("a");
+                //    $("#progress").hide();
+                //});
+            });
+
+
+
+
+            $("#fillDatabtn").click(function () {
+                var fixAttGridhd = $('#fixAttGridhd').DataTable();
+                var flag = false;
+                var i;
+                var $rows = fixAttGridhd.$('tbody tr.selected');
+                alert($rows.length);
+                //var ids = $.map(fixAttGridhd.rows('.selected').data(), function (item) {
+                //    return item[0]
+                //});
+                //console.log(ids)
+                //alert(table.rows('.selected').data().length + ' row(s) selected');
+                //var selectedRows = fixAttGridhd.rows.hasClass("selected");
+                //alert(selectedRows.length);
+
+                //$(".table > tbody > tr").each(function () {
+                //    if ($(this).hasClass("selected")) {
+                //        console.log($(this).attr("id"));
+                //    }
+                //});
+                //selectedRows.each(function (k,item){
+                //    item[3] = "test"+k;
+                //    item[4] = "abc";
+                //});
+                fixAttGridhd.ne
+                    .rows({ selected: true })
+                    .every(function (rowIdx, tableLoop, rowLoop) {
+                        fixAttGridhd.cell(rowIdx, 4).data("as");
+                        //fixAttGridhd.cell(rowIdx, 3).data("22");
+                    })
+                    .draw();
+                //table.each(function (value, index) {
+                //    console.log('Data in index: ' + index + ' is: ' + value);
+                //});
+                //$.each(selectedRows, function (idx, item) {
+
+                //    //alert(idx);
+                //    //alert(rowCount);
+                //    item[3] = "test";
+                //    item[4] = "abc";
+                //    //item[24] = idx + 1 + rowCount;
+                //    //alert(item[24]);
+                //    targetTable.row.add(JSON.parse(JSON.stringify(
+
+                //        item
+                //    )));
+                //    //alert('data added');
+
+                //})
+                //var rowsFY = tableFY.rows('.selected').data();
+                //$("#fixAttGridhd  tbody  tr").each(function () {
+                //    if ($(this).hasClass("selected")) {
+                //        i++;
+                //        alert(i);
+                //        var to = $("#timeOut").val();
+                //        var ti = $("#timeIn").val();
+                //        if ($('input:checkbox[name=statusChk]').is(':checked')) {
+
+                //            if ($("#statusSelectrt").val()) {
+                //                var value = $("#statusSelectrt").val();
+                //                $("[id='status']").html(value);
+                //                //console.log($("[id^='inpStatus'") + " : " + AllStatus.indexOf($("#statusSelectrt").val()));
+
+                //                updateFullArr("Status", value);
+                //                flag = true;
+                //            } else {
+                //                modal("Please Select a Status.", "info");
+                //            }
+
+
+                //        }
+
+
+                //        if ($('input:checkbox[name=timeOutChk]').is(':checked')) {
+
+                //            $("input[id='inpTimeOut']").html(to);
+                //            updateFullArr("TimeOut", $("#timeOut").val());
+                //            flag = true;
+
+                //        }
+
+                //        if ($('input:checkbox[name=timeInChk]').is(':checked')) {
+
+                //            $("input[id='inpTimeIn']").html($("#timeIn").val());
+                //            updateFullArr("TimeIn", $("#timeIn").val());
+                //            flag = true;
+
+                //        }
+                //        if (flag) {
+                //            modal("Data succefully filled in.", "info");
+                //        }
+                //    }
+                //});
+
+
+
+            });
+            initDatePicker();
+            $("#dtPunchDate").text({
+                interval: 60,
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+            $("#refreshBtn").click(function () {
+                //$("#totalShowLimit").val(totalShowLimit);
+                DailyEmpFixedAttandanceData();
+            });
+            //$("#refreshBtn").click(function () {
+            //   DailyEmpFixedAttandanceData()
+            //});
+            $("#timeOut").timepicker({
+                timeFormat: 'h:mm p',
+                interval: 60,
+                minTime: '10',
+                maxTime: '6:00pm',
+                defaultTime: '11',
+                startTime: '10:00',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+
+
+            $("input:checkbox[name=allChecked]").on("ifChecked", function () {
+                updateFullArr("IsChecked", true);
+                $("input:checkbox[name=check_list]").prop('checked', true);
+            });
+
+            $("input:checkbox[name=allChecked]").on("ifUnchecked", function () {
+                updateFullArr("IsChecked", false);
+                $("input:checkbox[name=check_list]").prop('checked', false);
+            });
+
+
+        });
+
+        function OnSuccess(response) {
+            //alert("aaa");
+            $("#fixAttGridDiv").html(response.fixAttGrid);
+            initScroller();
+            initDynamicTimePickers();
+            initSearchArray(response.gridData, response.AllStatus);
+            uncheckAllCheckBox();
+        }
+
+        function OnFailure(xhr, response) {
+            //alert(response.responseText + " : " + xhr.responseText);
+            var matches = xhr.responseText.match(/<title>(.*?)<\/title>/);
+            modal("ERROR : " + matches[1], "error");
+        }
+
+
+
+        $("#updateBtn").click(function () {
+            var dtFrom = $("#dtFrom").val();
+            var dtTo = $("#dtTo").val();
+            var criteria = $("#Criteria:checked").val();
+            var i, GridDataList = [];
+            for (i = 0; i < empArrLen; i++) {
+                //console.log("i : " + i);
+                if ($("#myCheckBox_" + i).prop("checked")) {
+                    empArr[i].IsChecked = true;
+                    empArr[i].dtPunchDate = dtPunchDate;
+                    empArr[i].Quantity = Quantity;
+                    empArr[i].Remarks = Remarks;
+                    empArr[i].Criteria = criteria;
+                    GridDataList.push(empArr[i]);
+                    alert(empArr[i].EmpId + " : " + empArr[i].EmpName);
+                    console.log(empArr[i].EmpId + " : " + empArr[i].EmpName);
+                } else {
+                    //console.log(empArr[i].EmpId + " : " + empArr[i].EmpName);
+                }
+            }
+
+
+
+            if (GridDataList.length <= 0) {
+                modal("Please select employees to update.", "error");
+                return;
+            }
+
+            var json = { FixAtts: GridDataList };
+            console.log(json);
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Production/Create",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                success: function (data) {
+                    //alert(data.response.Message);
+                    modal(data.response.Message, "success");
+                    customFile('1', data.ex);
+                    //Unchecking all the checkboxes
+                    uncheckAllCheckBox();
+                    updateFullArr("IsChecked", false);
+                },
+                complete: function () {
+                    $("#progress").hide();
+                    uncheckAllCheckBox();
+                },
+                error: function (xhr, response) {
+                    $("#progress").hide();
+                    var matches = xhr.responseText.match(/<title>(.*?)<\/title>/);
+                    modal("ERROR : " + matches[1], "error");
+                    customFile('3', data.ex);
+                }
+            });
+        });
+
+
+        //$(document).ready(function () {
+        //    $("#refreshBtn").click(function () {
+        //        DailyEmpFixedAttandanceData()
+        //    });
+        //    //$("#timeIn").timepicker({
+        //    //    showMeridian: false,
+        //    //    defaultTime: '08:00'
+        //    //});
+        //    $('#DtFrom').val(CurrentDate())
+        //    $('#DtTo').val(CurrentDate())
+        //    $("#DtFrom").datepicker({
+        //        onSelect: function (date) {
+        //            // Your CSS changes, just in case you still need them
+        //            $('a.ui-state-default').removeClass('ui-state-highlight');
+        //            $(this).addClass('ui-state-highlight');
+        //            var dateFormat = $("#DtFrom").datepicker("option", "dateFormat");
+        //            //setter
+        //            $("#DtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+
+        //        }
+        //    });
+        //    $("#DtTo").datepicker({
+        //        onSelect: function (date) {
+        //            // Your CSS changes, just in case you still need them
+        //            $('a.ui-state-default').removeClass('ui-state-highlight');
+        //            $(this).addClass('ui-state-highlight');
+        //            var dateFormat = $("#DtTo").datepicker("option", "dateFormat");
+        //            //setter
+        //            $("#DtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+        //        }
+        //    });
+
+
+
+        //})
+
+
+        //function CurrentDate() {
+        //    var date = new Date();
+        //    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+        //        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        //    var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+        //    return val;
+        //}
+
+
+        function DailyEmpFixedAttandanceData() {
+            //var strfy = JSON.stringify({ data });
+
+            //var formData = new FormData($('form').get(0));
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            //formData.append("isHide", strfy);
+
+
+            var dtfrom = $('#DtFrom').val();
+            var criteria = $("#Criteria:checked").val();
+            var options = {};
+
+            options.url = "/HR/ProductionList";
+            options.type = "POST";
+            options.dataType = "json";
+            options.headers = { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken };
+            //options.async = 'false';
+            options.data = { DtFrom: dtfrom, DtTo: dtto,  criteria: criteria };
+            options.success = function (data) {
+                if (data.Success == 1) {
+                    if (data.Result == null) {
+                        alert("Result is null")
+                    }
+
+                    for (item of data.Result) {
+                        $('#fixAttGridhd tbody')
+                            .append(
+                                `<tr>
+                                    <td id='EmpId' style='display: none;'>${item.EmpId}</td>
+                                    <td id='empCode'>${item.EmpCode}</td>
+                                    <td>${item.EmpName}</td>
+                                    <td id='StyleId'>${item.StyleId}</td>
+                                    <td id='dtPunchDate'>${item.dtPunchDate}</td>
+                                    <td id='Quantity'>${item.Quantity}</td>
+                                    <td id='remark'>${item.Remarks}</td>
+                                    <td>${item.SectName}</td>
+                                </tr>`
+                            );
+                    }
+                }
+
+            };
+            options.error = function () {
+                alert("error occured from DailyEmpFixedAttandanceData()");
+            };
+            $.ajax(options);
+        };
+
+    //<td><input id='myCheckBox_"+ index + "' name='check_list' class='myCheckBox' type='checkbox' checked=" ${item.IsChecked}"/></td>
+
+    //$("#fillDatabtn").click(function () {
+        //    var timeIn = $("#timeIn").val();
+        //    var timeOut = $("#timeOut").val();
+        //    var timeStatus = $("#StatusId").val();
+
+        //    if ($("#allChecked").status.IsChecked) {
+        //        $("#fixAttGridhd tbody tr").each(function () {
+        //            if ($("#timInChk").status.IsChecked) {
+        //                $(this).find('td').eq(4).val(timeIn);
+        //            }
+        //            if ($("#timOutChk").status.IsChecked) {
+        //                $(this).find('td').eq(5).val(timeOut);
+        //            }
+        //            if ($("#statusChk").status.IsChecked) {
+        //                $(this).find('td').eq(6).val(timeStatus);
+        //            }
+        //        })
+        //    }
+        //    else {
+        //        $("#fixAttGridhd tbody tr").each(function () {
+        //            for (item of data) {
+        //                $('#fixAttGridhd tbody').append(
+        //                    `<tr>
+        //                                                        <td id='EmpId' style='display: none;'>${item.EmpId}</td>
+        //                                                        <td><input id='myCheckBox_"+ index + "' name='check_list' class='myCheckBox' type='checkbox' ${item.IsChecked}/></td>
+        //                                                        <td id='dtPunch'>${item.dtPunchDate}</td>
+        //                                                        <td id='empCode'>${item.EmpCode}</td>
+        //                                                        <td id='timeIn'><div class='input-group bootstrap-timepicker timepicker' style='width: 100%;'><input type='text' value='${item.TimeIn}' class='editable inp timeIn' id='inpTimeIn_" + index + "'/></div></td>
+        //                                                        <td id='timeOut'><div class='input-group bootstrap-timepicker timepicker' style='width: 100%;'><input type='text' value='${item.TimeOut}' class='editable inp timeOut' id='inpTimeOut_" + index + "'/></div></td>
+        //                                                        <td id='status'>${item.Status}</td>
+        //                                                        <td id='othour'>${item.OtHour}</td>
+        //                                                        <td>${item.EmpName}</td>
+        //                                                        <td>${item.SectName}</td>
+        //                                                        <td>${item.ShiftName}</td>
+        //                                                        <td>${item.Line}</td>
+        //                                                        <td id='remark'>${item.Remarks}</td>
+        //                                                 </tr>`);
+        //            }
+
+
+        //            if ($(this).find('td').eq(1).find('input[type=checkbox]').is(':checked')) {
+        //                if ($("#timInChk").status.IsChecked) {
+        //                    $(this).find('td').eq(4).val(timeIn);
+        //                }
+        //                if ($("#timOutChk").status.IsChecked) {
+        //                    $(this).find('td').eq(5).val(timeOut);
+        //                }
+        //                if ($("#statusChk").status.IsChecked) {
+        //                    $(this).find('td').eq(6).val(timeStatus);
+        //                }
+        //            }
+
+        //        })
+        //    }
+        //});
+
+        //$("#updateBtn").click(function () {
+        //    var formData = new FormData();
+
+
+        //    var FixAtts = [];
+
+        //    var FixAtt = { EmpId: 0, dtPunch: "", empCode: 0, timein: "", timeout: "", status: "", othour: "", remark: "" };
+        //    var timeIn = $("#timeIn").val();
+        //    var timeOut = $("#timeOut").val();
+        //    var timeStatus = $("#StatusId").val();
+        //    $("#fixAttGridhd tbody tr").each(function () {
+        //        if ($(this).find('td').eq(1).find('input[type=checkbox]').is(':checked')) {
+        //            FixAtt.chk = $(this).find('td').eq(1).find('input[type=checkbox]').is(':checked');
+        //            FixAtt.EmpId = $(this).find('td').eq(0).text();
+        //            FixAtt.dtPunch = $(this).find('td').eq(2).text();
+        //            FixAtt.empCode = $(this).find('td').eq(3).text();
+        //            FixAtt.timein = $(this).find('td').eq(4).text();
+        //            FixAtt.timeout = $(this).find('td').eq(5).text();
+        //            FixAtt.status = $(this).find('td').eq(6).text();
+        //            FixAtt.othour = $(this).find('td').eq(7).text();
+        //            FixAtt.remark = $(this).find('td').eq(8).text();
+        //            FixAtts.push(FixAtt);
+        //        }
+        //    });
+
+        //    if (FixAtts.length < 1) {
+        //        return;
+        //    }
+
+        //    var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+        //    var json = JSON.stringify({ FixAtts });
+        //    formData.append('FixAtts', json);
+        //    var options = {};
+        //    options.type = 'POST';
+        //    options.url = "/FixedAtt/UpdateAttandence";
+        //    options.headers = { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken };
+        //    //options.dataType = 'json';
+        //    options.contentType = false;
+        //    options.processData = false;
+        //    options.data = formData;
+        //    options.success = function (data) {
+        //        //window.location.href = '';
+        //        alert('ok');
+        //    };
+        //    options.error = function () {
+        //        alert("error");
+        //    };
+        //    $.ajax(options);
+        //});
+
+                                                                                                                                            //function initSearchArray(gridData, allStatus) {
+                                                                                                                                            //    gtable = document.getElementById("fixAttGrid");
+                                                                                                                                            //    empArr = gridData;
+    </script>
+}

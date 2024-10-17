@@ -1,0 +1,97 @@
+﻿@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Leave_Type> LeaveTypes = new List<Cat_Leave_Type>();
+    LeaveTypes = ViewBag.LeaveType;
+}
+
+    <div class="table mb-0">
+        <input type="text" class="LeaveTypeSearch form-control" placeholder="Search . . ."  />
+    </div>
+<div class=" table-responsive">
+    <table id="commonTable" class="commonTable table table-hover mb-0">
+
+        <thead>
+            <tr>
+                <th class="d-none">LeaveType Id</th>
+                <th>Leave Type</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="mCustomScrollbar table-responsive" data-mcs-theme="minimal-dark" style="height: 220px">
+
+    <table id="LeaveTypeTable" class="LeaveTypeTable table table-hover trow table-striped mb-0">
+
+        <thead class="d-none">
+            <tr style="font-weight: bold; background:rgba(0,0,0,0.02);color: black;">
+                <th style="background:rgba(0,0,0,0.02); display: none;">LeaveType Id</th>
+                <th style="background:rgba(0,0,0,0.02);">Leave Type</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+                <td class="d-none">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+            </tr>
+
+            @if (LeaveTypes.Count > 0)
+            {
+
+                foreach (Cat_Leave_Type aLeaveType in LeaveTypes)
+                {
+                    <tr id="myrow">
+                        <td class="d-none">
+                            @aLeaveType.LTypeId
+                        </td>
+
+                        <td>
+                            @aLeaveType.LTypeNameShort
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@*<script src="~/Content/js/plugins/jquery/jquery-3.1.1.min.js"></script>
+    <script src="~/Content/js/plugins/datatables/jquery.dataTables.min.js"></script>*@
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".LeaveTypeSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+                $('#LeaveTypeTable tbody tr').each(function () {
+
+                    var LTypeId = $.trim($(this).children("td:eq(0)").html());
+                    var LeaveType = $.trim($(this).children("td:eq(1)").html());
+
+                    if (LTypeId.toLowerCase().indexOf(searchText) === -1 &&
+                        LeaveType.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+    }

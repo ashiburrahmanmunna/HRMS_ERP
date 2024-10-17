@@ -1,0 +1,726 @@
+﻿@using GTERP.Controllers.Payroll.PayrollReport
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model HR_Emp_ML_View
+
+@{
+    var mlList = ViewBag.MLList;
+    ViewBag.Title = "ML";
+}
+
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<link href="~/Content/ProjectLibFile/css/customCssFile/InlineStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt mr-2"></i>ML Process
+        </h4>
+        <div class="card-body p-2">
+            <div class="row">
+                <div class="col-12 col-md-6 ">
+                    <div class="needs-validation sticky-top" style="z-index:0;" novalidate>
+                        <table id="tblEmp" class="table table-hover table-striped text-nowrap w-100">
+                            <thead>
+                                <tr>
+                                    <th class="d-none">LvId</th>
+                                    <th>Emp Code - Name</th>
+                                    <th>Type</th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>Days</th>
+                                    <th>Apprved</th>
+                                    <th>FirstPayment</th>
+                                    <th>LastPayment</th>
+                                    <th>Remarks</th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (mlList != null)
+                                {
+                                    foreach (var item in mlList)
+                                    {
+                                <tr>
+                                    <td class="d-none">@item.lvId</td>
+                                    <td>-@item.EmpCode - @item.EmpName</td>
+                                    <td>@item.LvType</td>
+                                    <td>@item.DtFrom</td>
+                                    <td>@item.DtTo</td>
+                                    <td>@item.TotalDay</td>
+                                    <td>@item.LvApp</td>
+                                    <td>@item.FirstPayment</td>
+                                    <td>@item.LastPayment</td>
+                                    <td>@item.Remarks</td> 
+                                </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 myForm">
+
+                    @*<input type="hidden" asp-for="MLId">*@
+                    <section class="card p-1">
+                        <h5 class="text-center mb-2">Information</h5>
+                        <hr />
+                        <div class="row justify-content-around ">
+                            <div class="col-12 col-md-6 mb-1  row  d-none">
+                                <label asp-for="LvId" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="LvId" class="col-8 form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="EmpCode" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="EmpCode" class=" col-8 form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="EmpName" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="EmpName" class=" col-8 form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="SectName" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="SectName" class=" col-8 form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="DesigName" class="pr-1 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="DesigName" class=" col-8 form-control" readonly>
+                            </div>
+
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="GS" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="GS" class="col-8 form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="BS" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="BS" class="col-8 form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="lvType" class="pr-2 col-4  col-form-label text-right"></label>
+                                <input type="text" asp-for="lvType" class="col-8  form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="TotalDay" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="TotalDay" class="col-8  form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="DtFrom" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="DtFrom" value="" class="col-8  form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6 mb-1 row">
+                                <label asp-for="DtTo" class="pr-2 col-4 col-form-label text-right"></label>
+                                <input type="text" asp-for="DtTo" class="col-8  form-control" readonly>
+                            </div>
+
+                        </div>
+                        <h5 class="text-center mt-4">ML Payment Details</h5>
+                        <hr />
+                        <div class="row justify-content-around mb-2">
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="FirstSalMonth" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="FirstSalMonth" class=" form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="SecondSalMonth" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="SecondSalMonth" class=" form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="ThirdSalMonth" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="ThirdSalMonth" class=" form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="FirstAmt" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="FirstAmt" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="SecondAmt" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="SecondAmt" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="ThirdAmt" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="ThirdAmt" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="FirstDays" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="FirstDays" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="SecondDays" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="SecondDays" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-4">
+                                <label asp-for="ThirdDays" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="ThirdDays" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="TtlAmount" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="TtlAmount" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="TtlDays" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="TtlDays" class="edit-able form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="OtherBonus" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="OtherBonus" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="OtherDeduct" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="OtherDeduct" class="edit-able form-control" readonly>
+                            </div>
+
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="FirstPayment" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="FirstPayment" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-12 col-md-6">
+                                <label asp-for="LastPayment" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="LastPayment" class="edit-able form-control" readonly>
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                <label for="isedit">isedit</label><br>
+                                <input type="checkbox" id="isedit" name="isedit">
+
+                                @*@Html.CheckBoxFor(model => model.isedit, new { htmlAttributes = new { @class = "form-control" } })*@
+                                @*@Html.ValidationMessageFor(model => model.isedit, "", new { @class = "text-danger" })*@
+                            </div>
+
+                            <div class="col-md-3 col-12 mb-3 checkbox">
+                                <label for="FirstPaid">FirstPaid</label><br>
+                                <input type="checkbox" id="FirstPaid" name="FirstPaid">                            
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                <label for="LastPaid">LastPaid</label><br>
+                                <input type="checkbox" id="LastPaid" name="LastPaid">                               
+                            </div>
+                            <div class="col-md-3 col-12 mb-3">
+                                <label for="NoPay">NoPay</label><br>
+                                <input type="checkbox" id="NoPay" name="NoPay">
+
+                                @*@Html.CheckBoxFor(model => model.isedit, new { htmlAttributes = new { @class = "form-control" } })*@
+                                @*@Html.ValidationMessageFor(model => model.isedit, "", new { @class = "text-danger" })*@
+                            </div>
+
+                            <div class=" col-6 col-md-6">
+                                <label asp-for="Remarks" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="Remarks" class="edit-able form-control" readonly>
+                            </div>
+                            <div class=" col-6 col-md-6">
+                                <label asp-for="NetPayable" class=" col-form-label text-right"></label>
+                                <input type="text" asp-for="NetPayable" class="edit-able form-control" readonly>
+                            </div>
+
+                        </div>
+
+                        <div class="row text-right my-4">
+                            <div class="col-3">
+                                <input type="button" value="Process" class="btn btn-success rounded-1" onclick="process()" />
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-3">
+                                <input type="button" id="btnReport" value="Report" class="btn  btn-info  rounded-1" />
+                                @*<div id="loading" style="display: inLine;">*@
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-3">
+                                <input type="button" value="Cancel" class="btn btn-danger  rounded-1" onclick="resest()" />
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        $(document).ready(function () {
+            //data picker
+            $("#DtFrom").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtFrom").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtFrom").datepicker("option", "dateFormat", 'yyyy-MMM-dd');
+                    //$("#DtFrom").datepicker({
+                    //    dateFormat: 'yyyy-MMM-dd'
+                    //});
+                    //$('.datepicker').datepicker();
+                    //$('.datepicker').datepicker("option", "dateFormat", "yyyy-MMM-dd");
+
+                }
+            });
+            $("#DtTo").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtTo").datepicker("option", "dateFormat", 'yyyy-MMM-dd');
+
+                }
+            });
+           
+            // date table declaration 28-dec-2022 block
+            var message = "ML List";
+            //table = $('#tblEmp').DataTable({
+            //    dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            //    //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+            //    //buttons: [
+            //    //    'copy', 'csv', 'excel', 'pdf'
+            //    //],
+            //    buttons: {
+            //        dom: {
+            //            button: {
+            //                className: 'btn rounded-0'
+            //            }
+            //        },
+            //        buttons: [
+            //            //'copy', 'csv', 'excel', 'pdf'
+            //            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+            //            {
+            //                extend: 'colvis',
+            //                "columns": ':not(:last-child)',
+            //                text: '<i class="mdi mdi-view-column"></i>',
+            //                className: 'btn-info',
+            //                titleAttr: 'Show / hide columns',
+            //                visible: false
+            //                //collectionLayout: 'fixed two-column'
+
+            //            },
+            //            {
+            //                extend: 'excel',
+            //                text: '<i class="mdi mdi-file-excel"></i>',
+            //                className: 'btn-success',
+            //                titleAttr: 'Export to excel',
+            //                messageTop: message,
+            //                exportOptions: {
+            //                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13],
+            //                    format: {
+            //                        body: function (data, row, column, node) {
+            //                            if (column == 8) {
+            //                                return $(data).val();
+            //                            } else {
+            //                                return data;
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+
+            //        ]
+            //    },
+            //    "aoColumns": [
+            //        { "sClass": "LvId", "visible": false },
+            //        { "sClass": "EmpCode", "visible": true },
+            //        { "sClass": "LvType", "visible": true },
+            //        { "sClass": "DtFrom", "visible": true },
+            //        { "sClass": "DtTo", "visible": true },
+            //        { "sClass": "TotalDay", "visible": true },
+            //        { "sClass": "LvApp", "visible": true },
+            //        { "sClass": "FirstPayment", "visible": true },
+            //        { "sClass": "LastPayment", "visible": true },
+            //        { "sClass": "Remarks", "visible": true }
+            //    ],
+            //    'paging': false,
+            //    'info': true,
+            //    "scrollY": 455,
+            //    "scrollX": true,
+            //    language: {
+            //        search: '',
+            //        searchPlaceholder: "Search..."
+            //    },
+            //    select: {
+            //        style: 'single',
+            //        //selector: 'td:nth-child(1),td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(5),td:nth-child(6),td:nth-child(7),td:nth-child(8),td:nth-child(10)'
+            //    },
+
+            //});
+
+            
+            // row select get data
+            $('#tblEmp tbody').on('click', 'tr', function () {
+                var row = table.rows(this).data();
+                var LvId = row[0][0];
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetLeavData", "PayrollReport")',
+                    dataType: 'json',
+                    //headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { LvId: LvId},
+                    success: function (data) {
+                        if (data != null) {
+                            const lv = data[0];
+                            let datefrom = new Date(lv.DtFrom);
+                            let dateto = new Date(lv.DtTo);
+                            let IsFirstPaid = lv.FirstPaid;
+                            let IslastPaid = lv.LastPaid;                           
+                            let IsNoPay = lv.NoPay;                            
+                            if (IsFirstPaid == true) {
+                                $('#FirstPaid').prop('checked', true);
+                            }
+                            else {
+                                $('#FirstPaid').prop('checked', false);
+
+                            }
+                            if (IslastPaid == true) {
+                                $('#LastPaid').prop('checked', true);
+                            }
+                            else {
+                                $('#LastPaid').prop('checked', false);
+                            }
+                            if (IsNoPay == true) {
+                                $('#NoPay').prop('checked', true);
+                            }
+                            else {
+                                $('#NoPay').prop('checked', false);
+                            }
+                            
+                            //$("#MLId").val(lv.MLId);
+                            $("#LvId").val(lv.LvId);
+                            $("#EmpName").val(lv.EmpName);
+                            $("#EmpCode").val(lv.EmpCode);
+                            $("#SectName").val(lv.SectName);
+                            $("#DesigName").val(lv.DesigName);
+                            $("#GS").val(lv.GS);
+                            $("#BS").val(lv.BS);
+                            $("#lvType").val(lv.lvType);
+                            $("#TotalDay").val(lv.TotalDay)
+                            //$("#DtFrom").val(`${datefrom.getDay()}-${datefrom.getMonth()}-${datefrom.getFullYear()}`);
+                            $("#DtFrom").val(datefrom.toLocaleDateString());
+                            $("#DtTo").val(dateto.toLocaleDateString());
+                            $("#FirstSalMonth").val(lv.FirstSalMonth);
+                            $("#SecondSalMonth").val(lv.SecondSalMonth);
+                            $("#ThirdSalMonth").val(lv.ThirdSalMonth);
+                            $("#FirstAmt").val(lv.FirstAmt);
+                            $("#SecondAmt").val(lv.SecondAmt);
+                            $("#ThirdAmt").val(lv.ThirdAmt);
+                            $("#FirstDays").val(lv.FirstDays);
+                            $("#SecondDays").val(lv.SecondDays);
+                            $("#ThirdDays").val(lv.ThirdDays);
+                            $("#TtlAmount").val(lv.TtlAmount);
+                            $("#TtlDays").val(lv.TtlDays);
+                            $("#OtherBonus").val(lv.OtherBonus);
+                            $("#OtherDeduct").val(lv.OtherDeduct);
+                            $("#FirstPayment").val(lv.FirstPayment);
+                            $("#LastPayment").val(lv.LastPayment);
+                            $("#FirstPaid").val(IsFirstPaid);
+                            $("#LastPaid").val(IslastPaid);
+                            $("#NoPay").val(IsNoPay);
+                            if (lv.lvType == "ML") {
+                                $("#Remarks").val(lv.MLRemarks);
+
+                            }
+                            else {
+                                $("#Remarks").val(lv.Remarks);
+                            }
+                            
+                            $("#NetPayable").val(lv.NetPayable);
+                        }
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+
+                    }
+                });
+
+            });
+
+            /// enable and disable property input box
+            $("#isedit").click(function () {
+                if ($(this).is(":checked")) {
+                    $('.edit-able').prop('readonly', false);
+                } else {
+                    $('.edit-able').prop('readonly', true);
+                }
+            });
+           
+
+            
+            
+
+         
+            $('#btnReport').click(function () {
+                let LvId = $("#LvId").val();             
+                let rptFormat = "pdf";
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetReport", "PayrollReport")?LvId=' + LvId + "&rptFormat="+rptFormat,
+                    //url: '@Url.Action("GetReport", "PayrollReport")',
+                    dataType: 'json',
+                //    data: {
+                //        lvId: LvId, rptFormat: rptFormat
+                //        /*,let rptFormat = $("input[name='RptType']:checked").val();
+                //productId: productId, reportType: reportType, empId: empId, reportType: reportType, fromDate: fromDate, toDate: toDate, product: product/*, WarehouseId: WarehouseId*/ },
+                    success: function (response) {
+                        window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+            });
+
+           });
+
+        });
+
+        // process
+        function process() {
+
+            const LvId = parseInt($("#LvId").val() || 0);
+            let firstPaid = false;            
+            let lastPaid = false;
+            let noPay = false;
+            let isedit = false;
+            let ml = {
+                //MLId: '',
+                LvId: '',
+                SectName: '',
+                DesigName: '',
+                EmpCode: '',
+                EmpName: '',
+                GS: '',
+                BS: '',
+                lvType: '',
+                TotalDay: '',
+                DtFrom: '',
+                Dtto: '',
+                FirstSalMonth: '',
+                SecondSalMonth: '',
+                ThirdSalMonth: '',
+                FirstAmt: '',
+                SecondAmt: '',
+                ThirdAmt: '',
+                FirstDays: '',
+                SecondDays: '',
+                ThirdDays: '',
+                TtlAmount: '',
+                TtlDays: '',
+                OtherBonus: '',
+                OtherDeduct: '',
+                FirstPayment: '',
+                LastPayment: '',
+                FirstPaid: '',
+                LastPaid: '',
+                NoPay: '',
+                Remarks: '',
+                NetPayable: ''
+            };
+
+            //ml.MLId = $("#MLId").val();
+            ml.LvId = $("#LvId").val();
+            ml.SectName = $("#SectName").val();
+            ml.DesigName = $("#DesigName").val();
+            ml.EmpCode = $("#EmpCode").val();
+            ml.EmpName = $("#EmpName").val();
+            ml.GS = $("#GS").val();
+            ml.BS = $("#BS").val();
+            ml.lvType = $("#lvType").val();
+            ml.TotalDay = $("#TotalDay").val();
+            ml.DtFrom = $("#DtFrom").val();
+            ml.Dtto = $("#Dtto").val();
+            ml.FirstSalMonth = $("#FirstSalMonth").val();
+            ml.SecondSalMonth = $("#SecondSalMonth").val();
+            ml.ThirdSalMonth = $("#ThirdSalMonth").val();
+            ml.FirstAmt = $("#FirstAmt").val();
+            ml.SecondAmt = $("#SecondAmt").val();
+            ml.ThirdAmt = $("#ThirdAmt").val();
+            ml.FirstDays = $("#FirstDays").val();
+            ml.SecondDays = $("#SecondDays").val();
+            ml.ThirdDays = $("#ThirdDays").val();
+            ml.TtlAmount = $("#TtlAmount").val();
+            ml.TtlDays = $("#TtlDays").val();
+            ml.OtherBonus = $("#OtherBonus").val();
+            ml.OtherDeduct = $("#OtherDeduct").val();
+            ml.FirstPayment = $("#FirstPayment").val();
+            ml.LastPayment = $("#LastPayment").val();
+            ml.FirstPaid = $("#FirstPaid").val();
+            ml.LastPaid = $("#LastPaid").val();
+            ml.NoPay = $("#NoPay").val();
+            ml.Remarks = $("#Remarks").val();
+            ml.NetPayable = $("#NetPayable").val();
+
+            if ($("#FirstPaid").is(':checked')) {
+                firstPaid = true;
+                if ($("#LastPaid").is(':checked')) {
+                    lastPaid = true;
+                }
+            }
+            if ($("#NoPay").is(':checked')) {
+                noPay = true;
+            }
+            if($("#isedit").is(':checked')) {
+                isedit = true;
+            }
+            let chkML = 0; // for check ml value
+            if (noPay)
+            {
+                chkML = 0;
+            }
+            else {
+                if (firstPaid)
+                {
+                    chkML = 1;
+                    if (lastPaid)
+                    {
+                        // if firstpaid then check 2nd paid
+                        chkML = 2;
+                    }
+                }
+            }
+
+
+            if (isedit) { // for edit
+
+                chkML = 3;
+            }
+            //FirstPaid, bool LastPaid, bool NoPay
+
+            if (LvId > 0) {
+               // alert(chkML);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("MLProcess", "PayrollReport")',
+                    dataType: 'json',
+                    data: { LvId: LvId, MLPross: chkML, hR_Emp_ML: ml,isEdit: isedit },
+                    success: function (data) {
+                        if (data.success == "1") {
+                            alert(data.message);
+                            window.location.reload(true);
+                            //resest();
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+                });
+            }
+            else {
+                alert("Please select leave data");
+            }
+        }
+        // reset feild
+        function resest() {
+            $(".myForm :input[type='text']").val('');
+        }
+
+        //new add 28-dec-2022
+        $(document).ready(function () {
+
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "columnDefs": [
+                    // Hide second, third and fourth columns
+                    //{ "visible": false, "targets": [3, 4, 7, 9, 10] }
+                ],
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+                //fixedColumns: {
+                //    leftColumns: 1,
+                //    rightColumns: 1
+                //}
+
+                //"sScrollXInner": "100%",
+                //dom: 'Blfrtip',
+                ////,"fixedHeader": true
+            });
+        });
+
+        $("tr").click(function () {
+            $(this).addClass("selected").siblings().removeClass("selected");
+        });
+    </script>
+}

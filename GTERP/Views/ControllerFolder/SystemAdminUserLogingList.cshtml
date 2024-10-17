@@ -1,0 +1,355 @@
+﻿
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+</style>
+
+
+<form action="" method="post">
+    <div class="row mb-2">
+
+        <div class="col-md-2 col-12 d-block mx-auto">
+            <h2 id="styletext">User Loging Info List</h2>
+        </div>
+
+        <div class="col-md-3 col-12 pt-2">
+            <fieldset class="float-right">
+                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="card mb-2 p-2">
+        <div class="row">
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label>From Date</label>
+                        </span>
+                    </div>
+                    @Html.TextBox("fromdate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text py-0">
+                            <label>To Date </label>
+                        </span>
+                    </div>
+                    @Html.TextBox("todate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                </div>
+            </div>
+
+        </div>
+        <hr />
+        <div id="finalpanel" class="p-2">
+            <div class="table-responsive">
+                <table id="tbllist" class="table tbllist table-striped table-bordered text-nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+
+    <script>
+        $('#fromdate,#todate').datepicker({
+            //onSelect: function (date) {
+            //    var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+            //    $('#DoDate').datepicker('option', 'dateFormat', 'd-M-y')
+            //},
+            dateFormat: 'd-M-y',
+            changeMonth: true,
+            changeYear: true
+        });
+
+        CurrentDate();
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString().substr(-2);
+
+
+            if ($("#fromdate").val() == '') {
+                $("#fromdate").val(val);
+            }
+            if ($("#todate").val() == '') {
+                $("#todate").val(val);
+            }
+        }
+
+
+        function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+            var DistId = $('#DistId').val();
+            var YearNameId = $('#YearNameId').val();
+            var fromchallanno = $('#fromchallanno option:selected').text();
+            var tochallanno = $('#tochallanno option:selected').text();
+            var reporttype = $("input[name=RptType]:checked").val();
+            var reporttype = $("input[name=RptType]:checked").val();
+            var RepresentativeId = $('#RepresentativeId option:selected').val();
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, District: DistId, FromDate: FromDate, ToDate: ToDate, Year: YearNameId, FromChallanNo: fromchallanno, ToChallanNo: tochallanno, RepresentativeId: RepresentativeId },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+        }
+
+
+         var table;
+
+        $(document).ready(function () {
+
+
+            //$('#RepresentativeId').select2();
+            //var x = $("#ToDate").val();
+            //alert(x);
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+            var UserList = $("#UserList").val();
+            //var CustomerList = $("#CustomerList").val();
+            var fromdate;
+            var todate;
+            //alert(fromchallanno);
+            //var fromchallanno = $('#fromchallanno').text();
+            //var tochallanno = $('#tochallanno').text();
+
+
+            loaddata(null, null,'Search');
+
+            function getDateString(dateObj) {
+
+                if (dateObj == null) { return ''; };
+
+                var date = new Date(parseInt(dateObj.substr(6)));
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+                var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                //alert(val);
+
+
+                return formatdate;
+
+                //return dateObj.toDateString();
+            }
+
+            function loaddata(FromDate = "", ToDate = ""  , Criteria = "") {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tbllist').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+                                    }
+                                    else {
+                                        //alert('search else');
+                                        loaddata(null, null , "Search");
+
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                    .click(function () {
+                                    //alert('clear');
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                        $DateButton = $('<button class="btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tbllist" type="button" title="Date Wise Load"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Date Wise Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert('Date Wise');
+
+                                    todate = $("#todate").val();
+                                    fromdate = $("#fromdate").val();
+                                    UserList = $("#UserList").val();
+
+
+                                    //alert(fromdate);
+                                    loaddata(fromdate, todate, UserList);
+                                    //table.ajax.reload();
+                                })
+
+                        $('.dataTables_filter').append($DateButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    //"orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, 200], [5, 10, 20, 50, "All"]],
+
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success mr-1',
+                                titleAttr: 'Export to excel'
+                            }
+
+                        ]
+                    },
+                    "ajax": {
+                        "url": "@Url.Action("Get", "ControllerFolder")",
+                        "data": { FromDate: FromDate, ToDate: ToDate, UserList: UserList },
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    columns: [
+
+                    { "title": "UserLogingInfoId", "data": "UserLogingInfoId", "searchable": false, "visible": true },
+
+                    { "title": "Web Link", "data": "WebLink", "searchable": true },
+                    { "title": "Login Date", "data": "LoginDate", "searchable": false },
+                    { "title": "Login Time", "data": "LoginTime", "searchable": false },
+
+                    { "title": "PcName", "data": "PcName", "searchable": true  },
+                    { "title": "MacAddress", "data": "MacAddress", "searchable": true },
+
+                    { "title": "IPAddress", "data": "IPAddress", "searchable": true },
+                    { "title": "DeviceType", "data": "DeviceType", "searchable": true },
+
+                    { "title": "Platform", "data": "Platform", "searchable": true },
+
+                    { "title": "WebBrowserName", "data": "WebBrowserName", "searchable": false },
+                    { "title": "LongString", "data": "LongString", "searchable": false },
+
+                    { "title": "Status", "data": "Status", "searchable": true },
+                    { "title": "UserName", "data": "UserName", "searchable": true }
+
+                ],
+
+
+                    //order: false,
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+
+                    "destroy": true
+                });
+
+
+                //$('#tbllist_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+
+        });
+
+    </script>
+}

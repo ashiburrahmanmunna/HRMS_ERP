@@ -1,0 +1,500 @@
+﻿@model IEnumerable<GTERP.Models.COM_MasterLC>
+<head>
+    <style>
+
+        div.dt-button-collection button.dt-button:active:not(.disabled), div.dt-button-collection button.dt-button.active:not(.disabled), div.dt-button-collection div.dt-button:active:not(.disabled), div.dt-button-collection div.dt-button.active:not(.disabled), div.dt-button-collection a.dt-button:active:not(.disabled), div.dt-button-collection a.dt-button.active:not(.disabled) {
+            background-image: none;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        button.dt-button:active:not(.disabled):hover:not(.disabled), button.dt-button.active:not(.disabled):hover:not(.disabled), div.dt-button:active:not(.disabled):hover:not(.disabled), div.dt-button.active:not(.disabled):hover:not(.disabled), a.dt-button:active:not(.disabled):hover:not(.disabled), a.dt-button.active:not(.disabled):hover:not(.disabled) {
+            background-image: none;
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+            border: none;
+        }
+
+        div.dt-button-collection {
+            width: 250px;
+            border: none;
+        }
+
+        table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(odd) {
+            background-color: #F3F3F3;
+        }
+
+        table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
+            background-color: white;
+        }
+
+        table.dataTable {
+            margin-top: 1px !important;
+            margin-bottom: 0px !important;
+            border-top: none;
+        }
+
+        i.mdi.mdi-view-column {
+            display: inline;
+        }
+
+        .nicescroll {
+            height: 400px;
+        }
+        /*th.dt-invisible-column {
+                border: 0 !important;
+                padding: 0 !important;
+                }*/
+        /*div.dt-button-collection.fixed.two-column {
+                    margin-left: 195px;
+                    margin-top: -85px!important;
+                }*/
+        /*div.dt-button-collection.two-column {
+                    width: 510px;
+                    left: -240px !important;
+                }*/
+
+        button.dt-button, div.dt-button, a.dt-button {
+            background-image: none;
+            border: none;
+        }
+
+            button.dt-button:hover:not(.disabled), div.dt-button:hover:not(.disabled), a.dt-button:hover:not(.disabled) {
+                background-image: none;
+                border: none;
+            }
+        /*Child rows (show extra / detailed info)*/
+        td.details-control {
+            background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+        }
+    </style>
+</head>
+
+
+
+@*<p>
+        @Html.ActionLink("Create New Contct / LC", "Create")
+    </p>*@
+
+<div class="container-fluid">
+    <div class="card p-2">
+        <div class="row mb-3">
+            <div class="col-md-2 col-12">
+                @Html.ActionLink("Create New Contct / LC", "Create", "COM_MasterLC", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                @*<input type="file" id="FileUpload1" />
+                    <input type="button" id="btnUpload" value="Upload Excel For Contact Creation" />*@
+
+            </div>
+
+            <div class="col-md-4 col-12">
+                <h2 id="styletext">Master LC / Buyer Contact Informations</h2>
+            </div>
+
+
+            <div class="col-md-4 col-12">
+                <div class="input-group mb-1">
+                    <span class="input-group-btn">
+                        <span class="btn btn-primary rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                        <input name="uploaded_file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                    </span>
+                    <span class="form-control"></span>
+                    <input class="rounded-0 btn btn-primary" type="button" id="btnUpload" value="Upload Files" />
+                </div>
+            </div>
+            <div class="col-md-2 col-12">
+                <a class="btn btn-block rounded-0 btn-success mb-1" href="COM_MasterLC/Download?file=buyerpocontact.xlsx" target="_blank">Download Sample Format</a>
+            </div>
+
+        </div>
+        <hr />
+        <div class="p-2">
+            <div class="table-responsive text-nowrap">
+                <table id="tblmasterlclist" class="table table-striped table-bordered table-sm" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CommercialCompanies.CompanyName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.BuyerGroups.BuyerGroupName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.BuyerInformations.BuyerName)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.BuyerLCRef)
+                            </th>
+                            <th>
+                                Group LC
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.OpeningBank.OpeningBankName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.MasterLCValueManual)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TotalLCQty)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCValue)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Currency.CurCode)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Destinations.DestinationName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LienBank.LienBankName)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.PortOfLoading.PortOfLoadingName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.UnitMasterId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCRefNo)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCType.LCTypeName)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCOpenDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCExpirydate)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCStatus.LCStatusName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCNature.LCNatureName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tenor)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TradeTerms.TradeTermName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PaymentTerms.PaymentTermsName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DayList.DayListName)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.FileNo)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LCNOforImport)
+                            </th>
+
+                            <th></th>
+                        </tr>
+                    <thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CommercialCompanies.CompanyName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BuyerGroups.BuyerGroupName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BuyerInformations.BuyerName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BuyerLCRef)
+                                </td>
+                                <td>
+
+                                    @Html.DisplayFor(modelItem => item.COM_GroupLC_Subs.FirstOrDefault().COM_GroupLC_Mains.GroupLCRefName)
+
+                                    @*@foreach (var itemgrouplc in item.COM_GroupLC_Subs)
+                                        {
+                                            @Html.DisplayFor(modelItem => itemgrouplc.COM_GroupLC_Mains.GroupLCRefName)
+                                        }*@
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OpeningBank.OpeningBankName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MasterLCValueManual)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalLCQty)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCValue)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Currency.CurCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Destinations.DestinationName)
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LienBank.LienBankName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PortOfLoading.PortOfLoadingName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UnitMaster.UnitName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCRefNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCType.LCTypeName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCOpenDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCExpirydate)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCStatus.LCStatusName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCNature.LCNatureName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Tenor)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TradeTerms.TradeTermName)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PaymentTerms.PaymentTermsName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DayList.DayListName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FileNo)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LCNOforImport)
+                                </td>
+
+
+                                <td>
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "Edit", new { id = item.MasterLCID }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Master LC Report">
+                                        @Html.ActionLink("Get Report", "PrintMLCSC", "COM_MasterLC", new { id = item.MasterLCID }, new { @class = "fas fa-edit btn btn-success", @target = "_blank" })
+                                        @Html.ActionLink("Print", "PrintMLCSC", "COM_MasterLC", new { Id = item.MasterLCID, type = "pdf" }, new { @class = "fas fa-edit btn btn-info btn-xs", @target = "_blank" })
+                                       
+                                    </span>
+
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+    $(document).ready(function () {
+
+        $('#tblmasterlclist').DataTable({
+            dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+            //buttons: [
+            //    'copy', 'csv', 'excel', 'pdf'
+            //],
+            buttons: {
+                dom: {
+                    button: {
+                        className: 'btn rounded-0'
+                    }
+                },
+                buttons: [
+                    //'copy', 'csv', 'excel', 'pdf'
+                    //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                    {
+                        extend: 'colvis',
+                        "columns": ':not(:last-child)',
+                        text: '<i class="mdi mdi-view-column"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Show / hide columns',
+                        //collectionLayout: 'fixed two-column'
+
+                    },
+                    //{
+                    //    extend: 'copy',
+                    //    text: '<i class="mdi mdi-content-copy"></i>',
+                    //    className: 'btn-primary',
+                    //    titleAttr: 'Copy to Clipboard'
+                    //},
+                    //{
+                    //    extend: 'csv',
+                    //    text: '<i class="mdi mdi-note-outline"></i>',
+                    //    className: 'btn-secondary',
+                    //    titleAttr: 'Export to csv'
+
+                    //},
+                    {
+                        extend: 'excel',
+                        text: '<i class="mdi mdi-file-excel"></i>',
+                        className: 'btn-success',
+                        titleAttr: 'Export to excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        text: '<i class="mdi mdi-file-pdf"></i>',
+                        className: 'btn-danger',
+                        titleAttr: 'Export to PDF',
+                        exportOptions: {
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        }
+
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="mdi mdi-printer"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Print Table'
+                    }
+
+                ]
+            },
+            "columnDefs": [
+                // Hide second, third and fourth columns
+                //{ "visible": false, "targets": [2,11,12,14,17,18,19,20] }
+            ],
+            "searching": true,
+            "paging": false,
+            //"ordering": true,
+            "info": true,
+            "iDisplayLength": 20,
+            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+            "scrollX": true,
+             "scrollY": "60vh",
+            "scrollCollapse": true,
+             //responsive: true,
+            fixedColumns: {
+                leftColumns: 2,
+                rightColumns: 1
+            },
+            "language": {
+                sLengthMenu: " _MENU_",
+                search: "",
+                searchPlaceholder: "Search..."
+            },
+
+            //"sScrollXInner": "100%",
+            //dom: 'Blfrtip',
+            ////,"fixedHeader": true
+        });
+    });
+
+
+
+    $('#btnUpload').click(function () {
+
+
+        //var fileUpload = $("#FileUpload1").get(0);
+        //var files = fileUpload.files;
+        //var fileData = new FormData();
+        //fileData.append(files[0].name, files[0]);
+
+        //console.log(fileData);
+
+        var input = document.getElementById('FileUpload1');
+        //var files = $("#FileUpload1").get(0).files();//.files;
+        var files = input.files;
+        var fileData = new FormData();
+
+        for (var i = 0; i != files.length; i++) {
+            fileData.append("files", files[i]);
+        }
+
+
+
+        //$(document).ready(function () {
+        //    var options = {};
+        //    options.url = "/COM_MasterLC/UploadFiles";
+        //    options.type = "POST";
+        //    options.dataType = "json";
+        //    options.processData = false;
+        //    options.contentType = false;
+        //    options.data = fileData;
+        //    options.success = function (data) {
+        //        alert(data);
+        //    };
+        //    options.error = function () {
+        //        alert("error");
+        //    };
+        //    $.ajax(options);
+        //});
+
+
+         $.ajax({
+                url: '@Url.Action("UploadFiles", "COM_MasterLC")',
+                type: "Post",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData,
+                success: function (result) {
+                    if (result.Success == "1") {
+                        //alert('Excel Upload Successfully');
+                        toastr.success("'Excel Upload Successfully'");
+                        window.location.href = "@Url.Action("Create", "COM_MasterLC", new {Flag=1,buyerid=0})";
+
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+
+
+
+    });
+    </script>
+
+}
+

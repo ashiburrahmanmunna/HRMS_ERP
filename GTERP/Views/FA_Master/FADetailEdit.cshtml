@@ -1,0 +1,920 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.Models.FA_Details
+
+@{
+    string comid = HttpContextAccessor.HttpContext.Session.GetString("comid");
+     //comid = comid.ToString();
+}
+
+
+<style>
+
+    input:disabled, select:disabled, textarea:disabled {
+        cursor: not-allowed;
+        opacity: .6;
+    }
+
+    input, select {
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        background-color: #f0eaea;
+    }
+
+    header {
+        background-color: #bde9ba;
+    }
+
+    article {
+        padding: 5px;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+        width: 70%;
+        min-height: 500px;
+    }
+
+    header {
+        padding: 0px;
+        text-align: center;
+        border-bottom: 1px solid skyblue;
+    }
+
+    aside {
+        margin-top: 5px;
+        background-color: #f0eaea;
+        padding: 5px;
+        text-align: left;
+        /*font-style: italic;*/
+        border-right: 1px solid skyblue;
+        width: 25%;
+    }
+
+    section {
+        padding: 5px;
+        border: 1px solid skyblue;
+        margin-top: 5px;
+        border-radius: 10px;
+    }
+
+    footer {
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    nav {
+        text-align: center;
+    }
+
+    ul li {
+/*        display: inline;*/
+        padding-left: 5px;
+        padding-right: 5px;
+/*        text-align: left;*/
+        font-size: 14px;
+/*        font-weight: 400;*/
+    }
+
+    .bb {
+        border-top: 1px solid skyblue;
+    }
+
+    .hh {
+        min-height: 500px;
+        max-height: 800px;
+    }
+
+    .rr {
+        width: 5%;
+    }
+
+    .ll {
+        width: 95%;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+    }
+
+    #exampleModal {
+        top: 15%;
+        outline: none;
+    }
+    /*.modal-dialog {
+        width: 750px;
+        margin: auto;
+    }*/
+</style>
+
+<div class="container ">
+    <section class="row">
+        <header class="col-md-12">
+
+            <div class="row py-2">
+                <div class="col-md-6"><h3 class="text-left" id="title">Asset Item Edit</h3></div>
+                <div class="col-md-6 text-right" id="divbtnsubmit">
+                    <input type="button" id="btnsubmit" value="Save" name="Asset_Create" class="btn btn-sm btn-primary text-right" />
+                </div>
+               
+            </div>
+
+        </header>
+
+        <aside>
+            <div id="divshowassetinfo">
+                <h4>Asset Info</h4>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Asset Name</label>
+                    <div class="col-md-12 text-left">
+                        <span id="asn" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Asset Code</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="asc" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Depreciation Name</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="dn" style="font-size: 13px;font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Depreciation Frequency</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="df" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+               
+
+            </div>
+
+        </aside>
+
+        <article>
+            <div class="card p-2 hh ">
+                <div id="divAsset_Assign">
+                    <partial name="eee.cshtml" />
+                </div>
+            </div>
+        </article>
+
+
+        
+        
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="hh card p-2" style="overflow:scroll">
+                        <partial name="SeeDepreciation.cshtml" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+       
+
+       
+
+    </section>
+
+
+
+
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        var activediv;
+        var activediv2;
+        var activediv3;
+        var tblassetlist;
+        var tblassetitemlist;
+        var tbldetails;
+        var tbldepriciation;
+        var tblmaster;
+        var tblsalesrowlist;
+        var tblsoldassetlist;
+        var tblSee_Dep;
+        var antiForgeryToken;
+        var clickedtable;
+        var selectedItem;
+        var backdiv1;
+        var backdiv2;
+        var flag = 'temp';
+        var tblSee_Already_Dep;
+        var productid;
+
+        $(document).ready(function () {
+
+            var newOption;
+            if ('@ViewData["Title"]'=='Create') {
+                 newOption = new Option('--Please Select--', '-0', true, true);
+            } else {
+                newOption = new Option('--Please Select--', '-0', false, false);
+
+            }
+            //$('#ProductId').select2( );
+            ////$('#FA_MasterIdp').prepend(newOption).trigger('change');
+            $('#FA_MasterIdp').select2();
+            $('#FA_MasterIdp').prepend(newOption).trigger('change');
+            $('#AssignTo').select2();
+            ////$('#DMId').prepend(newOption).trigger('change');
+            $('#DMId').select2();
+            ////$('#AccId_DepreciationExpense').prepend(newOption).trigger('change');
+            $('#AccId_DepreciationExpense').select2();
+            ////$('#AccId_AccumulatedDepreciation').prepend(newOption).trigger('change');
+            $('#AccId_AccumulatedDepreciation').select2();
+            ////$('#FoD').prepend(newOption).trigger('change');
+            $('#FoD').select2();
+            ////$('#FA_DetailsId').prepend(newOption).trigger('change');
+            $('#FA_DetailsId').select2();
+        
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+        
+
+
+            $("#btnSeeDepSchedule").click(function () {
+                getTemSchedule();
+            })
+
+
+
+            $("#FA_MasterIdp").change(function () {
+                var FA_MasterIdp = $("#FA_MasterIdp option:selected").val();
+                $.ajax({
+                    url: '@Url.Action("getOnChangeFA_MasterIdp", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: FA_MasterIdp },
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            var d = data.list;
+                            if (d == 'no') {
+                                $("#divshowassetinfo").hide();
+                            }
+                            else {
+                                $("#asn").empty();
+                                $("#asn").text(d[0].ProductName);
+                                $("#asc").empty();
+                                $("#asc").text(d[0].ProductCode);
+                                $("#dn").empty();
+                                $("#dn").text(d[0].DMName);
+                                $("#df").empty();
+                                $("#df").text(d[0].Title);
+                                $("#divshowassetinfo").show();
+                                //activediv2 = 'divshowassetinfo';
+                            }
+                        }
+                    }
+
+                });
+            });
+
+
+
+         
+
+            function getAssetList() {
+                $.ajax({
+                            url: '@Url.Action("Index", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType:'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            $('#tblAsset_List').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            console.log(d);
+
+                            for (var i = 0; i < d.length; i++) {
+
+                                var DepreciationCode;
+                                var DepreciationAccountName;
+                                var AccDepreciationCode;
+                                var AccDepreciationAccountName;
+
+
+
+                                if (d[i].DepreciationHead != null) {
+                                    DepreciationCode = d[i].DepreciationHead.AccCode;
+                                    DepreciationAccountName = d[i].DepreciationHead.AccName;
+
+                                } else {
+                                    DepreciationCode = '=N/A=';
+                                    DepreciationAccountName = '=N/A=';
+                                }
+
+
+                                if (d[i].AccumulatedDepreciationHead != null) {
+                                    AccDepreciationCode = d[i].AccumulatedDepreciationHead.AccCode;
+                                    AccDepreciationAccountName = d[i].AccumulatedDepreciationHead.AccName;
+
+                                } else {
+                                    AccDepreciationCode = '=N/A=';
+                                    AccDepreciationAccountName = '=N/A=';
+                                }
+
+
+
+                                $('#tblAsset_List').dataTable().fnAddData([
+                                    d[i].AssetCode,
+                                    d[i].Percentage,
+                                    DepreciationCode, DepreciationAccountName,
+                                    AccDepreciationCode, AccDepreciationAccountName,
+                                    d[i].ComId,
+                                    d[i].DepreciationMethod.DMName,
+                                    d[i].Product.ProductName,
+                                    d[i].DepreciationFrequency.Title,
+                                    { IsInProcess: d[i].IsInProcess, FA_MasterId: d[i].FA_MasterId}
+
+                                    //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                                ]);
+                            }
+
+                            toastr.success('Data loaded Successfully');
+                        };
+                    },
+                });
+            };
+
+
+            tbldetails = $('#tbldetails').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_DetailsId", "visible": false },//0
+                    { "sClass": "FA_MasterId", "visible": false },//1
+                    { "sClass": "AssetItem", "visible": true },//2
+                    //{ "sClass": "IssuNo", "visible": true },
+                    { "sClass": "IssueDate", "visible": true },//3
+                    { "sClass": "AssignToSectionId", "visible": false },//4
+                    { "sClass": "AssignToSection", "visible": true },//5
+                    { "sClass": "UsefullLife", "visible": true },//6
+                    { "sClass": "RemainingYear", "visible": true },//7
+                    { "sClass": "RemainingMonth", "visible": true },//8
+                    { "sClass": "EVAULife", "visible": true },//9
+                    { "sClass": "PurchaseValue", "visible": true },//10
+                    { "sClass": "PurchaseDate", "visible": true },//11
+                    { "sClass": "AssignToDeptId", "visible": false }, //12
+                    { "sClass": "AssignToDept", "visible": true }, //13
+                    { "sClass": "WrittenDownValue", "visible": true }, //14
+
+                    { "sClass": "IsDelete", "visible": false },//15
+                    { "sClass": "CalculateDepreciation", "visible": true },//16
+                    { "sClass": "Action", "visible": true }//17
+
+
+                ],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+         
+            tblSee_Dep = $('#tblSee_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+
+                //"bLengthChange": true,
+                "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+            tblSee_Already_Dep = $('#tblSee_Already_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": false }
+
+
+                ],
+                "dom": 'Bfrtip',
+
+                "buttons": [
+                    {
+                        text: 'Back',
+                        action: function (e, dt, node, config) {
+
+                            $("#btnitemlist").trigger('click');
+                        }
+                    }
+                ],
+
+
+            "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+
+
+           
+
+
+
+            var AssignAsset = {
+                FA_DetailsId: 0,
+                FA_MasterId: 0,
+                AssetItem: '',
+                //IssuNo: '',
+                IssueDate: '',
+                PurchaseDate: '',
+                PurchaseValue: 0,
+                IssueDate: '',
+                AssignToSection: '',
+                UsefullLife: 0,
+                RemainingYear: 0,
+                RemainingMonth: 0,
+                EVAULife: 0,
+                AssignToDept: 0,
+                WrittenDownValue: 0,
+                ComId: '',
+                IsDelete: false,
+                CalculateDepreciation: false
+
+
+            };
+
+            
+
+
+            $('#btnsubmit').click(function () {
+
+
+
+                    var AssetListToAssign = [];
+                    var oTablerequisitionSub = $('#tbldetails').dataTable().fnGetData();
+
+                    if (oTablerequisitionSub.length == 0) {
+                        alert('Please Fill Necessary Data.');
+                        return false;
+                    };
+                    for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                        AssignAsset.FA_DetailsId = oTablerequisitionSub[i][0];
+                        AssignAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                        AssignAsset.AssetItem  = oTablerequisitionSub[i][2];
+                        //AssignAsset.IssuNo = oTablerequisitionSub[i][3];
+                        AssignAsset.PurchaseDate = oTablerequisitionSub[i][11];
+                        AssignAsset.PurchaseValue = oTablerequisitionSub[i][10];
+                        AssignAsset.IssueDate = oTablerequisitionSub[i][3];
+                        AssignAsset.AssignTo = oTablerequisitionSub[i][4];
+                        AssignAsset.UsefullLife = oTablerequisitionSub[i][6];
+                        AssignAsset.RemainingYear = oTablerequisitionSub[i][7];
+                        AssignAsset.RemainingMonth = oTablerequisitionSub[i][8];
+                        AssignAsset.EVAULife = oTablerequisitionSub[i][9];
+                        AssignAsset.AssignToDept = oTablerequisitionSub[i][12];
+                        AssignAsset.WrittenDownValue = oTablerequisitionSub[i][14];
+                        AssignAsset.IsDelete = oTablerequisitionSub[i][15];
+                        AssignAsset.CalculateDepreciation = oTablerequisitionSub[i][16];
+                        AssignAsset.ComId = '@comid' ;
+
+                        AssetListToAssign.push(AssignAsset);
+
+                        AssignAsset = {
+                            FA_DetailsId: 0,
+                            FA_MasterId: 0,
+                            AssetItem: '',
+                            //IssuNo: '',
+                            IssueDate: '',
+                            PurchaseDate: '',
+                            PurchaseValue: 0,
+                            IssueDate: '',
+                            AssignTo: '',
+                            UsefullLife: 0,
+                            RemainingYear: 0,
+                            RemainingMonth: 0,
+                            EVAULife: 0,
+                            AssignToDept: 0,
+                            WrittenDownValue: 0,
+                            ComId: '',
+                            IsDelete: false,
+                            CalculateDepreciation: false
+
+                        };
+                    };
+
+                    if (AssetListToAssign.length > 0) {
+                        $.ajax({
+                            url: '@Url.Action("AssignAsset", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { assetListToAssign: AssetListToAssign },
+                            success: function (data, status, xhr) {
+                                if (data.success == 1) {
+                                    $('#tbldetails').DataTable().clear().draw();
+                                    $("#divshowassetinfo").hide();
+                                    $("#divtbldetails").hide();
+                                    clear_form_elements(`div${name}`);
+                                    toastr.success('Asset Created Successfully');
+                                };
+                                if (data.error == 1) {
+                                    toastr.error('Asset can not be created');}
+                            },
+                        });
+                    }
+
+
+            });
+
+
+            $('#FA_MasterId1').change(function () {
+
+                var FA_MasterIds = $('#FA_MasterId1 option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("getsolditem", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                        data: { id: FA_MasterIds },
+                        success: function (data, status, xhr) {
+                            $("#FA_DetailsId1 option").remove();
+
+                            createSelectList(data.list)
+                            $('#FA_DetailsId1').attr('disabled', false);
+                            //if (selectedItem!=null) {
+                            //    $("#ProductId").val(selectedItem).change();
+                            //}
+                            //selectedItem = null;
+                        }
+
+                    });
+            });
+
+
+
+            $('#tbldetails tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tbldetails')) {
+
+                    tbldetails
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#btnaddrow").text("Modify");
+                            if ($("#spn2").children('#Cancel')) {
+                                $("#spn2").children('#Cancel').remove();
+                                $("#spn2").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn2").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tbldetails.rows('.selected').data();
+                            console.log(f[0]);
+
+                            selectedItem = `${f[0][2]}`;
+
+
+
+                            $('#FA_DetailsIdp').val(`${f[0][0]}`);
+                            $('#FA_MasterIdp').val(`${f[0][1]}`).change();
+                            $('#AssetItem').val(`${f[0][2]}`);
+                            $('#IssueDate').val(`${f[0][3]}`);
+                            $('#PurchaseDate').val(`${f[0][11]}`);
+                            $('#AssignTo').val(`${f[0][4]}`).change();
+                            $('#EVAULife').val(`${f[0][9]}`);
+                            $('#RemainingYear').val(`${f[0][7]}`);
+                            $('#UsefullLife').val(`${f[0][6]}`);
+
+                            ////
+
+                            $('#WrittenDownValue').val(`${f[0][14]}`);
+                            $('#PurchaseValue').val(`${f[0][10]}`);
+                            $('#RemainingMonth').val(`${f[0][8]}`);
+
+
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#btnaddrow").text("Add");
+                            $("#spn2").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#FA_DetailsIdp').val(0);
+                            $('#FA_MasterIdp').val(0);
+                            $('#AssetItem').val('');
+                            $('#IssuNo').val('');
+                            $('#PurchaseDate').val('');
+                            $('#AssignTo').val(0);
+                            $('#EVAULife').val(0);
+                            $('#RemainingYear').val(0);
+                            $('#UsefullLife').val(0);
+
+                            ////
+
+                            $('#WrittenDownValue').val(0);
+                            $('#PurchaseValue').val(0);
+                            $('#RemainingMonth').val(0);
+
+                        });
+                };
+
+            });
+
+           
+
+        });
+
+        $(document).on('click', '.dlttrash', function () {
+
+            var d = $(this).data();
+            var tablename = this.parentNode.parentNode.parentNode.parentNode.id;
+            var div = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tbldetails.cell(l, 10).data(true);
+                    $(this).parent().parent().hide();
+                }
+
+                else {
+                    var table = $(`#${tablename}`).DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#spn").children('#Cancel')) {
+                        $("#spn").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $(`#${tablename}`).height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+
+                var table = $(`#${tablename}`).DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($(".spn").children('#Cancel')) {
+                    $(".spn").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $(`#${tablename}`).height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+            var t = $(`#${tablename}`).dataTable().fnGetData();
+            if (t.length==0) {
+                $(`#${div}`).hide();
+            }
+
+        });
+
+        $(document).on('click', '.depstart', function ()  {
+            var na = $(this).attr('name');
+            if (na == 'See_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("SeeDepSchedule", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+
+                            $('#tblSee_Already_Dep').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            if (d != null) {
+                                $("#divAsset_Item_List").hide();
+                                backdiv1 = 'divAsset_Item_List';
+                                $("#divAlready_Dep_Schedule_List").show();
+                                activediv = 'divAlready_Dep_Schedule_List';
+
+
+                                //$("#divtbldetails").hide();
+                                //$("#divDepreciation_Schedule_List").show();
+
+                                for (var i = 0; i < d.length; i++) {
+
+                                    $('#tblSee_Already_Dep').dataTable().fnAddData([
+                                        d[i].DepreciationScheduleId,
+                                        d[i].AssetItem,
+                                        d[i].ScheduleDate,
+                                        d[i].DepAmount,
+                                        d[i].AccumulateDepAmount,
+                                        d[i].AccumulateDepBooked,
+                                        d[i].AccumulateDepRemain,
+                                        d[i].JournalEntry,
+                                        '<a data-itemId="0" href="#" class="dlttrash deleteItem"><i class="fa fa-trash"></i></a>'
+                                    ]);
+                                }
+
+                                //flag = 'fixed';
+
+                            }
+
+                            //clear_form_elements(`div${name}`);
+
+                            toastr.success('Depreciation Scheduled Loaded');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Depreciation schedule cannot be created');
+                        }
+                    },
+                });
+
+
+            }
+            if (na == 'Start_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("StartDepSchedule", "FA_Master")',
+                    type: 'POST',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+                            GetAssetItems();
+                            toastr.success('Depreciation Schedule Created Successfully');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Asset can not be create');
+                        }
+                    }
+                });
+
+            }
+        });
+
+        $(document).on('click', '.cancel', function () {
+
+            if ($.fn.DataTable.isDataTable('#tbldetails')) {
+                if (tbldetails.rows('.selected').any()) {
+                    $('#tbldetails tr.selected').removeClass('selected');
+                }
+                $("#addBtn").text("Add");
+                $(this).remove();
+                $('#CategoryId').val("0").change();
+                $('#ProductId').val("-1").change();
+                $('#ProductBrand').val("");
+                $('#ProductModel').val("");
+                $('#PurReqQty').val("");
+                $('#Note').val("");
+            }
+        });
+
+      
+        function dateformat(datetime) {
+            d = new Date(datetime);
+            var month = d.getMonth() + 1;
+            var date = d.getDate();
+            var year = d.getFullYear();
+            return `${year}-${month}-${date}`;
+        }
+
+        function InitilizeSelectLists() {
+            $.ajax({
+                url: '@Url.Action("InitializeSelectList", "FA_Master")',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data, status, xhr) {
+
+                    if (status == 'success') {
+
+                        if (data.master) {
+                            $('#FA_MasterIdp').empty();
+                            $('#FA_MasterIdp').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.master.length; ++i) {
+                                optionValue = data.master[i].Value;
+                                optionText = data.master[i].Text;
+                                $('#FA_MasterIdp').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+                        if (data.sale) {
+                            $('#FA_DetailsId1').empty();
+                            $('#FA_DetailsId1').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.sale.length; ++i) {
+                                optionValue = data.sale[i].Value;
+                                optionText = data.sale[i].Text;
+                                $('#FA_DetailsId1').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+
+                    };
+                },
+            });
+
+        }
+
+        function clear_form_elements(div_name) {
+            $("#" + div_name).find(':input').each(function () {
+                switch (this.type) {
+                    case 'password':
+                    case 'text':
+                    case 'textarea':
+                    case 'file':
+                    case 'select-one':
+                    case 'select-multiple':
+                    case 'date':
+                    case 'number':
+                    case 'tel':
+                    case 'email':
+                        jQuery(this).val('');
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        this.checked = false;
+                        break;
+                }
+            });
+        }
+
+        function createSelectList(selItem) {
+
+            $('#FA_DetailsId1').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#FA_DetailsId1').append(new Option(optionText, optionValue));
+            }
+        }
+
+        function Refresh() {
+            var url = '@Url.Action("Create", "FA_Master")';
+                    window.location.href = url;
+        }
+
+        $.LoadingOverlaySetup({
+            background: "rgba(0, 0, 0, 0.5)",
+            //fontawesome: "fas fa-cog fa-spin",
+            imageAnimation: "1.5s fadein",
+            imageColor: "#ffcc00"
+        });
+        $(document).ajaxStart(function () {
+            $.LoadingOverlay("show");
+
+        });
+        $(document).ajaxStop(function () {
+           $.LoadingOverlay("hide");
+
+        });
+    </script>
+}

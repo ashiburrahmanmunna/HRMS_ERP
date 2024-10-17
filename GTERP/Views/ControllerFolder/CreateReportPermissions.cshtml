@@ -1,0 +1,284 @@
+﻿@*@model GTERP.Models.CompanyPermission*@
+@model IEnumerable<GTERP.Models.ReportPermissionsVM>
+
+
+@using (Html.BeginForm("CreateReportPermissions", "ControllerFolder", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+  
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-12 order-md-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Report Permission</h2>
+                    </div>
+                    @Html.ValidationSummary("", new { @class = "text-error" })
+
+                    <div class="card-body p-2">
+                        <div class="row">
+                            <div class="col-md-2 col-12">
+                                <button type="button" onclick="TermsLoad()" class="btn btn-success btn-block rounded-0">Load</button>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button id="btnupdate" onclick="Sales_save()" class="btn btn-primary btn-block rounded-0" type="button">Update</button>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <div class="input-group mb-2">
+                                    <select id="UserList" class="form-control" asp-items="@ViewBag.userid ">
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                <hr />
+                        <div class="row mb-2 px-3">
+                            <div class="table-responsive">
+                                <div class="row d-flex justify-content-between">
+                                    <div></div>
+                                    <div class="col-2 offset-10" style="background-color:rgb(234 232 232);padding:5px 10px;">
+                                        <input type="checkbox" onclick="toggle(this)" style="cursor:pointer"/> 
+                                        <span class="font-weight-bold ml-2">Checked All</span>
+                                    </div>
+                                </div>
+                                <table id="tblterms" class="table tblterms table-bordered display nowrap table-striped table-hover text-center" cellspacing="0" width="100%">
+
+                                    <thead>
+                                        <tr>
+                                            @*<th style="width:0%;">Product Id</th>*@
+                                            @* <th class="d-none">Category Id</th> ///sample for not visible*@
+                                            <th>ReportPermissionsId</th>
+                                            <th>ReportId</th>
+                                            <th>Check</th>
+                                            <th>Report Name</th>
+                                            <th>Report Type</th>
+
+
+                                            @*<th style="width:40%;">Product</th>*@
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model)
+                                            {
+                                                <tr class="txtMultTerms">
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.ReportPermissionsId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.ReportId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.isChecked)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.ReportName)
+                                                    </td>
+
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.ReportType)
+                                                    </td>
+
+
+
+                                                </tr>
+                                            }
+                                        }
+
+
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+
+        </div>
+    </div>
+
+
+}
+
+@section scripts{
+
+    <script type="text/javascript">
+        function toggle(source) {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+            }
+        }
+    function Sales_save() {
+
+
+        //var ReportPermissions = [];
+        // Step 1: Read View Data and Create JSON Object
+        // Creating SalesSub Json Object
+
+
+        var ReportPermissions = { "isChecked": 0, "ReportPermissionsId": 0, "Userid": "", "ComId": "",  "ReportId": 0 };
+
+        ////sales subs data
+        var oTable = $('#tblterms').dataTable().fnGetData();
+        var nodes = $('#tblterms').dataTable().fnGetNodes();
+
+        let reports = [];
+       
+        for (var i = 0; i < oTable.length; i++) {
+            if ($(nodes[i].cells[0].children[0]).is(':checked')) {
+                ReportPermissions.isChecked = 1;
+                ReportPermissions.ReportId = oTable[i][1];
+                //alert(oTable[i][1]);
+                ReportPermissions.Userid = $("#UserList").val();    
+              
+                reports.push(ReportPermissions);
+                ReportPermissions = { "isChecked": 0, "ReportPermissionsId": 0, "Userid": "", "ComId": "", "ReportId": 0 };
+
+            }
+        }
+
+       
+        var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+        var strfy = JSON.stringify({ strfy: ReportPermissions });
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CreateReportPermissions", "ControllerFolder")',
+            dataType: 'json',
+            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+            //async: true,
+            data: { ReportPermissions: reports, UserId: $("#UserList").val() },
+            success: function (data) {
+                if (data.Success == 1) {
+                    alert('data update success');
+                }
+            },
+            error: function (ex) {
+                toastr.error("Sorry, an error occured . . . .");
+            }
+        });
+    }
+
+
+        $(document).ready(function () {
+
+
+            $("#UserList").select2();
+
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+            //$("#btnupdate").hide();
+
+            //$("#UserList").change(function () {
+
+            //    TermsLoad();
+            //})
+
+
+
+
+
+            // here i have used datatables.js (jQuery Data Table)
+            $('#tblterms').dataTable({
+                "aoColumns": [
+                    { "name": "ReportPermissionsId", "sClass": "ReportPermissionsId", "visible": false },
+                    { "name": "ReportId", "sClass": "", "visible": false },
+                    { "name": "isChecked", "sClass": "", "visible": true },
+                    { "name": "ReportName", "sClass": "ReportName", "visible": true },
+                    { "name": "ReportType", "sClass": "ReportType", "visible": true }
+
+                ],
+                columnDefs: [
+                    {
+                        'render': function (data) {
+                            if (data == 1) {
+                                return '<input type="checkbox" id="chkboxChecked" checked value=' + data + ' class="isChecked" >';
+                            } else {
+                                return '<input type="checkbox" id="chkboxChecked" value=' + data + ' class="isChecked" >';
+                            }
+                        }, targets: 2
+                    }
+                    ],
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sRowSelector": "td:not(:first-child)"
+                },
+                select: {
+                    select:'multi',
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                "searching": true,
+                "paging": false,
+
+                "ordering": false,
+                "info": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search...",
+                   
+                },
+                
+            })
+
+
+            //TermsLoad();
+        });
+          function TermsLoad() {
+
+                var table = $('#tblterms').DataTable();
+                table
+                    .clear()
+                    .draw();
+
+
+                table.row($(this).parents('tr')).remove().draw();
+
+
+                $("#btnupdate").show();
+                var userid = $("#UserList").val();
+                //alert(userid);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("getUserReport", "ControllerFolder")',
+                    dataType: 'json',
+                    async: false,
+                    data: { userid: userid },
+                    success: function (data) {
+                        data.map((item) => {
+                            $('#tblterms').dataTable().fnAddData([item.ReportPermissionsId, item.ReportId, item.isChecked, item.ReportName, item.ReportType]);
+                        });
+
+
+
+                        table = $('#tblterms').DataTable();
+                        table.draw();
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+                });
+
+
+
+            }
+
+
+    </script>
+}

@@ -1,0 +1,293 @@
+﻿@model GTERP.Models.Cat_JobCardDynamic
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+@using (Html.BeginForm("CreateJobCardProcess", "HRReport", FormMethod.Post, new { id = "myForm" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 col-12">
+                @if (Model != null)
+                {
+                    <input type="hidden" id="JcdId" name="JcdId" value="@Model.JcdId" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="JcdId" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">Dynamic Job Card - @ViewBag.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                <input type="hidden" asp-for="ComId" />
+                                <input type="hidden" asp-for="userId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        From
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="dtFrom" class="form-control" id="dtFrom"/>
+                                                @Html.ValidationMessageFor(model => model.dtFrom, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        To
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="dtTo" class="form-control" id="dtTo"/>
+                                                @Html.ValidationMessageFor(model => model.dtTo, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        Type
+                                                    </span>
+                                                </div>
+                                                @if (ViewBag.Title == "Edit" || ViewBag.Title == "Delete")
+                                                {
+                                                    @*@Html.DropDownList("Type", ViewBag.Type,null, htmlAttributes: new { @class = "form-control", id = "TypeId" })*@
+                                                    @Html.DropDownListFor(x => x.Type, new SelectList((IEnumerable<SelectListItem>
+                                            )ViewBag.Type, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "TypeId" })
+                                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+
+                                                }
+                                                else
+                                                {
+                                                    @Html.DropDownList("Type", ViewBag.Type, "--Please Select--", htmlAttributes: new { @class = "form-control", id = "TypeId" })
+                                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                                                }
+
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.OTHrLimit)
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="OTHrLimit" class="form-control" />
+                                                @Html.ValidationMessageFor(model => model.OTHrLimit, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.IsHideWHDayOT)
+                                                    </span>
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        @Html.CheckBoxFor(model => model.IsHideWHDayOT, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.IsHideWHDayOT, "", new { @class = "text-danger" })
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.Remarks)
+                                                    </span>
+                                                </div>
+                                                @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                <input type="text" asp-for="Remarks" class="form-control" />
+                                                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0"  />
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="ProcessLock_delete()">Delete</button>
+                                    }
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "JobCardProcessList", "HRReport", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+        $("#TypeId").select2();
+
+        function resetForm() {
+            $('#myForm').trigger('reset');
+        }
+
+        $(function () {
+            $("#dtFrom").datepicker({
+                        dateFormat: 'dd-M-yy'
+                    });
+            $("#dtTo").datepicker({
+                        dateFormat: 'dd-M-yy'
+                    });
+                });
+
+
+        
+
+
+        function ProcessLock_delete() {
+
+            var JcdId = $("#JcdId").val();
+
+            $.ajax({
+                url: '@Url.Action("DeleteJobCardProcess", "HRReport")',
+                data: { id: JcdId }, //use id here
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("JobCardProcessList", "HRReport")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        //$(function () {
+        //    var currentDate = new Date();
+        //    var formattedDate = formatDate(currentDate);
+        //    $("#dtFrom").val(formattedDate[0]);
+        //    $("#dtTo").val(formattedDate[1]);
+        //});
+        $(function () {
+            var currentDate = new Date();
+            var formattedDate = formatDate(currentDate);
+
+            var dtFromValue = $("#dtFrom").val(); 
+            var dtFromValue1 = formatDateFromString(dtFromValue);
+            var dtToValue = $("#dtTo").val();
+            var dtToValue1 = formatDateFromString(dtToValue);
+
+            if (dtFromValue !== '') {
+                $("#dtFrom").val(dtFromValue1);
+            } else {
+                $("#dtFrom").val(formattedDate[0]);
+            }
+
+            if (dtToValue !== '') {
+                $("#dtTo").val(dtToValue1);
+            } else {
+                $("#dtTo").val(formattedDate[1]);
+            }
+        });
+
+        function formatDate(date) {
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+            let year1 = parseInt(year);
+            year1 = year1 + 5;
+            var year2 = year1.toString();
+            var formattedDate = "1" + "-" + months[monthIndex] + "-" + year;
+            var formattedDate1 = day + "-" + months[monthIndex] + "-" + year2;
+
+            return [formattedDate, formattedDate1];
+        }
+        function formatDateFromString(dateString) {
+            var date = new Date(dateString);
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+            var formattedDate = day + "-" + months[monthIndex] + "-" + year;
+
+            return formattedDate;
+        }
+
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
+
+

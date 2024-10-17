@@ -1,0 +1,320 @@
+﻿@*@model GTERP.Models.COM_MasterLC*@
+
+@*<head>
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <link href="~/Content/css/select2.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,700i&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        th {
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 13px;
+        }
+        div.dataTables_length {
+            float: right;
+        }
+        div.dataTables_filter {
+            float: left;
+            /*font-size: 17px;*/
+        }
+
+        div.dt-buttons {
+            float: right;
+            font-size: 12px !important;
+        }
+        div.dataTables_paginate {
+            float: right;
+        }
+
+        div.DTTT {
+            float: left;
+            margin-right: 50px;
+        }
+
+        div.buttons {
+            clear: both;
+        }
+
+        .fas, .far {
+            font-size: 10px !important;
+        }
+
+
+        table.dataTable tbody td, .sorting {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .sorting_asc {
+            color: green;
+            vertical-align: middle;
+            text-align: center;
+            font-style: oblique;
+        }
+
+        .sorting_desc {
+            color: #0932d1;
+            vertical-align: middle;
+            text-align: center;
+            font-style: oblique;
+        }
+
+        .table-sm th {
+            padding: .8em;
+            background: rgb(192,196,196);
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        }
+
+        #styletext {
+            color: transparent;
+            background: #666666;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+            font-weight: 100;
+            font-size: 30px;
+        }
+
+
+        .bold-red {
+            color: red;
+            font-weight: bold;
+        }
+
+        tr.statuscolor {
+            background: linear-gradient(0deg, rgba(93, 162, 62, 0.62) 1%, rgba(201, 230, 207, 0.61) 65%, rgba(101, 192, 116, 0.43) 100%);
+        }
+
+        tr.statusnone {
+            background: linear-gradient(0deg, rgba(243, 28, 58, 0.62) 1%, rgba(255, 136, 136, 0.61) 65%, rgba(190, 7, 16, 0.43) 100%);
+        }
+    </style>
+</head>*@
+<form action="" method="post">
+
+    <div class="container-fluid">
+    <div class="card p-3">
+
+        <div class="row mb-3">
+            <div class="col-md-4 col-12">
+                <div>
+                    <h4 id="styletext">PI Receiving Status Date Wise</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-12">
+                @Html.DropDownList("SupplierId", null, "=Please Select=", htmlAttributes: new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-2 col-12">
+                @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+            </div>
+            <div class="col-md-2 col-12">
+                @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+            </div>
+            <div class="col-md-1 col-12">
+                <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block rounded-0" />
+            </div>
+        </div>
+  
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table table-bordered table-sm table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("File No")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Factory")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Supplier Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("PI No")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Order No")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Import Qty")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Unit Name")
+                        </th>
+
+                        <th>
+                            @Html.DisplayName("Total Value")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Receiving Date")
+                        </th>
+                        <th>
+                            @Html.DisplayName("PI Status")
+                        </th>
+
+                        <th>
+                            @Html.DisplayName("BBLC No")
+                        </th>
+
+                        <th>
+                            @Html.DisplayName("LC Opening Date")
+                        </th>
+
+
+                    </tr>
+                <thead>
+                <tbody>
+                    @foreach (var item in ViewBag.PIDailyReceiving)
+                    {
+                        <tr class=@item.StatusColor>
+
+                            <td>
+                                @item.FileNo
+                            </td>
+                            <td>
+                                @item.Factory
+                            </td>
+                            <td>
+                                @item.SupplierName
+                            </td>
+                            <td>
+                                @item.PINo
+                            </td>
+                            <td>
+                                @item.OrderNo
+                            </td>
+                            <td>
+                                @item.ImportQty
+                            </td>
+                            <td>
+                                @item.UnitName
+                            </td>
+                            <td>
+                                @item.TotalValue
+                            </td>
+                            <td>
+                                @item.ReceivingDate
+                            </td>
+                            <td class="bold-red">
+                                @item.PIStatus
+                                @*@Convert.ToString(string.Format("{0:MMMM}", item.ShipmentDate))*@
+                            </td>
+                            <td>
+                                @item.BBLCNo
+                            </td>
+
+                            <td>
+                                @item.LcOpeningDate
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    </div>
+
+</form>
+
+<script>
+    var tblVouchersub;
+
+    $(document).ready(function () {
+
+        $('#SupplierId').select2();
+        //$("select").select2({
+        //    theme: "bootstrap4",
+        //});
+
+        $('#tbllist').DataTable({
+            dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            //buttons: [
+            //    'copy', 'csv', 'excel', 'pdf'
+            //],
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: 'PI Daily Receiving Status'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: 'PI Daily Receiving Status',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL'
+                }
+            ],
+            "searching": true,
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "iDisplayLength": 20,
+            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+            "scrollX": true,
+            "scrollCollapse": true,
+            language: {
+                sLengthMenu: "_MENU_"
+            },
+
+
+
+
+        });
+
+
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+
+        }
+    });
+
+</script>
+

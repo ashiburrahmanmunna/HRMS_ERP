@@ -1,0 +1,450 @@
+﻿
+
+@model GTERP.ViewModels.AdvSalaryReport
+@{
+    ViewBag.Title = "Advanced Salary Report";
+    //List<HR_Emp_Increment> Increment = new List<HR_Emp_Increment>();
+    //Increment = ViewBag.Increment;
+    //Increment = Increment.OrderBy(m => m.IncId).ToList();
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    fieldset {
+        border: solid 1px rgba(0,0,0,0.3);
+        border-radius: 2px;
+        padding: 0 10px;
+    }
+
+    .no-gutter > [class*='col-'] {
+        padding-left: 2px;
+        margin: 0px;
+    }
+
+    input[type="text"] {
+        font-size: 14px;
+        height: 30px;
+        margin-top: -2px;
+        margin-left: 4px;
+        border-radius: 3px;
+    }
+
+    .form-control {
+        border-radius: 3px;
+    }
+
+    #fromTo {
+        font-size: 16px;
+        text-align: right;
+        margin-left: 8px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+
+    /*.panel {
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+
+    .panel-body {
+        padding: 7px;
+    }*/
+    /*#buttonDiv {
+      padding: 8px;
+    }*/
+
+    /*.selectedRow {
+        background: #c6b99f;
+    }*/
+
+    #Save, #Update, #Delete, #Reset {
+        font-size: 16px;
+    }
+
+    .salaryTable tbody tr td {
+        padding: 5px;
+    }
+
+    input[type="text"] {
+        margin-left: 0px;
+        font-size: 13px;
+    }
+
+
+    table tbody {
+        cursor: pointer;
+    }
+
+    .selection, .select2 {
+        font-size: 14px;
+    }
+
+    /*
+    #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }*/
+
+    .divforfull, .backDiv {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 999999999999999;
+    }
+    /*
+    #loadingGif {
+        position: fixed;
+        top: 50%;
+        margin-top: -64px;
+        left: 50%;
+        z-index: 9999999999999999999999;
+    }*/
+
+    .myMessage {
+        position: fixed;
+        top: 150px;
+        left: 35%;
+        z-index: 9999999999999999999999999999999999;
+    }
+
+    fieldset:hover {
+        box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    button {
+        background: rgb(177,211,245);
+        color: black;
+        border-radius: 4px;
+        width: 100%;
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+
+    #buttonTable {
+        padding: 5px;
+    }
+
+        #buttonTable tr td {
+            width: 90px;
+            padding: 3px;
+            white-space: nowrap;
+        }
+
+    #sectionTable, #employeeTable, #typeTable, #bandTable {
+        opacity: 0.5;
+    }
+
+        #sectionTable tbody tr.selectedRow:hover,
+        #employeeTable tbody tr.selectedRow:hover,
+        #typeTable tbody tr.selectedRow:hover,
+        #bandTable tbody tr.selectedRow:hover {
+            background: rgb(208,232,251);
+        }
+
+    .btn {
+        font-size: 13px;
+    }
+
+    .content {
+        padding-top: 75px;
+    }
+
+    .table-responsive {
+        border: none;
+    }
+</style>
+
+<div class="card">
+    <div class="form-header btn-info">
+        <i class="far fa-file-alt"></i>  Advanced Salary Report
+        <div id="loading" style="display: inline;">
+            <div id="loadingGif" style="display:inline;">
+                <img src="~/Files/loading.gif" style="height:16px;display:inline;" />
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("AdvSalaryReport", "PayrollReport", FormMethod.Post))
+    {
+        <div>    
+            <div class="col-md-12 col-12 pt-2">
+                <fieldset class="boxStyle px-3">
+                <div class="row p-2">
+                    <div class="col-md-9 col-12">
+                    <div class="row">
+                        <div class="custom-control custom-radio col-md-2 col-12">
+                            <input id="All" name="Criteria" type="radio" class="custom-control-input" value="All" checked required>
+                            <label class="custom-control-label" for="All">All Employees</label>
+                        </div>
+                        <div class="custom-control custom-radio col-md-3 col-12">
+                            <input id="Employee" name="Criteria" type="radio" class="custom-control-input" value="Employee" required>
+                            <label class="custom-control-label" for="Employee">Employee Wise</label>
+                        </div>
+                        <div class="custom-control custom-radio col-md-2 col-12">
+                            <input id="Section" name="Criteria" type="radio" class="custom-control-input" value="Section" required>
+                            <label class="custom-control-label" for="Section">Section Wise</label>
+                        </div>
+                        <div class="custom-control custom-radio col-md-2 col-12">
+                            <input id="Type" name="Criteria" type="radio" class="custom-control-input" value="Type" required>
+                            <label class="custom-control-label" for="Type">Type Wise</label>
+                        </div>
+                        <div class="custom-control custom-radio col-md-2 col-12">
+                            <input id="Band" name="Criteria" type="radio" class="custom-control-input" value="Band" required>
+                            <label class="custom-control-label" for="Band">Line Wise</label>
+                        </div>
+
+                    </div>
+                    </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-12">
+                <div class="row p-3">
+                    <div class="col-md-3 col-12 mb-2">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Sections</legend>
+                            <partial name="_SectionGrid" />
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-5 col-12 mb-2">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Employees</legend>
+                            <partial name="_EmployeeGrid" />
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-2 col-12">
+                        <fieldset class="boxStyle px-3" style="height:320px;">
+                            <legend visible="true" style="width: auto;height:320px;" class="legendStyle">Employee Types</legend>
+                                <table id="typeTable" class="table-striped trow table text-center" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Employee Type
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>=ALL=</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>        
+
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-2 col-12 mb-2">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Lines</legend>
+                            <partial name="_LineGrid" />
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            @Html.HiddenFor(m => m.ButtonString)
+            @Html.HiddenFor(m => m.SectionId)
+            @Html.HiddenFor((m => m.EmployeeId))
+            @Html.HiddenFor(m => m.EmployeeType)
+            @Html.HiddenFor(m => m.LineId)
+
+            <div id="buttonDiv">
+                <div id="buttonTable" class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <button id="AdvSalarySheet" type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                                    <i class="glyphicon glyphicon-download-alt"></i>
+                                    Advanced Salary Sheet
+                                </button>
+                            </td>
+                            <td>
+                                <button id="AdvSalaryPayslip" type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                                    <i class="glyphicon glyphicon-download-alt"></i>
+                                    Advanced Salary Payslip
+                                </button>
+                            </td>
+                            <td>
+                                <button id="AdvSalaryTopSheet" type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                                    <i class="glyphicon glyphicon-download-alt"></i>
+                                    Advanced Salary Top Sheet
+                                </button>
+                            </td>
+                            <td>
+                                <button id="AdvSalaryBankSheet" type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                                    <i class="glyphicon glyphicon-download-alt"></i>
+                                    Advanced Salary Bank Sheet
+                                </button>
+                            </td>
+                            <td>
+                                <button id="Denomination" type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                                    <i class="glyphicon glyphicon-download-alt"></i>
+                                    Denomination
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $("button[type='submit']").click(function () {
+                $("#ButtonString").val($(this).attr("id"));
+                //alert($("#ButtonString").val());
+                //show();
+                // return false;
+            });
+
+            $("#sectionTable tbody tr:eq(0), #employeeTable tbody tr:eq(0),  #typeTable tbody tr:eq(0), #bandTable tbody tr:eq(0)").addClass("selectedRow");
+
+            $("#loading").css("display", "none");
+
+            function show() {
+                var tobeShowed = "Button : " +
+                    $("#ButtonString").val() +
+                    "\n" +
+                    "Section : " +
+                    $("#SectionId").val() +
+                    "\n" +
+                    "Employee : " +
+                    $("#EmployeeId").val() +
+                    "\n" +
+                    "Line : " +
+                    $("#LineId").val() +
+                    "\n" +
+                    "Employee Type : " +
+                    $("#EmployeeType").val();
+                alert(tobeShowed);
+            }
+
+            $("#SectionId").val("0");
+            $("#EmployeeId").val("0");
+            $("#LineId").val("0");
+            $("#EmployeeType").val("=ALL=");
+
+            var criteria = "";
+            //alert("enter");
+            //$('input').on('ifChanged', function (event) { $(event.target).trigger('change'); });
+            $(document).on('ifChanged', '#Criteria', function () {
+
+            });
+
+            $(document).on("click", "#sectionTable tbody tr", function () {
+                if (criteria != "Section") {
+                    return;
+                }
+                $("#sectionTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#SectionId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            $(document).on("click", "#employeeTable tbody tr", function () {
+                if (criteria != "Employee") {
+                    return;
+                }
+                $("#employeeTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#EmployeeId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+
+            $(document).on("click", "#bandTable tbody tr", function () {
+                if (criteria != "Band") {
+                    return;
+                }
+                $("#bandTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#LineId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            $(document).on("click", "#typeTable tbody tr", function () {
+                if (criteria != "Type") {
+                    return;
+                }
+                $("#typeTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#EmployeeType").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            function blurThem() {
+                //alert('blur');
+                $("#sectionTable, #employeeTable, #typeTable, #bandTable").css("opacity", "0.5");
+                $("#sectionTable, #employeeTable,  #typeTable, #bandTable").children("tbody").children("tr").removeClass("selectedRow");
+                $("#sectionTable tbody tr:eq(0), #employeeTable tbody tr:eq(0), #typeTable tbody tr:eq(0), #bandTable tbody tr:eq(0)").addClass("selectedRow");
+                $("#SectionId").val("0");
+                $("#EmployeeId").val("0");
+                $("#LineId").val("0");
+                $("#EmployeeType").val("=ALL=");
+            }
+
+            $("input[type='radio']").click(function () {
+
+                var radioValue = $("input[name='Criteria']:checked").val();
+
+                //alert(radioValue);
+                criteria = $.trim($(this).val());
+                //alert(criteria);
+
+                switch (criteria) {
+
+                    case "All":
+                        //alert('fff');
+
+                        blurThem();
+                        //alert('sss');
+                        break;
+                    case "Section":
+                        //alert('fff');
+
+                        blurThem();
+                        $("#sectionTable").css("opacity", "1");
+                        //alert('sss');
+
+                        break;
+
+                    case "Type":
+                        blurThem();
+                        $("#typeTable").css("opacity", "1");
+                        break;
+                    case "Band":
+                        blurThem();
+                        $("#bandTable").css("opacity", "1");
+                        break;
+                    case "Employee":
+                        blurThem();
+                        $("#employeeTable").css("opacity", "1");
+                        break;
+                }
+
+            });
+        });
+
+
+
+
+
+
+    </script>
+}
+

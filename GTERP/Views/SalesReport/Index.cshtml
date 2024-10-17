@@ -1,0 +1,375 @@
+﻿@model IEnumerable<GTERP.Controllers.Sales.SalesReport.SalesReportController.DistrictWiseSalesVM>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h1 class="text-center">Sales Report</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            @*<div class="card p-2">
+                    <label class="col-2 control-label">Bank:</label>
+                    <div class="col-10">
+                        <select id="distid" class="form-control" asp-items="ViewBag.DistId">
+                            <option>--Select District--</option>
+                        </select>
+                    </div>
+                </div>*@
+
+            <div class="card p-2">
+                <div class="row">
+                    <div class="form-group row col-md-3">
+                        <label class="col-4 control-label" >From Date:</label>
+                        <div class="col-8"><input id="fromdate" class="form-control" autocompleate="off" /></div>
+                    </div>
+                    <div class="form-group row col-md-3">
+                        <label class="col-3 control-label">To Date:</label>
+                        <div class="col-9"><input id="todate" class="form-control" autocomplete="off"/></div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <button class="btn btn-success" type="button" onclick="ReportPrint('PrintDeliveryOrderDateWiseReport')">Delivery Order Date Wise</button>
+                        <button class="btn btn-info" type="button" onclick="ReportPrint('PrintDailyDateWiseSalesSummaryReport')">Daily Date WiseSales Summary</button>
+                    </div>
+
+                    <div class="col-md-2 col-12 round text-left">
+                        <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+                            <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                            <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                            <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group row col-md-4">
+                        <label class="col-3 control-label">Bank:</label>
+                        <div class="col-9">
+                            <select id="BankNameId" class="form-control" asp-items="ViewBag.BankName">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <button class="btn btn-success" type="button" onclick="ReportPrint('PrintBankDipositrDateWiseReport')">Bank Diposit Date Wise</button>
+                        <button class="btn btn-primary" type="button" onclick="ReportPrint('PrintrptDeliveryChallanReport')">Delivery Challan Report</button>
+                        <button class="btn btn-info" type="button" onclick="ReportPrint('PrintrptChallanReport')">Challan Report</button>
+                    </div>
+                   
+                </div>
+                <div class="row">
+
+                    <div class="form-group row col-md-3">
+                        <label class="col-5 control-label">From DO No:</label>
+                        <div class="col-7">
+                            <select id="fromdono" class="form-control" asp-items="ViewBag.DONo">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-3">
+                        <label class="col-5 control-label">To DO No:</label>
+                        <div class="col-7">
+                            <select id="todono" class="form-control" asp-items="ViewBag.DONo">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <button class="btn btn-primary" type="button" onclick="ReportPrint('PrintDeliveryOrderNumberWiseReport')">Delivery No Wise Sales </button>
+                        <button class="btn btn-success" type="button" onclick="ReportPrint('PrintDeliveryOrderWiseChallanReport')">Delivery Order No Wise Challan </button>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="form-group row col-md-4">
+                        <label class="col-4 control-label">Month:</label>
+                        <div class="col-8">
+                            <select id="month" class="form-control" asp-items="ViewBag.Month">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <button class="btn btn-warning" type="button" onclick="ReportPrint('PrintrptBankDiposit[Month]WiseSummaryReport')">Bank Diposit[Month] Wise Summary</button>
+                        
+                        
+
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="form-group row col-md-4">
+                        <label class="col-4 control-label">District:</label>
+                        <div class="col-8">
+                            <select id="district" class="form-control" asp-items="ViewBag.DistId">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <button class="btn btn-warning" type="button" onclick="ReportPrint('PrintrptAllotmentMonthWiseDistrictReport')">Allotment Month Wise District Summary</button>
+                        <button class="btn btn-primary" type="button" onclick="ReportPrint('PrintrptDeliveryDateWiseBankSummaryReport')">Delivery Date Wise Bank Report</button>
+                        <button class="btn btn-info" type="button" onclick="ReportPrint('PrintrptAllotmentWiseSummaryReport')">Allotment Wise Summary Report</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group row col-md-4">
+                        <label class="col-3 control-label">Year:</label>
+                        <div class="col-9">
+                            <select id="YearNameId" class="form-control" asp-items="ViewBag.Year">
+                                <option>=Year=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <button class="btn btn-success" type="button" onclick="ReportPrint('PrintAnnualSalesReport')">Annual Salse Report</button>
+                        <button class="btn btn-warning" type="button" onclick="ReportPrint('PrintrptBankWiseSummaryReport')">Bank Wise Yearly Summary Report</button>
+                        <button class="btn btn-primary" type="button" onclick="ReportPrint('PrintrptDellerWiseBalanceReport')">Deller Wise Balance Report</button>
+                        <button class="btn btn-info" type="button" onclick="ReportPrint('PrintrptMonthWiseSalesReport')">Month Wise Sales Summary</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group row col-md-4">
+                        <label class="col-3 control-label">Gate Pass No</label>
+                        <div class="col-9">
+                            <select class="form-control" asp-items="ViewBag.GatePassId" id="GatePassId">
+                                <option value="0">Gate Pass No</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-success" type="button" onclick="ReportPrint('PrintrptTruckGatePassReport')">
+                            Gate Pass Report
+                        </button>
+                    </div>
+
+
+
+                    <div class="form-group row col-md-4">
+                        <label class="col-4 control-label">DO No For Challan:</label>
+                        <div class="col-8"><input id="dono" class="form-control" /></div>
+                       
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-info" type="button" onclick="ReportPrint('PrintrptDOChallanOrderReport')">DO Challan Order</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group row col-md-6">
+                        <label class="col-4 control-label">Booking Month:</label>
+                        <div class="col-8">
+                            <select id="monthid" class="form-control" asp-items="ViewBag.Month">
+                                <option>=All=</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-warning" type="button" onclick="ReportPrint('PrintrptBoraddhoVittikMulloJomaanduttolonReport')">বরাদ্দ ভিত্তিক মূল্য জমা ও উত্তোলন</button>
+                        <button class="btn btn-secondary" type="button" onclick="ReportPrint('PrintrptDealerVittikMulloJomaanduttolonReport')">ডিলার ভিত্তিক বরাদ্দ মূল্য জমা ও উত্তোলন</button>
+                    </div>
+                </div>
+            </div>
+            <br />
+            @*<div id="finalpanel" class="card p-2">
+
+                    <div class="table-responsive text-nowrap">
+                        <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                            <thead>
+                                <tr></tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr></tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $('#district').select2();
+        $('#YearNameId').select2();
+        $('#month').select2();
+        $('#fromdono').select2();
+        $('#todono').select2();
+        $('#BankNameId').select2();
+
+          $('#fromdate,#todate').datepicker({
+            onSelect: function (date) {
+                var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+                $('#DoDate').datepicker('option', 'dateFormat', 'dd-MM-yy')
+            },
+            dateFormat: 'dd-MM-yy',
+            changeMonth: true,
+            changeYear: true
+        });
+
+
+        //$('#DistId').select2({})
+        //    .on('select2:select', function (e) {
+        //    })
+
+
+         function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+             var DistrictId = $('#DistId option:selected').val();
+             var YearId = $('#YearNameId option:selected').val();
+             var MonthId = $('#month option:selected').val();
+             var FromDOId = $('#fromdono option:selected').val();
+             var ToDOId = $('#todono option:selected').val();
+             var Bank = $('#BankNameId option:selected').text();
+             var GatePassId = $('#GatePassId option:selected').val();
+             var dono = $('#dono').val();
+             var BookingMonthid = $('#monthid option:selected').val();
+            var reporttype = $("input[name=RptType]:checked").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, DistrictId: DistrictId, FromDate: FromDate, ToDate: ToDate, MonthId: MonthId, YearId: YearId, FromDOId: FromDOId, ToDOId: ToDOId, Bank: Bank, GatePassId: GatePassId, DONo: dono, BookingMonthId: BookingMonthid },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+         }
+
+
+        $('#distid').change(function () {
+            districtWiseSales()
+        })
+
+        function districtWiseSales() {
+            var distid = $('#distid').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DistrictWiseSales", "SalesReport")',
+                dataType: 'json',
+                data: { distid: distid },
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        //$('.table').DataTable();
+
+        var peopleList = $('#tbllist').DataTable({
+        serverSide: true,
+        processing: true,
+
+        ajax: {
+            url: '@Url.Action("Get", "SalesReport")',
+            type: "POST"
+        },
+        success: function (data) {
+            //console.log(data);
+            //alert(data);
+        },
+
+        dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+        columns: [
+
+            { "title": "DOId", "data": "DOId", "searchable": true, "visible": false },
+
+            //{ "title": "Year", "data": "Year" },
+            //{ "title": "Month", "data": "Month" },
+            //{ "title": "District", "data": "District" },
+            { "title": "Delivery Number", "data": "DeliveryNumber", "searchable": true },
+            { "title": "DO Date", "data": "DODate", "searchable": true },
+            { "title": "Dealer Name", "data": "DealerName", "searchable": true },
+            { "title": "District Name", "data": "DistrictName", "searchable": true },
+            { "title": "Bank Name", "data": "BankName", "searchable": true },
+            { "title": "Month", "data": "AllotmentMonth", "searchable": true },
+            { "title": "Pay Slip No", "data": "PayInSlipNo", "searchable": true },
+            { "title": "Pay Slip Date", "data": "PayInSlipDate", "searchable": true },
+            { "title": "Unit Price", "data": "UnitPrice", "searchable": true },
+            { "title": "Quantity", "data": "Quantity", "searchable": true },
+            { "title": "Total Price", "data": "TotalPrice", "searchable": true },
+            { "title": "Remarks", "data": "Remarks"},
+            {
+                "title": "Action",
+                "data": "DOId",
+                "render": function (data, type, row) {
+                    var myUrledit = '@Url.Action("Edit", "SalesReport")/' + data;
+                    var myUrldelete = '@Url.Action("Delete", "SalesReport")/' + data;
+                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                }
+            }
+        ],
+        buttons: {
+            dom: {
+                button: {
+                    className: 'btn rounded-0'
+                }
+            },
+            buttons: [
+                //'copy', 'csv', 'excel', 'pdf'
+                //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                {
+                    extend: 'colvis',
+                    "columns": ':not(:last-child)',
+                    text: '<i class="mdi mdi-view-column"></i>',
+                    className: 'btn-info',
+                    titleAttr: 'Show / hide columns',
+                    //collectionLayout: 'fixed two-column'
+
+                },
+                {
+                    extend: 'copy',
+                    text: '<i class="mdi mdi-content-copy"></i>',
+                    className: 'btn-primary',
+                    titleAttr: 'Copy to Clipboard'
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="mdi mdi-note-outline"></i>',
+                    className: 'btn-secondary',
+                    titleAttr: 'Export to csv'
+
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="mdi mdi-file-excel"></i>',
+                    className: 'btn-success',
+                    titleAttr: 'Export to excel'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    text: '<i class="mdi mdi-file-pdf"></i>',
+                    className: 'btn-danger',
+                    titleAttr: 'Export to PDF',
+                    //exportOptions: {
+                    //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    //}
+                }
+            ]
+        },
+        "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+        "searching": true
+    });
+    </script>
+}
+

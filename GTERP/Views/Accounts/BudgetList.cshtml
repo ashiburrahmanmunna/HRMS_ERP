@@ -1,0 +1,103 @@
+﻿@model IEnumerable<GTERP.Models.BudgetMain>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+
+            <div class="col-md-3 col-12">
+                @Html.ActionLink("Accounts", "CreateBudget", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">BudgetMain / Year-Month Wise Allotment</h2>
+            </div>
+        </div>
+    </div>
+
+    <div id="finalpanel" class="card p-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+@section Scripts{
+    <script>
+        //$('.table').DataTable();
+
+                var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "Accounts")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "BudgetMainId", "data": "BudgetMainId", "searchable": false, "visible": false },
+                    { "title": "Year", "data": "Year" },
+                    { "title": "Month", "data": "Month" },
+                    { "title": "Total Debit", "data": "TotalBudgetDebit", "searchable": false },
+                    { "title": "Total Credit", "data": "TotalBudgetCredit", "searchable": false },
+                    {
+                        "title": "Action",
+                        "data": "BudgetMainId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "Accounts")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "Accounts")/' + data;
+                            var myUrlprint = '@Url.Action("Print", "Accounts")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Budget Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success mr-1',
+                            titleAttr: 'Export to excel'
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                "language": {
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                });
+
+    </script>
+}

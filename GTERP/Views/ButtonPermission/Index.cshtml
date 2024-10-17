@@ -1,0 +1,231 @@
+﻿
+@model IEnumerable<GTERP.Controllers.HouseKeeping.ButtonPermissionController.ButtonPermissionVM>
+
+@using (Html.BeginForm("Index", "ButtonPermission", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+    <div class="container">
+
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Button Permission</h2>
+                    </div>
+                    @Html.ValidationSummary("", new { @class = "text-error" })
+
+                    <div class="card-body p-2">
+                        @*<div class="row">
+                            <div class="col-md-8 col-12">
+
+                            </div>
+                            <div class="col-md-2 col-12">
+                                
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button id="btnupdate" onclick="save()" class="btn btn-primary btn-block rounded-0" type="button">Update</button>
+                            </div>
+                        </div>*@
+                        
+                        <div class="row mb-2 px-3">
+                            <div class="table-responsive">
+                                <div class="row d-flex justify-content-between">
+                                    <div></div>
+                                    <div class="col-2 offset-10" style="padding:5px 10px;">
+                                        <button id="btnupdate" onclick="save()" class="btn btn-primary btn-block rounded-0 "type="button">Update</button>
+                                    </div>
+                                </div>
+                                <table id="myTbl" class="table tblterms table-bordered display nowrap table-striped table-hover text-center" cellspacing="0" width="100%">
+
+                                    <thead>
+                                        <tr>
+                                            
+                                            <th hidden>ComId</th>
+                                            <th>Company Name</th>
+                                            <th>IsShowEarn</th>
+                                            <th>IsShowSettlement</th>
+                                            <th>IsShowMail</th>
+                                            @*<th style="width:40%;">Product</th>*@
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td hidden>
+                                                        @Html.DisplayFor(i => item.ComId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(i => item.CompanyName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.CheckBoxFor(i => item.IsShowEarn)
+                                                    </td>
+                                                    <td>
+                                                        @Html.CheckBoxFor(i => item.IsShowSettlement)
+                                                    </td>
+                                                    <td>
+                                                        @Html.CheckBoxFor(i => item.IsShowSendEmail)
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+
+
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+@*<div class="container ">
+    <div class="pl-table ">
+      <div class="pl-thead tall">
+        <div class="row">
+          <div class="col">ID</div>
+          <div class="col">Company Name</div>
+          <div class="col">IsShowEarn</div>
+          <div class="col">IsShowEarn</div>
+          <div class="col">IsShowSendEmail</div>
+
+        </div>
+      </div>
+      <div class="pl-tbody">
+        @if (Model != null)
+         {
+             foreach (var item in Model)
+             {
+                <div class="row">
+                  <div class="col">@item.ComId</div>
+                  <div class="col">@item.CompanyName</div>
+                  <div class="col"><input name="" type="checkbox" value="@item.IsShowEarn"></div>
+                  <div class="col"><input name="" type="checkbox" value="@item.IsShowSettlement"> </div>
+                  <div class="col"><input name="" type="checkbox" value="@item.IsShowSendEmail"> </div>
+                </div>
+             }
+         }
+
+
+      </div>
+    </div>*@
+
+}
+
+
+@section Scripts {
+     <script>
+        $(document).ready(function(){
+            $('input[type="checkbox"]').click(function(){
+                if($(this).prop("checked") == true){
+                    console.log("Checkbox is checked.");
+                }
+                else if($(this).prop("checked") == false){
+                    console.log("Checkbox is unchecked.");
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+
+
+            $("#document").ready(() => {
+
+                $("#companyList").select2();
+                let table;
+
+                table = $("#myTbl").DataTable({
+                    "dom": '<"pull-left"f><"pull-right"l>tip',
+                    "searching": true,
+                    "paging": false,
+                    language: {
+                        search: '',
+                        searchPlaceholder: "Search...",
+
+                    },
+
+                })
+
+
+
+                console.log(table);
+            })
+
+            function toggle(source) {
+                let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                for (let i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i] != source)
+                        checkboxes[i].checked = source.checked;
+                }
+        }
+
+
+
+
+      function save() {
+
+
+
+
+        let ButtonPermissions = { "ComId": "", "IsShowEarn": 0, "IsShowSettlement": 0, "IsShowSendEmail": 0 };
+        let oTable = $('#myTbl').dataTable().fnGetData();
+        let nodes = $('#myTbl').dataTable().fnGetNodes();
+
+        let data = [];
+
+        for (let i = 0; i < oTable.length; i++) {
+
+            if ($(nodes[i].cells[2].children[0]).is(':checked')) {
+                ButtonPermissions.IsShowEarn = true;
+            }
+            if ($(nodes[i].cells[3].children[0]).is(':checked')) {
+                ButtonPermissions.IsShowSettlement = true;
+            }
+            if ($(nodes[i].cells[4].children[0]).is(':checked')) {
+                    ButtonPermissions.IsShowSendEmail = true;
+            }
+
+
+            ButtonPermissions.ComId = oTable[i][0];
+            //alert(oTable[i][0]);
+
+            data.push(ButtonPermissions);
+                ButtonPermissions = { "ComId": "", "IsShowEarn": 0, "IsShowSettlement": 0, "IsShowSendEmail": 0 };
+        }
+
+        //console.log(data);
+        let antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CreateButtonPermissions", "ButtonPermission")',
+            dataType: 'json',
+            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+            //async: true,
+            data: { BtnPermissions: data },
+            success: function (data) {
+                if (data.Success == 1) {
+                    customFile('1','Data Update Successfully');
+                     window.location.href = '@Url.Action("Index","ButtonPermission")';
+                }
+            },
+            error: function (ex) {
+                customFile('3','Something is wrong!')
+            }
+        });
+    }
+    </script>
+
+}

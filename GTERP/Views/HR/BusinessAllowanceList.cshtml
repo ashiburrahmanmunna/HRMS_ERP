@@ -1,0 +1,412 @@
+﻿@model GTERP.Models.HR_Emp_BusinessAllow
+
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    List<GTERP.ViewModels.BusinessAllowViewModel> recreations = ViewBag.BusinessAllow;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i>  Business Allowance
+        </h4>
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-3 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.DtFrom)</span>
+                                    </div>
+                                    <input type="text" asp-for="DtFrom" name="DtBirth" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.DtFrom, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.DtTo)</span>
+                                    </div>
+                                    <input type="text" asp-for="DtTo" name="DtBirth" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.DtTo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.Remarks)</span>
+                                    </div>
+                                    <input type="text" asp-for="Remarks" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.Rate)</span>
+                                    </div>
+                                    <input type="text" value="200" asp-for="Rate" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-12 mb-3">
+                                <input type="button" value="Save" class="btn btn-success rounded-0 btn-block" id="btnSave" />
+                            </div>
+                        </div>
+                   
+                    <hr />
+                    <input type="button" class="btn btn-warning float-right rounded-0" value="Select All" id="btnSelect" />
+                    <table id="tblEmp" class="table table-hover table-striped" width="100%">
+                        <thead>
+                            <tr>
+                                <th>EmpId</th>
+                                <th>Emp Code</th>
+                                <th>Emp Name</th>
+                                <th>Designation</th>
+                                <th>Department</th>
+                                <th>Section</th>
+                                <th>Emp Type</th>
+                                <th>Total Duty</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (recreations != null)
+                            {
+                                foreach (var item in recreations)
+                                {
+                            <tr>
+                                <td>@item.EmpId</td>
+                                <td>@item.EmpCode</td>
+                                <td>@item.EmpName</td>
+                                <td>@item.DesigName</td>
+                                <td>@item.DeptName</td>
+                                <td>@item.SectName</td>
+                                <td>@item.EmpType</td>
+                                <td>@item.ttlBusinessDuty</td>
+                                <td>@item.Rate</td>
+                                <td>@item.Amount</td>
+                            </tr>
+                                }
+                            }
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section Scripts {
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        $("#btnLoad").click(function () {
+            DailyEmpFixedAttandanceData();
+        });
+        function initializeGrid(data) {
+            $('#tblEmp').DataTable().clear().draw();
+            for (var i = 0; i < data.length; i++) {
+
+                $('#tblEmp').dataTable().fnAddData(
+                    [
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].ProssType,
+                        data[i].EmpType,
+                        data[i].DeptName,
+                        data[i].SectName,
+                        data[i].DesigName,
+                        data[i].Remarks
+                    ]
+                );
+            }
+        };
+
+
+        function DailyEmpFixedAttandanceData() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            let prossType = $("#prossType option:selected").val();
+
+             $.ajax({
+                  type: 'POST',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("Search", "OTFC")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: { prossType: prossType },
+                 success: function (data) {
+                     if (data.Success == "1") {
+                         if (data.result == null) {
+                             alert("Result is null")
+                         }
+                         initializeGrid(data.result);
+                     }
+                     else {
+                         toastr.error(result.ex);
+                     }
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                 }
+            });
+
+        };
+
+        $(document).ready(function () {
+
+            $("#DtFrom").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtFrom").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+            $("#DtTo").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+            // row select
+            $("#btnSelect").click(function () {
+                if ($("#btnSelect").val() == "Select All") {
+                    $('#tblEmp tbody tr').each(function () {
+                        if (!$(this).hasClass('selected')) {
+                            $(this).addClass('selected');
+                        }
+
+                    });
+                    $("#btnSelect").val("De Select");
+                } else {
+                    $('#tblEmp tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+
+
+                    });
+                    $("#btnSelect").val("Select All");
+                }
+            });
+
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            //"columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            visible: false
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            messageTop: 'helow',
+                            exportOptions: {
+                                columns: [0,1, 2, 3, 4, 5, 6, 7, 8, 9,10],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        //if (column == 8) {
+                                        //    return $(data).val();
+                                        //} else {
+                                            return data;
+                                        //}
+                                    }
+                                }
+                            }
+                        }
+
+                    ]
+                },
+
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'EmpType', 'visible': true },
+                    { 'sClass': 'DeptName', 'visible': true },
+                    { 'sClass': 'SectName', 'visible': true },
+                    { 'sClass': 'DesigName', 'visible': true },
+                    { 'sClass': 'ttlBusinessDuty', 'visible': true },
+                    { 'sClass': 'Rate', 'visible': true },
+                    { 'sClass': 'Amount', 'visible': true }
+                ],
+                columnDefs: [
+                    {
+                        'targets': 7, 'render': function (data, type, row) {
+                            return `<input class="form-control ttldays" type="text" data-val="true" value="${data}">`;
+                        }
+                    }
+                ],
+                select: {
+                    style: 'multi',
+                    selector: 'tr>td:nth-child(1),tr>td:nth-child(2),tr>td:nth-child(3),tr>td:nth-child(4),tr>td:nth-child(5),tr>td:nth-child(6),tr>td:nth-child(8),tr>td:nth-child(9)'
+                   
+                },
+                'paging': false,
+                'info': false,
+                "scrollY": 455,
+                "scrollX": true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+            });
+
+            $(".ttldays").click(function () {
+                if ($(this).val()=="0.00") {
+                    $(this).val("");
+                }
+            })
+
+            $(".ttldays").change(function () {
+                let ttldays = parseFloat($(this).val());
+                let rate = parseFloat($("#Rate").val());
+                let tr = $(this).closest("tr");
+                //table.rows(tr).data()[0][9] = 5000;
+                //table.rows().draw();
+                //table.row(tr).cell(9).data("500").draw();
+                console.log(table.rows(tr).data()[0][9]);
+                //table.cell({ row: 1, column: 9 }).data("34").draw(true);
+                //table.row(tr).cell(9).data("500").draw();
+                //console.log(table.rows(tr).data()[0][9]);
+
+                table
+                    .rows(tr)
+                    .every(function (rowIdx, tableLoop, rowLoop) {
+                        
+                        table.cell(rowIdx, 9).data(ttldays*rate);
+
+                    })
+                    .draw();
+                console.log(table.rows(tr).data()[0][9]);
+
+
+            });
+
+            $("#btnSave").click(function () {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var dtFrom = $('#DtFrom').val();
+                var dtTo = $('#DtTo').val();
+                var Remarks = $('#Remarks').val();
+
+                if (dtFrom == "") {
+                    $('#DtFrom').focus();
+                    return false;
+                }
+                if (dtTo == "") {
+                    $('#DtTo').focus();
+                    return false;
+                }
+
+                var BusinessAllows = [];
+
+                var data = table.rows('.selected').data();
+                var nodes = table.rows('.selected').nodes();
+               // console.log(data);
+
+
+                for (var i = 0; i < data.length; i++) {
+                     var HR_Emp_BusinessAllow = {
+                         EmpId: '', dtFrom: dtFrom, dtTo: dtTo, Remarks: Remarks, Amount: 0, ttlBusinessDuty:0,Rate:0,
+                            ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                            UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                            DateAdded: CurrentDate(), UpdateByUserId:CurrentDate(), DateUpdated: CurrentDate()
+                    }
+
+                    HR_Emp_BusinessAllow.EmpId = data[i][0];
+                    HR_Emp_BusinessAllow.dtFrom = dtFrom;
+                    HR_Emp_BusinessAllow.dtTo = dtTo;
+                    HR_Emp_BusinessAllow.Rate = data[i][8]||0;
+                    HR_Emp_BusinessAllow.Amount = data[i][9]||0;
+                        HR_Emp_BusinessAllow.ttlBusinessDuty = nodes[i].cells[6].children[0].value || 0; 
+                    HR_Emp_BusinessAllow.Remarks = Remarks;
+                    BusinessAllows.push(HR_Emp_BusinessAllow);
+
+
+                };
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CreateBusinessAllowance", "HR")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                     dataType: 'json',
+                     headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                     data: { BusinessAllows: BusinessAllows},
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            window.location.href='@Url.Action("BusinessAllowanceList", "HR")'
+                        }
+                        else
+                            toastr.error(result.ex);
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+                });
+            });
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+    </script>
+}

@@ -1,0 +1,561 @@
+﻿
+
+<div class="row">
+    <div id="success-alert" class="alert-danger">@ViewBag.msg</div>
+    <div class="col-sm-4 border border-info">
+        <div class="form-group my-1">
+            <button type="button" class="btn btn-outline-primary btnSaveDevice d-flex" id="Finger_Face" onclick="startSpinner()">
+                <span class="spinner-border spinner-border-sm my-1 mx-1"
+                      role="status" aria-hidden="true" style="display:none;" id="spinner"></span> Import Data From Device
+            </button>
+            <br />
+            <div class="d-flex bg-secondary">
+                <input style="width:200px" type="file" multiple id="folderPic" />
+                <span><button class="btn btn-outline-success picUpload " value="">upload to device</button> </span>
+            </div>
+
+            @*<span class="spinner-border spinner-border-sm my-1 mx-1"
+            role="status" aria-hidden="true" style="display:none;" id="spinner"></span> Save To Device*@
+
+            <h5 class="header-color">IP Address</h5>
+            <div id="deviceData"></div>
+        </div>
+    </div>
+
+    <div class="col-sm-8 border border-primary">
+        <h4 class="header-color">Master Data</h4>
+        <div class="my-1 d-flex justify-content-md-between">
+            <button type="button" id="showData" class="btn btn-outline-success d-flex mx-1" onclick="startSpinnerShowData()">
+                <span class="spinner-border spinner-border-sm my-1 mx-1"
+                      role="status" aria-hidden="true" style="display:none;" id="spinnerShowData"></span> Load Master Data
+            </button>
+            <div class="d-flex bg-secondary">
+                <button class="btn btn-warning readExl d-flex" value="">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDltExcel"></span>delete by excel list
+                </button><span><input type="file" multiple id="folderExl" /> </span>
+            </div>
+        </div>
+        <section class="border border-warning my-1" style="background-color: blanchedalmond;">
+            <div class="d-flex justify-content-between">
+                <button type="button" id="Finger_FaceDb" style="display:none" class="btn btn-success" onclick="startSpinnerSend()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerSend"></span> Transfer To Device
+                </button>
+                <button type="button" id="deleteDevice" class="btn btn-danger col-xl-auto d-flex" onclick="startSpinnerDelete()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDelete"></span> Delete From Device
+                </button>
+                <button type="button" id="download-xlsx" style="display:none" class="btn btn-outline-info">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerExcel"></span> Master Data Download-Excel
+                </button>
+                <button type="button" id="downloadImg" style="display:none" class="btn btn-primary" onclick="startSpinnerPicture()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerPicture"></span> Save Picture
+                </button>
+                <button type="button" id="DeleteFromDB" style="display:none" class="btn btn-outline-danger" onclick="startSpinnerDB()">
+                    <span class="spinner-border spinner-border-sm my-1 mx-1"
+                          role="status" aria-hidden="true" style="display:none;" id="spinnerDB"></span> Delete Master Data
+                </button>
+            </div>
+
+
+            Selected Data: <span id="select-stats" style="color:indigo"></span>
+            <div class="tabulator-table tabulator-row-handle-box" id="tbody1"></div>
+        </section>
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        .header-color {
+            color: rgb(197 194 194);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+
+        var SelectedCard = [];
+        var SelectedDevice;
+        var Selecteddata;
+
+        // for save to device button
+        function startSpinner() {
+            document.getElementById('spinner').style.display = 'block';
+        }
+        function stopSpinner() {
+            document.getElementById('spinner').style.display = 'none';
+        }
+
+        // for delete button
+        function startSpinnerDelete() {
+            document.getElementById('spinnerDelete').style.display = 'block';
+        }
+        function stopSpinnerDelete() {
+            document.getElementById('spinnerDelete').style.display = 'none';
+        }
+
+        // for Download in Excel button--startSpinnerExcel
+        function startSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'block';
+        }
+        function stopSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'none';
+        }
+
+        // for show data button
+        function startSpinnerShowData() {
+            document.getElementById('spinnerShowData').style.display = 'block';
+        }
+        function stopSpinnerShowData() {
+            document.getElementById('spinnerShowData').style.display = 'none';
+        }
+
+        // for send to device button
+        function startSpinnerSend() {
+            document.getElementById('spinnerSend').style.display = 'block';
+        }
+        function stopSpinnerSend() {
+            document.getElementById('spinnerSend').style.display = 'none';
+        }
+
+
+        // for img downloder
+        function startSpinnerPicture() {
+            document.getElementById('spinnerPicture').style.display = 'block';
+        }
+        function stopSpinnerPicture() {
+            document.getElementById('spinnerPicture').style.display = 'none';
+        }
+        // for img Delete from DB
+        function startSpinnerDlt() {
+            document.getElementById('spinnerDlt').style.display = 'block';
+        }
+        function stopSpinnerDlt() {
+            document.getElementById('spinnerDlt').style.display = 'none';
+        }
+        function startSpinnerDB() {
+            document.getElementById('spinnerDB').style.display = 'block';
+        }
+        function stopSpinnerDB() {
+            document.getElementById('spinnerDB').style.display = 'none';
+        }
+         function startDltExcel() {
+            document.getElementById('spinnerDltExcel').style.display = 'block';
+        }
+        function stopDltExcel() {
+            document.getElementById('spinnerDltExcel').style.display = 'none';
+        }
+
+        ///////////////////////////////////////////////////////////////////
+
+        $(document).ready(function() {
+            document.getElementById('Finger_FaceDb').style.display = 'none';
+            document.getElementById('DeleteFromDB').style.display = 'none';
+
+            $.ajax({
+                url: "/dataTransfer/deviceInfo/",
+                method: "get",
+                dataType: 'Json',
+                success: function(data) {
+                    var tabledata = data;
+                    var table = new Tabulator("#deviceData",
+                        {
+
+
+                            height: "400px",
+                            layout: "fitDataStretch",
+
+                            paginationSize: 10,
+                            paginationSizeSelector: [10, 20, 50, 100],
+                            selectable: true,
+                            data: tabledata, //assign data to table
+                            /* autoColumns: true,*/ //create columns from data field names
+                            columns: [
+                                {
+                                    formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+                                        cell.getRow().toggleSelect();
+                                    }
+                                },
+
+                                { title: "Ip Address", field: "ipAddress", hozAlign: "left", sorter: "number", headerFilter: "input", contextPopup: "Im a Popup" },
+                                { title: "Location", field: "location", hozAlign: "center", sorter: "number", headerFilter: "input", tooltip: true },
+                                {
+                                    title: "HikPassword", field: "hikpassword", hozAlign: "center", sorter: "number", headerFilter: "input",
+
+                                }]
+                        })
+                    table.on("rowSelectionChanged", function(data, rows) {
+                        SelectedDevice = data;
+                    })
+                }
+
+            })
+        });
+
+        $(".picUpload").click(function() {
+
+            var fileUpload = $("#folderPic").get(0);
+
+            var files = fileUpload.files;
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("img", files[i]);
+            }
+
+            fileData.append("DeviceData", JSON.stringify(SelectedDevice));
+
+
+            if (SelectedDevice != "") {
+
+                $.ajax({
+                    url: "/dataTransfer/SetImg/",
+                    type: "POST",
+                    data: fileData,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    enctype: 'multipart/form-data',
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(JSON.stringify(data));
+                        stopSpinnerSend();
+                        $("#folderPic").val('');
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerSend();
+                    }
+                })
+            }
+            else {
+                alert("Select Device and Then Try!");
+                stopSpinnerSend();
+
+            }
+
+        });
+
+        $(".readExl").click(function() {
+            startDltExcel();
+            if ($("#folderExl").val() != '') {
+                var fileUpload = $("#folderExl").get(0);
+
+                var files = fileUpload.files;
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append("exl", files[i]);
+                }
+
+                fileData.append("DeviceData", JSON.stringify(SelectedDevice));
+
+
+                if (SelectedDevice != "") {
+
+                    $.ajax({
+                        url: "/dataTransfer/readExl/",
+                        type: "POST",
+                        data: fileData,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        enctype: 'multipart/form-data',
+                        dataType: 'json',
+                        success: function(data) {
+                            alert("data deleted");
+                            stopDltExcel()
+                            $("#folderExl").val('');
+                        },
+                        error: function(er) {
+                            alert(JSON.stringify(er));
+                            stopDltExcel()
+                        }
+                    })
+                }
+                else {
+                    alert("Select Device and Then Try!");
+                    stopDltExcel();
+
+                }
+            }
+            else {
+                alert("Select your desired Excel File");
+                stopDltExcel();
+
+            }
+
+        })
+
+        $("#success-alert").click(function() {
+            $("#success-alert").slideUp(500);
+        });
+        $("#showData").click(function() { load(); });
+
+
+
+        function load() {
+            startSpinnerShowData();
+            $.ajax({
+                url: '@Url.Action("Empinfo", "dataTransfer")',
+                method: "get",
+                dataType: 'Json',
+                success: function(data) {
+                    console.log(data);
+                    var tabledata = data;
+                    var table = new Tabulator("#tbody1",
+                        {
+                            height: "400px",
+
+                            layout: "fitData",
+                            selectable: true,
+                            pagination: true,
+                            paginationSize: 10,
+                            paginationSizeSelector: [10, 20, 50, 100],
+                            data: tabledata, //assign data to table
+
+                            /* autoColumns: true,*/ //create columns from data field names
+                            columns: [
+                                {
+                                    formatter: "rowSelection", titleFormatter: "rowSelection", titleFormatterParams: {
+                                        rowRange: "active" // only toggle the values of the active filtered rows
+                                    }, hozAlign: "center", headerSort: false,
+                                    cellClick: function(e, cell) {
+                                        cell.getRow().toggleSelect();
+                                    }
+                                },
+
+                                { title: "EmpCode", field: "empCode", hozAlign: "right", sorter: "number", headerFilter: "input" },
+                                {
+                                    title: "Card No", field: "cardNo", hozAlign: "left", sorter: "number", headerFilter: "input",
+                                    tooltip: function(e, cell, onRendered) {
+                                        //e - mouseover event
+                                        //cell - cell component
+                                        //onRendered - onRendered callback registration function
+                                        var el = document.createElement("div");
+                                        var img = document.createElement("img");
+
+                                        $.ajax({
+                                            url: "/dataTransfer/showImg/",
+                                            method: "post",
+                                            data: { cardNo: cell.getValue() },
+                                            dataType: 'Json',
+                                            success: function(data1) {
+
+                                                Pic = ""
+
+                                                img.src = "data:image/jpeg;base64," + data1;
+                                                img.width = '100';
+                                                img.height = '100';
+
+
+
+                                            }
+                                        })
+                                        el.style.backgroundColor = "orange";
+                                        el.appendChild(img);
+                                        return el;
+
+                                    },
+                                },
+                                { title: "Name", field: "empName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Department", field: "deptName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Section", field: "sectName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Designation", field: "desigName", hozAlign: "center", headerFilter: "input" },
+                                { title: "Floor", field: "floor", hozAlign: "center", headerFilter: "input" },
+                                { title: "Line", field: "line", hozAlign: "center", headerFilter: "input" },
+                                { title: "Ip Address", field: "ipAddress", hozAlign: "center", headerFilter: "input" },
+                                { title: "Finger", field: "finger_Data", width: 200, headerFilter: "input", width: 80 },
+                                { title: "Image", field: "emp_image", width: 200, headerFilter: "input", width: 80 },
+                            ]
+                        });
+                    //dsfds
+                    document.getElementById("download-xlsx").style.display = "block";
+
+                    document.getElementById("download-xlsx").addEventListener("click", function() {
+                        table.download("xlsx", "data.xlsx", { sheetName: "MyData" })
+                    });
+
+
+                    table.on("rowSelectionChanged", function(data, rows) {
+                        document.getElementById("select-stats").innerHTML = data.length;
+                        Selecteddata = data;
+                        SelectedCard = [];
+                        for (const { cardNo, empName } of data) {
+
+                            SelectedCard.push({ cardNo, empName });
+                        }
+
+                        if (data.length > 0) {
+
+                            document.getElementById("Finger_FaceDb").style.display = "block";
+                            document.getElementById("DeleteFromDB").style.display = "block";
+                            document.getElementById("downloadImg").style.display = "block";
+
+                        }
+                        else {
+                            document.getElementById("Finger_FaceDb").style.display = "none";
+                            document.getElementById("DeleteFromDB").style.display = "none";
+                            document.getElementById("downloadImg").style.display = "none";
+
+                        }
+                    })
+
+                    stopSpinnerShowData();
+                }
+            })
+        };
+
+        $("#Finger_FaceDb").click(function() {
+            $("#Finger_FaceDb").css({ "display": "flex", "flex-direction": "row" });
+            startSpinnerSend();
+            if (SelectedDevice != "") {
+
+                $.ajax({
+                    url: "/dataTransfer/SetFingerPrint/",
+                    type: "POST",
+                    data: {
+                        SelectedData: SelectedCard,
+                        Device: SelectedDevice
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(JSON.stringify(data));
+                        stopSpinnerSend();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerSend();
+                    }
+                })
+            }
+            else {
+                alert("Select Device and Then Try!");
+                stopSpinnerSend();
+            }
+        })
+
+        $("#downloadImg").click(function() {
+            startSpinnerPicture();
+            if (Selecteddata != "") {
+                $.ajax({
+                    url: "/dataTransfer/downImg/",
+                    type: "POST",
+                    dataType: 'json',
+
+                    data:
+                    {
+                        data: SelectedCard,
+
+                    },
+
+                    success: function(data) {
+                        alert("Picture saved Successfully!");
+                        stopSpinnerPicture();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerPicture();
+                    }
+                })
+            }
+            else {
+                alert("select data");
+                stopSpinnerDown();
+            }
+        });
+
+        $("#deleteDevice").click(function() {
+            if (Selecteddata != "" && SelectedDevice != "") {
+                $.ajax({
+                    url: "/dataTransfer/btnDel/",
+                    type: "POST",
+                    dataType: 'json',
+
+                    data:
+                    {
+                        data: SelectedCard,
+                        Device: SelectedDevice
+                    },
+
+                    success: function(data) {
+                        alert("Device data deleted Successfully!");
+                        stopSpinnerDelete();
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er));
+                        stopSpinnerDelete();
+                    }
+                })
+            }
+            else {
+                alert("select data and device");
+                stopSpinnerDelete();
+            }
+        });
+
+        $("#DeleteFromDB").click(function() {
+            if (Selecteddata != "") {
+                $.ajax({
+                    url: "/dataTransfer/btnDelfromDB/",
+                    type: "POST",
+                    dataType: 'json',
+
+                    data:
+                    {
+                        data: SelectedCard,
+
+                    },
+
+                    success: function(data) {
+                        alert("Database data deleted Successfully!");
+
+                        stopSpinnerDB();
+                        load();
+
+                    },
+                    error: function(er) {
+
+                        stopSpinnerDB()
+                    }
+                })
+            }
+            else {
+                alert("select data first");
+
+            }
+        });
+        $("#Finger_Face").click(function() {
+            $.ajax({
+                url: "/dataTransfer/GetFingerFace/",
+                type: "Post",
+                data: { Device: SelectedDevice },
+                dataType: 'json',
+
+                error: function(er) {
+                    alert(JSON.stringify(er));
+                },
+                complete: function() {
+                    alert("Completed");
+                    stopSpinner();
+                },
+                success: function(data) {
+                    alert(data);
+                    stopSpinner();
+                }
+            })
+        });
+
+
+    </script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+
+}
+

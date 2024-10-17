@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="col-md-4 col-xs-12 d-block mx-auto">
+    <h2 id="styletext">ML Sheet Upload</h2>
+
+</div>
+<br />
+<div class="col-md-6 offset-md-3 col-12">
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-btn">
+                <span class="btn btn-primary rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                <input name="uploaded_file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+            </span>
+        </div>
+        <span class="form-control"></span>
+        <div class="input-group-append">
+            <span>
+                <input type="button" id="btnUpload" value="Upload Files" class="btn btn-success rounded-0"/>
+            </span>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div class="col-md-4 col-xs-12 d-block mx-auto">
+
+
+    <a href="/Payroll/MLDownload?file=ML.xlsx" class="btn btn-success rounded-0" target="_blank">Download Sample Format</a>
+
+</div>
+
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+
+            $('#btnUpload').click(function () {
+
+
+                //var fileUpload = $("#FileUpload1").get(0);
+                //var files = fileUpload.files;
+                //var fileData = new FormData();
+                //fileData.append(files[0].name, files[0]);
+
+                //console.log(fileData);
+
+                var input = document.getElementById('FileUpload1');
+                //var files = $("#FileUpload1").get(0).files();//.files;
+                var files = input.files;
+                var fileData = new FormData();
+
+                for (var i = 0; i != files.length; i++) {
+                    fileData.append("files", files[i]);
+                }
+
+                $.ajax({
+                    url: '@Url.Action("MLUploadFiles", "Payroll")',
+                    type: "Post",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        if (result.Success == "1") {
+                            //alert('Excel Upload Successfully');
+                            toastr.success("'Excel Upload Successfully'");
+                           // window.location.href = "@Url.Action("MLExcelUploadList", "Payroll", new {Flag=1,buyerid=0})";
+
+                        }
+                        else {
+                            alert(result.ex);
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+
+            });
+        });
+
+
+
+
+    </script>
+
+}

@@ -1,0 +1,173 @@
+﻿@model GTERP.Models.Production
+
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("Edit", "Productions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 1000px;">
+        <div class="py-7 text-center">
+
+            <h1 id="styletext">Production Data Entry</h1>
+            <p class="lead"></p>
+        </div>
+        @*@if (Model != null)
+        {
+            <input type="hidden" id="DistId" name="DistId" value="@Model.PrdUnitId" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="PrdUnitId" value="0" />
+        }*@
+        <div id="modalbodyfahad" class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Production Data @ViewBag.Title</h4>
+                
+                    <div class="container">
+                        <div class="row">
+                            <input type="hidden" asp-for="ProductionId" />
+                            <div class="col mb-3">
+                                <label asp-for="PrdUnitId" class="control-label">Unit</label>
+                                <select id="UnitId" asp-for="PrdUnitId" class="form-control" asp-items="ViewBag.PrdUnitId"></select>
+                            </div>
+                            @*<div class="col mb-3">
+                                <label asp-for="ProductId" class="control-label">Product</label>
+                                <select id="ItemDescId" asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+                            </div>*@
+                            <div class="col mb-3">
+                                <label asp-for="ProductionDate" class="control-label">Production Date</label>
+                                <input asp-for="ProductionDate" type="date" class="form-control" />
+                                <span asp-validation-for="ProductionDate" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="DailySeedQty" class="control-label"></label>
+                                <input asp-for="DailySeedQty" class="form-control" />
+                                <span asp-validation-for="DailySeedQty" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="DailyBagQty" class="control-label"></label>
+                                <input asp-for="DailyBagQty" class="form-control" />
+                                <span asp-validation-for="DailyBagQty" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            
+                            <div class="col mb-3">
+                                <label asp-for="PhosphoricPerTon" class="control-label">Phosphoric Acid</label>
+                                <input asp-for="PhosphoricPerTon" class="form-control" />
+                                <span asp-validation-for="PhosphoricPerTon" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="AmmoniaPerTon" class="control-label">Ammonia</label>
+                                <input asp-for="AmmoniaPerTon" class="form-control" />
+                                <span asp-validation-for="AmmoniaPerTon" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="SulfuricPerTon" class="control-label">Sulfuric Acid</label>
+                                <input asp-for="SulfuricPerTon" class="form-control" />
+                                <span asp-validation-for="SulfuricPerTon" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="SandPerTon" class="control-label">Sand</label>
+                                <input asp-for="SandPerTon" class="form-control" />
+                                <span asp-validation-for="SandPerTon" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block" type="button" onclick="Product_delete()">Delete</button>
+                                }
+
+
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "Index", "Productions", null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+        $("#UnitId").select2();
+        $("#ItemDescId").select2();
+        
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+        
+
+        function Product_delete() {
+
+            var productionid = $("#ProductionId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "Productions")',
+                data: JSON.stringify({ id: productionid }), //use id here
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "Productions")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

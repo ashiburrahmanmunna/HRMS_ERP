@@ -1,0 +1,115 @@
+﻿@model GTERP.ViewModels.RawDataEditVM
+
+<div class="container" style="max-width: 700px;">
+    <div class="py-7 text-center">
+        <h1 id="styletext">Punch Data Edit</h1>
+        <p class="lead"></p>
+    </div>
+
+    <div id="modalbodyfahad" class="row card p-4">
+        <div class="col-md-12 order-md-1">
+            <h4 class="mb-3">Edit Punch Data</h4>
+
+            <form asp-controller="RawDataView" asp-action="Edit" method="post" class="needs-validation card p-4" novalidate>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Employee Code</span>
+                                </div>
+                                <input type="hidden" asp-for="aId" id="aId" name="aId" value="@Model.aId" />
+                                <input type="text" asp-for="EmpCode" id="EmpCode" class="form-control" aria-label="With textarea" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Punch Date</span>
+                                </div>
+                                <input type="datetime" asp-for="DtPunchDate" id="PunchDate" class="form-control" aria-label="With textarea" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Punch Time</span>
+                                </div>
+                                <input type="datetime" asp-for="DtPunchTime" id="PunchTime" class="form-control" aria-label="With textarea">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center m-2">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-4 col-xs-12 d-block mx-auto">
+                            <button type="submit" class="btn btn-primary btn-md btn-block rounded-0">Update</button>
+                            
+                        </div>
+                        <div class="col-md-4 col-xs-12 d-block mx-auto">
+                            <input type="button" value="Back" class="btn btn-info btn-block rounded-0" onclick="goBack()" />
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var empCode = "@Model.EmpCode";
+            var punchDate = "@Model.DtPunchDate";
+            var punchTime = "@Model.DtPunchTime";
+            var formattedPunchDate = parseDate(punchDate);
+            var formattedPunchTime = parseDate(punchTime);
+            
+
+            $("#EmpCode").val(empCode);
+            $("#PunchDate").val(formatDate(formattedPunchDate));
+            $("#PunchTime").val(formatTime(formattedPunchTime));
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function parseDate(dateString) {            
+            var timestamp = Date.parse(dateString);
+            return new Date(timestamp);
+            
+        }
+
+        function formatDate(date) {
+            var months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+
+            var formattedDate = day + "-" + months[monthIndex] + "-" + year;
+
+            return formattedDate;
+        }
+
+        function formatTime(time) {
+            var hours = time.getHours().toString().padStart(2, '0');
+            var minutes = time.getMinutes().toString().padStart(2, '0');
+
+            return `${hours}:${minutes}`;
+        }
+
+
+        $('form').submit(function (e) {
+            e.preventDefault(); 
+            var punchDate = $("#PunchDate").val();
+            var punchTime = $("#PunchTime").val();
+            var dateTimeString = punchDate + ' ' + punchTime;
+            $("#PunchTime").val(dateTimeString);
+            this.submit();
+        });
+    </script>
+}

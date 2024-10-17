@@ -1,0 +1,61 @@
+﻿@*@using Microsoft.AspNetCore.Identity
+    @inject SignInManager<IdentityUser> SignInManager
+    @inject UserManager<IdentityUser> UserManager*@
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+<ul class="navbar-nav">
+    @*@if (@User.Identity.IsAuthenticated)*@
+    @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("username")))
+    {
+        <li class="nav-item nav-profile dropdown">
+            <a class="nav-link" href="#" data-toggle="collapse" data-target="#profileDropdown">
+                <img src="~/Content/img/default.png" alt="profile" class="rounded-circle" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown" id="profileDropdown">
+                <a class="dropdown-item" asp-action="Profile" asp-controller="Home" title="Manage">
+                    <i class="mdi mdi-account-outline text-primary"></i>
+                    @HttpContextAccessor.HttpContext.Session.GetString("username")
+                </a>
+                <a class="dropdown-item">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <i class="mdi mdi-logout text-primary"></i>
+                        <button type="submit" class="nav-link btn btn-link text-dark">Logout </button>
+                    </form>
+                </a>
+            </div>
+        </li>
+
+
+        <li class="active" id="shoppingcart" style="display:none">
+            <a href="@Url.Action("Myorder", "AddToCart")" class="btn btn-default btn-lg">
+                <span class="fa fa-shopping-cart" style="color:green"></span>Cart <span class="badge">@HttpContextAccessor.HttpContext.Session.GetString("cartlistcount")</span>
+            </a>
+        </li>
+
+
+        @*<li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@HttpContextAccessor.HttpContext.Session.GetString("username")</a>
+            </li>*@
+        @*<li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                </form>
+            </li>*@
+    }
+    else
+    {
+        <li class="nav-item nav-profile dropdown">
+            <a class="nav-link" href="#" data-toggle="collapse" data-target="#profileDropdown">
+                <img src="~/Content/img/default.png" alt="profile" class="rounded-circle" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown" id="profileDropdown">
+                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Register</a>
+                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </div>
+        </li>
+
+    }
+</ul>

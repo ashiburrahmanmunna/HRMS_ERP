@@ -1,0 +1,531 @@
+﻿@model GTERP.Models.HR_OverTimeSetting
+
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+    .flexDiv{
+        display:flex;
+        flex-direction:row;
+        justify-content:space-between;
+    }
+    .hideDiv{
+        display:none;
+    }
+</style>
+
+@using (Html.BeginForm("CreateOvertimeSetting", "HRVariables", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12  col-12">
+                @if (Model != null)
+                {
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Id" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">Overtime Setting Entry - @ViewBag.Title</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                
+                                <div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        Company Name
+                                                    </span>
+                                                </div>
+                                                <select asp-for="CompanyId" asp-items="@ViewBag.CompanyName">
+                                                    <option selected value="">--Please Select One--</option>
+                                                </select>
+                                                @Html.ValidationMessageFor(model => model.CompanyId, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 col-12 mb-3">
+                                            Is Allow Minute
+                                            @Html.EditorFor(model => model.IsAllowMinute, new { htmlAttributes = new { @class = "ml-2", @id = "myCheck", @onclick = "addbox()" } })
+                                            @Html.ValidationMessageFor(model => model.IsAllowMinute, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-6 col-12" id="area1" style="display:none;">
+                                                    <div class="input-group mb-2 ">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text py-0">
+                                                                Grace From
+                                                            </span>
+                                                        </div>
+                                                        @{
+                                                            if (ViewBag.Title == "Create")
+                                                            {
+                                                                <input value="0" asp-for="GraceTimeFrom" class="form-control border" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input asp-for="GraceTimeFrom" class="form-control border" />
+                                                            }
+                                                        }
+
+                                                        @Html.ValidationMessageFor(model => model.GraceTimeFrom, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-6 col-12" id="area2" style="display:none;">
+                                                    <div class="input-group mb-2">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text py-0">
+                                                                Grace To
+                                                            </span>
+                                                        </div>
+                                                        @{ if (ViewBag.Title == "Create")
+                                                            {
+                                                                <input value="0" asp-for="GraceTimeTo" class="form-control border" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input asp-for="GraceTimeTo" class="form-control border" />
+                                                            }
+
+                                                        }
+
+                                                        @Html.ValidationMessageFor(model => model.GraceTimeTo, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="downdiv">
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.From1)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="0" asp-for="From1" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="From1" class="form-control border" />
+                                                        }
+                                                    }
+
+                                                    @Html.ValidationMessageFor(model => model.From1, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.To1)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="20" asp-for="To1" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="To1" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.To1, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="mx-4" style="font-size:larger">=</div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.OT1)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="0" asp-for="OT1" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="OT1" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.OT1, "", new { @class = "text-danger border" })
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.From2)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="21" asp-for="From2" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="From2" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.From2, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.To2)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="29" asp-for="To2" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="To2" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.To2, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="mx-4" style="font-size:larger">=</div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.OT2)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="0" asp-for="OT2" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="OT2" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.OT2, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.From3)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="30" asp-for="From3" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="From3" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.From3, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.To3)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="49" asp-for="To3" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="To3" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.To3, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="mx-4" style="font-size:larger">=</div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.OT3)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="0" asp-for="OT3" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="OT3" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.OT3, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.From4)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="50" asp-for="From4" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="From4" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.From4, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.To4)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="59" asp-for="To4" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="To4" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.To4, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="mx-4" style="font-size:larger">=</div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.OT4)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="1" asp-for="OT4" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="OT4" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.OT4, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text py-0">
+                                                            @Html.LabelFor(model => model.OTStart)
+                                                        </span>
+                                                    </div>
+                                                    @{ if (ViewBag.Title == "Create")
+                                                        {
+                                                            <input value="50" asp-for="OTStart" class="form-control border" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="OTStart" class="form-control border" />
+                                                        }
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.OTStart, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 col-12 mb-3">
+                                            Is Manual OT
+                                            @Html.EditorFor(model => model.IsManualOT, new { htmlAttributes = new { @class = "ml-2 check-box", @id = "ManualCheck", @onclick = "addOTManual()" } })
+                                            @Html.ValidationMessageFor(model => model.IsManualOT, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-6 col-12" id="area3" style="display:none;">
+                                                    <div class="input-group mb-2 ">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text py-0">
+                                                                OT Rate
+                                                            </span>
+                                                        </div>
+                                                        @{
+                                                            if (ViewBag.Title == "Create")
+                                                            {
+                                                                <input value="0" asp-for="OTRate" class="form-control border" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input asp-for="OTRate" class="form-control border" />
+                                                            }
+                                                        }
+
+                                                        @Html.ValidationMessageFor(model => model.OTRate, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-block rounded-0" type="button" onclick="Overtime_delete()">Delete</button>
+                                    }
+
+
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "OvertimeSettingList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            addbox();
+            addOTManual();
+        });
+
+        // for hide and show 
+        function addbox() {
+            if (document.getElementById('myCheck').checked) {
+                document.getElementById('area1').style.display = 'block';
+                document.getElementById('area2').style.display = 'block';
+                document.getElementById('downdiv').style.display = 'none';
+            } else {
+                document.getElementById('area1').style.display = 'none';
+                document.getElementById('area2').style.display = 'none';
+                document.getElementById('downdiv').style.display = 'block';
+            }
+        }
+        function addOTManual() {
+            if (document.getElementById('ManualCheck').checked)
+            {
+                document.getElementById('area3').style.display = 'block';
+            }
+            else
+            {
+                document.getElementById('area3').style.display = 'none';
+            }
+
+        }
+
+        function Overtime_delete() {
+
+            var ID = $("#Id").val();
+                //alert(SalesId);
+                $.ajax({
+
+                    url: '@Url.Action("DeleteOvertimeSetting", "HRVariables")',
+
+                    data: JSON.stringify({ id: ID }), //use id here
+                    //data: JSON.stringify(salesmain),
+                    type: 'POST',
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("OvertimeSettingList", "HRVariables")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+                });
+        }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

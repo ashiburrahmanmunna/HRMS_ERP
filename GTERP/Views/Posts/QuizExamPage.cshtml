@@ -1,0 +1,287 @@
+﻿@model IEnumerable<GTERP.ViewModels.quizAnsVms>
+
+@{
+    ViewData["Title"] = "QuizExamPage";
+ 
+    var Data = ViewBag.data;
+    int sl = 0;
+
+}
+
+
+
+
+
+
+<div class="container">
+
+    <div class="col-sm-12 col-xl-12 m-2">
+        <div class="bg-light rounded h-100 p-4">
+
+
+
+
+            @*<p class="text-sec bg bg-yellow">Please Answer the following question</p>*@
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="input-group  ">
+
+                            <span class="input-group-text col-md-04">ID:</span>
+                            <div class="col-md-2">
+                            <input id="applicantid" class="input-group-text" type="number" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group  col-md-6">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="timerDisplay  " style="font-family: 'Roboto mono',monospace;color: #0381bb;font-size: 28px;align-items: center;">
+                            00 : 00 : 00
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <h4 style="color:black">Please Answer the following question </h4>
+                </div>
+
+                <div class="col-md-4">
+                    Pass Mark: <span class="text-danger" id="passMark">@Model.FirstOrDefault().passMark</span>
+                </div>
+                <div class="col-md-4">
+                    Time :
+                    <span class="text-danger">@Model.FirstOrDefault().time</span>
+                    <input id="timer1" type="number" hidden value="@Model.FirstOrDefault().timer" />
+                    @*<span  class="text-danger" id="timer1">@Model.FirstOrDefault().timer</span>*@
+                </div>
+            </div>
+
+            <hr />
+            @*<input type="hidden" asp-for="ModuleCourseId"/>*@
+            @foreach (var q in Model)
+            {
+                var an = 0;
+                var count = (@sl += 1);
+                    <div class="queSet">
+                        <div>Question_@count: &nbsp @q.question </div>
+                        <input id="quizId_@count" type="text" hidden value="@q.quizId" />
+                        <input id="ModuleId" type="text" hidden value="@q.ModuleId" />
+                        <div id="ansSet_@count">
+
+                        @foreach (var ans in q.answer)
+                        {
+                            var ansCount = (@an += 1);
+
+                                    <input id="result_@count@ansCount" name="result_@count" type="@q.optionType" value="@ans" />
+                                    <label for="@ans">@ans</label>
+
+                                    <br />
+                        }
+                        </div>
+                    </div>
+
+
+            }
+            @*<button class="btn btn-success" id="submit">Submit</button>*@
+            <a asp-action="ExamUpdate" id="submit" class="btn btn-outline-success m-3 btn-sm">Submit</a>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ModuleRecordView">Back to List</a>
+</div>
+
+
+@section Scripts{
+
+        <script>
+
+            window.onload = function () {
+                if (int !== null) {
+                    clearInterval(int);
+                }
+                int = setInterval(displayTimer, 10);
+
+            }
+
+
+            let [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
+            let timerRef = document.querySelector('.timerDisplay');
+            let int = null;
+            let clocktimee = 0;
+            let clockminute = 0;
+            let clocksecond = 0;
+            let clockhourss = 0;
+
+            var endtime = $('#timer1').val();
+
+
+            function displayTimer() {
+                milliseconds += 10;
+                if (milliseconds == 1000) {
+                    milliseconds = 0;
+                    seconds++;
+                    clocksecond++;
+                    if (clocksecond == endtime) {
+
+                        CheckQuizAns();
+                        alert("t");
+                        if (clocksecond == endtime) {
+                            clearInterval(int);
+                            document.getElementById("submit").disabled = true;
+
+                            $('submit').hide();
+
+                        }
+                    }
+
+                    if (seconds == 60) {
+                        seconds = 0;
+                        minutes++;
+                        clockminute++;
+
+                        if (minutes == 60) {
+                            minutes = 0;
+                            hours++;
+                            alert(hours + minute + second);
+                        }
+                    }
+
+
+
+                }
+
+                let h = hours < 10 ? "0" + hours : hours;
+                let m = minutes < 10 ? "0" + minutes : minutes;
+                let s = seconds < 10 ? "0" + seconds : seconds;
+                let ms = milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds;
+
+                timerRef.innerHTML = ` ${h} : ${m} : ${s} `;
+            }
+
+
+            $('#submit').click(function () {
+                CheckQuizAns();
+            })
+
+            function CheckQuizAns() {
+
+
+
+
+                let QuizCheck = []
+                let QuizAns = {
+                    ModuleId: 0,
+                    quizId: 0,
+                    question: '',
+                    answer: [],
+                    optionType: '',
+                    passMark: 0,
+                    applicantid: 0,
+
+                }
+
+
+
+                $('.queSet').each(function (index, tr) {
+                    let countQue = index + 1;
+                    QuizAns.ModuleId = $('#ModuleId').val();
+                    QuizAns.quizId = $(`#quizId_${countQue}`).val();
+                    QuizAns.passMark = $('#passMark').html();
+                    QuizAns.applicantid = $('#applicantid').val();
+
+
+
+                    $(`#ansSet_${countQue}> input`).each(function (index, div) {
+                        let countAns = index + 1;
+                        if ($(`#result_${countQue}${countAns}`).is(':checked')) {
+                            var ans = $(`#result_${countQue}${countAns}`).val()
+                            QuizAns.answer.push(ans);
+                        };
+
+                    })
+                    QuizCheck.push(QuizAns);
+                    QuizAns = {
+                        ModuleId: 0,
+                        quizId: 0,
+                        question: '',
+                        answer: [],
+                        optionType: '',
+                        passMark: 0,
+                        applicantid: 0,
+
+                    }
+                })
+                //var str = JSON.stringify(QuizCheck);
+
+
+
+                //alert(str);
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("CheckQuiz", "Posts")',
+                    data: { QuizAns: QuizCheck },
+                    dataType: "json",
+                    success: function (res) {
+
+                        if (res.result == 'pass') {
+
+
+
+
+
+                        }
+                        else {
+                            if (res.result == 'fail') {
+
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '@Url.Action("ExamUpdate", "Posts")',
+                                    data: { QuizAns: QuizCheck },
+                                    dataType: "json",
+                                    success: function (res) {
+
+                                        if (res.result == 'pass') {
+
+
+
+
+                                        }
+                                        else {
+
+
+
+                                        }
+
+                                    }
+
+                                })
+
+                            }
+                        }
+
+                    }
+
+                })
+
+
+            }
+
+
+
+
+
+
+        </script>
+}

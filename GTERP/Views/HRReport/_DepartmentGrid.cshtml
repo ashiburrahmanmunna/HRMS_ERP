@@ -1,0 +1,101 @@
+﻿
+@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Department> departments = new List<Cat_Department>();
+    departments = ViewBag.departments;
+}
+
+
+<div class="mb-0">
+    <input type="text" class="departmentsearch form-control" placeholder="Search . . ." style="font-size: 12px; padding: 1px; padding-left: 10px; height: 30px; margin-bottom: 5px;" />
+</div>
+<table id="commonTable" class="commonTable table table-hover table-striped trow" align="center" style="margin-bottom: 0;">
+    <thead>
+        <tr>
+            <th class="d-none">Department Id</th>
+            <th>Department Name</th>
+        </tr>
+    </thead>
+</table>
+
+
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 225px;">
+    <table id="departmentTable" class="departmentTable table table-hover table-light trow" align="center" style="font-size: 12px;">
+
+        <thead class="d-none">
+            <tr>
+                <th>Department Id</th>
+                <th>Department Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+
+                <td class="d-none">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+
+            </tr>
+
+            @if (departments.Count > 0)
+            {
+                foreach (Cat_Department aDepartment in departments)
+                {
+                    <tr id="myrow">
+
+                        <td class="d-none">
+                            @aDepartment.DeptId
+                        </td>
+
+                        <td>
+                            @aDepartment.DeptName
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+
+    </table>
+</div>
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".departmentsearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+
+                var i = 0;
+
+                $('#departmentTable tbody tr').each(function () {
+
+                    var departmentId = $.trim($(this).children("td:eq(0)").html());
+                    var departmentName = $.trim($(this).children("td:eq(1)").html());
+
+
+                    if (departmentId.toLowerCase().indexOf(searchText) === -1 &&
+                        departmentName.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+}

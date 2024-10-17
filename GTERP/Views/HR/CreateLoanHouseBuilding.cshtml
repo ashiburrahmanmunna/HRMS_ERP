@@ -1,0 +1,1038 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    List<HR_Loan_Data_HouseBuilding> loanCalculation = ViewBag.LoanCalculation;
+}
+
+@model GTERP.Models.HR_Loan_HouseBuilding
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+@using (Html.BeginForm("CreateLoanHouseBuilding", "HR", FormMethod.Post, new { id = "myForm", enctype = "multipart/form-data" }))
+{
+
+    @if (Model != null)
+    {
+        <input type="hidden" id="LoanHouseId" name="LoanHouseId" value="@Model.LoanHouseId" />
+    }
+    else
+    {
+        <input type="hidden" asp-for="LoanHouseId" value="0" />
+    }
+    //form
+    <div class="container-fluid card">
+        <div class="row">
+            <div class="col-md-3 col-12 pt-3 border-right" id="hideIt">
+                <div class="text-center mb-3">
+
+                   
+                    @if (Model != null)
+                    {
+                        if (Model.HR_Emp_Info.HR_Emp_Image != null)
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Info.HR_Emp_Image.EmpImageId" name="HR_Emp_Info.HR_Emp_Image.EmpImageId" value="@Model.HR_Emp_Info.HR_Emp_Image.EmpImageId" />
+                            if (Model.HR_Emp_Info.HR_Emp_Image.EmpImage == null)
+                            {
+                                <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar" multiple />
+                            }
+                            else
+                            {
+                                <img id='image_X' src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.HR_Emp_Info.HR_Emp_Image.EmpImage))" class="avatar rounded-circle profile image img-thumbnail" alt="avatar">
+                            }
+
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="HR_Emp_Info.HR_Emp_Image.EmpImageId" name="HR_Emp_Image.EmpImageId" value="0" />
+                            <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar" multiple />
+                           
+                        }
+
+
+                        <input type="file" class="image-upload" name="file" id="myFile" />
+                        <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+
+                    }
+                    else
+                    {
+                        <img id='image_X' src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle profile image img-thumbnail" alt="avatar">
+                        <input type="hidden" asp-for="HR_Emp_Info.HR_Emp_Image.EmpImageId" name="HR_Emp_Info.HR_Emp_Image.EmpImageId" value="0" />
+                        <input type="file" class="image-upload" name="file" id="myFile" />
+                        <input type="hidden" id="imageDatatest" name="imageDatatest" value="data:image/jpeg;base64,....." />
+                        <br />
+
+                    }
+                    @Html.ValidationMessageFor(model => model.HR_Emp_Info.HR_Emp_Image.EmpImage, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header">Name</div>
+                    <div class="card-body">
+                        @if (@Model != null)
+                        {
+                            @Model.HR_Emp_Info.EmpName
+                        }
+                    </div>
+                </div>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item text-muted">Information <i class="fa fa-dashboard fa-1x"></i></li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Department</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.HR_Emp_Info.Cat_Department.DeptName
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Designation</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.HR_Emp_Info.Cat_Designation.DesigName
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Joining Date</strong></span>
+                        @if (@Model != null)
+                        {
+                            @String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(Model.HR_Emp_Info.DtJoin).ToShortDateString()))
+                        }
+                    </li>
+                    <li class="list-group-item">
+                        <span class=""><strong>Mobile No</strong></span>
+                        @if (@Model != null)
+                        {
+                            @Model.HR_Emp_Info.EmpPhone1
+                        }
+
+                    </li>
+                </ul>
+                <div class="card mb-3">
+                    <div class="card-header">Email</div>
+                    <div class="card-body">
+                        @if (@Model != null)
+                        {
+                            @Model.HR_Emp_Info.EmpEmail
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-9 col-12 container pt-3">
+                <div class="row mb-2">
+                    <span class="btn btn-primary col-md-2 col-12 rounded-0 ml-2" id="showHide">show/hide</span>
+                    <span class="text-center col-md-10 col-12" id="styletext">House Building Loan Entry Form</span>
+                </div>
+
+                <div class="mt-4 needs-validation" novalidate>
+                    <div class="container tab-pane">
+                        <div class="row">
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.EmpId)</span>
+                                    </div>
+                                    <select asp-for="EmpId" class="form-control" asp-items="ViewBag.EmpId">
+                                        <option value="0">--Please Select--</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.EmpId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.Compound)</span>
+                                    </div>
+                                    <select asp-for="Compound" asp-items="ViewBag.Compound" class="form-control">
+                                        <option value="0" selected>--Please Select--</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.Compound, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.LoanAmount)</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.LoanAmount, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.LoanAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.LoanTerm)</span>
+                                    </div>
+                                    <input type="text" asp-for="LoanTerm" placeholder="Month" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.LoanTerm, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.InterestRate)</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.InterestRate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.InterestRate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.PayBack)</span>
+                                    </div>
+                                    <select asp-for="PayBack" asp-items="ViewBag.PayBack" class="form-control">
+                                        <option value="0" selected>--Please Select--</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.PayBack, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.TotalLoanAmount)</span>
+                                    </div>
+                                    <input type="text" asp-for="TotalLoanAmount" disabled class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.TotalLoanAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.TotalInterest)</span>
+                                    </div>
+                                    <input type="text" asp-for="TotalInterest" disabled class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.MonthlyLoanAmount)</span>
+                                    </div>
+                                    <input type="text" asp-for="MonthlyLoanAmount" disabled class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.MonthlyLoanAmount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.MonthlyInterest)</span>
+                                    </div>
+                                    <input type="text" asp-for="MonthlyInterest" disabled class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.MonthlyInterest, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.LoanType)</span>
+                                    </div>
+                                    <input type="text" asp-for="LoanType" disabled value="House Building Loan" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.LoanType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.DtLoanStart)</span>
+                                    </div>
+                                    <input type="text" asp-for="DtLoanStart" class="form-control" />
+                                    @*@Html.EditorFor(model => model.DtLoanStart, new { htmlAttributes = new { @class = "form-control" } })*@
+                                    @Html.ValidationMessageFor(model => model.DtLoanStart, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.DtLoanEnd)</span>
+                                    </div>
+                                    <input type="text" asp-for="DtLoanEnd" disabled class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.DtLoanEnd, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.Isinactive)</span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <input type="checkbox" asp-for="Isinactive" />
+                                            @Html.ValidationMessageFor(model => model.Isinactive, "", new { @class = "text-danger" })
+                                        </span>
+                                    </div>
+                             
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <button type="button" id="calculate" class="btn btn-success rounded-0">
+                                    <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Calculate
+                                </button>
+                            </div>
+
+                            <div class="col-md-4 col-12 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@Html.LabelFor(model => model.Remarks)</span>
+                                    </div>
+                                    <textarea class="form-control" asp-for="Remarks"></textarea>
+
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <hr />
+                        <div class="row">
+                            @*<partial name="_LoanHouseBuildingGrid"/>*@
+                            <div class="table-responsive">
+                                <table id="tblLoan" class="table table-striped trow table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="d-none">LoanDataHouseId</th>
+                                            <th class="d-none">LoanHouseId</th>
+                                            <th class="d-none">EmpId</th>
+                                            <th>Inst.</th>
+                                            <th>Loan Month</th>
+                                            <th>Beginning LoanBalance</th>
+                                            <th>Interest Amount</th>
+                                            <th>Principal Amount</th>
+                                            <th>Monthly Loan Amount</th>
+                                            <th>Ending Balance</th>
+                                            <th>Paid</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (loanCalculation != null)
+                                        {
+                                            foreach (var loan in loanCalculation)
+                                            {
+                                                <tr>
+                                                    <td class="d-none">@loan.LoanDataHouseId</td>
+                                                    <td class="d-none">@loan.LoanHouseId</td>
+                                                    <td class="d-none">@loan.EmpId</td>
+                                                    <td>@loan.InstalmentNo</td>
+                                                    <td>@String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(loan.DtLoanMonth).ToShortDateString()))</td>
+                                                    <td>@loan.BeginningLoanBalance</td>
+                                                    <td>@loan.InterestAmount</td>
+                                                    <td>@loan.PrincipalAmount</td>
+                                                    <td>@loan.MonthlyLoanAmount</td>
+                                                    <td>@loan.EndingBalance</td>
+                                                    <td>@loan.IsPaid</td>
+                                                    @*<td>
+                                                        @if (loan.IsPaid)
+                                                        {
+                                                            <input type="checkbox" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" />
+                                                        }
+                                                    </td>*@
+
+
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row text-center my-2">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3 col-12">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <button type="button" id="btnSaveUpdate" class="btn btn-primary btn-md btn-block rounded-0">
+                                        <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+                                    </button>
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <button type="button" id="btnSaveUpdate" class="btn btn-warning btn-md btn-block rounded-0">
+                                        <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Update
+                                    </button>
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Employee_delete()">Delete</button>
+                                }
+
+                            </div>
+                            <div class="col-md-3 col-12">
+                                @Html.ActionLink("Back", "LoanHouseBuildingList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+@section Scripts
+    {
+    <script>
+        //var installment = 0, loanAmount = 0, interest=0, compount="", payback="";
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var table;
+        var newCalculation = false;
+        $(document).ready(function () {
+            var title =@Html.Raw(Json.Serialize(@ViewBag.Title));
+            if (title == "Create") {
+                $("#LoanTerm").val("");
+                $("#InterestRate").val("0");
+                $("#TotalInterest").val("0");
+                $("#DtLoanStart").val("");
+                $("#DtLoanEnd").val("");
+            }
+
+            $("#TotalLoanAmount, #MonthlyLoanAmount").keyup(function () {
+                var tLA = parseFloat($("#TotalLoanAmount").val() || 0);
+                var mLA = parseFloat($("#MonthlyLoanAmount").val() || 0);
+                $("#LoanTerm").val(Math.round(tLA / mLA));
+            });
+
+
+            $("#LoanAmount, #TotalInterest").keyup(function () {
+                let lAmoutn = parseFloat($("#LoanAmount").val() ||0);
+                let tInterest = parseFloat($("#TotalInterest").val()||0);
+                $("#TotalLoanAmount").val(Math.round(lAmoutn + tInterest));
+            });
+
+            var cmpd = $("#Compound").val();
+            loanType();
+            $("#Compound").change(function () {
+                loanType();
+            });
+
+            function loanType() {
+                cmpd = $("#Compound").val();
+                if (cmpd == "Manually") {
+                    $('#TotalLoanAmount').prop("disabled", false);
+                    $('#TotalInterest').prop("disabled", false);
+                    //$('#MonthlyInterest').prop("disabled", false);
+                    $('#MonthlyLoanAmount').prop("disabled", false);
+                } else {
+                    $('#TotalLoanAmount').prop("disabled", true);
+                    $('#TotalInterest').prop("disabled", true);
+                    //$('#MonthlyInterest').prop("disabled", true);
+                    $('#MonthlyLoanAmount').prop("disabled", true);
+                }
+            }
+            var nameForExport = $("#EmpId option:selected").text() + " House Building Loan";
+            
+            //$('#tblLoan').append('<caption style="caption-side: bottom">A fictional company\'s staff table.</caption>');
+            table = $('#tblLoan').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                       /* 'copy',*/// 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            messageTop: nameForExport,
+                            titleAttr: 'Show / hide columns',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        return $(data).is("input") ?
+                                            $(data).val() :
+                                            data;
+                                    }
+                                }
+                            }
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    messageTop: nameForExport,
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard',
+                        //    exportOptions: {
+                        //        columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                        //        format: {
+                        //            body: function (data, row, column, node) {
+                        //                return $(data).is("input") ?
+                        //                    $(data).val() :
+                        //                    data;
+                        //            }
+                        //        }
+                        //    }
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    messageTop: nameForExport,
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv',
+                        //    exportOptions: {
+                        //        columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                        //        format: {
+                        //            body: function (data, row, column, node) {
+                        //                return $(data).is("input") ?
+                        //                    $(data).val() :
+                        //                    data;
+                        //            }
+                        //        }
+                        //    }
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            messageTop: nameForExport,
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        return $(data).is("input") ?
+                                            $(data).val() :
+                                            data;
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            messageTop: nameForExport,
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        return $(data).is("input") ?
+                                            $(data).val() :
+                                            data;
+                                    }
+                                }
+                            }
+
+                        },
+                        {
+                            extend: 'print',
+                            messageTop: nameForExport,
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7, 8, 9, 10],
+                                format: {
+                                    body: function (data, row, column, node) {
+                                        return $(data).is("input") ?
+                                            $(data).val() :
+                                            data;
+                                    }
+                                }
+                            }
+                        }
+
+                    ]
+                },
+                'aoColumns': [
+                    { 'sClass': 'LoanDataHouseId', 'visible': false },
+                    { 'sClass': 'LoanHouseId', 'visible': false },
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'InstalmentNo', 'visible': true },
+                    { 'sClass': 'DtLoanMonth', 'visible': true },
+                    { 'sClass': 'BeginningLoanBalance', 'visible': true },
+                    { 'sClass': 'InterestAmount', 'visible': true },
+                    { 'sClass': 'PrincipalAmount', 'visible': true },
+                    { 'sClass': 'MonthlyLoanAmount', 'visible': true },
+                    { 'sClass': 'EndingBalance', 'visible': true },
+                    { 'sClass': 'IsPaid', 'visible': true }
+                ],
+                columnDefs: [
+                    {
+                        'targets': 4, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control cellDate" value="${data}" />`;
+                            //<input type="text" class="form-control cellDate hasDatepicker" value="01-Oct-2021" aria-invalid="false">
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 5, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control" value="${data}" />`;
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 6, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control" value="${data}" />`;
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 7, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control" value="${data}" />`;
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 8, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control" value="${data}" />`;
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 9, 'render': function (data, type, row) {
+                            cmpd = $("#Compound option:selected").text();
+                            if (cmpd == "Manually")
+                                return `<input type="text" class="form-control" value="${data}" />`;
+                            else
+                                return data;
+                        }
+                    },
+                    {
+                        'targets': 10, 'render': function (data, type, row) {
+                            if (data == "True")
+                                return `<input type="checkbox" checked />`;
+                            else
+                                return `<input type="checkbox" />`;
+                        }
+                    }
+
+                ],
+                "order": [[3, "asc"]],
+                "fnDrawCallback": function () {
+                    //$('.cellDate').datepicker({
+                    //    changeMonth: true,
+                    //    changeYear: true,
+                    //    dateFormat: 'dd-M-yy'
+                    //});
+                    $('.cellDate').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $(this).datepicker("option", "dateFormat");
+                        //setter
+                        $(this).datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+                    });
+                },
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 20,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+
+            });
+
+            $("#EmpId").select2();
+
+            $("#DtLoanStart").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function (date) {
+                        // Your CSS changes, just in case you still need them
+                        $('a.ui-state-default').removeClass('ui-state-highlight');
+                        $(this).addClass('ui-state-highlight');
+                        var dateFormat = $("#DtLoanStart").datepicker("option", "dateFormat");
+                        //setter
+                        $("#DtLoanStart").datepicker("option", "dateFormat", 'dd-M-yy');
+                    }
+            });
+
+            
+            var date = new Date();
+            var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+            // calculate loan
+             $("#calculate").click(function () {
+                if (!checkValue()) {
+                    alert("Please fill up necessary field");
+                    return false;
+                 }
+                 newCalculation = true;
+                let loanAmount = $.trim($("#LoanAmount").val());
+                let interest = parseInt($.trim($("#InterestRate").val()));
+                let month = parseInt($.trim($("#LoanTerm").val()));
+                let dtLoanStart = $("#DtLoanStart").val();                
+                let ttlLoanAmt = $("#TotalLoanAmount").val()||0;
+                let ttlInterest = $("#TotalInterest").val()||0;
+                let monthlyLoanAmt = $("#MonthlyLoanAmount").val()||0;
+                let loanType = $("#Compound").val();
+
+                 table.rows().remove().draw();
+                  $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CalcualteLoanHouseBuildingPartial", "HR")',
+                     dataType: 'json',
+                    // headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                      //async: true,
+                      data: {
+                          lAmount: loanAmount,
+                          interest: interest,
+                          period: month,
+                          startDate: dtLoanStart,
+                          ttlLoanAmt: ttlLoanAmt,
+                          ttlInterest: ttlInterest,
+                          monthlyLoanAmt: monthlyLoanAmt,
+                          loanType: loanType
+                      },
+                     success: function (result) {
+                         initializeGrid(result); 
+                         StopSpinner("#calculate");
+                    },
+                      error: function (ex) {
+                          StopSpinner("#calculate");
+                        alert("Sorry, an error occured . . . .");
+                    }
+                  });
+                 
+
+               
+             });
+
+            
+
+            function initializeGrid(data) {              
+                var lhid = $("#LoanHouseId").val();
+                var ttlInterest = 0;
+
+                var arrays = [];
+                for (var i = 0; i < data.length; i++) {
+                    ttlInterest += parseFloat(data[i].InterestAmount);
+                    arrays.push([
+                        0,//data[i].LoanDataHouseId,
+                        lhid,//data[i].LoanHouseId,
+                        0,//data[i].EmpId,
+                        data[i].Period,
+                        data[i].DtLoanMonth,
+                        data[i].BeginningLoanBalance,
+                        data[i].InterestAmount,
+                        data[i].PrincipalAmount,
+                        data[i].MonthlyLoanAmount,
+                        data[i].EndingBalance,
+                        data[i].IsPaid
+                    ]);
+                }
+                table.rows.add(arrays).draw(false);
+                var newData = table.row(':last-child').data();
+                //alert(data[0]);
+                $("#DtLoanEnd").val(newData[4]);
+
+                $("#MonthlyLoanAmount").val(Math.round(newData[8]));
+
+                $("#TotalInterest").val(Math.round(ttlInterest.toFixed(2)));
+                $("#TotalLoanAmount").val(Math.round(ttlInterest + parseFloat($("#LoanAmount").val())));
+                $("#MonthlyInterest").val(Math.round((ttlInterest / parseFloat($("#LoanTerm").val())).toFixed(2)));
+                    
+            };
+
+            $("#EmpId").change(function () {
+                let id = $("#EmpId").val();
+                if (id == "0") return false;
+                window.location.href = '@Url.Action("GetEmpLoanHouseBuilding", "HR")?id=' + id;
+                
+            });
+
+
+            $("#btnSaveUpdate").click(function () {
+                if (!checkValue()) {                     
+                    return false;
+                }
+
+                var HR_Loan_Data_HouseBuildings = [];
+                var HR_Loan_Data_HouseBuilding = {
+                    LoanDataHouseId: 0, ComId: '', LoanHouseId: 0, EmpId: 0,InstalmentNo:'', DtLoanMonth: '',
+                    BeginningLoanBalance: 0, InterestAmount: 0, PrincipalAmount: 0, MonthlyLoanAmount: 0,
+                    EndingBalance: 0, IsPaid: false, PcName: '', UserId: '',
+                    DateAdded: today, UpdateByUserId: '', DateUpdated: today
+                };
+
+                var loanList = table.rows().nodes();
+                console.log(loanList);
+                var data = table.rows().data();
+
+                cmpd = $("#Compound option:selected").text();
+                for (var i = 0; i < data.length; i++) {
+
+                    HR_Loan_Data_HouseBuilding.LoanDataHouseId = data[i][0];
+                    HR_Loan_Data_HouseBuilding.LoanHouseId =data[i][1];
+                    HR_Loan_Data_HouseBuilding.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                    HR_Loan_Data_HouseBuilding.EmpId = $("#EmpId option:selected").val();
+                    HR_Loan_Data_HouseBuilding.InstalmentNo = data[i][3];
+
+                    if (cmpd == "Manually") {
+                        HR_Loan_Data_HouseBuilding.DtLoanMonth = loanList[i].cells[1].children[0].value;;
+                        HR_Loan_Data_HouseBuilding.BeginningLoanBalance = loanList[i].cells[2].children[0].value;
+                        HR_Loan_Data_HouseBuilding.InterestAmount = loanList[i].cells[3].children[0].value;
+                        HR_Loan_Data_HouseBuilding.PrincipalAmount = loanList[i].cells[4].children[0].value;
+                        HR_Loan_Data_HouseBuilding.MonthlyLoanAmount = loanList[i].cells[5].children[0].value;
+                        HR_Loan_Data_HouseBuilding.EndingBalance = loanList[i].cells[6].children[0].value;
+                    }
+                    else {
+                       
+                        HR_Loan_Data_HouseBuilding.DtLoanMonth = data[i][4];
+                        HR_Loan_Data_HouseBuilding.BeginningLoanBalance = data[i][5];
+                        HR_Loan_Data_HouseBuilding.InterestAmount = data[i][6];
+                        HR_Loan_Data_HouseBuilding.PrincipalAmount = data[i][7];
+                        HR_Loan_Data_HouseBuilding.MonthlyLoanAmount = data[i][8];
+                        HR_Loan_Data_HouseBuilding.EndingBalance = data[i][9];
+                    }
+
+                    if ($(loanList[i].cells[7].children[0]).is(':checked')) {
+                       
+                        HR_Loan_Data_HouseBuilding.IsPaid = true;
+                    }
+                    else {
+                        HR_Loan_Data_HouseBuilding.IsPaid = false;
+                    }
+                    //HR_Loan_Data_HouseBuilding.IsPaid = $(this).find('td:eq(9)').find("input[type='checkbox']").val();
+                    HR_Loan_Data_HouseBuilding.PcName = '';
+                    HR_Loan_Data_HouseBuilding.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    HR_Loan_Data_HouseBuilding.DateAdded = today
+                    HR_Loan_Data_HouseBuilding.UpdateByUserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    HR_Loan_Data_HouseBuilding.DateUpdated = today;
+                    HR_Loan_Data_HouseBuilding.DtTran = today;
+
+                    HR_Loan_Data_HouseBuildings.push(HR_Loan_Data_HouseBuilding);
+
+                    HR_Loan_Data_HouseBuilding = {
+                        LoanDataHouseId: 0, ComId: '', LoanHouseId: 0, EmpId: 0, InstalmentNo: '', DtLoanMonth: '',
+                        BeginningLoanBalance: 0, InterestAmount: 0, PrincipalAmount: 0, MonthlyLoanAmount: 0, EndingBalance: 0, IsPaid: false,
+                        PcName: '', UserId: '', DateAdded: today, UpdateByUserId: '', DateUpdated: today
+                    };
+                };
+
+
+
+
+                var check = false;
+                if ($("#Isinactive").is(":checked")) {
+                    check = true;
+                }
+                var HR_Loan_HouseBuilding = {
+                    LoanHouseId: $("#LoanHouseId").val() || 0,
+                    ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                    EmpId: $("#EmpId option:selected").val(),
+                    LoanType: $("#LoanType").val(),
+                    DtLoanStart: $("#DtLoanStart").val(),
+                    DtLoanEnd: $("#DtLoanEnd").val(),
+                    LoanAmount: $("#LoanAmount").val(),
+                    LoanTerm: $("#LoanTerm").val(),
+                    InterestRate: $("#InterestRate").val(),
+                    Compound: $("#Compound option:selected").val(),
+                    PayBack: $("#PayBack option:selected").val(),
+                    MonthlyLoanAmount: $("#MonthlyLoanAmount").val()||0,
+                    MonthlyInterest: $("#MonthlyInterest").val()||0,
+                    TotalLoanAmount: $("#TotalLoanAmount").val()||0,
+                    TotalInterest: $("#TotalInterest").val()||0,
+
+                    Isinactive: check,
+                    Remarks: $("#Remarks").val(),
+                    PcName: '',
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateAdded: today,
+                    UpdateByUserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                    DateUpdated: today,
+                    DtTran: today,
+                    HR_Loan_Data_HouseBuildings:HR_Loan_Data_HouseBuildings
+                };
+
+                //console.log(HR_Loan_HouseBuilding);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateLoanHouseBuilding", "HR")',
+                    dataType: 'json',
+                    async: 'true',
+                    data: { hR_Loan_HouseBuilding: HR_Loan_HouseBuilding, newCalculation: newCalculation },
+                    success: function (result) {
+                         if (result.Success == "1") {
+                             customFile('1', result.ex);
+                            
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("LoanHouseBuildingList", "HR")';
+                            }, 500);
+                         }
+                         else {
+                                toastr.error(result.ex);
+                        }
+                        StopSpinner("#btnSaveUpdate");
+                    },
+                    error: function (ex) {
+                        StopSpinner("#btnSaveUpdate");
+                       
+                    }
+                });
+
+            });
+        });
+
+        $(".col-md-9 #showHide").click(function () {
+            $("#hideIt").toggle();
+            $(this).parent().toggleClass('col-md-12');
+        });
+
+
+        function Employee_delete() {
+            var LoanHouseId = $("#LoanHouseId").val();
+            //alert(SalesId);
+            $.ajax({
+                url: '@Url.Action("DeleteLoanHouseBuilding", "HR")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: LoanHouseId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("LoanHouseBuildingList", "HR")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+
+
+        function checkValue() {
+            if ($("#EmpId").val() == "0") {
+                $("#EmpId").focus();
+                toastr.warning("Select an employee");
+                return false;
+            }
+            let loanAmount = $.trim($("#LoanAmount").val());
+            if (loanAmount < 1 || loanAmount == "") {
+                $("#LoanAmount").focus();
+                return false;
+            }
+
+            let interest = $.trim($("#InterestRate").val());
+            if (interest < 0) {
+                $("#InterestRate").focus();
+                return false;
+            }
+
+                let month = parseFloat($.trim($("#LoanTerm").val() || 0));
+
+            if (month == "" || month < 0) {
+                $("#LoanTerm").focus();
+                return false;
+            }
+
+            let startdate = $("#DtLoanStart").val();
+
+            if (startdate == "") {
+                $("#DtLoanStart").focus();
+                return false;
+            }
+            //loanAmount = $.trim($("#LoanAmount").val());
+            //if (loanAmount < 1 || loanAmount == "") return false;
+
+            //interest = $.trim($("#InterestRate").val());
+            //if (interest < 0) return false;
+
+        //    let year = parseFloat($.trim($("#LoanTerm").val()||0));
+        //    let month = parseFloat($.trim($("#termMonth").val()||0));
+
+        //    //if (year == "" || year < 0 || month == "" || month < 0) return false;
+
+        //    let payback = $("#PayBack option:selected").val();
+
+        //    if (payback == "EveryHalfMonth") {
+        //        //let halfmonth = (year * 24) + (month * 2);
+        //        installment = parseInt((year * 24) + (month * 2));
+
+
+        //    } else if (payback == "EveryMonth") {
+        //        installment = parseInt((year * 12) + month);
+
+        //    } else if (payback == "EveryQuarter") {
+        //        installment = parseInt((year * 4) + (month / 4));
+
+        //    }else if (payback == "Every6Month") {
+        //        installment = parseInt((year * 2) + (month / 6));
+        //    }else if (payback == "EveryYear") {
+        //        installment = parseInt(year + (month / 12));
+        //    }
+        //    alert(installment);
+           return true;
+        }
+    </script>
+
+}
+

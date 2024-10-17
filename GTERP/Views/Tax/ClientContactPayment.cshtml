@@ -1,0 +1,200 @@
+﻿@model IEnumerable<GTERP.Models.Tax_ClientContactPayment>
+@inject GTRDBContext _context ;
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-3 col-12">
+                @Html.ActionLink("Contact Payment Creation", "CreateContactPayment", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">Contact Payment List</h2>
+            </div>
+        </div>
+    </div>
+
+    <form class="card p-2">
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table table-hover table-bordered tbllist  table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Client Code</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FiscalYearId)
+                        </th>
+                        <th>Contract Payment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        @*  if (e.IsApprove == false)
+                    {*@
+                        <tr style="background-color:rgb(249 207 181)">
+
+                            <td>[-@e.ClientName]</td>
+                            <td>@e.ClientCode</td>
+                            @*<td>
+                                @{
+                                    var FisacalName = _context.Acc_FiscalYears.Where(w => w.FiscalYearId == int.Parse(e.FiscalYearId)).Select(s => s.FYName).FirstOrDefault();
+                                }
+                                @FisacalName
+                            </td>*@
+                            <td>@e.FiscalYearId</td>
+                            <td>@e.ContractPayment</td>
+                            @*                              <td>@e.JoinDate.ToString("dd-MMM-yyyy")</td>
+                        *@
+                            <td class="text-nowrap">
+                                <span data-toggle="tooltip" title="Edit!">
+                                    @Html.ActionLink(" ", "EditClientContractPayment", new { id = e.ClientPaymentId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                </span>
+                                <span data-toggle="tooltip" title="Delete!">
+                                    @Html.ActionLink(" ", "DeleteClientContractPayment", new { id = e.ClientPaymentId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                </span>
+
+
+                            </td>
+                        </tr>
+                        @*}*@
+                        @*   else
+                    {
+                    <tr>
+                    <td>[-@e.EmpCode]</td>
+                    <td>@e.EmpName</td>
+                    <td>@e.DeptName</td>
+                    <td>@e.DesigName</td>
+                    <td>@e.SectName</td>
+                    <td>@e.EmpTypeName</td>
+                    <td>@e.FloorName</td>
+                    <td>@e.LineName</td>
+                    <td>@e.FingerId</td>
+                    <td>@e.JoinDate.ToString("dd-MMM-yyyy")</td>
+                    <td>@e.Email</td>
+                    <td class="text-nowrap">
+                    <span data-toggle="tooltip" title="Edit!">
+                    @Html.ActionLink(" ", "EditEmpInfo", new { id = e.EmpId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                    </span>
+                    <span data-toggle="tooltip" title="Delete!">
+                    @Html.ActionLink(" ", "DeleteEmpInfo", new { id = e.EmpId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                    </span>
+                    </td>
+                    </tr>
+                    }*@
+                    }
+                </tbody>
+            </table>
+        </div>
+        <br />
+    </form>
+</div>
+
+
+@section Scripts{
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+
+                        },
+
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "searching": true,
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+            });
+        });
+
+    </script>
+
+   
+
+
+    
+
+}
+
+
+

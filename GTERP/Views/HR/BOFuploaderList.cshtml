@@ -1,0 +1,103 @@
+﻿@model IEnumerable<GTERP.Models.Hr_BOFuploader>
+@{
+    ViewData["Title"] = "BOFuploaderList";
+}
+
+
+<div class="card-header">
+    BOF Entry
+</div>
+<div class="text-center">
+    <div class="row mb-2">
+        <div class="col-md-2 col-2">
+            @Html.ActionLink("Create New", "BOFuploader", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+        </div>
+
+        @*Upload Excel File Start*@
+        <div class="col-md-8 col-8">
+            <form method="post" enctype="multipart/form-data" asp-action="BOFuploaderFile">
+                <div class="input-group input-group w-60" style="margin:0 auto;">
+                    <span class="input-group-btn input-group-prepend">
+                        <span class="btn btn-info rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                        <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                    </span>
+                    <span class="form-control border border-info" style="background: #f2f2f2e6;"></span>
+                    <button class="rounded-0 btn btn-info btn-sm" type="submit" id="btnUpload">Upload</button>
+                    <div style="padding-left:10px;">
+                        <a href="~/HR/DownloadShiftFile?file=BOF_Sample_Uploader.xlsx" title="Download Sample Format"
+                           class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i>BOF Upload Sample</a>
+
+                    </div>
+                </div>
+            </form>          
+        </div>
+        @*Upload Excel File End*@
+
+
+        <div class="col-md-2 col-2">
+        </div>
+    </div>
+</div>
+
+   
+   
+        @* <a asp-action="BOFuploader" asp-controller="HR" class="btn btn-primary">Create New</a> *@
+        
+        <div class="card p-2">
+            <table id="costEntryTable" class="table table-hover table-bordered tbllist  table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Serial No.</th>
+                         <th>Date</th>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Job Nature</th>
+                        <th>FG Dispatch Primary</th>
+                        <th>FG Dispatch Customer</th>
+                        <th>FG Dispatch Glycerin</th>
+                        <th>Unloading</th>
+                        <th>Total Earned</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+            @if (Model != null)
+            {
+                int serialNumber = 1; // Initialize serial number counter
+
+                @foreach (var entry in Model.OrderByDescending(e => e.DateAdded))
+                {
+                    <tr>
+                        <td>@serialNumber</td>
+                        <td>@entry.DateAdded?.ToString("dd-MMM-yyyy")</td>
+                        <td>@entry.EmpName</td>
+                        <td>@entry.Cat_Department?.DeptName</td>
+                        <td>@entry.Cat_Designation?.DesigName</td>
+                        <td>@entry.FgDispatch1st</td>
+                        <td>@entry.FgDispatch2nd</td>
+                        <td>@entry.Glycerin</td>
+                        <td>@entry.Unloading</td>
+                        <td>@entry.TotalEarnde</td>
+
+                        <td class="text-nowrap">
+                            <span data-toggle="tooltip" title="Edit!">
+                                @Html.ActionLink(" ", "BOFuploaderDetails", new { id = entry.id }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                            </span>
+                            <span data-toggle="tooltip" title="Delete!">
+                                @Html.ActionLink(" ", "BOFuploaderDelete", new { id = entry.id }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                            </span>
+                        </td>
+                    </tr>
+
+                    serialNumber++; // Increment the serial number for the next iteration
+                }
+            }
+
+                </tbody>
+            </table>
+        </div>
+ 
+
+
+
+<!-- Add this in your HTML head section -->

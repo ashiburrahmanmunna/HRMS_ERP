@@ -1,0 +1,174 @@
+﻿@model GTERP.Models.Tax_ClientContactPayment
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+
+<div class="container" style="max-width: 700px;">
+    <div class="card">
+        <div class="card-header">
+            <h4 id="styletext">Contract Payment - @ViewBag.Title</h4>
+        </div>
+        <form asp-action="CreateContactPayment" asp-controller="Tax" method="post" class="needs-validation card p-4" novalidate>
+            <div class="card-body">
+                <div id="modalbodyfahad" class="row">
+                    <div class="col-md-12 order-md-1">
+
+                        @if (Model != null)
+                        {
+                            <input type="hidden" asp-for="ClientPaymentId" name="ClientPaymentId" value="@Model.ClientPaymentId" />
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="ClientPaymentId" value="0" />
+                        }
+                        <input type="hidden" asp-for="ComId" />
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.ClientId)
+                                            </span>
+                                        </div>
+
+                                        <select asp-for="ClientId" asp-items="@ViewBag.ClientId">
+                                            <option>--Please Select--</option>
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+                                      
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                @Html.LabelFor(model => model.FiscalYearId)
+                                            </span>
+                                        </div>
+                                        @*@Html.EditorFor(model => model.DtReleased, new { htmlAttributes = new { @class = "form-control" } })*@
+                                        <select asp-for="FiscalYearId" asp-items="ViewBag.FiscalYearId" class="form-control">
+                                        </select>
+                                        @*<input type="text" asp-for="FiscalYearId" class="form-control" />
+                                        @Html.ValidationMessageFor(model => model.FiscalYearId, "", new { @class = "text-danger" })*@
+                                    </div>
+                                </div>
+                                 <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ContractPayment)
+                                                </span>
+                                            </div>
+                                        @Html.EditorFor(model => model.ContractPayment, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.ContractPayment, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row text-center my-2">
+                    <br />
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                        @if (ViewBag.Title == "Create")
+                        {
+                            <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                        }
+                        else if (ViewBag.Title == "Edit")
+                        {
+                            <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                        }
+                        else if (ViewBag.Title == "Delete")
+                        {
+                            <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Behavior_delete()">Delete</button>
+                        }
+                    </div>
+                    <div>
+                        @Html.ActionLink("Back", "ClientContactPayment", "Tax", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                    </div>
+                    <div class="col-md-2"></div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+
+
+@section Scripts{
+    <script>
+
+        $("#EmpId").select2();
+        $("#dtNotice,#dtEvent").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtNotice,#dtEvent").datepicker("option", "dateFormat");
+                //setter
+                $("#dtNotice,#dtEvent").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+
+        function Behavior_delete() {
+
+            var BehaveId = $("#BehaveId").val();
+            // alert(DesigId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteClientContractPayment", "Tax")',
+                data: JSON.stringify({ id: BehaveId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("ClientContactPayment", "Tax")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

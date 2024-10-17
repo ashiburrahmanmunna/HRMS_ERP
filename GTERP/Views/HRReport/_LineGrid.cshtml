@@ -1,0 +1,98 @@
+﻿
+
+@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Line> Lines = new List<Cat_Line>();
+    Lines = ViewBag.LineList;
+}
+
+<div class="mb-0">
+    <input type="text" class="bandSearch form-control" placeholder="Search . . ." style="width: 93%; font-size: 12px; margin-left: 10px; padding: 1px; padding-left: 10px; height: 30px; margin-bottom: 5px;" />
+</div>
+<table id="commonTable" class="commonTable table table-hover" align="center" style="width: 93%; margin-left: 10px; margin-bottom: 0;padding-right: -10px; font-size: 12px;position: relative;overflow: scroll;">
+
+    <thead>
+        <tr>
+            <th style="background:rgba(0,0,0,0.02); display: none;" width="45%">Line Id</th>
+            <th style="background:rgba(0,0,0,0.02);">Line Name</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 220px;position: relative;">
+
+    <table id="bandTable" class="bandTable table table-hover trow table-striped" align="center" style="width: 100%;margin-left: 10px;padding-right: -10px;font-size: 12px;position: relative;bottom: 0;overflow: scroll;">
+
+        <thead>
+            <tr>
+                <th class="d-none">Line Id</th>
+                <th style="background:rgba(0,0,0,0.02);">Line Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+                <td class="d-none">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+            </tr>
+
+            @if (Lines.Count > 0)
+            {
+
+                foreach (Cat_Line aLine in Lines)
+                {
+                    <tr id="myrow">
+                        <td class="d-none">
+                            @aLine.LineId
+                        </td>
+
+                        <td>
+                            @aLine.LineName
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@*<script src="~/Content/js/plugins/jquery/jquery-3.1.1.min.js"></script>
+    <script src="~/Content/js/plugins/datatables/jquery.dataTables.min.js"></script>*@
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".bandSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+                $('#bandTable tbody tr').each(function () {
+
+                    var bandId = $.trim($(this).children("td:eq(0)").html());
+                    var bandName = $.trim($(this).children("td:eq(1)").html());
+
+                    if (bandId.toLowerCase().indexOf(searchText) === -1 &&
+                        bandName.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+}

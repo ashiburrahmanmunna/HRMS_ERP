@@ -1,0 +1,2967 @@
+﻿@model GTERP.Models.COM_MasterLC
+
+
+
+<head>
+    @*<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <link href="~/Content/DataTables/css/jquery.dataTables.css" rel="stylesheet" />
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.js"></script>
+    <link href="~/Content/DataTables/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+
+    <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/Content/DataTables/css/select.bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Scripts/dataTables.cellEdit.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+
+    <script src="~/Scripts/DataTables/dataTables.select.min.js"></script>
+    <link href="~/Content/DataTables/css/select.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+    <link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <link href="~/Content/InlineStyle.css" rel="stylesheet" />
+
+
+
+    <link href="~/Content/DataTables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/Content/DataTables/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/DataTables/css/fixedHeader.bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedColumns.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.fixedHeader.min.js"></script>*@
+
+
+    <style>
+
+        #ajax-loader {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding-top: 100%;
+            display: none;
+            /*position: fixed;
+            width: 100%;
+            height: 100%;
+            display: none;
+            background-color: #fff;
+            opacity: 0.6;*/
+            z-index: 99999;
+        }
+
+        th {
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 13px;
+        }
+
+
+        div.dataTables_length {
+            float: right;
+        }
+        /*.dt-buttons {
+
+        }*/
+        /*div.dataTables_length select {
+            font-size:17px;
+
+        }*/
+        /*div.dataTables_length> label {
+            display: none;
+        }*/
+        div.dataTables_filter {
+            float: left;
+            /*font-size: 17px;*/
+        }
+
+        div.dt-buttons {
+            float: right;
+            font-size: 12px !important;
+        }
+        /*div.dataTables_info {
+            float: left;
+        }*/
+
+        div.dataTables_paginate {
+            float: right;
+        }
+
+        div.DTTT {
+            float: left;
+            margin-right: 50px;
+        }
+
+        div.buttons {
+            clear: both;
+        }
+
+        .fas, .far {
+            font-size: 10px !important;
+        }
+
+
+        table.dataTable tbody td, .sorting {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .sorting_asc {
+            color: green;
+            vertical-align: middle;
+            text-align: center;
+            font-style: oblique;
+        }
+
+        .sorting_desc {
+            color: #0932d1;
+            vertical-align: middle;
+            text-align: center;
+            font-style: oblique;
+        }
+
+        .table-sm th {
+            padding: .8em;
+            background: rgb(192,196,196);
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        }
+
+        #styletext {
+            color: transparent;
+            background: #666666;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+            font-weight: 100;
+            font-size: 30px;
+        }
+
+
+
+        tr.newrowclass {
+            background: linear-gradient(0deg, rgba(93, 162, 62, 0.62) 1%, rgba(201, 230, 207, 0.61) 65%, rgba(101, 192, 116, 0.43) 100%);
+        }
+
+        tr.statusnone {
+            background: linear-gradient(0deg, rgba(243, 28, 58, 0.62) 1%, rgba(255, 136, 136, 0.61) 65%, rgba(190, 7, 16, 0.43) 100%);
+        }
+        /*.newrowclass {
+            padding: .8em;
+            background: rgb(192,196,196);
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 500;
+            font-size: 15px;
+        }*/
+
+
+        div.dt-button-collection button.dt-button:active:not(.disabled), div.dt-button-collection button.dt-button.active:not(.disabled), div.dt-button-collection div.dt-button:active:not(.disabled), div.dt-button-collection div.dt-button.active:not(.disabled), div.dt-button-collection a.dt-button:active:not(.disabled), div.dt-button-collection a.dt-button.active:not(.disabled) {
+            background-image: none;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        button.dt-button:active:not(.disabled):hover:not(.disabled), button.dt-button.active:not(.disabled):hover:not(.disabled), div.dt-button:active:not(.disabled):hover:not(.disabled), div.dt-button.active:not(.disabled):hover:not(.disabled), a.dt-button:active:not(.disabled):hover:not(.disabled), a.dt-button.active:not(.disabled):hover:not(.disabled) {
+            background-image: none;
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+            border: none;
+        }
+
+        div.dt-button-collection {
+            width: 250px;
+            border: none;
+        }
+
+        table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(odd) {
+            background-color: #F3F3F3;
+        }
+
+        table.dataTable.table-striped.DTFC_Cloned tbody tr:nth-of-type(even) {
+            background-color: white;
+        }
+
+        table.dataTable {
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
+            border-top: none;
+        }
+
+        i.mdi.mdi-view-column {
+            display: inline;
+        }
+
+        .nicescroll {
+            height: 400px;
+        }
+        /*th.dt-invisible-column {
+            border: 0 !important;
+            padding: 0 !important;
+        }*/
+        /*div.dt-button-collection.fixed.two-column {
+            margin-left: 195px;
+            margin-top: -85px!important;
+        }*/
+        /*div.dt-button-collection.two-column {
+            width: 510px;
+            left: -240px !important;
+        }*/
+
+        button.dt-button, div.dt-button, a.dt-button {
+            background-image: none;
+            border: none;
+        }
+
+            button.dt-button:hover:not(.disabled), div.dt-button:hover:not(.disabled), a.dt-button:hover:not(.disabled) {
+                background-image: none;
+                border: none;
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+    <h2 class="text-center" id="headline">Master LC @ViewBag.Title</h2>
+    @*<h4 id="styletext" class="text-center">Contact / LC Creation [@ViewBag.Title]</h4>*@
+
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+    {
+        <div class="needs-validation" novalidate>
+            @*<div id="ajax-loader">Loading content...</div>*@
+            @*<div id="fakeloader-overlay" class="visible incoming"><div class="loader-wrapper-outer"><div class="loader-wrapper-inner"><div class="loader"></div></div></div></div>*@
+
+            @*@Html.AntiForgeryToken()*@
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="container-fluid">
+                <div id="modalbodyfahad" class="row">
+                    <div class="col-md-12 mb-2">
+
+                        @**@
+                        <div class="card p-4 borderTopStyle">
+                            <h4 id="styletext" class="text-center">Contact / LC Creation (@ViewBag.Title)</h4>
+                            <hr />
+                            <table class="table table-condensed">
+                                <tr class="row" style="border-top-style:none">
+                                    <td id="divCommercialCompany" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Company :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(m => m.CommercialCompanyId, ViewBag.CommercialCompanyId as List<SelectListItem>, "--Select From List--", new { id = "CommercialCompanyId", @class = "form-control form-control-sm" })
+                                            @* @Html.DropDownList("CurrencyId", ViewBag.CurrencyId as List<SelectListItem>, "--Select From List--", new { id = "CurrencyId", @class = "form-control form-control-sm", @readonly = "readonly" })*@
+                                            @Html.ValidationMessageFor(model => model.CommercialCompanyId)
+                                        </span>
+
+                                    </td>
+
+                                    <td id="divbuyergroup" class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            <label>Buyer Group:</label>
+
+                                        </span>
+                                        <span class="input-group">
+                                            <select asp-for="BuyerGroupID" class="form-control" asp-items="ViewBag.BuyerGroupID"></select>
+                                            @*@Html.DropDownListFor(m => m.BuyerGroupID, ViewBag.BuyerGroupID as List<SelectListItem>, "--Select Buyer Group--", new { id = "BuyerGroupID", @class = "form-control form-control-sm", @readonly = "readonly" })*@
+                                            @*<span class="input-group-append">
+                    <button id="exportorderload" class="btn btn-danger" type="button" style="font-size: 0.5rem;" onclick="ExportOrder_load()">Load</button>
+
+                </span>*@
+                                            @Html.ValidationMessageFor(model => model.BuyerGroupID)
+                                        </span>
+                                    </td>
+
+                                    <td id="divbuyer" class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            <label>Buyer :</label>
+
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(m => m.BuyerID, ViewBag.BuyerID as List<SelectListItem>, "--Select Buyer--", new { id = "BuyerID", @class = "form-control form-control-sm", @readonly = "readonly" })
+                                            @*<span class="input-group-append">
+                    <button id="exportorderload" class="btn btn-danger" type="button" style="font-size: 0.5rem;" onclick="ExportOrder_load()">Load</button>
+
+                </span>*@
+                                            @Html.ValidationMessageFor(model => model.BuyerID)
+                                        </span>
+                                    </td>
+
+
+                                    <td id="divlcmargin" class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.BuyerInformations.LCMargin)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.HiddenFor(model => model.MasterLCID)
+                                            @Html.HiddenFor(model => model.userid)
+                                            @Html.HiddenFor(model => model.useridUpdate)
+                                            @Html.HiddenFor(model => model.DateAdded)
+                                            @Html.HiddenFor(model => model.DateUpdated)
+                                                                                                                                                                          
+                                            @Html.EditorFor(model => model.BuyerInformations.LCMargin, new { htmlAttributes = new { @class = "form-control form-control-sm", @readonly = "readonly" } })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.BuyerInformations.LCMargin)
+
+                                    </td>
+                                    @*<td class="col-md-1 col-12">
+            <span class="text-right">
+                @Html.LabelFor(model => model.Tenor)
+            </span>
+            <span class="input-group">
+                @Html.EditorFor(model => model.Tenor, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+            </span>
+            @Html.ValidationMessageFor(model => model.Tenor)
+
+        </td>*@
+
+                                    <td id="divBankAccountId" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Bank Account No :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(m => m.BankAccountId, ViewBag.BankAccountId as List<SelectListItem>, "--Select Opening Bank--", new { id = "BankAccountId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.BankAccountId)
+                                    </td>
+
+                                    <td id="divOpeningBankId" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Concern / Exporter Bank :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(m => m.OpeningBankId, ViewBag.OpeningBankId as List<SelectListItem>, "--Select Opening Bank--", new { id = "OpeningBankId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.OpeningBankId)
+                                    </td>
+
+
+
+                                    <td id="divSupplier" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Buyer Bank :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(m => m.LienBankId, ViewBag.LienBankId as List<SelectListItem>, "--Select Lien Bank--", new { id = "LienBankId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LienBankId)
+                                    </td>
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCType.LCTypeName)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.DropDownList("LCTypeId", ViewBag.LCTypeId as List<SelectListItem>, new { id = "LCTypeId", @class = "form-control form-control-sm custom-select" })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCTypeId)
+
+                                    </td>
+
+                                    <td id="divPurchaseDate" class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCRefNo)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.LCRefNo, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCRefNo)
+                                    </td>
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.MasterLCValueManual)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.MasterLCValueManual, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.MasterLCValueManual)
+                                    </td>
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.SalesContractIssueDate)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.SalesContractIssueDate, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+                                    <td id="divPurchaseDate" class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCExpirydate)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.LCExpirydate, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.UnitMaster.UnitName)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.UnitMasterId, ViewBag.UnitMasterId as List<SelectListItem>, new { id = "UnitMasterId", @class = "form-control form-control-sm custom-select" })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.UnitMasterId)
+                                    </td>
+
+
+
+
+
+
+
+
+
+                                    <td id="divSupplier" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Currency :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownList("CurrencyId", ViewBag.CurrencyId as List<SelectListItem>, new { id = "CurrencyId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.CurrencyId)
+                                    </td>
+
+                                    <td class="col-md-3 col-12 hideclass">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCNature.LCNatureName)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.LCNatureId, ViewBag.LCNatureId as List<SelectListItem>, "--Select From List--", new { id = "LCNatureId", @class = "form-control form-control-sm custom-select" })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCNatureId)
+                                    </td>
+
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.BuyerLCRef)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.BuyerLCRef, new
+                                            {
+                                                htmlAttributes = new
+                                                {
+                                                    /**/
+                                                    @class = "form-control form-control-sm",
+                                                @*@placeholder = "Auto Generated", disabled = "disabled"*@}
+})
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.BuyerLCRef)
+                                    </td>
+
+
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCOpenDate)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.LCOpenDate, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+                                        </span>
+                                    </td>
+
+
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.TotalLCQty)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.TotalLCQty, new { htmlAttributes = new { @class = "form-control form-control-sm", @readonly = "readonly" } })
+                                            @*@Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @readonly = "readonly" })*@
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.TotalLCQty)
+
+                                    </td>
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCValue)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.LCValue, new { htmlAttributes = new { @class = "form-control form-control-sm", @readonly = "readonly" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCValue)
+                                    </td>
+
+
+
+
+
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.TradeTerms.TradeTermName)
+                                        </span>
+                                        <span class="input-group">
+
+                                            @Html.DropDownListFor(model => model.TradeTermId, ViewBag.TradeTermId as List<SelectListItem>, new { id = "TradeTermId", @class = "form-control form-control-sm custom-select" })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.TradeTermId)
+
+                                    </td>
+
+                                    <td id="divportofloading" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Port of Loading :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.PortOfLoadingId, ViewBag.PortOfLoadingId as List<SelectListItem>, "--Select From List--", new { id = "PortOfLoadingId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.PortOfLoadingId)
+                                    </td>
+
+                                    <td id="divPortOfDischarge" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Port of Discharge :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.PortOfDischargeId, ViewBag.PortOfDischargeId as List<SelectListItem>, "--Select From List--", new { id = "PortOfDischargeId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.PortOfDischargeId)
+                                    </td>
+                                    <td id="divDestination" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Destination :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.DestinationId, ViewBag.DestinationId as List<SelectListItem>, "--Select From List--", new { id = "DestinationId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.DestinationId)
+                                    </td>
+
+
+                                    <td id="divShipModeId" class="col-md-3 col-12">
+                                        <span class="text-right"><label>Ship Mode :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.ShipModeId, ViewBag.ShipModeId as List<SelectListItem>, "--Select From List--", new { id = "ShipModeId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.ShipModeId)
+                                    </td>
+                                    <td id="divpaymentterms" class="col-md-2 col-12">
+                                        <span class="text-right"><label>Payment Terms :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.PaymentTermsId, ViewBag.PaymentTermsId as List<SelectListItem>, new { id = "PaymentTermsId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.PaymentTermsId)
+                                    </td>
+                                    <td id="divDays" class="col-md-1 col-12">
+                                        <span class="text-right"><label>Days :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.DayListId, ViewBag.DayListId as List<SelectListItem>, new { id = "DayListId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.DayListId)
+                                    </td>
+                                    <td id="divDays" class="col-md-1 col-12">
+                                        <span class="text-right"><label>LC Status :</label></span>
+                                        <span class="input-group">
+                                            @Html.DropDownListFor(model => model.LCStatusId, ViewBag.LCStatusId as List<SelectListItem>, new { id = "LCStatusId", @class = "form-control form-control-sm custom-select" })
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCStatusId)
+                                    </td>
+
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.DestinationContract)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.DestinationContract, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.DestinationContract)
+                                    </td>
+                                    <td class="col-md-3 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.Remarks)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.Remarks)
+                                    </td>
+
+                                    <td class="col-md-1 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.FileNo)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.FileNo, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.FileNo)
+                                    </td>
+
+                                    <td class="col-md-2 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.Balance)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.Balance, new { htmlAttributes = new { @class = "form-control form-control-sm", @readonly = "readonly" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.Balance)
+                                    </td>
+                                    <td class="col-md-2 col-12">
+                                        <span class="text-right">
+                                            @Html.LabelFor(model => model.LCNOforImport)
+                                        </span>
+                                        <span class="input-group">
+                                            @Html.EditorFor(model => model.LCNOforImport, new { htmlAttributes = new { @class = "form-control form-control-sm" } })
+
+                                        </span>
+                                        @Html.ValidationMessageFor(model => model.LCNOforImport)
+                                    </td>
+
+
+
+
+
+                                </tr>
+
+
+
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="divexcelupload" class="col mb-2">
+                        <div class="card p-4 borderTopStyle">
+                            <div class="row">
+                                <div class="col-md-5 col-xs-12">
+
+                                    <div class="input-group">
+                                        <span class="input-group-btn input-group-prepend">
+                                            <span class="btn btn-primary rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                                            <input name="uploaded_file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+                                        </span>
+                                        <span class="form-control border border-primary" style="background: transparent;"></span>
+                                        <input type="button" id="btnUpload" value="Upload Files" class="input-group-append btn-primary border-0" />
+                                    </div>
+                                </div>
+
+                                @*<div class="col-md-3 col-xs-12">
+                                        <span class="form-control">
+                                            <a href="~/Com_masterLC/Download?file=buyerpocontactlist.xlsx" target="_blank">Download Sample Format</a>
+
+
+                                        </span>
+                                    </div>*@
+                                <div class="col col-xs-12">
+                                    <h5> Upload the List of Buyer PO Under the Referred Sales Contact  </h5>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div id="divmasterlc" class="col mb-2">
+                        <div class="card p-4 borderTopStyle">
+
+                            <br />
+                            <div class="table-responsive text-nowrap">
+                                <table id="tblmasterlc" class="tbl display responsive nowrap table-striped table-hover" cellspacing="0" width="100%">
+
+                                    <thead>
+                                        <tr>
+                                            <th style="width:15%;">Export Order Id</th>
+                                            <th style="width:15%;">Buyer PONo</th>
+                                            <th style="width:15%;">PO LineNo</th>
+                                            <th style="width:15%;">Style</th>
+                                            <th style="width:15%;">Po Date</th>
+                                            <th style="width:15%;">Destination</th>
+                                            <th style="width:15%;">Order Qty</th>
+                                            <th style="width:15%;">Unit</th>
+                                            <th style="width:15%;">Rate</th>
+                                            <th style="width:15%;">CM</th>
+                                            <th style="width:15%;">Order Value</th>
+                                            <th style="width:15%;">Ship Mode</th>
+                                            <th style="width:15%;">ExFactory Date</th>
+                                            <th style="width:15%;">Ship Date</th>
+                                            <th style="width:15%;">Export Order Status</th>
+                                            <th style="width:15%;">Export Order Category</th>
+                                            <th style="width:15%;">Company</th>
+                                            @*<th style="width:15%;">action</th>
+                                                <th style="width:15%;">checkbox</th>*@
+                                            <th style="width:15%;"></th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+
+                                        @foreach (var item in ViewBag.exportorder)
+                                        {
+
+
+                                            <tr class="txtMultviewbag">
+                                                <td>
+                                                    @item.ExportOrderID
+                                                </td>
+                                                <td>
+                                                    @item.BuyerContactPONo
+                                                </td>
+                                                <td>
+                                                    @item.POLineNo
+                                                </td>
+                                                <td>
+                                                    @item.StyleInformation.StyleName
+                                                </td>
+                                                <td>
+
+                                                    @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.PoDate))
+
+                                                </td>
+                                                <td>
+                                                    @item.Destination.DestinationName
+                                                </td>
+                                                <td>
+                                                    @item.OrderQty
+                                                </td>
+                                                <td>
+                                                    @item.UnitMaster.UnitName
+                                                </td>
+                                                <td>
+                                                    @item.Rate
+                                                </td>
+                                                <td>
+                                                    @item.CM
+                                                </td>
+                                                <td>
+                                                    @item.OrderValue
+                                                </td>
+                                                <td>
+                                                    @item.ShipModes.ShipModeName
+                                                </td>
+                                                <td>
+
+                                                    @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.ExFactoryDate))
+                                                </td>
+                                                <td>
+
+                                                    @Convert.ToString(string.Format("{0:dd-MMM-yy}", @item.ShipDate))
+                                                </td>
+                                                <td>
+                                                    @item.ExportOrderStatus.ExportOrderStatusName
+                                                </td>
+                                                <td>
+                                                    @item.ExportOrderCategorys.ExportOrderCategoryName
+                                                </td>
+                                                <td>
+                                                    @item.StyleInformation.Company.CompanyName
+                                                </td>
+
+                                                @*<td>
+                                                        <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" class="clickchk">
+
+                                                    </td>*@
+                                                <td></td>
+
+                                            </tr>
+
+                                        }
+                                    </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                    <div id="divexportlc" class="col mb-2">
+                        <div class="card p-2 borderTopStyle">
+
+                            <br />
+                            <div class="table-responsive text-nowrap">
+                                <table id="tblexportLc" class="tbl display responsive nowrap table-striped table-hover tblexportLc" cellspacing="0" width="100%">
+
+                                    <thead>
+                                        <tr>
+                                            <th style="width:15%;">Export Order Id</th>
+                                            <th style="width:15%;">Buyer PONo</th>
+                                            <th style="width:15%;">PO LineNo</th>
+                                            <th style="width:15%;">Style</th>
+                                            <th style="width:15%;">Po Date</th>
+                                            <th style="width:15%;">Destination</th>
+                                            <th style="width:15%;">Order Qty</th>
+                                            <th style="width:15%;">Unit</th>
+                                            <th style="width:15%;">Rate</th>
+                                            <th style="width:15%;">CM</th>
+                                            <th style="width:15%;">Order Value</th>
+                                            <th style="width:15%;">Ship Mode</th>
+                                            <th style="width:15%;">ExFactory Date</th>
+                                            <th style="width:15%;">Ship Date</th>
+                                            <th style="width:15%;">Export Order Status</th>
+                                            <th style="width:15%;">Export Order Category</th>
+                                            <th style="width:15%;">Company</th>
+                                            @*<th style="width:15%;">action</th>
+                                                <th style="width:15%;">checkbox</th>*@
+                                            <th style="width:15%;">lcid</th>
+
+
+                                            @*<th style="width:15%;">ExportOrderID</th>
+                                                <th style="width:15%;">ExportOrderStatus</th>
+                                                <th style="width:15%;">ExportPONo</th>
+                                                <th style="width:15%;">MasterLCID</th>*@
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model.COM_MasterLCExport)
+                                            {
+
+
+                                                <tr class="txtMult">
+
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrderID)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.BuyerContactPONo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.POLineNo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.StyleInformation.StyleName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.PoDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.Destination.DestinationName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.OrderQty)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.UnitMaster.UnitName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.Rate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.CM)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.OrderValue)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.ShipModes.ShipModeName)
+                                                    </td>
+                                                    <td>
+                                                        @Convert.ToString(string.Format("{0:dd-MMM-yy}", @Html.DisplayTextFor(i => item.ExportOrders.ExFactoryDate)))
+                                                    </td>
+                                                    <td>
+                                                        @Convert.ToString(string.Format("{0:dd-MMM-yy}", @Html.DisplayTextFor(i => item.ExportOrders.ShipDate)))
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.ExportOrderStatus.ExportOrderStatusName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.ExportOrderCategorys.ExportOrderCategoryName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayTextFor(i => item.ExportOrders.StyleInformation.Company.CompanyName)
+                                                    </td>
+
+
+                                                    @*<td>
+                                                            <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash"></i></a>
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" class="clickchk">
+                                                        </td>*@
+                                                    <td>
+                                                        @*@Html.DisplayTextFor(i => item.MasterLCID)*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4"></td>
+                                            <td class="text-right" colspan="2">
+                                                <h4> Total LC Qty & Value :</h4>
+                                            </td>
+                                            <td colspan="1">
+                                                <h4 class="ttlorderqty">0.00</h4>
+                                            </td>
+                                            <td colspan="3"></td>
+                                            <td colspan="1">
+                                                <h4 class="ttlordervalue">0.00</h4>
+                                            </td>
+                                            <td colspan="6"></td>
+
+
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                    <div class="col mb-2">
+                        <div class="card p-1 borderTopStyle">
+
+                            <br />
+                            <div class="table-responsive text-nowrap">
+                                <table id="tblmasterlcdetails" class="tbl display responsive nowrap table-striped table-sm table-hover" cellspacing="0" width="100%">
+
+                                    <thead>
+                                        <tr>
+                                            <th style="width:15%;">Master LC Details Id</th>
+                                            <th style="width:15%;">Buyer / Export PO No</th>
+                                            <th style="width:15%;">Style Name</th>
+                                            <th style="width:15%;">Item Name</th>
+                                            <th style="width:15%;">HSCode</th>
+                                            <th style="width:15%;">Fabrication</th>
+                                            <th style="width:15%;">Order Qty</th>
+                                            <th style="width:15%;">Unit</th>
+
+                                            <th style="width:15%;">Factor</th>
+                                            <th style="width:15%;">Qty[PCS]</th>
+                                            <th style="width:15%;">FOB</th>
+                                            <th style="width:15%;">Order Value</th>
+
+
+
+
+
+                                            <th style="width:15%;">Ship Date</th>
+                                            <th style="width:15%;">Destination</th>
+
+
+
+                                            <th style="width:15%;">Contract No</th>
+                                            <th style="width:15%;">Order Type</th>
+                                            <th style="width:15%;">Cat No</th>
+                                            <th style="width:15%;">Delivery No</th>
+
+                                            <th style="width:15%;">Destination PO</th>
+                                            <th style="width:15%;">Kimball</th>
+                                            <th style="width:15%;">Color Code</th>
+                                            <th style="width:15%;">LC Date</th>
+
+
+
+                                            <th style="width:15%;">Remove</th>
+                                            <th style="width:15%;">IsDelete</th>
+                                            <th style="width:15%;">SL NO</th>
+
+
+
+
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model.COM_MasterLC_Details)
+                                            {
+
+
+                                        <tr class="txtMultlcdetails">
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.MasterLCDetailsID)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ExportPONo)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.StyleName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ItemName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.HSCode)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Fabrication)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.OrderQty)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.UnitMasterId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Factor)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.QtyInPcs)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.UnitPrice)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.TotalValue)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(i => item.ShipmentDate)
+                                                @*@Html.DisplayTextFor(i => item.ShipmentDate)*@
+                                                @*@Html.DisplayFor(i => item.ShipmentDate)*@
+                                                @*@Convert.ToString(string.Format("{0:dd-MM-yy}", @Html.DisplayTextFor(i => item.ShipmentDate)))*@
+                                                @*@Convert.ToString(string.Format("{0:dd-M-yy}", @Html.DisplayTextFor(i => item.ShipmentDate))) @*//.ToString("dd-M-YY")*@
+
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Destination)
+                                            </td>
+
+
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ContractNo)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.OrderType)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.CatNo)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.DeliveryNo)
+                                            </td>
+
+
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.DestinationPO)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.Kimball)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayTextFor(i => item.ColorCode)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(i => item.ContractDate)
+                                            </td>
+
+                                                @if (item.ExportInvoiceDetails.Count() > 0)
+                                                {
+                                                    <td>
+
+                                                        @Html.DisplayFor(i => item.ExportInvoiceDetails.FirstOrDefault().ExportInvoiceMasters.InvoiceNo)
+                                                    </td>
+
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        <a class="dlttrash" data-itemId="0" href="#"><i class="fa fa-trash fa-2x"></i></a>
+
+                                                    </td>
+                                                }
+
+
+
+                                            <td></td>
+                                            <td>
+                                                @Html.DisplayFor(i => item.SL)
+                                            </td>
+
+                                        </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4"></td>
+                                            <td class="text-right" colspan="2">
+                                                <h4>
+                                                    Total LC Qty & Value :
+                                                </h4>
+                                            </td>
+                                            <td colspan="1">
+                                                <h4 class="ttlorderqtylcdetials">0.00</h4>
+                                            </td>
+                                            <td colspan="2"></td>
+                                            <td colspan="1">
+                                                <h4 class="ttlorderqtypcslcdetails">0.00</h4>
+                                            </td>
+                                            <td colspan="1"></td>
+                                            <td colspan="1">
+                                                <h4 class="ttlordervaluelcdetails">0.00</h4>
+                                            </td>
+                                            <td colspan="10"></td>
+
+
+
+
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <br />
+                        </div>
+                    </div>  @*masterlc DEtails TAble*@
+                </div>
+
+            </div>
+
+
+            <div class="row text-center m-2">
+                <br />
+                <div class="col-md-3"></div>
+
+                <div class="col-md-2 col-xs-12 d-block mx-auto">
+                    <button class="form-control form-control-sm btn btn-success btn-block" type="button" onclick="Add()">Add More</button>
+
+                </div>
+                @*<div class="col-md-3"><h4>Master LC Entry</h4></div>*@
+                @if (ViewBag.Title == "Create")
+                {
+                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+                        @if (ViewData.ModelState.IsValid)
+                        {
+                            @*<input type='submit' value='Delete' name='SubmitAction' />*@
+
+                            @*<button type="button" onclick="AddSubSection()" class="form-control form-control-sm btn btn-success mb-2 btn-block">Save</button>*@
+                            <button class="form-control form-control-sm btn btn-success mb-2 btn-block" type="button" onclick="MasterLC_save()">Save</button>
+                        }
+
+                    </div>
+                }
+                else if (ViewBag.Title == "Edit")
+                {
+                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+                        <button class="form-control form-control-sm btn btn-warning mb-2 btn-block" type="button" onclick="MasterLC_save()">Update</button>
+
+                    </div>
+                }
+                else if (ViewBag.Title == "Delete")
+                {
+                    <div class="col-md-2 col-xs-12 d-block mx-auto">
+
+                        <button class="form-control form-control-sm btn btn-danger mb-2 btn-block" type="button" onclick="MasterLC_delete()">Delete</button>
+
+                    </div>
+                }
+                <div class="col-md-2 col-xs-12 d-block mx-auto">
+                    @Html.ActionLink("Back", "Index", "COM_MasterLC", null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+
+                </div>
+                <div class="col-md-3"></div>
+
+            </div>
+
+            @*<div class="row text-center m-2">
+                    <br />
+                    <div class="col-md-3"></div>
+                    <div class="form-group">
+
+                        @Html.Label("File Upload", new { @class = "col-sm-6" })
+
+                        <div class="col-sm-7">
+                            <input type="file" id="postedFile" name="postedFile" class="form-control" accept=".xls,.xlsx" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-md-offset-3 col-md-10">
+                            <br />
+                            <input type="submit" title="Upload" value="Upload" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>*@
+
+
+            @*<div>
+                    <table>
+                        <tr>
+                            <td>
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <button class="btn btn-primary btn-lg btn-block" type="button" onclick="MasterLC_save()">Save</button>
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <button class="btn btn-warning btn-lg btn-block" type="button" onclick="MasterLC_save()">Update</button>
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-lg btn-block" type="button" onclick="MasterLC_delete()">Delete</button>
+                                }
+                            </td>
+                            <td>
+                                @Html.ActionLink("Back", "Index", "COM_CNFBillImportMaster", null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>*@
+        </div>
+
+    }
+
+
+
+</body>
+
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    @*<script src="~/Scripts/js/jquery.dataTables.min.js"></script>*@
+    <script>
+
+        $('#MasterLCValueManual').attr("data-val-required", "Sales Contract value is required.");
+
+        var tblmasterlcdetails;
+        $(".hideclass").hide();
+
+        //$("#fakeloader-overlay").hide();
+
+
+
+
+        var row;
+        var col;
+        $('#tblmasterlcdetails tbody').on('click', '.dlttrash', function (e) {
+
+            var table = $('#tblmasterlcdetails').DataTable();
+            row = $(this).parent().parent();
+
+            //$('#example tbody').on('click', 'tr', function () {
+            var data = table.row(row).data();
+            data[23] = 'True';
+            alert('You clicked on ' + data[23] + '\'s row');
+
+           
+
+            //var rowindex = $(this).parent().parent().index();
+            //var cell = table.cell(5, 23);;
+            //cell.data('True').draw();
+
+            //});
+
+            ////var table = $('#tblmasterlcdetails').DataTable();
+            ///////fahad is delete code
+            $(this).parent().parent().hide(); ///fahad for checking.
+            ////table.row($(this).parents('tr')).remove().draw();
+
+            ////row = $(this).parent().parent().index();
+            toastr.error("Row Deleted")
+
+            //////var cell = table.cell(row, 23);
+            //////cell.data('True');
+            ////var x = "500.00";
+            ////var y = $('#tblmasterlcdetails').height();
+            ////var z = parseFloat(x) + parseFloat(y);
+            ////$("html, body").animate({ scrollTop: z }, 500);
+
+            //var table = $('#tblmasterlcdetails').DataTable();
+            //row = $(this).parent().parent().index();
+            //alert('Row Deleted');
+            //var cell = table.cell(row, 23); /////delete column update true or false by fahad
+
+
+            //cell.data('True');
+
+            ///fahad is delete code
+            //$(this).parent().parent().hide(); ///fahad for checking.
+            //table.row($(this).parents('tr')).remove().draw();
+
+
+            $(this).closest('tr').children('td.isDelete').text('True');
+            //$(this).closest('tr').children('td.isDelete').val('True');
+
+
+
+            //alert(vv);
+
+            var x = "100.00";
+            var y = $('#tblmasterlcdetails').height();
+            var z = parseFloat(x) + parseFloat(y);
+
+            table.draw();
+
+            $("html, body").animate({ scrollTop: z }, 500);
+
+            //alert('hit');
+            multInputslcdetails();
+
+
+
+        });
+
+        function Add() {
+            //var checked = true;
+
+
+            //alert('passed');
+
+
+            //var tblProform = $('#tblProform').DataTable();
+            $('#tblmasterlcdetails').dataTable().fnAddData(['0', 'PONO', 'StyleName', 'ItemName', 'HSCode', 'Fabrication', '0', 'Pcs', '1', '0', '0.00', '0.00', '1-Dec-19', 'UK', 'ContractNO', 'OrderType', 'CatNo','DeliveryNo','DestinationPO','Kimball','ColorCode','1-jan-20', '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash fa-2x"></i></a >',false,0
+
+
+
+                //{ "sClass": "MasterLCDetailsID", "visible": false },
+                //{ "sClass": "ExportPONo", "visible": true },
+                //{ "sClass": "StyleName", "visible": true },
+                //{ "sClass": "ItemName", "visible": true },
+                //{ "sClass": "HSCode", "visible": true },
+                //{ "sClass": "Fabrication", "visible": true },
+                //{ "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                //{ "sClass": "UnitMasterId", "visible": true },
+                //{ "sClass": "Factor", "visible": true },
+                //{ "sClass": "QtyInPcs", "visible": true },
+                //{ "sClass": "UnitPrice", "visible": true, render: $.fn.dataTable.render.number(',', '.', 2, '') },
+                //{ "sClass": "TotalValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 2, '') },
+                //{ "sClass": "ShipmentDate", "visible": true }, //, render: $.fn.dataTable.moment('DD/MM/YYYY')
+                //{ "sClass": "Destination", "visible": true }, //
+                //null
+                //$('#PINo').val() || 0,
+                //'<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash"></i></a >',
+            ])
+            toastr.success("New Row Added");
+
+            //  var piform = $('#tblProform').height();
+            //alert('ok');
+            //$("html, body").animate({ scrollTop: z }, 50);
+        }
+
+
+
+
+
+        $('#headline').hide();
+        $('#BuyerID').select2();
+        $('#BuyerGroupID').select2();
+
+       // $('#CommercialCompanyId').select2();
+
+        $('#OpeningBankId').select2();
+        //$('#BankAccountId').select2();
+
+
+
+
+
+        $('#LienBankId').select2();
+        $('#LCTypeId').select2();
+
+        $('#UnitMasterId').select2();
+        $('#CurrencyId').select2();
+        $('#NatureId').select2();
+        $('#TradeTermId').select2();
+        $('#PortOfLoadingId').select2();
+
+        $('#PortOfDischargeId').select2();
+        $('#DestinationId').select2();
+        $('#ShipModeId').select2();
+        $('#PaymentTermsId').select2();
+        $('#DayListId').select2();
+
+
+
+
+        //$("select").on("select2:close", function (e) {
+        //    $(this).valid();
+        //});
+
+
+        var x = "@ViewBag.BuyerID";
+        if (x > 0) {
+            $('#BuyerID').val("@ViewBag.BuyerID");
+        }
+        else {
+
+        }
+
+
+
+        $('#BankAccountId').select2({})
+            .on("select2:select", function (e) {
+                if ($('#BankAccountId').val() > 0) {
+
+                    //ConcernBankAccount_Info();
+                    //alert($("#BankAccountId").val());
+                    ConcernBank_Info();
+                }
+                else {
+                    alert('Please Select Concern Information First.')
+                }
+
+                // have to fire our own change event because value set in JS
+                // TODO capture ahead of time instead of using default
+                //$(this).trigger('change');
+                console.log("select2:select")
+            });
+
+
+        $('#CommercialCompanyId').select2({})
+            .on("select2:select", function (e) {
+                if ($('#CommercialCompanyId').val() > 0) {
+
+                    ConcernBankAccount_Info();
+                    //alert($("#BankAccountId").val());
+                    ConcernBank_Info();
+                }
+                else {
+                    alert('Please Select Concern Information First.')
+                }
+
+                // have to fire our own change event because value set in JS
+                // TODO capture ahead of time instead of using default
+                //$(this).trigger('change');
+                console.log("select2:select")
+            });
+
+        //$('#CommercialCompanyId').change(function () {
+        //    //alert('test');
+        //    ConcernBankAccount_Info();
+        //    //alert($("#BankAccountId").val());
+        //    ConcernBank_Info();
+
+
+        //})
+
+
+
+
+
+
+        function ConcernBankAccount_Info() {
+            $("#BankAccountId").empty();
+
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("ConcernOpeningBankAccountList", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#CommercialCompanyId").val() },
+
+                        success: function (data) {
+                            var s = '';//'<option value="-1">Please Select Product</option>';
+
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#BankAccountId").html(s);
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                    return false;
+
+
+
+
+        };
+
+
+        function ConcernBank_Info() {
+            $("#OpeningBankId").empty();
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("ConcernOpeningBankList", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#BankAccountId").val() },
+
+                        success: function (data) {
+                            var s = '';//'<option value="-1">Please Select Product</option>';
+
+                            for (var i = 0; i < data.length; i++) {
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                            }
+                            $("#OpeningBankId").html(s);
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                    return false;
+            };
+
+
+        $('#BuyerID').change(function () {
+            //alert('test');
+                    BuyerMargin_Info();
+
+        })
+
+        function BuyerMargin_Info() {
+
+                    var MyAppUrlSettings = {
+                    MyUsefulUrl : '@Url.Action("BuyerInfo", "COM_MasterLC")'
+                    }
+
+                    $.ajax({
+                    type: 'POST',
+                    url: MyAppUrlSettings.MyUsefulUrl,
+                    dataType: 'json',
+                    async: false,
+                        data: { id: $("#BuyerID").val() },
+
+                            success: function (data) {
+                                //alert('working');
+                                //console.log(data);
+
+                                //if ($("#BuyerInformations_LCMargin").val() > 0) {
+                                //    //alert('lcmargin');
+                                //}
+                                //else
+                                //{
+                                //    $("#BuyerInformations_LCMargin").val(data.LCMargin).show();
+                                //    ///alert('lcmargin found');
+
+                                //}
+
+                                $("#BuyerInformations_LCMargin").val(data.LCMargin).show();
+
+
+
+                        },
+                    error: function (ex) {
+                    alert('Failed.' + ex);
+                        }
+                        });
+                    return false;
+        };
+
+
+
+
+    function MasterLC_delete() {
+        var MasterLCID = $("#MasterLCID").val();
+        //alert(SalesId);
+        $.ajax({
+
+            url: '@Url.Action("Delete", "COM_MasterLC")',
+            //url: '@Url.Action("Delete")',
+            data: JSON.stringify({ id: MasterLCID }), //use id here
+            //data: JSON.stringify(salesmain),
+            type: 'POST',
+            async: false,
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+
+                if (result.Success == "1") {
+
+
+
+                    toastr.error("Data Delete Successfully");
+
+                        window.setTimeout(function () {
+
+                            // Move to a new location or you can do something else
+                                 window.location.href = '@Url.Action("Index", "COM_MasterLC")';
+
+                        }, 500);
+
+                }
+                else {
+                    //alert();
+                    toastr.error(result.ex)
+                    //if (!result.success) {
+                    //    for (var error in result.errors) {
+                    //        $('#errorMessages').append(error + '<br />');
+                    //    }
+                    //}
+                }
+            },
+            error: function (result) {
+
+                if (result.ex = "") {
+                    toastr.error("Unable To Delete");
+                } else {
+                    toastr.error(result.ex);
+
+                }
+
+
+
+            }
+
+        });
+    }
+        //alert('1st ok');
+
+
+        function ExportOrder_load() {
+        var buyerids = 0;
+        buyerids = $('#BuyerID').val();
+        //alert(buyerids);
+
+        //$("#custmid").attr("href", "ExportOrders/Create?styleid=" + styleid);
+
+           // ViewBag.Title
+            var y = "@ViewBag.Title";
+            if (y == "Create")
+            {
+        window.location.href ="Create?BuyerID=" + buyerids;
+
+            }
+            else {
+        window.location.href ="?BuyerID=" + buyerids;
+
+            }
+        //window.location.href ="@ViewBag.Title""?BuyerID=" + buyerids;
+
+        @*//'@Url.Action("?styleid=" + styleid, "ExportOrders" )';*@
+
+
+        };
+
+        //alert('2nd ok');
+
+
+
+        ////////function save//////
+        function MasterLC_save() {
+            // Step 1: Read View Data and Create JSON Object
+            //alert('working');
+
+
+
+            //if (!$("#myform").valid()) {
+            //    alert('Please Fill Up All Necessary Information Correctly.');
+            //    $("html, body").animate({ scrollTop: 0 }, 500);
+            //    return false;
+            //}
+
+            $('input[type=search]').val('').change();
+            multInputslcdetails();
+
+
+            // Creating Detail Json Object
+            var COM_MasterLCExportT = { "MasterLCID": "", "ExportOrderID": "" };
+            var COM_MasterLCDetailsT = {
+                "MasterLCDetailsID": "",
+                "MasterLCID": "", "ExportPONo": "", "StyleName": "", "ItemName": "",
+                "HSCode": "", "Fabrication": "", "OrderQty": "", "UnitMasterId": "",
+                "Factor": "", "QtyInPcs": "", "UnitPrice": "", "TotalValue": "",
+                "ShipmentDate": "", "Destination": "", "ContractNo": "", "OrderType": "", "CatNo": "", "DeliveryNo": "", "DestinationPO": "", "Kimball": "", "ColorCode": "", "ContractDate": "", "isDelete": "", "SL": "" 
+            };
+
+
+            var COM_MasterLC = {
+
+                "userid": "", "useridUpdate": "", "DateAdded": "", "DateUpdated": "",
+
+                "MasterLCID": "", "LCRefNo": "", "BuyerLCRef": "",
+                "CommercialCompanyId": "", "LCOpenDate": "", "SalesContractIssueDate" :"", "LCExpirydate": "",
+                "BuyerID": "", "BuyerGroupID": "", "OpeningBankId": "", "BankAccountId": "", "LienBankId": "", "TotalLCQty": "", "UnitMasterId": "",
+
+                "LCValue": "", "MasterLCValueManual": "", "CurrencyId": "", "Tenor": "", "DestinationId": "", "DestinationContract": "", "Remarks": "", "FileNo": ""  , "PortOfLoadingId": "", "PortOfDischargeId": "",
+
+                "LCTypeId": "", "LCStatusId": "", "LCNatureId": "", "TradeTermId": "",
+
+                "ShipModeId": "", "PaymentTermsId": "", "DayListId": "", "LCNOforImport": "", "Balance": "",
+                "COM_MasterLCExport": [],
+                "COM_MasterLC_Details": []
+
+
+            };
+
+
+
+                                                 @*@Html.HiddenFor(model => model.MasterLCID)
+                                            @Html.HiddenFor(model => model.userid)
+                                            @Html.HiddenFor(model => model.useridUpdate)
+                                            @Html.HiddenFor(model => model.DateAdded)
+                                            @Html.HiddenFor(model => model.DateUpdated)*@
+
+
+
+            // Creating Masters Json Object
+            // Set Invoice Main Value
+
+            COM_MasterLC.userid = $("#userid").val() || 0;
+            COM_MasterLC.useridUpdate = $("#useridUpdate").val() || 0;
+            COM_MasterLC.DateAdded = $("#DateAdded").val();
+            COM_MasterLC.DateUpdated = $("#DateUpdated").val();
+
+
+
+            COM_MasterLC.MasterLCID = $("#MasterLCID").val() || 0;
+            COM_MasterLC.LCRefNo = $("#LCRefNo").val();
+            COM_MasterLC.BuyerLCRef = $("#BuyerLCRef").val();
+            COM_MasterLC.CommercialCompanyId = $("#CommercialCompanyId").val();
+            COM_MasterLC.LCOpenDate = $("#LCOpenDate").val();
+            COM_MasterLC.SalesContractIssueDate = $("#SalesContractIssueDate").val();
+
+
+            COM_MasterLC.LCExpirydate = $("#LCExpirydate").val();
+
+            COM_MasterLC.BuyerID = $("#BuyerID").val();
+            COM_MasterLC.BuyerGroupID = $("#BuyerGroupID").val();
+
+            COM_MasterLC.OpeningBankId = $("#OpeningBankId").val();
+            COM_MasterLC.BankAccountId = $("#BankAccountId").val();
+
+            COM_MasterLC.LienBankId = $("#LienBankId").val();
+            COM_MasterLC.TotalLCQty = $("#TotalLCQty").val();
+
+            COM_MasterLC.UnitMasterId = $("#UnitMasterId").val();
+            COM_MasterLC.LCValue = $("#LCValue").val();
+            COM_MasterLC.MasterLCValueManual = $("#MasterLCValueManual").val();
+
+
+            COM_MasterLC.CurrencyId = $("#CurrencyId").val();
+
+            COM_MasterLC.Tenor = $("#Tenor").val();
+            COM_MasterLC.DestinationId = $("#DestinationId").val();
+            COM_MasterLC.DestinationContract = $("#DestinationContract").val();
+            COM_MasterLC.Remarks = $("#Remarks").val();
+            COM_MasterLC.FileNo = $("#FileNo").val();
+
+
+
+            COM_MasterLC.LCNOforImport = $("#LCNOforImport").val();
+            COM_MasterLC.Balance = $("#Balance").val();
+
+
+
+            COM_MasterLC.PortOfLoadingId = $("#PortOfLoadingId").val();
+            COM_MasterLC.PortOfDischargeId = $("#PortOfDischargeId").val();
+
+
+            COM_MasterLC.LCTypeId = $("#LCTypeId").val();
+            COM_MasterLC.LCStatusId = $("#LCStatusId").val();
+            COM_MasterLC.LCNatureId = 1;// $("#LCNatureId").val();
+            COM_MasterLC.TradeTermId = $("#TradeTermId").val();
+
+            COM_MasterLC.ShipModeId = $("#ShipModeId").val();
+            COM_MasterLC.PaymentTermsId = $("#PaymentTermsId").val();
+            COM_MasterLC.DayListId = $("#DayListId").val();
+                @*Invoicemain.comid = '@Session["comid"].ToString()';
+            Invoicemain.userid = '@Session["userid"].ToString()';*@
+
+
+            //var table = $('#tblinvoicesub').DataTable();
+            //var column = table.column('#Invoicetypeid');
+            //console.log(column);
+
+            ////Invoice subs data
+            var oTable = $('#tblexportLc').dataTable().fnGetData();
+            for (var i = 0; i < oTable.length; i++) {
+                //var oTableRow = oTable[i];
+                //alert(oTableRow);
+
+                // IF This view is for edit then it will read InvoiceId from Hidden field
+                if ($('h2').text() == "Master LC Edit") {
+                    //alert('edit found');
+                    COM_MasterLCExportT.MasterLCID = $('#MasterLCID').val();
+
+                }
+                else {
+                    COM_MasterLCExportT.MasterLCID = 0;
+                }
+
+
+                //ExportLc.MasterLCID = oTable[i][2];
+                COM_MasterLCExportT.ExportOrderID = oTable[i][0];
+                //alert(ExportLc);
+
+
+                COM_MasterLC.COM_MasterLCExport.push(COM_MasterLCExportT);
+                COM_MasterLCExportT = { "MasterLCID": "", "ExportOrderID": "" };
+
+
+
+            }
+
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            function perfectdate(jsonDate) {
+                var date = new Date(parseInt(jsonDate.substr(6)));
+                var month = date.getMonth() + 1;
+                //return date.getDate() + "/" + month + "/" + date.getFullYear();
+                return date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            }
+
+
+
+            var oTableDetails = $('#tblmasterlcdetails').dataTable().fnGetData();
+            //var oTableDetailshtml = $("#tblmasterlcdetails").dataTable().fnGetNodes();
+            //console.log(oTableDetailshtml);
+
+
+            if ($('h2').text() == "Master LC Edit") {
+                //alert('edit found');
+                for (var i = 0; i < oTableDetails.length; i++) {
+                    var check;
+                    var masterlcdetailsid;
+                    masterlcdetailsid = oTableDetails[i][0];
+                    //alert(masterlcdetailsid);
+
+                    check = oTableDetails[i][23];
+                    //alert(check);
+
+
+                    if (check == 'True' && masterlcdetailsid == 0) /////where isDelete = false only take those data
+                    {
+
+                    }
+                    else {
+
+
+                        COM_MasterLCDetailsT.MasterLCID = $('#MasterLCID').val();
+                        COM_MasterLCDetailsT.MasterLCDetailsID = oTableDetails[i][0];
+                        COM_MasterLCDetailsT.ExportPONo = oTableDetails[i][1];
+                        if (oTableDetails[i][2] != null) {
+                            COM_MasterLCDetailsT.StyleName = oTableDetails[i][2].replace(/amp;/ig, '');
+                        }
+                        if (oTableDetails[i][3] != null) {
+                            COM_MasterLCDetailsT.ItemName = oTableDetails[i][3].replace(/amp;/ig, '');
+                        }
+                        COM_MasterLCDetailsT.HSCode = oTableDetails[i][4];
+                        if (oTableDetails[i][5] != null) {
+
+                            COM_MasterLCDetailsT.Fabrication = oTableDetails[i][5].replace(/amp;/ig, '');
+                        }
+                        COM_MasterLCDetailsT.OrderQty = oTableDetails[i][6];
+                        COM_MasterLCDetailsT.UnitMasterId = oTableDetails[i][7];
+                        COM_MasterLCDetailsT.Factor = oTableDetails[i][8];
+                        //COM_MasterLCDetailsT.QtyInPcs = oTableDetails[i][9];
+                        COM_MasterLCDetailsT.QtyInPcs = oTableDetails[i][8] * oTableDetails[i][6];//oTableDetails[i][9];
+                        COM_MasterLCDetailsT.UnitPrice = oTableDetails[i][10];
+                        COM_MasterLCDetailsT.TotalValue = oTableDetails[i][11];
+                        COM_MasterLCDetailsT.ShipmentDate = oTableDetails[i][12];
+                        COM_MasterLCDetailsT.Destination = oTableDetails[i][13];
+
+                        if (oTableDetails[i][14] != null) {
+
+                            COM_MasterLCDetailsT.ContractNo = oTableDetails[i][14].replace(/amp;/ig, '');
+                        }
+                        COM_MasterLCDetailsT.OrderType = oTableDetails[i][15];
+                        COM_MasterLCDetailsT.CatNo = oTableDetails[i][16];
+                        COM_MasterLCDetailsT.DeliveryNo = oTableDetails[i][17];
+
+                        COM_MasterLCDetailsT.DestinationPO = oTableDetails[i][18];
+                        COM_MasterLCDetailsT.Kimball = oTableDetails[i][19];
+                        COM_MasterLCDetailsT.ColorCode = oTableDetails[i][20];
+                        COM_MasterLCDetailsT.ContractDate = oTableDetails[i][21];
+
+
+                        //console.log(oTableDetailshtml[i].cells[22][0]);
+                        //var x = oTableDetailshtml[i].cells[22].children[0].value;
+                        //alert(x);
+        
+     
+                        COM_MasterLCDetailsT.isDelete = oTableDetails[i][23];
+                        COM_MasterLCDetailsT.SL = oTableDetails[i][24];
+
+                        COM_MasterLC.COM_MasterLC_Details.push(COM_MasterLCDetailsT);
+
+                        var COM_MasterLCDetailsT = {
+                            "MasterLCDetailsID": "",
+                            "MasterLCID": "", "ExportPONo": "", "StyleName": "", "ItemName": "",
+                            "HSCode": "", "Fabrication": "", "OrderQty": "", "UnitMasterId": "",
+                            "Factor": "", "QtyInPcs": "", "UnitPrice": "", "TotalValue": "",
+                            "ShipmentDate": "", "Destination": "", "ContractNo": "", "OrderType": "", "CatNo": "", "DeliveryNo": "", "DestinationPO": "", "Kimball": "", "ColorCode": "", "ContractDate": "", "isDelete": "", "SL": ""
+                        };
+                    }
+                }
+
+            }
+            else { ///create or new save
+                for (var i = 0; i < oTableDetails.length; i++) {
+
+                    var check;
+                    check = oTableDetails[i][23];
+                    //alert(check);
+
+                    if (check == 'True') /////where isDelete = false only take those data
+                    { }
+                    else {
+                        //alert('hit');
+
+                        COM_MasterLCDetailsT.MasterLCID = 0;
+                        COM_MasterLCDetailsT.MasterLCDetailsID = oTableDetails[i][0];
+                        COM_MasterLCDetailsT.ExportPONo = oTableDetails[i][1];
+                        COM_MasterLCDetailsT.StyleName = oTableDetails[i][2].replace(/amp;/ig, '');
+                        COM_MasterLCDetailsT.ItemName = oTableDetails[i][3].replace(/amp;/ig, '');
+                        COM_MasterLCDetailsT.HSCode = oTableDetails[i][4];
+                        if (oTableDetails[i][5] != null) {
+                            COM_MasterLCDetailsT.Fabrication = oTableDetails[i][5].replace(/amp;/ig, '');
+                        }
+                        COM_MasterLCDetailsT.OrderQty = oTableDetails[i][6];
+                        COM_MasterLCDetailsT.UnitMasterId = oTableDetails[i][7];
+                        COM_MasterLCDetailsT.Factor = oTableDetails[i][8];
+                        COM_MasterLCDetailsT.QtyInPcs = oTableDetails[i][8] * oTableDetails[i][6];//oTableDetails[i][9];
+                        COM_MasterLCDetailsT.UnitPrice = oTableDetails[i][10];
+                        COM_MasterLCDetailsT.TotalValue = oTableDetails[i][11];
+                        COM_MasterLCDetailsT.ShipmentDate = oTableDetails[i][12];
+                        COM_MasterLCDetailsT.Destination = oTableDetails[i][13];
+                        COM_MasterLCDetailsT.ContractNo = oTableDetails[i][14];
+                        COM_MasterLCDetailsT.OrderType = oTableDetails[i][15];
+                        COM_MasterLCDetailsT.CatNo = oTableDetails[i][16];
+                        COM_MasterLCDetailsT.DeliveryNo = oTableDetails[i][17];
+
+                        COM_MasterLCDetailsT.DestinationPO = oTableDetails[i][18];
+                        COM_MasterLCDetailsT.Kimball = oTableDetails[i][19];
+                        COM_MasterLCDetailsT.ColorCode = oTableDetails[i][20];
+                        COM_MasterLCDetailsT.ContractDate = oTableDetails[i][21];
+
+
+
+
+
+                        COM_MasterLCDetailsT.isDelete = oTableDetails[i][23];
+                        COM_MasterLCDetailsT.SL = oTableDetails[i][24];
+
+                        COM_MasterLC.COM_MasterLC_Details.push(COM_MasterLCDetailsT);
+
+                        var COM_MasterLCDetailsT = {
+                            "MasterLCDetailsID": "",
+                            "MasterLCID": "", "ExportPONo": "", "StyleName": "", "ItemName": "",
+                            "HSCode": "", "Fabrication": "", "OrderQty": "", "UnitMasterId": "",
+                            "Factor": "", "QtyInPcs": "", "UnitPrice": "", "TotalValue": "",
+                            "ShipmentDate": "", "Destination": "", "ContractNo": "", "OrderType": "", "CatNo": "", "DeliveryNo": "", "DestinationPO": "", "Kimball": "", "ColorCode": "", "ContractDate": "", "isDelete": "", "SL": ""
+                        };
+                    }
+                }
+            }
+
+
+
+
+            ////Invoice terms data
+
+            //alert('checking');
+            //console.log(COM_MasterLC);
+
+
+
+
+            // Set 2: Ajax Post
+            // Here i have used ajax post for saving/updating information
+            @*$.ajax({
+                //url: '/COM_MasterLC/Create',
+                url: '@Url.Action("Create", "COM_MasterLC")',
+
+                data: JSON.stringify(COM_MasterLC),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                async: true,
+                beforeSend: function () {
+                   // $("#fakeloader-overlay").show();
+                    //$(document).ready(
+                    //    function () {
+                    //        window.FakeLoader.init({ auto_hide: true });
+                    //    }
+                    //);
+                    //window.FakeLoader.init({ auto_hide: true });
+                    //alert('hit');
+                    //$('#ajax-loader').show();
+
+                },
+                complete: function () {
+                    //$('#ajax-loader').hide();
+                    // window.FakeLoader.init({ auto_hide: true });
+                    //alert('hit');
+                },
+
+                success: function (result) {
+                    //alert('Proceed for Bulk Data Save');
+
+                    if (result.Success == "1") {
+
+                        //window.location.href = "/Invoice/index";
+                        //window.location.href = '@Url.Action("Index", "COM_MasterLC")';
+                        //window.location.href = "Create?BuyerID=0&Flag = 1";
+
+
+                        if ($('h2').text() == "Master LC Edit") {
+
+                            customFile('2', result.ex);
+
+                        }
+                        else {
+                            customFile('1', result.ex);
+                        }
+
+
+
+                        window.setTimeout(function () {
+
+                            // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Index", "COM_MasterLC")';
+
+                        }, 500);
+
+
+                    }
+                    else {
+
+                        //alert(result.ex);
+                        if (!result.success) {
+                            for (var error in result.errors) {
+                                //alert(result.errors);
+                                //$('#errorMessages').append(error + '<br />');
+                                customFile('3', result.errors);
+                        }
+                    }
+                    }
+                },
+                error: function (ex) {
+                    customFile('3', result.ex);
+                }
+
+            });*@
+
+            //$(document).ready(function () {
+                var options = {};
+                options.url = "/COM_MasterLC/Create";
+                options.type = "POST";
+                options.dataType = "json";
+                options.data = COM_MasterLC;
+                options.success = function (data) {
+                    alert(data);
+                };
+                options.error = function () {
+                    alert("error");
+                };
+                $.ajax(options);
+            //});
+
+        }
+        ////////function save//////
+
+        //alert('5th ok');
+
+
+
+    $(document).ready(function () {
+        //var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        //alert(allErrors);
+        //$("#myform").validate().form();
+        //var ids = [];
+        //$("form").each(function () {
+        //    ids.push(this.id);
+        //    alert(this.id);
+        //});
+        ////var formId = "#" + ids[0]
+        ////alert(formId);
+        ////$(formId).validate();
+        //alert('byerid');
+
+
+
+        //var $form = $("myform");
+
+        //// get validator object
+        //var $validator = $form.validate();
+
+        //// get errors that were created using jQuery.validate.unobtrusive
+        //var $errors = $form.find(".field-validation-error span");
+
+        //// trick unobtrusive to think the elements were succesfully validated
+        //// this removes the validation messages
+        //$errors.each(function () { $validator.settings.success($(this)); })
+
+        //// clear errors from validation
+        //$validator.resetForm();
+
+        //// Then show the errors
+        //$.validator().showErrors({ prop: error });
+        //$(function () {
+
+        //    $('#myform').validate({
+        //        rules: {
+        //            thisval: "required"
+        //        }
+        //    });
+        //    console.info($('#myform').valid());
+
+        //});
+
+        $('#divmasterlc').hide();
+        $('#divexportlc').hide();
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        tblmasterlcdetails = $('#tblmasterlcdetails').dataTable(
+            {
+                "aoColumns": [
+                    { "sClass": "MasterLCDetailsID", "visible": false },
+                    { "sClass": "ExportPONo", "visible": true },
+                    { "sClass": "StyleName", "visible": true },
+                    { "sClass": "ItemName", "visible": true },
+                    { "sClass": "HSCode", "visible": true },
+                    { "sClass": "Fabrication", "visible": true },
+                    { "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 2, '') },
+                    { "sClass": "UnitMasterId", "visible": true },
+                    { "sClass": "Factor", "visible": true },
+                    { "sClass": "QtyInPcs", "visible": true },
+                    { "sClass": "UnitPrice", "visible": true},
+                    { "sClass": "TotalValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 2, '') },
+                    {
+                        "sClass": "ShipmentDate", "visible": true
+                        ////,'render': function (jsonDate) {
+                        ////    var date = new Date(parseInt(jsonDate.substr(6)));
+                        ////    var month = date.getMonth() + 1;
+                        ////    //return date.getDate() + "/" + month + "/" + date.getFullYear();
+                        ////    return date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+                        ////}
+                    }, //, render: $.fn.dataTable.moment('DD/MM/YYYY')
+                    { "sClass": "Destination", "visible": true }, //
+                    { "sClass": "ContractNo", "visible": true }, //
+                    { "sClass": "OrderType", "visible": true }, //
+                    { "sClass": "CatNo", "visible": true }, //
+                    { "sClass": "DeliveryNo", "visible": true }, //
+
+                    { "sClass": "DestinationPO", "visible": true }, //
+                    { "sClass": "Kimball", "visible": true }, //
+                    { "sClass": "ColorCode", "visible": true }, //
+                    { "sClass": "ContractDate", "visible": true }, //
+
+
+
+                    null,
+                    { "sClass": "isDelete", "visible": true },
+                    { "sClass": "slno", "visible": true }
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    if (data[0] == "0") {
+                        $(row).addClass('newrowclass');
+                    }
+                },
+                //columnDefs: [
+                //    //{ targets: [0, 1], "width": "20%", render: $.fn.dataTable.render.ellipsis(20, false, true) },
+                //    //{ targets: 2, "width": "33%", render: $.fn.dataTable.render.ellipsis(40, false, true) },
+                //    { targets: 12, "width": "16%", render: $.fn.dataTable.render.moment('Do MMM YYYYY') }
+                //    //{ targets: 4, "width": "11%", render: $.fn.dataTable.render.number(',', '.', 0) }
+                //],
+
+                //"dom": 'T<"clear">lfrtip',
+
+                //"tableTools": {
+                //    "sRowSelector": "td:not(:first-child)"
+                //},
+                //select: {
+                //    style: 'os',
+                //    selector: 'td:first-child'
+                //},
+
+                //dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf'
+                ],
+                "searching": true,
+                "bLengthChange": false,
+                //"bFilter": false,
+                "bSort": false, ///if sorting enable then problem when press the dlttrash icon .. cuase it forget the index posititon
+                //"bInfo": false,
+                //"retrieve": true,
+                //"ordering": true,
+                "paging": false,
+                "iDisplayLength": -1,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                rowCallback: function (row) {
+                    $(row).addClass('txtMultlcdetails');
+                },
+                //"scrollX": true,
+                //"scrollY": "600px",
+                //"scrollCollapse": true,
+                //fixedColumns: {
+                //    //leftColumns: 1,
+                //    rightColumns: 1
+                //},
+                //select: "multi",
+                //columnDefs: [{
+                //    targets: [-1],
+                //    render: function () {
+                //        return "<button type='button'>X</button>"
+                //    }
+                //}],
+                //dom: 'tBfip',
+                //buttons: [{
+                //    extend: "selectRows",
+
+                //    text: 'Excel Upload',
+                //    action: function (e, sourceTable, button, config) {
+
+                //        //var selectedRows = sourceTable.rows(".selected");
+                //        //var mData = selectedRows.data();
+                //        //// I tried making a copy of the entire data object using JSON but it
+                //        //// gave me a circular reference error so I am doing it row at a time.
+                //        //// remove the seleted rows
+                //        //selectedRows.remove().draw();
+                //        //targetTable = $("#tblmasterlc").DataTable();
+                //        //$.each(mData, function (idx, item) {
+                //        //    targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                //        //    //targetTable.addClass('txtMult');
+
+                //        //})
+                //        ////$this.addClass('yourClass');
+                //        //targetTable.draw();
+                //        ////$('.tblexportLc tr:last').addClass('txtMult');
+                //        //multInputs();
+                //    }
+                //}],
+                //initComplete: function () {
+                //    $("#tblmasterlcdetails button").on("click", function (evt) {
+
+                //        var t1 = $("#tblmasterlcdetails").DataTable();
+                //        //var t2 = $("#tblmasterlc").DataTable();
+                //        var tr = $(this).closest("tr");
+                //        var row = t1.row(tr);
+                //        //var data = JSON.parse(JSON.stringify(row.data()));
+                //        ////alert(data[0]);
+
+                //        /////alert('hit');
+                //        row.remove().draw();
+                //        //t2.row.add(data).draw();
+
+                //        multInputslcdetails();
+                //    });
+                //}
+            });
+
+        tblmasterlcdetails = $('#tblmasterlcdetails').DataTable();
+        tblmasterlcdetails.MakeCellsEditable({
+            "onUpdate": myCallbackFunction,
+            "inputCss": 'my-input-class',
+            "columns": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14,15,16,17,18,19,20,21,23,24,25],
+            "inputTypes": [
+                {
+                    "column": 1,
+                    "type": "text"
+                },
+                {
+                    "column": 2,
+                    "type": "text"
+                },
+                {
+                    "column": 3,
+                    "type": "text"
+                },
+                {
+                    "column": 4,
+                    "type": "text"
+                },
+                {
+                    "column": 5,
+                    "type": "text"
+                },
+                {
+                    "column": 6,
+                    "type": "text"
+                },
+                {
+                    "column": 7,
+                    "type": "text"
+                },
+                {
+                    "column": 8,
+                    "type": "text"
+                }, {
+                    "column": 9,
+                    "type": "text"
+                },
+                {
+                    "column": 10,
+                    "type": "text"
+                },
+                {
+                    "column": 11,
+                    "type": "text"
+                },
+                {
+                    "column": 12,
+                    "type": "datepicker-confirm",
+                    "options": {
+                        "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                    }
+                },
+                {
+                    "column": 13,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 14,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 15,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 16,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 17,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 18,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 19,
+                    "type": "text"
+                }
+                ,
+                {
+                    "column": 20,
+                    "type": "text"
+                },
+                {
+                    "column": 21,
+                    "type": "datepicker-confirm",
+                    "options": {
+                        "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                    }
+                },
+                {
+                    "column": 24,
+                    "type": "text"
+                },
+                {
+                    "column": 23,
+                    "type": "text"
+                },
+                {
+                    "column": 25,
+                    "type": "text"
+                }
+                //{
+                //    "column": 1,
+                //    "type": "datepicker-confirm",
+                //    "options": {
+                //        "icon": "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" // Optional
+                //    }
+                //}
+            ]
+        });
+
+
+        function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+
+            //alert('test call back function');
+
+            console.log("The new value for the cell is: " + updatedCell.data());
+            console.log("The old value for that cell was: " + oldValue);
+            console.log("The values for each cell in that row are: " + updatedRow.data());
+            //console.log("The values One cell in that row are: " + updatedRow.data()[3]);
+            //console.log("The values One cell in that row are: " + updatedRow.data()[4]);
+
+            //var quantity = updatedRow.data()[11];
+            //var unitprice = updatedRow.data()[12];
+            //alert(quantity);
+            //alert(unitprice);
+
+
+            multInputslcdetails();
+
+
+        }
+
+         $('#btnUpload').click(function () {
+
+        // Checking whether FormData is available in browser
+        if (window.FormData !== undefined) {
+
+            var fileUpload = $("#FileUpload1").get(0);
+            var files = fileUpload.files;
+            // Create FormData object
+            var fileData = new FormData();
+
+            //alert(fileData);
+            // Looping over all files and add it to FormData object
+
+                fileData.append(files[0].name, files[0]);
+
+            //alert(fileData);
+
+
+            $.ajax({
+                url: '@Url.Action("UploadFilesPOList", "COM_MasterLC")',
+                type: "Post",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData,
+                success: function (data) {
+                    if (data.Success == "0") {
+
+
+                        toastr.error(data.ex);
+
+                    }
+
+                    else
+
+                    {
+
+                        //console.log(data);
+
+                        toastr.success("'Excel Upload Successfully'");
+
+                        for (var i = 0; i < data.length; i++) {
+                            //alert(data[i]);
+                            $('#tblmasterlcdetails').dataTable().fnAddData([0, data[i].PONo, data[i].Style, data[i].ItemName, data[i].HSCode, data[i].Fabrication, data[i].OrderQty, data[i].OrderUOM, data[i].Factor, data[i].QuantityPcs, data[i].UnitPrice, data[i].TotalValue, data[i].ShipDate, data[i].Destination, data[i].ContractNo, data[i].OrderType, data[i].CatNo, data[i].DeliveryNo, data[i].DestinationPO, data[i].Kimball, data[i].ColorCode, data[i].ContractDate, '<a data-itemId="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash fa-2x"></i></a >', false, data[i].SL]);
+
+                            // alert(data[i].MasterLCId); 'class= "OrderValue"' +
+                        }
+                        toastr.success("Data Load Into the Existing Master LC / Sales Contact'");
+
+
+                        //$("#FileUpload1").reset();
+                        //reset($('#FileUpload1'));
+                        //reset($('#text'));
+                        var $el = $('#FileUpload1');
+                        $el.wrap('<form>').closest('form').get(0).reset();
+                        $el.unwrap();
+
+                        //tblmasterlcdetails = $('#tblmasterlcdetails').dataTable();
+                        multInputslcdetails();
+
+
+
+                    }
+                }
+            });
+        } else {
+            alert("FormData is not supported.");
+             }
+        });
+
+        $(document).ready(function () {
+            //
+
+        });
+
+            ///problem
+            var tblDetails = $('#tblexportLc').dataTable({
+                "aoColumns": [
+
+                    //{ "name": "ExportPONo", "sClass": "ExportPONo", "visible": true, "targets": 1 },
+                    //{ "name": "ExportOrderStatus", "sClass": "ExportOrderStatus", "visible": true },
+                    //{ "name": "MasterLCID", "sClass": "ExpenseHeadID", "visible": true },
+                    //{ "name": "ExportOrderID", "sClass": "purchasesubid", "visible": true },
+
+                    { "sClass": "ExportOrderID", "visible": false },
+                    { "sClass": "BuyerContactPONo", "visible": true },
+                    { "sClass": "POLineNo", "visible": true },
+                    { "sClass": "StyleName", "visible": true },
+                    { "sClass": "PoDate", "visible": true },
+                    { "sClass": "DestinationName", "visible": true },
+                    { "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                    { "sClass": "UnitName", "visible": true },
+                    { "sClass": "Rate", "visible": true },
+                    { "sClass": "CM", "visible": true },
+                    { "sClass": "OrderValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                    { "sClass": "ShipMode", "visible": true },
+                    { "sClass": "ExFactoryDate", "visible": true },
+                    { "sClass": "ShipDate", "visible": true },
+                    { "sClass": "ExportOrderStatus", "visible": true },
+                    { "sClass": "ExportOrderCategory", "visible": true },
+                    { "sClass": "CompanyName", "visible": true },
+                    //null,
+                    //null,
+                    { "sClass": "LCId", "visible": true }
+
+                ],
+
+
+                "dom": 'T<"clear">lfrtip',
+
+                "tableTools": {
+                    "sRowSelector": "td:not(:first-child)"
+                },
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+
+
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                //"retrieve": true,
+                rowCallback: function (row) {
+                    $(row).addClass('txtMult');
+                }, select: "multi",
+                columnDefs: [{
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'><=</button>"
+                    }
+                }],
+                dom: 'tBfip',
+                buttons: [{
+                    extend: "selectRows",
+
+                    text: 'Detach From Master LC',
+                    action: function (e, sourceTable, button, config) {
+
+                        var selectedRows = sourceTable.rows(".selected");
+                        var mData = selectedRows.data();
+                        // I tried making a copy of the entire data object using JSON but it
+                        // gave me a circular reference error so I am doing it row at a time.
+                        // remove the seleted rows
+                        selectedRows.remove().draw();
+                        targetTable = $("#tblmasterlc").DataTable();
+                        $.each(mData, function (idx, item) {
+                            targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                            //targetTable.addClass('txtMult');
+
+                        })
+                        //$this.addClass('yourClass');
+                        targetTable.draw();
+                        //$('.tblexportLc tr:last').addClass('txtMult');
+                        multInputs();
+                    }
+                }],
+                initComplete: function () {
+                    $("#tblexportLc button").on("click", function (evt) {
+
+                        var t1 = $("#tblexportLc").DataTable();
+                        var t2 = $("#tblmasterlc").DataTable();
+                        var tr = $(this).closest("tr");
+                        var row = t1.row(tr);
+                        var data = JSON.parse(JSON.stringify(row.data()));
+                        //alert(data[0]);
+
+                        ///alert('hit');
+                        row.remove().draw();
+                        t2.row.add(data).draw();
+
+                        multInputs();
+                    });
+                }
+            })
+
+
+
+
+            var masterlcasdf = $('#tblmasterlc').dataTable({
+
+                "aoColumns": [
+
+                    { "sClass": "ExportOrderID", "visible": false },
+                    { "sClass": "BuyerContactPONo", "visible": true },
+                    { "sClass": "POLineNo", "visible": true },
+                    { "sClass": "StyleName", "visible": true },
+                    { "sClass": "PoDate", "visible": true },
+                    { "sClass": "DestinationName", "visible": true },
+                    { "sClass": "OrderQty", "visible": true, render: $.fn.dataTable.render.number(',', '.', 2, '')  },
+                    { "sClass": "UnitName", "visible": true },
+                    { "sClass": "Rate", "visible": true },
+                    { "sClass": "CM", "visible": true },
+                    { "sClass": "OrderValue", "visible": true, render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                    { "sClass": "ShipMode", "visible": true },
+                    { "sClass": "ExFactoryDate", "visible": true },
+                    { "sClass": "ShipDate", "visible": true },
+                    { "sClass": "ExportOrderStatus", "visible": true },
+                    { "sClass": "ExportOrderCategory", "visible": true },
+                    { "sClass": "CompanyName", "visible": true },
+                    //null,
+                    null,
+                    //{ "sClass": "LCId", "visible": true }
+
+                ],
+                //"dom": 'T<"clear">lfrtip',
+
+                //"tableTools": {
+                //    "sRowSelector": "td:not(:first-child)"
+                //},
+                //select: {
+                //    style: 'os',
+                //    selector: 'td:first-child'
+                //},
+
+
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                rowCallback: function (row) {
+                    $(row).addClass('txtMultviewbag');
+                }, select: "multi",
+                columnDefs: [{
+                    targets: [-1],
+                    render: function () {
+                        return "<button type='button'>=></button>"
+                    }
+                }],
+                dom: 'tBfip',
+                buttons: [{
+                    extend: "selectRows",
+
+                    text: 'Attach To Master LC',
+                    action: function (e, sourceTable, button, config) {
+
+                        var selectedRows = sourceTable.rows(".selected");
+                        var mData = selectedRows.data();
+                        // I tried making a copy of the entire data object using JSON but it
+                        // gave me a circular reference error so I am doing it row at a time.
+                        // remove the seleted rows
+                        selectedRows.remove().draw();
+                        targetTable = $("#tblexportLc").DataTable();
+                        $.each(mData, function (idx, item) {
+                            targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                            //targetTable.addClass('txtMult');
+
+                        })
+                        //$this.addClass('yourClass');
+                        targetTable.draw();
+                        //$('.tblexportLc tr:last').addClass('txtMult');
+                        multInputs();
+                    }
+                }],
+                initComplete: function () {
+                    $("#tblmasterlc button").on("click", function (evt) {
+
+                        var t1 = $("#tblmasterlc").DataTable();
+                        var t2 = $("#tblexportLc").DataTable();
+                        var tr = $(this).closest("tr");
+                        var row = t1.row(tr);
+                        var data = JSON.parse(JSON.stringify(row.data()));
+                        //alert(data[0]);
+
+                        ///alert('hit');
+                        row.remove().draw();
+                        t2.row.add(data).draw();
+
+                        multInputs();
+                    });
+                }
+        }) //
+
+        multInputs();
+
+        multInputslcdetails();
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        //if ($('h2').text() == "Master LC Edit") {
+
+
+
+        //}
+        //else {
+
+        //    //if ($("#LCOpenDate").val().length == 0) {
+
+        //    //    $("#LCOpenDate").val(CurrentDate());
+        //    //    $("#LCExpirydate").val(CurrentDate());
+        //    //}
+
+
+        //}
+
+
+
+        $("#LCOpenDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#LCOpenDate").datepicker("option", "dateFormat");
+                //setter
+                $("#LCOpenDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+    });
+        $("#SalesContractIssueDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#SalesContractIssueDate").datepicker("option", "dateFormat");
+                //setter
+                $("#SalesContractIssueDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+
+
+    //$(".ShipmentDate").datepicker({
+    //    onSelect: function (date) {
+    //        // Your CSS changes, just in case you still need them
+    //        $('a.ui-state-default').removeClass('ui-state-highlight');
+    //        $(this).addClass('ui-state-highlight');
+    //        var dateFormat = $("#LCOpenDate").datepicker("option", "dateFormat");
+    //        //setter
+    //        $("#LCOpenDate").datepicker("option", "dateFormat", 'dd-M-y');
+    //    }
+    //});
+
+
+
+        $("#LCExpirydate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#LCExpirydate").datepicker("option", "dateFormat");
+                //setter
+                $("#LCExpirydate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+        //$('#tblmasterlc').DataTable({
+        //    select: {
+        //        style: 'multi'
+        //    }
+        //});
+
+        //alert('final');
+
+
+
+
+    function multInputs() {
+
+        var totalorderqty = 0;
+        var totalordervalue = 0;
+
+
+
+        // for each row:
+
+        $("tr.txtMult").each(function () {
+            // get the values from this row:
+
+
+
+            var $val1 = $('.OrderQty', this).text().replace(/[\$,]/g, '');
+            var $val2 = $('.OrderValue', this).text().replace(/[\$,]/g, '');
+
+
+            //alert($val1);
+            //alert($val2);
+
+            //var $val2 = $('.Amount', this).text();
+            //var $total = ($val1 * $val2);
+
+            //$('.amount', this).text($total);
+            //$('.amount', this).val($total);
+            totalorderqty += parseFloat($val1);
+            totalordervalue += parseFloat($val2);
+            //ttlqty += $val1;
+
+        });
+        //alert(totalorderqty);
+        //$(".subtotalamount").text(mult);
+        $(".ttlorderqty").val(totalorderqty.toLocaleString());
+        $(".ttlorderqty").text(totalorderqty.toLocaleString());
+
+
+        //alert(ttlqty);
+        $(".ttlordervalue").val(totalordervalue.toLocaleString());//---fahad
+        $(".ttlordervalue").text(totalordervalue.toLocaleString());//---fahad
+
+        $("#TotalLCQty").val(totalorderqty);//---fahad
+        $("#TotalLCQty").text(totalorderqty);//---fahad
+
+        $("#LCValue").val(totalordervalue);//---fahad
+        $("#LCValue").text(totalordervalue);//---fahad
+
+    };
+
+
+    function multInputslcdetails() {
+
+        var totalorderqty = 0;
+        var totalqtyinpcs = 0;
+        var totalunitprice = 0;
+        var totalvalue = 0;
+
+                //<h4 class="ttlorderqtylcdetials">0.00</h4>
+                //<h4 class="ttlorderqtypcslcdetails">0.00</h4>
+                //<h4 class="ttlordervaluelcdetails">0.00</h4>
+
+
+        // for each row:
+
+
+
+        $("tr.txtMultlcdetails:visible").each(function () {
+
+            //var isDelete = $('.isDelete', this).text().replace(/[\$,]/g, '');
+            //alert(isDelete);
+
+            //if (isDelete == 'True')
+            //{
+
+            //}
+
+            //else
+            {
+
+
+
+
+                // get the values from this row:
+                var $val5 = $('.Factor', this).text().replace(/[\$,]/g, '');
+
+
+
+                var $val1 = $('.OrderQty', this).text().replace(/[\$,]/g, '');
+
+                var $val6 = $val5 * $val1;
+                $('.QtyInPcs', this).text($val6);
+
+
+                var $val2 = $val6;// $('.QtyInPcs', this).text().replace(/[\$,]/g, '');
+                var $val3 = $('.UnitPrice', this).text().replace(/[\$,]/g, '');
+
+
+
+
+                var $val4 = $('.TotalValue', this).text().replace(/[\$,]/g, '');
+
+
+                if ($val4 == '' || $val4 == '0.00')
+                {
+                    //alert('enter');
+                    $val4 = ($val1 * $val3).toFixed(2);
+                    $('.TotalValue', this).text($val4);
+
+                }
+
+
+                //alert($val1);
+                //alert($val2);
+
+                //var $val2 = $('.Amount', this).text();
+                //var $total = ($val1 * $val2);
+
+                //$('.amount', this).text($total);
+                //$('.amount', this).val($total);
+                totalorderqty += parseFloat($val1);
+                totalqtyinpcs += parseFloat($val2);
+                totalunitprice += parseFloat($val3);
+                totalvalue += parseFloat($val4);
+
+
+            }
+            //ttlqty += $val1;
+
+        });
+        //totalvalue.toLocaleString();
+        ///alert(totalvalue.toFixed(0));
+        var x = totalvalue.toFixed(2);
+        //alert(x);
+        //alert(totalorderqty);
+        //$(".subtotalamount").text(mult);
+        $(".ttlorderqtylcdetials").val(totalorderqty.toLocaleString());
+        $(".ttlorderqtylcdetials").text(totalorderqty.toLocaleString());
+
+        //alert(ttlqty);
+        $(".ttlorderqtypcslcdetails").val(totalqtyinpcs.toLocaleString());//---fahad
+        $(".ttlorderqtypcslcdetails").text(totalqtyinpcs.toLocaleString());//---fahad
+
+        $(".ttlordervaluelcdetails").val(totalvalue.toLocaleString());//---fahad
+        $(".ttlordervaluelcdetails").text(totalvalue.toLocaleString());//---fahad
+
+
+
+        $("#TotalLCQty").val(totalqtyinpcs);//---fahad
+        $("#TotalLCQty").text(totalqtyinpcs);//---fahad
+
+        $("#LCValue").val(parseFloat(x));//---fahad
+        $("#LCValue").text(parseFloat(x));//---fahad
+
+
+
+        if (($("#MasterLCValueManual").val() > -1) && ($("#LCValue").val() > -1))
+        {
+            var balance = ($("#MasterLCValueManual").val() - $("#LCValue").val()).toFixed(2);
+            //alert($("#MasterLCValueManual").val());
+            //alert($("#LCValue").val());
+            //alert($("#Balance").val());
+
+
+
+            $("#Balance").val(parseFloat(balance));
+            $("#Balance").text(parseFloat(balance));
+        }
+
+
+       // alert($("#LCValue"));
+
+    };
+
+
+
+    </script>
+
+
+}

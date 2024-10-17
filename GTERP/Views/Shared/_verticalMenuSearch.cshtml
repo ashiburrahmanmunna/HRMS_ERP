@@ -1,0 +1,179 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+@{
+    var activemenuid = HttpContextAccessor.HttpContext.Session.GetInt32("activemenuid");
+    string menu = "ms";
+    string menutest = "ams";
+    <div class="horizontal-menu">
+        <nav class="navbar top-navbar">
+            <div class="navbar-menu-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-1 col-12">
+                            <div class="nav-btn pull-left d-sm-block">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <ul class="navbar-nav">
+                                <li class="d-lg-flex">
+                                    <sidebar>
+                                        <button class="app-menu__button" id="navbox-trigger">
+                                            <div class="app-icon">
+                                                <span class="app-icon__component bg-danger"></span>
+                                                <span class="app-icon__component bg-primary"></span>
+                                                <span class="app-icon__component bg-success"></span>
+                                                <span class="app-icon__component bg-warning"></span>
+                                                <span class="app-icon__component bg-info"></span>
+                                                <span class="app-icon__component bg-danger"></span>
+                                                <span class="app-icon__component bg-info"></span>
+                                                <span class="app-icon__component bg-success"></span>
+                                                <span class="app-icon__component bg-danger"></span>
+                                            </div>
+                                        </button>
+                                    </sidebar>
+                                </li>
+                                <li class="text-center navbar-brand-wrapper text-left">
+                                    <a class="navbar-brand" href="~/Home">ANJ ERP</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                        
+                        </div>
+                        <div class="col-md-7 d-none d-sm-block py-1">
+                            <div class="input-group nav-search">
+                            
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                </div>
+                                <input type="text" id="tags" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
+                            </div>
+                        </div>
+                           <a class="navbar-brand" href="~/TutorialCertificate/GetAllModuleName">Get Certificate</a>
+                        <div class="col-md-2 col-12 d-flex justify-content-end">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    @{
+                                        var Companys = HttpContextAccessor.HttpContext.Session.GetObject<List<CompanyUser>>("UserCompanys");
+                                        var comid = HttpContextAccessor.HttpContext.Session.GetString("comid");
+                                        if (Companys != null)
+                                        {
+
+                                            @Html.DropDownList("company", new SelectList(Companys, "ComId", "CompanyName", comid), new { @class = "custom-select" })
+
+
+                                        }
+                                    }
+                                </li>
+                                <li class="nav-item">
+                                    <partial name="_LoginPartial" />
+                                    @*@Html.Partial("_LoginPartial")*@
+                                </li>
+                                <li class="nav-item">
+                                   <a class="navbar-brand" href="~/TutorialCertificate/GetAllModuleName">Get Certificate</a>
+                                </li>
+                            </ul> 
+
+                        </div>
+                           <a class="navbar-brand" href="~/TutorialCertificate/GetAllModuleName">Get Certificate</a>
+                        @* mobile view *@
+                        <div class="col-12 d-block d-sm-none">
+                            <div class="input-group nav-search">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                </div>
+                                <input type="text" id="tagsmob" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
+                            </div>
+                        </div>
+                        @* mobile view end*@
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+}
+
+<hr />
+<!--toggle Menu start-->
+@{
+    var Modules = HttpContextAccessor.HttpContext.Session.GetObject<List<GTERP.Models.Module>>("Modules");
+    var ModuleMenuPrent = HttpContextAccessor.HttpContext.Session.GetObject<List<GTERP.Models.ModuleMenu>>("ModuleMenuPrent");
+
+    <div id="navigation-bar" class="navigation-bar">
+        <div class="navbox  container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-xs-12">
+                    <div class="navbox-tiles menu first nav-tabs">
+                        <ul class="p-0">
+
+                            @if (Modules != null)
+                            {
+                                foreach (var item in Modules)
+                                {
+                                    if (item.ModuleId.ToString() == activemenuid.ToString())
+                                    {
+                                        <li class="active">
+                                            <a data-toggle="tab" href="#m_@item.ModuleId" id="@item.ModuleId" class="@item.ModuleClassa active">
+                                                <div class="icon"><i class="@item.ModuleClassi"></i></div>
+                                                <span class="title">@item.ModuleName</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a data-toggle="tab" href="#m_@item.ModuleId" id="@item.ModuleId" class="@item.ModuleClassa">
+                                                <div class="icon"><i class="@item.ModuleClassi"></i></div>
+                                                <span class="title">@item.ModuleName</span>
+                                            </a>
+                                        </li>
+                                    }
+
+                                }
+                            }
+
+
+                        </ul>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-6 col-xs-12 second menu tab-content">
+                    @if (Modules != null)
+                    {
+
+                        foreach (var module in Modules)
+                        {
+                            <div id="m_@module.ModuleId" class="tab-pane fade in">
+                                <div class="navbox-tiles nav">
+
+                                    @if (ModuleMenuPrent != null)
+                                    {
+                                        var parentMenus = ModuleMenuPrent.Where(m => m.ModuleId == module.ModuleId).ToList();
+                                        foreach (var item in parentMenus)
+                                        {
+                                            <a href="#@menutest@item.ModuleMenuId" class="tile">
+                                                <div class="icon"><i class="@item.ModuleMenuClassi"></i></div>
+                                                <span class="title">@item.ModuleMenuCaption</span>
+                                            </a>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+<!--toggle Menu end-->

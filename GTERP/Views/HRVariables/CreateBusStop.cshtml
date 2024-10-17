@@ -1,0 +1,250 @@
+﻿@model GTERP.Models.Cat_BusStop
+
+<style>
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateBusStop", "HRVariables", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6  offset-md-3 col-12">
+                @if (Model != null)
+                {
+                    <input type="hidden" id="BusStopId" name="BusStopId" value="@Model.BusStopId" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="BusStopId" value="0" />
+                }
+                <div id="modalbodyNurjahan" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">Bus Stop Entry - @ViewBag.Title</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                <input type="hidden" asp-for="ComId" />
+                                <input type="hidden" asp-for="UserId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.BusStopName)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.BusStopName, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.BusStopName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.Rate)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.Remarks)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        @Html.LabelFor(model => model.IsInactive)
+                                                    </span>
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <label class="checkbox-inline">
+                                                            @Html.CheckBoxFor(m => m.IsInactive, false)
+                                                        </label>
+                                                        @Html.ValidationMessageFor(model => model.IsInactive, "", new { @class = "text-danger" })
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                   
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="BusStop_delete()">Delete</button>
+                                    }
+
+
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "Index", "BusStop", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+    $("#BusStopId").select2();
+
+    function BusStop_delete() {
+
+        var busStopId = $("#BusStopId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteBusStop", "HRVariables")',
+                data: JSON.stringify({ id: busStopId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("BusStopList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+
+@*<div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="BusStopName" class="control-label"></label>
+                    <input asp-for="BusStopName" class="form-control" />
+                    <span asp-validation-for="BusStopName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Rate" class="control-label"></label>
+                    <input asp-for="Rate" class="form-control" />
+                    <span asp-validation-for="Rate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Remarks" class="control-label"></label>
+                    <textarea asp-for="Remarks" class="form-control"></textarea>
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsInactive" /> @Html.DisplayNameFor(model => model.IsInactive)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ComId" class="control-label"></label>
+                    <input asp-for="ComId" class="form-control" />
+                    <span asp-validation-for="ComId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PcName" class="control-label"></label>
+                    <input asp-for="PcName" class="form-control" />
+                    <span asp-validation-for="PcName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <input asp-for="UserId" class="form-control" />
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DateAdded" class="control-label"></label>
+                    <input asp-for="DateAdded" class="form-control" />
+                    <span asp-validation-for="DateAdded" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateByUserId" class="control-label"></label>
+                    <input asp-for="UpdateByUserId" class="form-control" />
+                    <span asp-validation-for="UpdateByUserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DateUpdated" class="control-label"></label>
+                    <input asp-for="DateUpdated" class="form-control" />
+                    <span asp-validation-for="DateUpdated" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+

@@ -1,0 +1,438 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<GTERP.Models.PurchaseMain>
+<style>
+
+    .tblPurchaseList th:first-child, .tblPurchaseList tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblPurchaseList tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tblPurchaseList th:last-child, .tblPurchaseList tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblPurchaseList tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+    div#tblSalesList_filter input.form-control.form-control-sm {
+        padding-top: 1px;
+    }
+</style>
+
+
+<form action="" method="post">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 col-12">
+                @Html.ActionLink("Purchase Creation", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-8 col-12">
+                <h2 id="styletext" class="text-right">Purchase List</h2>
+            </div>
+        </div>
+
+
+
+        @*<h2>Index</h2>
+
+            <p>
+                @Html.ActionLink("Create New", "Create")
+            </p>*@
+
+        <div class="card p-2 my-2">
+            <div class="row mb-2">
+                <div class="col-md-2 col-12">
+                    <div class="input-group mb-2">
+                        @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-2 col-12">
+                    <div class="input-group mb-2">
+                        @Html.DropDownList("SupplierList", ViewBag.SupplierList as List<SelectListItem>, "--All Supplier--", new { id = "SupplierList", @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date</span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date</span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+
+                </div>
+
+                @*<div class="col-md-1 col-12">
+                        <div class="form-group row">
+                            <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block" />
+                        </div>
+
+                    </div>*@
+
+
+                <div class="col-md-2 col-12">
+                    <fieldset class="float-right">
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+                    </fieldset>
+                </div>
+
+            </div>
+
+
+
+            <hr />
+
+
+
+            <div id="finalpanel" class="p-2">
+
+                <div class="text-nowrap">
+                    <table id="tblPurchaseList" class="table tblPurchaseList table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+        $("#UserList").select2();
+        $("#SupplierList").select2();
+
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+
+        }
+
+
+    });
+
+
+    $('input[name=RptType]').click(function () {
+        var reporttype = $("input[name=RptType]:checked").val();
+        //alert(reporttype);
+
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Action("SetSessionInd", "ExportInvoiceMasters")',
+        dataType: 'json',
+        async: true,
+            data: { reporttype: reporttype},
+            success: function (response) {
+              //  window.location.href = response.Url;
+
+                //window.open(response.Url, '_blank')
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+
+        });
+
+    });
+
+    var table;
+
+
+    $(document).ready(function () {
+
+    //var x = $("#ToDate").val();
+    //alert(x);
+
+    var userlist = $("#UserList").val();
+    var supplierlist = $("#SupplierList").val();
+    var fromdate = $("#FromDate").val();
+    var todate = $("#ToDate").val();
+
+    loaddata(userlist, fromdate, todate  , supplierlist ,1);
+
+
+
+    function getDateString(dateObj) {
+
+    if (dateObj == null) { return ''; };
+
+    var date = new Date(parseInt(dateObj.substr(6)));
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+    var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+    //alert(val);
+
+
+    return formatdate;
+
+    //return dateObj.toDateString();
+    }
+
+    function loaddata(UserId = "", FromDate = "", ToDate = "", SupplierList = "", isAll = 1) {
+
+
+
+    //alert(UserId, FromDate, ToDate);
+
+    table = $('#tblPurchaseList').DataTable({
+    initComplete: function () {
+
+    var input = $('.dataTables_filter input').unbind(),
+    self = this.api(),
+
+    $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblPurchaseList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+    .text('Search')
+    .click(function () {
+    if (input.val().length > 0) {
+    self.search(input.val()).draw();
+
+    }
+    else {
+    loaddata(userlist, fromdate, todate, supplierlist, 1);
+
+    }
+
+
+
+
+    }),
+    $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblPurchaseList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+    .text('Clear')
+    .click(function () {
+    input.val('');
+    $searchButton.click();
+    }),
+    $allButton = $('<button class="btn rounded-0 btn-primary ml-1 btn-sm" tabindex="0" aria-controls="tblPurchaseList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+    .text('Load')
+    .click(function () {
+    input.val('');
+    //alert(FromDate);
+    loaddata(userlist, fromdate, todate, supplierlist, 1);
+    //table.ajax.reload();
+
+
+    })
+    $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+    },
+
+    "serverSide": true,
+    "orderCellsTop": true,
+    "scrollX": true,
+    "scrollY": "60vh",
+    "scrollCollapse": true,
+    "info": true,
+    "iDisplayLength": 10,
+    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+    "columnDefs": [
+    // Hide second, third and fourth columns
+    { "visible": false, "targets": [] }
+    ],
+    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+    //buttons: [
+    //    'copy', 'csv', 'excel', 'pdf'
+    //],
+    buttons: {
+    dom: {
+    button: {
+    className: 'btn rounded-0'
+    }
+    },
+    buttons: [
+    //'copy', 'csv', 'excel', 'pdf'
+    //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+    {
+    extend: 'colvis',
+    "columns": ':not(:last-child)',
+    text: '<i class="mdi mdi-view-column"></i>',
+    className: 'btn-info',
+    titleAttr: 'Show / hide columns',
+    //collectionLayout: 'fixed two-column'
+
+    },
+    //{
+    //extend: 'copy',
+    //text: '<i class="mdi mdi-content-copy"></i>',
+    //className: 'btn-primary',
+    //titleAttr: 'Copy to Clipboard'
+    //},
+    //{
+    //extend: 'csv',
+    //text: '<i class="mdi mdi-note-outline"></i>',
+    //className: 'btn-secondary',
+    //titleAttr: 'Export to csv'
+
+    //},
+    {
+    extend: 'excel',
+    text: '<i class="mdi mdi-file-excel"></i>',
+    className: 'btn-success',
+    titleAttr: 'Export to excel'
+    },
+    {
+    extend: 'pdfHtml5',
+    orientation: 'landscape',
+    pageSize: 'LEGAL',
+    text: '<i class="mdi mdi-file-pdf"></i>',
+    className: 'btn-danger mr-1',
+    titleAttr: 'Export to PDF'
+    //,exportOptions: {
+    //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    //}
+
+    }
+
+    ]
+    },
+    //"datatest": function (d) {
+    //    d.FromDate = $('#FromDate').val();
+    //    d.ToDate = $('#ToDate').val();
+    //    alert(d);
+    //},
+    //"fixedHeader": true,
+    //"responsive": true,
+    "ajax": {
+    "url": "@Url.Action("Get", "Purchase")",
+    "data": { UserList: $("#UserList").val(), FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), SupplierList: $("#SupplierList").val(), isAll: isAll },
+
+    //"url": "/Cities/GetListViewModel",
+    "type": "POST",
+    "datatype": "json"
+    },
+    "columns": [
+    { "title": "Purchase Id", "data": "PurchaseId", "visible": false },
+    { "title": "Purchase No", "data": "PurchaseNo", "searchable": true },
+    { "title": "Supplier Name", "data": "SupplierName", "searchable": true },
+        { "title": "Purchase Person", "data": "PurchasePerson", "searchable": true },
+        { data: "PurchaseDateFormatted", title: "Purchase Date", orderData: 3 },
+    //{
+    //    "title": "Purchase Date", "data": "PurchaseDate"//, "render": function (data) { return getDateString(data); }
+    //    },
+        //{ "title": "Purchase Date Format", "data": "PurchaseDateFormatted"},
+
+    { "title": "Reference No", "data": "ReferenceNo", "searchable": true },
+        { "title": "Net Amount", "data": "NetAmount" },
+        { "title": "Paid Amount", "data": "PaidAmount" },
+        { "title": "Due", "data": "Due" },
+    {
+    "data": { PurchaseId: "PurchaseId" },
+    "render": function (data, type, row) {
+
+    var myUrledit = '@Url.Action("Edit", "Purchase")/' + data.PurchaseId;
+    var myUrldelete = '@Url.Action("Delete", "Purchase")/' + data.PurchaseId;
+    var myUrlprint = '@Url.Action("Print", "Purchase")/' + data.PurchaseId + '?type=pdf';
+
+
+                                return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Sales Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+
+                        }
+
+
+                    ],
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: "_MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+
+
+                    "destroy": true
+                });
+
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+        });
+
+    </script>
+}
+
+

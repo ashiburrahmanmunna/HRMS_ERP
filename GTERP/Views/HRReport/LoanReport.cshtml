@@ -1,0 +1,477 @@
+﻿
+
+@model GTERP.ViewModels.LoanReportVM
+@{
+    ViewBag.Title = " Loan Report";
+}
+<style>
+    fieldset {
+        border: solid 1px rgba(0,0,0,0.3);
+        border-radius: 2px;
+        padding: 0 10px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+
+
+    #Save, #Update, #Delete, #Reset {
+        font-size: 16px;
+    }
+
+    .salaryTable tbody tr td {
+        padding: 5px;
+    }
+
+    table tbody {
+        cursor: pointer;
+    }
+
+
+    .divforfull, .backDiv {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 999999999999999;
+    }
+
+    .myMessage {
+        position: fixed;
+        top: 150px;
+        left: 35%;
+        z-index: 9999999999999999999999999999999999;
+    }
+
+    fieldset:hover {
+        box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    button {
+        background: rgb(177,211,245);
+        color: black;
+        border-radius: 4px;
+        width: 100%;
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+
+    #buttonTable {
+        padding: 5px;
+    }
+
+        #buttonTable tr td {
+            width: 90px;
+            padding: 3px;
+            white-space: nowrap;
+        }
+
+    #sectionTable, #employeeTable, #EmpTypeTable, #LocationTable {
+        opacity: 0.5;
+    }
+
+        #sectionTable tbody tr.selectedRow:hover,
+        #employeeTable tbody tr.selectedRow:hover,
+        #EmpTypeTable tbody tr.selectedRow:hover,
+        #reportTable tbody tr.selectedRow:hover
+        #LocationTable tbody tr.selectedRow:hover {
+            background: rgb(208,232,251);
+        }
+</style>
+@using (Html.BeginForm("LoanReport", "HRReport", FormMethod.Post))
+{
+    <div class="card">
+        <div class="form-header btn-info">
+            <div class="row">
+                <div class="col-md-6 col-12">
+                    <i class="far fa-file-alt"></i>   Loan Report
+                    <div id="loading" style="display: inLine;">
+                        @*<div id="loadingGif" style="display:v;" inLine
+                                <img src="~/Files/loading.gif" style="height:16px;display:inLine;" />
+                            </div>*@
+                    </div>
+                </div>
+                <div class="col-md-6 col-12 text-right">
+                    <div class="form-check form-check-inline custom-radio">
+                        <input id="PDF" name="Format" type="radio" class="custom-control-input" value="PDF" checked required>
+                        <label class="custom-control-label" for="PDF">PDF</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Word" name="Format" type="radio" class="custom-control-input" value="Word" required>
+                        <label class="custom-control-label" for="Word">Word</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Excel" name="Format" type="radio" class="custom-control-input" value="Excel" required>
+                        <label class="custom-control-label" for="Excel">Excel</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <button type="submit" id="previewBtn" class="btn btn-primary" formtarget="_blank">
+                            <span class="fas fa-eye"> </span> Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+            <div class="col-md-12 col-12 pt-2">
+                <fieldset class="boxStyle">
+                    <div class="row p-2">
+                        <div class="col-md-7 col-12 pt-2">
+                            <div class="form-check form-check-inline custom-radio pl-3">
+                                <input id="All" name="Criteria" type="radio" class="custom-control-input" value="All" checked required>
+                                <label class="custom-control-label" for="All">All Employees</label>
+                            </div>
+                            <div class="form-check form-check-inline custom-radio pl-4">
+                                <input id="Employee" name="Criteria" type="radio" class="custom-control-input" value="Employee" required>
+                                <label class="custom-control-label" for="Employee">Employee Wise</label>
+                            </div>
+                            <div class="form-check form-check-inline custom-radio pl-4">
+                                <input id="Section" name="Criteria" type="radio" class="custom-control-input" value="Section" required>
+                                <label class="custom-control-label" for="Section">Section Wise</label>
+                            </div>
+                            <div class="form-check form-check-inline custom-radio pl-4">
+                                <input id="EmpType" name="Criteria" type="radio" class="custom-control-input" value="EmpType" required>
+                                <label class="custom-control-label" for="EmpType">EmpType Wise</label>
+                            </div>
+                            <div class="form-check form-check-inline custom-radio pl-4">
+                                <input id="Location" name="Criteria" type="radio" class="custom-control-input" value="Location" required>
+                                <label class="custom-control-label" for="Location">Location Wise</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5 col-12 pr-0 pl-0">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                From Date
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                To Date
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    @*<div class="col-md-8 col-12 row">
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="All" name="Criteria" type="radio" class="custom-control-input" value="All" checked required>
+                                <label class="custom-control-label" for="All">All Employees</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-3 col-12">
+                                <input id="Employee" name="Criteria" type="radio" class="custom-control-input" value="Employee" required>
+                                <label class="custom-control-label" for="Employee">Employee Wise</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="Section" name="Criteria" type="radio" class="custom-control-input" value="Section" required>
+                                <label class="custom-control-label" for="Section">Section Wise</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="EmpType" name="Criteria" type="radio" class="custom-control-input" value="EmpType" required>
+                                <label class="custom-control-label" for="EmpType">EmpType Wise</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="Band" name="Criteria" type="radio" class="custom-control-input" value="Band" required>
+                                <label class="custom-control-label" for="Band">Line Wise</label>
+                            </div>
+                        </div>*@
+                    @*<div class="col-md-8 col-12 row">
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="PDF" name="Format" type="radio" class="custom-control-input" value="PDF" checked required>
+                                <label class="custom-control-label" for="PDF">PDF</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-3 col-12">
+                                <input id="Word" name="Format" type="radio" class="custom-control-input" value="Word" required>
+                                <label class="custom-control-label" for="Word">Word</label>
+                            </div>
+                            <div class="custom-control custom-radio col-md-2 col-12">
+                                <input id="Excel" name="Format" type="radio" class="custom-control-input" value="Excel" required>
+                                <label class="custom-control-label" for="Excel">Excel</label>
+                            </div>
+
+                        </div>*@
+                    @*<div class="col-md-6 col-12 row pr-0 pl-0">
+
+                            <div class="form-group col-md-6 col-12  row">
+                                <label for="FromDate" class="col-sm-5 col-form-label">From Date</label>
+                                <div class="col-sm-7">
+                                    @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control" })
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row col-md-6 col-12 mb-0">
+                                <label for="ToDate" class="col-sm-4 col-form-label">To Date</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control" })
+                                </div>
+                            </div>
+
+
+                        </div>*@
+
+                </fieldset>
+                <div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row pl-3 py-3">
+                    <div class="col-md-2 col-12">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Reports</legend>
+                            <partial name="_ReportGrid" />
+                        </fieldset>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Sections</legend>
+                            <partial name="_SectionGrid" />
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-4 col-12">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Employees</legend>
+                            <partial name="_EmployeeGrid" />
+                        </fieldset>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">EmpTypes</legend>
+                            <partial name="_EmpTypeGrid" />
+                        </fieldset>
+                    </div>
+
+                    <div class="col-md-2 col-12">
+                        <fieldset class="boxStyle px-3">
+                            <legend visible="true" style="width: auto;" class="legendStyle">Locations</legend>
+                            <partial name="_LocationGrid" />
+                        </fieldset>
+                    </div>
+
+
+                </div>
+            </div>
+
+            @Html.HiddenFor(m => m.ReportName)
+            @Html.HiddenFor(m => m.SectionId)
+            @Html.HiddenFor((m => m.EmpId))
+            @Html.HiddenFor(m => m.EmpTypeId)
+            @Html.HiddenFor(m => m.LId)
+
+            @*<div id="buttonDiv">
+                <div id="buttonTable">
+                    <button type="submit" class="btn rounded-0 rounded-0 btn-info" formtarget="_blank">
+                        <i class="glyphicon glyphicon-download-alt"></i>
+                        Report
+                    </button>
+                </div>
+
+            </div>*@
+        </div>
+    </div>
+}
+
+@*<script src="~/Content/js/jquery.ui.core.min.js"></script>*@
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.js"></script>*@
+@*<script src="~/Content/js/malihu-script.js"></script>*@
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $("#FromDate, #ToDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true,
+                format: "dd-M-yyyy"
+            }).datepicker("setDate", new Date());
+
+
+            //$("#FromDate").datepicker({
+            //        changeMonth: true,
+            //        changeYear: true,
+            //        onSelect: function (date) {
+            //            // Your CSS changes, just in case you still need them
+            //            $('a.ui-state-default').removeClass('ui-state-highlight');
+            //            $(this).addClass('ui-state-highlight');
+            //            var dateFormat = $("#FromDate").datepicker("option", "dateFormat");
+            //            //setter
+            //            $("#FromDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            //        }
+            //});
+            //$("#ToDate").datepicker({
+            //        changeMonth: true,
+            //        changeYear: true,
+            //        onSelect: function (date) {
+            //            // Your CSS changes, just in case you still need them
+            //            $('a.ui-state-default').removeClass('ui-state-highlight');
+            //            $(this).addClass('ui-state-highlight');
+            //            var dateFormat = $("#ToDate").datepicker("option", "dateFormat");
+            //            //setter
+            //            $("#ToDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            //        }
+            //});
+
+
+            //$("button[type='submit']").click(function () {
+            //    $("#ReportName").val($(this).attr("id"));
+            //    //alert($("#ReportName").val());
+            //    //show();
+            //    // return false;
+            //});
+
+            // set report name
+            $("#ReportName").val($.trim($("#reportTable tbody tr:eq(0)").children("td:eq(1)").text()));
+
+            $("#sectionTable tbody tr:eq(0), #employeeTable tbody tr:eq(0),  #EmpTypeTable tbody tr:eq(0), #LocationTable tbody tr:eq(0),#reportTable tbody tr:eq(0)").addClass("selectedRow");
+
+            $("#loading").css("display", "none");
+
+            //function show() {
+            //    var tobeShowed = "Button : " +
+            //        $("#ReportName").val() +
+            //        "\n" +
+            //        "Section : " +
+            //        $("#SectionId").val() +
+            //        "\n" +
+            //        "Employee : " +
+            //        $("#EmployeeId").val() +
+            //        "\n" +
+            //        "Location : " +
+            //        $("#LId").val() +
+            //        "\n" +
+            //        "EmpType : " +
+            //        $("#EmpTypeId").val();
+            //    alert(tobeShowed);
+            //}
+
+            $("#SectionId").val("0");
+            $("#EmployeeId").val("0");
+            $("#LId").val("0");
+            $("#EmpTypeId").val("0");
+
+            var criteria = "";
+            //alert("enter");
+            //$('input').on('ifChanged', function (event) { $(event.target).trigger('change'); });
+            $(document).on('ifChanged', '#Criteria', function () {
+
+            });
+
+            $(document).on("click", "#sectionTable tbody tr", function () {
+                if (criteria != "Section") {
+                    return;
+                }
+                $("#sectionTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#SectionId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            $(document).on("click", "#employeeTable tbody tr", function () {
+                if (criteria != "Employee") {
+                    return;
+                }
+                $("#employeeTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#EmployeeId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+            $(document).on("click", "#LocationTable tbody tr", function () {
+                if (criteria != "Location") {
+                    return;
+                }
+                $("#LocationTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#LId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            $(document).on("click", "#reportTable tbody tr", function () {
+
+                $("#reportTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#ReportName").val($.trim($(this).children("td:eq(1)").text()));
+            });
+
+            $(document).on("click", "#EmpTypeTable tbody tr", function () {
+                if (criteria != "EmpType") {
+                    return;
+                }
+                $("#EmpTypeTable tbody tr").removeClass("selectedRow");
+                $(this).addClass("selectedRow");
+                $("#EmpTypeId").val($.trim($(this).children("td:eq(0)").html()));
+            });
+
+            function blurThem() {
+                //alert('blur');
+                $("#sectionTable, #employeeTable,  #EmpTypeTable, #LocationTable").css("opacity", "0.5");
+                $("#sectionTable, #employeeTable,  #EmpTypeTable, #LocationTable").children("tbody").children("tr").removeClass("selectedRow");
+                $("#sectionTable tbody tr:eq(0), #employeeTable tbody tr:eq(0), #EmpTypeTable tbody tr:eq(0), #LocationTable tbody tr:eq(0)").addClass("selectedRow");
+                $("#SectionId").val("0");
+                $("#EmployeeId").val("0");
+                $("#LId").val("0");
+                $("#EmpTypeId").val("0");
+            }
+
+
+
+            $("input[type='radio']").click(function () {
+
+                var radioValue = $("input[name='Criteria']:checked").val();
+
+                //alert(radioValue);
+                criteria = $.trim($(this).val());
+                //alert(criteria);
+
+                switch (criteria) {
+
+                    case "All":
+                        //alert('fff');
+
+                        blurThem();
+                        //alert('sss');
+                        break;
+                    case "Section":
+                        //alert('fff');
+
+                        blurThem();
+                        $("#sectionTable").css("opacity", "1");
+                        //alert('sss');
+
+                        break;
+                    case "EmpType":
+                        blurThem();
+                        $("#EmpTypeTable").css("opacity", "1");
+                        break;
+                    case "Location":
+                        blurThem();
+                        $("#LocationTable").css("opacity", "1");
+                        break;
+                    case "Employee":
+                        blurThem();
+                        $("#employeeTable").css("opacity", "1");
+                        break;
+                }
+
+            });
+        });
+
+    </script>
+}

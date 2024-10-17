@@ -1,0 +1,1310 @@
+﻿@model GTERP.Models.CostAllocation_Main
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //var subData = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+    var RequisitionResult = ViewBag.reqsub;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="card p-2">
+
+        <div class="card-body">
+            <input type="hidden" name="UserId" value="" />
+            <input type="hidden" id="mode" value="@ViewBag.Title" />
+
+            @if (Model != null)
+            {
+                <input type="hidden" id="CostAlloMainId" name="CostAlloMainId" value="@Model.CostAlloMainId" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="ComId" name="ComId" value="@Model.ComId" />
+                <input type="hidden" id="DateAdded" name="DateAdded" value="@Model.DateAdded" />
+                @*<input type="hidden" id="Status" name="Status" value="@Model.Status" />*@
+
+                //<input type="hidden" id="PurReqSubId" name="PurReqSubId" value="@Model.PurchaseRequisitionSub.FirstOrDefault().PurReqSubId" />
+                //<input type="hidden" asp-for="PurReqId" id="PurReqId" />
+            }
+            else
+            {
+
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <form>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <!--#region first Div-->
+                            <div class="card col-md-12">
+                                <div class="text-center pt-2">
+                                    <h4>Notes Entry</h4>
+                                </div>
+                                <hr />
+
+                                <div class="row">
+                                    <div class=" col-md-4 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="FiscalYearId" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <select asp-for="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYearId"></select>
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-4 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="FiscalMonthId" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <select asp-for="FiscalMonthId" class="form-control" asp-items="ViewBag.FiscalMonthId"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class=" col-md-4 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="Name" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <input asp-for="Name" class="form-control" type="text" />
+                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                              
+                                    <div class=" col-md-12 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="Remarks" class="control-label"></label>
+                                                </span>
+                                            </div>
+
+                                            <textarea asp-for="Remarks" class="form-control"></textarea>
+                                            <span asp-validation-for="Remarks" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                       
+                        <div class="row my-2">
+                            <!-- #endregion -->
+                            <!--#region Details & Distribute Div-->
+                            <div class="card col-md-6 col-12">
+                                <div class="text-center">
+                                    <h4>Create Details Item</h4>
+                                </div>
+                                <hr />
+                                @Html.HiddenFor(m => m.CostAllocation_Detailses.FirstOrDefault().CostAlloSubId, new { id = "CostAlloSubId" })
+                                <div class="row">
+                                    <div class="col-md-12 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Account Head</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" asp-items="ViewBag.AccId" id="Details_AccId"></select>
+                                            @*<div type="button" class="btn btn-primary" data-toggle="modal" id="btnModal" data-target="#exampleModal"><i class="fa fa-plus fa-lg"></i></div>*@
+
+                                            @*@Html.DropDownList("ProductId", ViewBag.ProductId as List<SelectListItem>, new { id = "ProductId", @class = "form-control form-control" })*@
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class=" col-md-6 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Caption</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("DetailsCaption", "", new { id = "DetailsCaption", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-6 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Percentage</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("DetailsPercentage", "", new { id = "DetailsPercentage", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="row">
+                                    <div class=" col-md-12 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Remarks</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("DetailsRemarks", "", new { id = "DetailsRemarks", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4 offset-md-4 col-12">
+                                    <span id="detailsspan">
+                                        <button type="button" id="detailsAddBtn" onclick="DetailsAdd()" class="btn btn-block btn-primary rounded-0">Add</button>
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card p-3 col-md-6">
+                                <div class="text-center">
+                                    <h4>Create Distribute Item</h4>
+                                </div>
+                                <hr />
+                                @Html.HiddenFor(m => m.CostAllocation_Distributes.FirstOrDefault().CostAlloDistributeId, new { id = "CostAlloDistributeId" })
+                                <div class="row">
+                                    <div class=" col-md-12 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Account Head</label>
+                                                </span>
+                                            </div>
+                                            <select class="form-control" asp-items="ViewBag.AccId" id="Distribute_AccId"></select>
+                                            @*<div type="button" class="btn btn-primary" data-toggle="modal" id="btnModal" data-target="#exampleModal"><i class="fa fa-plus fa-lg"></i></div>*@
+
+                                            @*@Html.DropDownList("ProductId", ViewBag.ProductId as List<SelectListItem>, new { id = "ProductId", @class = "form-control form-control" })*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class=" col-md-6 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Caption</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("Caption", "", new { id = "Caption", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-6 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Percentage</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("Percentage", "", new { id = "Percentage", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class=" col-md-12 col-12 mb-2">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label>Remarks</label>
+                                                </span>
+                                            </div>
+                                            @Html.TextBox("DistributeRemarks", "", new { id = "DistributeRemarks", @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4 offset-md-4 col-12">
+                                    <span id="distributespan">
+                                        <button type="button" id="distributeAddBtn" onclick="DistributeAdd()" class="btn btn-block btn-primary rounded-0">Add</button>
+                                        @*<button type="button" id="UpBtn"  class="btn btn-success">Update</button>*@
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <!-- #endregion -->
+
+                        </div>
+
+                        <br />
+                        <div @*id="tblDiv"*@>
+                            <div class="row">
+
+                                <div class="col-md-6 ">
+                                    <div class="card">
+
+                                        <div class="table-responsive text-nowrap">
+                                            <table id="tblCostAlloDetails" class="table-sm tbl display responsive table-striped table-hover text-center" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="d-none">CostAlloMainId</th>
+                                                        <th class="d-none">CostAlloSubId</th>
+                                                        <th class="d-none">Details_AccId</th>
+                                                        <th>Acc Code</th>
+                                                        <th>Caption</th>
+                                                        <th>Percentage</th>
+                                                        <th>Remarks</th>
+                                                        <th>Action</th>
+                                                        <th>IsDelete</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @if (Model != null)
+                                                    {
+                                                        if (Model.CostAllocation_Detailses != null)
+                                                        {
+                                                            foreach (var item in Model.CostAllocation_Detailses)
+                                                            {
+                                                    <tr class="txtDetails">
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.CostAlloMainId)
+                                                        </td>
+
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.CostAlloSubId)
+                                                        </td>
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.Details_AccId)
+                                                        </td>
+
+                                                        <td>
+                                                            @*@Html.DisplayTextFor(i => item.Acc_ChartOfAccount.AccCode)*@
+                                                            @item.Acc_ChartOfAccount.AccName - [ @item.Acc_ChartOfAccount.AccCode ]
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.DetailsTableCaption)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.DetailsTablePercentage)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.Remarks)
+                                                        </td>
+
+                                                        <td>
+                                                            <a class="dlttrash" data-itemId="@item.CostAlloSubId" data-html="@item.CostAlloSubId" href="#"><i class="fa fa-trash"></i></a>
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.IsDelete)
+                                                        </td>
+                                                    </tr>
+                                                            }
+                                                        }
+
+                                                    }
+                                                </tbody>
+                                                <tfoot>
+
+                                                </tfoot>
+
+                                            </table>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="table-responsive text-nowrap">
+                                            <table id="tblCostAlloDistribute" class="table-sm tbl display responsive table-striped table-hover text-center" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="d-none">CostAlloMainId</th>
+                                                        <th class="d-none">CostAlloSubId</th>
+                                                        <th class="d-none">Details_AccId</th>
+                                                        <th class="d-none">CostAlloDistributeId</th>
+                                                        <th class="d-none">Details_AccId</th>
+                                                        <th>Acc Code</th>
+                                                        <th>Caption</th>
+                                                        <th>Percentage</th>
+                                                        <th>Remarks</th>
+                                                        <th>Action</th>
+                                                        <th>IsDelete</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @if (Model != null)
+                                                    {
+                                                        if (Model.CostAllocation_Distributes != null)
+                                                        {
+                                                            foreach (var item in Model.CostAllocation_Distributes)
+                                                            {
+                                                    <tr class="txtDistribute">
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.CostAlloMainId)
+                                                        </td>
+
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.CostAlloSubId)
+                                                        </td>
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.CostAlloDistributeId)
+                                                        </td>
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.Details_AccId)
+                                                        </td>
+                                                        <td class="d-none">
+                                                            @Html.DisplayTextFor(i => item.Distribute_AccId)
+                                                        </td>
+
+                                                        <td>
+                                                            @*@Html.DisplayTextFor(i => item.Acc_ChartOfAccount.AccCode)*@
+                                                            @item.Acc_ChartOfAccount.AccName - [  @item.Acc_ChartOfAccount.AccCode  ]
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.Caption)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.Percentage)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.Remarks)
+                                                        </td>
+                                                        <td>
+                                                            <a class="dlttrash" data-itemId="@item.CostAlloDistributeId" data-html="@item.CostAlloDistributeId" href="#"><i class="fa fa-trash"></i></a>
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayTextFor(i => item.IsDelete)
+                                                        </td>
+                                                    </tr>
+                                                            }
+                                                        }
+
+                                                    }
+                                                </tbody>
+                                                <tfoot>
+
+                                                </tfoot>
+
+                                            </table>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                            <br />
+
+                            <div class="row">
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <div class="col-md-4 offset-md-4 col-12">
+
+                                            <span>
+                                                <button type="button" class="btn btn-primary rounded-0" onclick="CostAllo_Save()">Save</button>
+                                            </span>
+                                            <span>
+                                                @Html.ActionLink("Back", "CostAllocationList", "Accounts", null, new { @class = "btn btn-info rounded-0", @id = "btnBack" })
+                                            </span>
+
+                                        </div>
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <div class="col-md-4 offset-md-4 col-12">
+                                            @*<span>
+                                                    <button type="button" onclick="DetailsAdd()" class="btn btn-success">Add</button>
+                                                </span>*@
+                                            <span>
+                                                <button type="button" class="btn btn-warning rounded-0" onclick="CostAllo_Save()">Update</button>
+                                            </span>
+                                            <span>
+                                                @Html.ActionLink("Back", "CostAllocationList", "Accounts", null, new { @class = "btn btn-info rounded-0", @id = "btnBack" })
+                                            </span>
+
+                                        </div>
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <div class="col-md-4 offset-md-4 col-12">
+                                            <span>
+                                                <button class="btn btn-danger rounded-0" type="button" onclick="ConfirmDialogDelete('Are you sure');">Delete</button>
+                                            </span>
+                                            <span>
+                                                @Html.ActionLink("Back", "CostAllocationList", "Accounts", null, new { @class = "btn btn-info rounded-0", @id = "btnBack" })
+                                            </span>
+
+                                        </div>
+                                    }
+                            
+                            </div>
+                        </div>
+
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+
+@section Scripts
+    {
+    <script>
+
+
+
+
+
+        function Products_save() {
+
+            if ($("#MProductName").val().length < 6) {
+                toastr.info("Product Name at least 6 charecter long");
+                return false;
+            }
+
+            if ($("#MCategoryId").val()=="") {
+                toastr.info("Provie Category");
+                return false;
+            }
+
+            if ($("#MSubCategoryId").val()=="") {
+                toastr.info("Provie Sub Category");
+                return false;
+            }
+
+            if ($("#MUnitId").val()=="") {
+                toastr.info("Provie Unit");
+                return false;
+            }
+
+            ///alert('save 2');
+
+            var Product = {
+                "userid": "", "useridUpdate": "", "DateAdded": "", "DateUpdated": "", "comid": "0",
+                "ProductId": "", "ProductName": "", "CategoryId": "","ProductMainGroupId":"", "Description": "", "CostPrice": "", "SalePrice": "", "RetailerPrice": "", "ReorderLevelOne": "", "MinimumOrderQty": "", "CountryId": "", "ProductBarcode": "", "vatPercentage": "",
+                "vatAmount": "", "ProductBrand": "", "ProductModel": "", "UnitId": "", "SubCategoryId": "", "ProductImage": "", "FileExtension": "", "ImagePath": "", "ProductCode": "", "AccIdInventory": "", "AccIdConsumption": ""
+                //"InventorySubs": []
+            };
+
+
+
+            Product.userid = "";
+
+
+            Product.useridUpdate = "";
+            Product.DateAdded = "";
+            Product.DateUpdated = "";
+
+            Product.ProductId = 0;
+            Product.ProductName = $("#MProductName").val();
+            Product.CategoryId = $("#MCategoryId").val();
+            Product.ProductMainGroupId = "";
+
+
+
+            Product.Description = "";
+            Product.CostPrice =  0;
+
+            Product.SalePrice =  0;
+            Product.RetailerPrice =  0;
+            Product.ReorderLevelOne =  0;
+            Product.MinimumOrderQty =  0;
+
+
+            Product.CountryId = "18"; // for BDT
+            Product.ProductImage ="";
+
+            Product.FileExtension = "";
+            Product.ImagePath = "";
+
+
+
+            Product.ProductCode = "New Product";
+            Product.AccIdInventory = "";
+            Product.AccIdConsumption = "";
+
+
+            Product.ProductBarcode ="";
+            Product.vatPercentage =  0;
+
+
+            Product.vatAmount = 0;
+            Product.ProductBrand = $("#ProductBrand").val();
+            Product.ProductModel = $("#ProductModel").val();
+            Product.UnitId = $("#UnitId").val();
+            Product.SubCategoryId = $("#MSubCategoryId").val();
+
+
+            $.ajax({
+                url: '@Url.Action("CreateProduct", "PurchaseRequisition")',
+                type: 'POST',
+                dataType:'JSON',
+                data: {product: Product},
+                success: function (result) {
+                    if (result.Success == "1") {
+                        $("#ProductId").append(`<option value="${result.data.ProductId}">${result.data.ProductName}</option>`);
+                        customFile("1", result.ex);
+                    }
+                     else {
+                        customFile(result.Success, result.ex);
+                     }
+                },
+                error: function (ex) {
+                    toastr.error("Something wrong")
+                }
+            });
+        }
+
+        function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            CostAlloDelete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+
+        function CostAlloDelete() {
+            var StoreReqId = $('#PurReqId').val();
+            //alert(VoucherId);
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+             $.ajax({
+                 @*url: '@Url.Action("Delete", "Acc_Voucher")',
+                 data: JSON.stringify({ id: id }),
+                type: 'POST',
+                contentType:false,
+                dataType: false,*@
+
+
+                 headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+
+
+                type: 'POST',
+                url: '@Url.Action("Delete", "PurchaseRequisition")',
+                dataType: 'json',
+                async: 'true',
+                 data: { id: StoreReqId },
+
+
+                 //async: 'true',
+                @*url: '@Url.Action("Delete", "Acc_Voucher")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: VoucherId }), //use id here
+                //data: JSON.stringify(Acc_VoucherMain),
+                type: 'POST',
+                async: false,
+
+                dataType: 'json',*@
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                        window.location.href = '@Url.Action("Index", "PurchaseRequisition")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+        }
+
+        //$('#ReqDate').val(CurrentDate());
+        //$('#BoardMeetingDate').val(CurrentDate());
+        //$('#RequiredDate').val(CurrentDate());
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        //$("#ReqDate,#BoardMeetingDate,#RequiredDate").datepicker({
+        //    onSelect: function (date) {
+        //        // Your CSS changes, just in case you still need them
+        //        $('a.ui-state-default').removeClass('ui-state-highlight');
+        //        $(this).addClass('ui-state-highlight');
+        //        var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+        //        //setter
+        //        $("#ReqDate").datepicker("option", "dateFormat", 'dd-MM-yy');
+        //    }
+        //});
+
+        var tblCostAlloDetails;
+        var tblCostAlloDistribute;
+        var antiForgeryToken
+        var selectedItem;
+        var isdelete = false;
+
+        $(document).ready(function () {
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+
+            $("#FiscalYearId").select2();
+            $("#FiscalMonthId").select2();
+            $("#Details_AccId").select2();
+            $("#Distribute_AccId").select2();
+            //$("#CategoryId").select2();
+            //$("#PurposeId").select2();
+            //$("#DepartmentId").select2();
+            //$("#PrdUnitId").select2();
+            //$("#SectId").select2();
+
+
+
+             @*$.ajax({
+                url: '@Url.Action("GetProducts", "PurchaseRequisition")',
+                 headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                type: 'GET',
+               // contentType: 'application/json',
+                dataType: 'json',
+                success: function (result) {
+                    createSelectList(result.item);
+                }
+             });*@
+
+            var mode = $("#mode").val();
+            if (mode == "Edit" || mode == "Delete") {
+                $("#tblDiv").show();
+                           }
+            else {
+                $("#tblDiv").hide();
+                // $("#UpBtn").hide();
+            }
+
+            tblCostAlloDetails = $('#tblCostAlloDetails').DataTable({
+                "aoColumns": [
+                    { "sClass": "CostAlloMainId", "visible": false },
+                    { "sClass": "CostAlloSubId", "visible": false },
+                    { "sClass": "Details_AccId", "visible": false },
+                    { "sClass": "AccCode", "visible": true },
+                    { "sClass": "DetailsTableCaption", "visible": true },
+                    { "sClass": "DetailsTablePercentage", "visible": true },
+                    { "sClass": "DetailsRemarks", "visible": true },
+                    { "sClass": "Action", "visible": true },
+                    { "sClass": "IsDelete", "visible": false }
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtDetails');
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: true,
+                select: 'single'
+            }).draw();
+
+            tblCostAlloDistribute = $('#tblCostAlloDistribute').DataTable({
+                "aoColumns": [
+                    { "sClass": "CostAlloMainId", "visible": false },
+                    { "sClass": "CostAlloSubId", "visible": false },
+                    { "sClass": "CostAlloDistributeId", "visible": false },
+                    { "sClass": "Details_AccId", "visible": false },
+                    { "sClass": "Distribute_AccId", "visible": false },
+                    { "sClass": "AccCode", "visible": true },
+                    { "sClass": "Caption", "visible": true },
+                    { "sClass": "Percentage", "visible": true },
+                    { "sClass": "Remarks", "visible": true },
+                    { "sClass": "Action", "visible": true },
+                    { "sClass": "IsDelete", "visible": false }
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtDistribute');
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: true,
+                select: 'single'
+            }).draw();
+
+            
+        });
+
+        function createSelectList(selItem) {
+
+            $('#ProductId').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#ProductId').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+
+       // cascadeproduct();
+
+        function cascadeproduct(selItem) {
+
+                    var CategoryId = $('#CategoryId option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("GetProducts", "PurchaseRequisition")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: CategoryId },
+                        success: function (data, status, xhr) {
+                            $("#ProductId option").remove();
+
+                            createSelectList(data.item)
+                            if (selectedItem!=null) {
+                                $("#ProductId").val(selectedItem).change();
+                            }
+                            //selectedItem = null;
+                        }
+
+                    });
+
+        }
+
+        function SelectEmployee(selItem) {
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].EmpId;
+                optionText = selItem[i].EmpCode+' '+ selItem[i].EmpName;
+                $('#ProductId').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+
+          function CostAllo_Save() {
+
+
+              var Name = $('#Name').val();
+
+              if (Name.length < 1) {
+
+                //$("#SRNoSpan").text('Fill Requisition No.');
+                toastr.error('Fill Name');
+                return false;
+            }
+
+
+
+
+              var CostAllocation_Main = {
+                  "CostAlloMainId": 0, "Name": "", "FiscalYearId": "", "FiscalMonthId": "","Remarks": "", "ComId": "", "UserId": "", "DateAdded": "","DateUpdated": "",
+                  "CostAllocation_Detailses": [],"CostAllocation_Distributes": [],
+            };
+
+
+                  CostAllocation_Main.CostAlloMainId = $('#CostAlloMainId').val();
+              CostAllocation_Main.Name = $('#Name').val().replace(/amp;/ig, '');
+                  CostAllocation_Main.FiscalYearId = $('#FiscalYearId').val();
+                  CostAllocation_Main.FiscalMonthId = $('#FiscalMonthId').val();
+              CostAllocation_Main.Remarks = $('#Remarks').val().replace(/amp;/ig, '');
+              CostAllocation_Main.ComId = $('#ComId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                CostAllocation_Main.UserId = $('#UserId').val() || '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                CostAllocation_Main.DateAdded = $('#DateAdded').val();
+                
+
+            var tblDetails = $('#tblCostAlloDetails').dataTable().fnGetData();
+            var tblDistribute = $('#tblCostAlloDistribute').dataTable().fnGetData();
+
+            if (tblDetails.length == 0) {
+                alert('Please Fill Necessary Data.');
+                return false;
+              };
+
+            for (var i = 0; i < tblDetails.length; i++) {
+
+                var CostAllocation_Details = {
+                    "CostAlloSubId": "", "CostAlloMainId": "", "Details_AccId": "","DetailsTableCaption": "","DetailsTablePercentage": "", "Remarks": "","IsDelete": "",
+                     "DateAdded": "", "DateUpdated": ""
+                };
+
+                CostAllocation_Details.CostAlloMainId = $("#CostAlloMainId").val()||0;
+                CostAllocation_Details.CostAlloSubId = tblDetails[i][1];
+                CostAllocation_Details.Details_AccId = tblDetails[i][2];
+                CostAllocation_Details.DetailsTableCaption = tblDetails[i][4].replace(/amp;/ig, ''); ///tblDetails.[i][3].replace(/amp;/ig, '');
+                CostAllocation_Details.DetailsTablePercentage = tblDetails[i][5].replace(/amp;/ig, ''); ///tblDetails.[i][3].replace(/amp;/ig, '');
+                CostAllocation_Details.Remarks = tblDetails[i][6].replace(/amp;/ig, ''); ///tblDetails.[i][3].replace(/amp;/ig, '');
+                CostAllocation_Details.IsDelete = tblDetails[i][8];                
+                CostAllocation_Main.CostAllocation_Detailses.push(CostAllocation_Details);
+              };
+
+              for (var i = 0; i < tblDistribute.length; i++) {
+
+                  var CostAllocation_Distribute = {
+                      "CostAlloSubId": "", "CostAlloMainId": "", "CostAlloDistributeId": "", "Details_AccId": "","Distribute_AccId": "", "Caption": "","Percentage": "","Remarks": "",
+                      "IsDelete": "","DateAdded": "", "DateUpdated": ""
+                };
+
+                  CostAllocation_Distribute.CostAlloMainId = $("#CostAlloMainId").val()||0;
+                  CostAllocation_Distribute.CostAlloSubId = "";// tblDistribute[i][1];
+                  CostAllocation_Distribute.CostAlloDistributeId = tblDistribute[i][2];
+                  CostAllocation_Distribute.Details_AccId = tblDistribute[i][3];
+                  CostAllocation_Distribute.Distribute_AccId = tblDistribute[i][4];
+                  CostAllocation_Distribute.Caption = tblDistribute[i][6].replace(/amp;/ig, '');
+                  CostAllocation_Distribute.Percentage = tblDistribute[i][7];
+                  CostAllocation_Distribute.Remarks = tblDistribute[i][8].replace(/amp;/ig, '');
+                  CostAllocation_Distribute.IsDelete = tblDistribute[i][10];
+                  
+
+                  CostAllocation_Main.CostAllocation_Distributes.push(CostAllocation_Distribute);
+              };
+
+
+
+            //console.log(CostAllocation_Main);
+
+            $.ajax({
+                url: '@Url.Action("CreateCostAllocation", "Accounts")',
+                type: 'POST',
+                data: { CostAllocation_Main: CostAllocation_Main},
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+               // contentType: 'application/json',
+                dataType: 'JSON',
+                success: function (result) {
+                   // console.log(result);
+                    //alert('Data Save Successfully');
+                    if (result.Success == 1) {
+                        toastr.success("Data Save Successfully")
+                        window.location.href = '@Url.Action("CostAllocationList", "Accounts")';
+                    } else if (result.Success == 2) {
+                        toastr.success("Data Update Successfully")
+                         window.location.href = '@Url.Action("CostAllocationList", "Accounts")';
+                    }
+                    if (result.Success==3) {
+                        alert(result.ex);
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                    alert(err);
+                }
+            });
+        };
+
+        // details part
+
+        function DetailsAdd() {
+
+            var accId = $('#Details_AccId').val();
+
+
+                var tblDetails = $('#tblCostAlloDetails').dataTable().fnGetData();
+
+                if ($.fn.DataTable.isDataTable('#tblCostAlloDetails')) {
+                    var ifExist = false;
+                        if (tblCostAlloDetails.rows('.selected').any()) {
+                                for (var i = 0; i < tblDetails.length; i++) {
+                                    var item = tblDetails[i][1];
+
+                                    if (accId == item) {
+                                        var ind2 = tblCostAlloDetails.row('.selected').index();
+                                        if (i != ind2) {
+                                            toastr.error('Multiple Acc Code is not allowed');
+                                            ifExist = true;
+                                            return;
+                                        }
+                                    }
+
+                                }
+
+                                if (ifExist == false) {
+
+                                    tblCostAlloDetails
+                                        .rows({ selected: true })
+                                        .every(function (rowIdx, tableLoop, rowLoop) {
+
+
+
+                                            tblCostAlloDetails.cell(rowIdx, 2).data($('#Details_AccId').val());
+
+                                            tblCostAlloDetails.cell(rowIdx, 3).data($('#Details_AccId option:selected').text());
+
+                                            tblCostAlloDetails.cell(rowIdx, 4).data($('#DetailsCaption').val());
+                                            tblCostAlloDetails.cell(rowIdx, 5).data($('#DetailsPercentage').val());
+                                            tblCostAlloDetails.cell(rowIdx, 6).data($('#DetailsRemarks').val());
+                                            //tblCostAlloDetails.cell(rowIdx, 5).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                        })
+
+                                        .draw();
+
+                                    tblCostAlloDetails.$('tr.selected').removeClass('selected');
+
+
+                                    $("#detailsAddBtn").text("Add");
+                                    $("#detailsCancel").remove();
+
+                                }
+
+                        }
+                        else {
+                            for (var i = 0; i < tblDetails.length; i++) {
+                                var item = tblDetails[i][2];
+                                //alert(item)
+                                if (accId == item) {
+                                    toastr.error('Multiple ACC Code is not allowed');
+                                    //ifExist = true;
+                                    return;
+                                }
+
+                            }
+                            tblCostAlloDetails.draw();
+                            var i = 0;
+
+                            $('#tblCostAlloDetails').dataTable().fnAddData([
+                                $("#CostAlloMainId").val()||0,
+                                0,
+                                $('#Details_AccId').val(),
+                                $('#Details_AccId option:selected').text(),
+                                $('#DetailsCaption').val(),
+                                $('#DetailsPercentage').val(),
+                                $('#DetailsRemarks').val(),
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ',
+                                false
+                            ]);
+
+                        }
+                        tblCostAlloDetails = $('#tblCostAlloDetails').DataTable();
+
+
+                    $('#DetailsCaption').val("");
+                    $('#DetailsPercentage').val("");
+                    $('#DetailsRemarks').val("");
+                }
+
+        };
+
+        $('#tblCostAlloDetails tbody').on('click', 'tr', function () {
+            if ($.fn.DataTable.isDataTable('#tblCostAlloDetails')) {
+
+                tblCostAlloDetails
+                    .on('select', function (e, dt, type, indexes) {
+
+                        $("#detailsAddBtn").text("Modify");
+                        if ($("#detailsspan").children('#detailsCancel')) {
+                            $("#detailsspan").children('#detailsCancel').remove();
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel">Cancel</button>');
+                        }
+                        else {
+                            $("#detailsspan").append('<button type="button" id="detailsCancel" class="btn btn-danger detailsCancel">Cancel</button>');
+                        }
+
+
+                        var f = tblCostAlloDetails.rows('.selected').data();
+                        //console.log(f[0][2]);
+
+                        selectedItem = `${f[0][2]}`;
+
+                        //$('#CategoryId').val(`${f[0][1]}`).change();
+
+                        $('#Details_AccId').val(`${f[0][2]}`).change();
+                        $('#DetailsCaption').val(`${f[0][4]}`);
+                        $('#DetailsPercentage').val(`${f[0][5]}`);
+                        $('#DetailsRemarks').val(`${f[0][6]}`);
+
+                        //$('#Note').val(f[0][8]);
+                    })
+                    .on('deselect', function (e, dt, type, indexes) {
+                        selectedItem = null;
+                        $("#detailsAddBtn").text("Add");
+                        $("#detailsspan").children('#detailsCancel').remove();
+                        $(".cancel").trigger("click");
+                        $('#Details_AccId').val("0").change();
+                        $('#DetailsCaption').val("");
+                        $('#DetailsPercentage').val("");
+                        $('#DetailsRemarks').val("");
+                    });
+            };
+
+        });
+
+        $('#tblCostAlloDetails tbody').on('click', '.dlttrash', function () {
+            var d = $(this).data();
+            var i = this.parentNode.parentNode;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tblCostAlloDetails.cell(l, 6).data(true);
+                    $(this).parent().parent().hide();
+                }
+                else {
+                    var table = $('#tblCostAlloDetails').DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#detailsspan").children('#Cancel')) {
+                        $("#detailsspan").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $('#tblCostAlloDetails').height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+                var table = $('#tblCostAlloDetails').DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($("#detailsspan").children('#Cancel')) {
+                    $("#detailsspan").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $('#tblCostAlloDetails').height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+
+        });
+
+        $(document).on('click','.detailsCancel',function () {
+            if ($.fn.DataTable.isDataTable('#tblCostAlloDetails')) {
+                if (tblCostAlloDetails.rows('.selected').any()) {
+                    $('#tblCostAlloDetails tr.selected').removeClass('selected');
+                }
+                $("#detailsAddBtn").text("Add");
+                $(this).remove();
+                $('#Details_AccId').val("0").change();
+                        $('#DetailsCaption').val("");
+                        $('#DetailsPercentage').val("");
+                        $('#DetailsRemarks').val("");
+            }
+
+
+        });
+
+        // Distribute part
+
+        function DistributeAdd() {
+
+            var accId = $('#Distribute_AccId').val();
+
+            var tblDetails = $('#tblCostAlloDistribute').dataTable().fnGetData();
+
+            if ($.fn.DataTable.isDataTable('#tblCostAlloDistribute')) {
+                var ifExist = false;
+                if (tblCostAlloDistribute.rows('.selected').any()) {
+
+                    if (ifExist == false) {
+
+                        tblCostAlloDistribute
+                            .rows({ selected: true })
+                            .every(function (rowIdx, tableLoop, rowLoop) {
+
+                                tblCostAlloDistribute.cell(rowIdx, 4).data($('#Distribute_AccId').val());
+
+                                tblCostAlloDistribute.cell(rowIdx, 5).data($('#Distribute_AccId option:selected').text());
+
+                                tblCostAlloDistribute.cell(rowIdx, 6).data($('#Caption').val());
+                                tblCostAlloDistribute.cell(rowIdx, 7).data($('#Percentage').val());
+                                tblCostAlloDistribute.cell(rowIdx, 8).data($('#DistributeRemarks').val());
+                                //tblCostAlloDetails.cell(rowIdx, 5).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                            })
+
+                            .draw();
+
+                        tblCostAlloDistribute.$('tr.selected').removeClass('selected');
+
+
+                        $("#distributeAddBtn").text("Add");
+                        $("#distributeCancel").remove();
+
+                    }
+
+                }
+                else {
+                   
+                    tblCostAlloDistribute.draw();
+                    var i = 0;
+
+                    $('#tblCostAlloDistribute').dataTable().fnAddData([
+
+                        $("#CostAlloMainId").val() || 0,
+                        $('#CostAlloSubId').val() || 0,
+                        0,
+                        null,//$('#Distribute_AccId').val(),
+                        $('#Distribute_AccId').val(),
+                        $('#Distribute_AccId option:selected').text(),
+                        $('#Caption').val(),
+                        $('#Percentage').val(),
+                        $('#DistributeRemarks').val(),
+                        '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ',
+                        false
+                    ]);
+                 
+                }
+                tblCostAlloDistribute = $('#tblCostAlloDistribute').DataTable();
+
+                $('#Caption').val("");
+                $('#Percentage').val("");
+                $('#DistributeRemarks').val("");
+            }
+
+        };
+
+        $('#tblCostAlloDistribute tbody').on('click', 'tr', function () {
+            if ($.fn.DataTable.isDataTable('#tblCostAlloDistribute')) {
+
+                tblCostAlloDistribute
+                    .on('select', function (e, dt, type, indexes) {
+
+                        $("#distributeAddBtn").text("Modify");
+                        if ($("#distributespan").children('#distributeCancel')) {
+                            $("#distributespan").children('#distributeCancel').remove();
+                            $("#distributespan").append('<button type="button" id="distributeCancel" class="btn btn-danger distributeCancel">Cancel</button>');
+                        }
+                        else {
+                            $("#distributespan").append('<button type="button" id="distributeCancel" class="btn btn-danger distributeCancel">Cancel</button>');
+                        }
+
+
+                        var f = tblCostAlloDistribute.rows('.selected').data();
+                        //console.log(f[0][2]);
+
+                        selectedItem = `${f[0][4]}`;
+
+                        //$('#CategoryId').val(`${f[0][1]}`).change();
+
+                        $('#Distribute_AccId').val(`${f[0][4]}`).change();
+                        $('#Caption').val(`${f[0][6]}`);
+                        $('#Percentage').val(`${f[0][7]}`);
+                        $('#DistributeRemarks').val(`${f[0][8]}`);
+
+
+                        //$('#Note').val(f[0][8]);
+                    })
+                    .on('deselect', function (e, dt, type, indexes) {
+                        selectedItem = null;
+                        $("#distributeAddBtn").text("Add");
+                        $("#distributespan").children('#distributeCancel').remove();
+                        $(".distributeCancel").trigger("click");
+                        $('#Distribute_AccId').val("0").change();
+                        $('#Caption').val("");
+                        $('#Percentage').val("");
+                        $('#DistributeRemarks').val("");
+                    });
+            };
+
+        });
+
+        $('#tblCostAlloDistribute tbody').on('click', '.dlttrash', function () {
+            var d = $(this).data();
+            var i = this.parentNode.parentNode;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tblCostAlloDistribute.cell(l, 10).data(true);
+                    $(this).parent().parent().hide();
+                }
+                else {
+                    var table = $('#tblCostAlloDistribute').DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#distributespan").children('#distributeCancel')) {
+                        $("#distributespan").children('#distributeCancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $('#tblCostAlloDistribute').height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+                var table = $('#tblCostAlloDistribute').DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($("#distributespan").children('#distributeCancel')) {
+                    $("#distributespan").children('#distributeCancel').remove();
+                }
+                $("#distributeAddBtn").text("Add");
+                var x = "500.00";
+                var y = $('#tblCostAlloDistribute').height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+
+        });
+
+        $(document).on('click', '.distributeCancel', function () {
+            if ($.fn.DataTable.isDataTable('#tblCostAlloDistribute')) {
+                if (tblCostAlloDistribute.rows('.selected').any()) {
+                    $('#tblCostAlloDistribute tr.selected').removeClass('selected');
+                }
+                $("#distributeAddBtn").text("Add");
+                $(this).remove();
+               
+                $('#Distribute_AccId').val("0").change();
+                $('#Caption').val("");
+                $('#Percentage').val("");
+                $('#DistributeRemarks').val("");
+            }
+
+
+        });
+
+    </script>
+}

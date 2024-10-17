@@ -1,0 +1,286 @@
+﻿
+@model GTERP.Models.Production
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row my-2 text-center">
+
+    <div class="col-md-12 col-12">
+        <h2 id="styletext">Production Report</h2>
+    </div>
+</div>
+<form action="" method="post">
+    <div class="container">
+        <div class="card p-4 my-2 col-md-8 col-12 offset-md-2">
+            <div class="row mb-2">
+                <div class="col-md-12 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>Type</label>
+                            </span>
+                        </div>
+                        @Html.DropDownList("ReportType", ViewBag.ReportType as List<SelectListItem>, new { id = "ReportType", @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-12" id="prdunit">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>Unit </label>
+                            </span>
+                        </div>
+
+                        @Html.DropDownList("PrdUnitId", ViewBag.PrdUnitId as List<SelectListItem>, "--Unit--", new { id = "PrdUnitId", @class = "form-control" })
+
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12" id="year">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>Year</label>
+                            </span>
+                        </div>
+                        @Html.DropDownList("FiscalYearId", ViewBag.UserList as List<SelectListItem>, "--Year--", new { id = "FiscalYearId", @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12" id="month">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>Month </label>
+                            </span>
+                        </div>
+                        @Html.DropDownList("FiscalMonthId", ViewBag.UserList as List<SelectListItem>, "--Month--", new { id = "FiscalMonthId", @class = "form-control months" })
+
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-12" id="prddate">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>Production Date </label>
+                            </span>
+                        </div>
+                        @Html.TextBox("ProductionDate", null, new { @class = "form-control text-center ProductionDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "ProductionDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12" id="fromdate">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>From Date </label>
+                            </span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12" id="todate">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">
+                                <label>To Date</label>
+                            </span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+
+            </div>
+
+           
+            <div class="row">
+
+
+                <div class="col-md-4 col-12">
+                    <button type="button" id="btnReport" class="btn btn-success btn-block rounded-0">Report</button>
+                </div>
+
+
+                <div class="col-md-8 col-12 text-right">
+
+                    <fieldset>
+
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                    </fieldset>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+        
+    <!--</div>-->
+</form>
+
+
+@section Scripts{
+    <script>
+        function CurrentDate(da) {
+            var date = new Date(da);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+        $("#FromDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#FromDate").datepicker("option", "dateFormat");
+                //setter
+                $("#FromDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+        $(".ProductionDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $(".ProductionDate").datepicker("option", "dateFormat");
+                //setter
+                $(".ProductionDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#ToDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#ToDate").datepicker("option", "dateFormat");
+                //setter
+                $("#ToDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#FromDate").val(CurrentDate(new Date()));
+        $(".ProductionDate").val(CurrentDate(new Date()));
+        $("#ToDate").val(CurrentDate(new Date()));
+
+        $(document).ready(function () {
+
+            //$('#FiscalYearId').select2();
+            $('#FiscalMonthId').select2();
+           $('#ReportType').select2();
+            $('#PrdUnitId').select2();
+           $('#FiscalYearId').select2();
+           $('#FiscalMonthId').select2();
+           //$('#EmpId').select2();
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+           function showhide() {
+               if ($('#ReportType').val() == "rptDailyProduction") {
+                   $('#month').addClass("d-none");
+                   $('#fromdate').addClass("d-none");
+                   $('#todate').addClass("d-none");
+                   $('#prddate').removeClass("d-none");
+                   $('#year').addClass("d-none");
+                   $('#prdunit').addClass("d-none");
+               } else if ($('#ReportType').val() == "rptFaxReport") {
+                   $('#month').addClass("d-none");
+                   $('#fromdate').addClass("d-none");
+                   $('#todate').addClass("d-none");
+                   $('#prddate').removeClass("d-none");
+                   $('#year').addClass("d-none");
+                   $('#prdunit').addClass("d-none");
+               } else if ($('#ReportType').val() == "rptMISReport") {
+                    $('#month').removeClass("d-none");
+                    $('#fromdate').addClass("d-none");
+                    $('#todate').addClass("d-none");
+                    $('#prddate').addClass("d-none");
+                    $('#year').removeClass("d-none");
+                    $('#prdunit').addClass("d-none");
+               } else if ($('#ReportType').val() == "rptSales") {
+                    $('#month').removeClass("d-none");
+                   $('#fromdate').addClass("d-none");
+                    $('#todate').addClass("d-none");
+                   $('#prddate').removeClass("d-none");
+                    $('#year').removeClass("d-none");
+                    $('#prdunit').addClass("d-none");
+               }
+               else {
+                    $('#month').removeClass("d-none");
+                    $('#year').removeClass("d-none");
+                    $('#prdunit').removeClass("d-none");
+                    $('#fromdate').addClass("d-none");
+                    $('#todate').addClass("d-none");
+                    $('#prddate').addClass("d-none");
+                }
+           }
+           showhide();
+           $('#ReportType').change(function () {
+               showhide();
+           })
+
+            $('#FiscalYearId').change(function () {
+                let fiscalYearId = $("#FiscalYearId").val();
+                $("#FiscalMonthId").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetMonthByYear","Productions")',
+                    dataType: 'json',
+                    data: { fiscalYearId: fiscalYearId },
+                    success: function (data) {
+                        console.log(data);
+                        for (var i = 0; i < data.length; i++) {
+                            $('#FiscalMonthId').append(`<option value="${data[i].FiscalMonthId}">${data[i].MonthName}</option>`)
+                        }
+
+                    }
+                })
+            });
+
+           $('#btnReport').click(function () {
+               let fiscalYearId = $("#FiscalYearId").val();
+               let fiscalMonthId = $("#FiscalMonthId").val();
+               let reportType = $("#ReportType").val();
+               let productionDate = $(".ProductionDate").val();
+               let fromDate = $("#FromDate").val();
+               let toDate = $("#ToDate").val();
+               let prdUnitId = $("#PrdUnitId").val();
+               let rptFormat = $("input[name='RptType']:checked").val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("ProductionReport", "Productions")',
+                    dataType: 'json',
+                    data: { reportType: reportType, rptFormat: rptFormat, yearId: fiscalYearId, monthid: fiscalMonthId, productionDate: productionDate, fromDate: fromDate, toDate: toDate, prdUnitId: prdUnitId },
+                    success: function (response) {
+                        window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+                });
+           });
+        });
+    </script>
+}

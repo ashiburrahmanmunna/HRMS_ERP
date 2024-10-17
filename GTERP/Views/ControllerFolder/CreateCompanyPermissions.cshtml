@@ -1,0 +1,416 @@
+﻿@*@model GTERP.Models.CompanyPermission*@
+@model GTERP.Models.CompanyPermissionVM
+@*<script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.js"></script>
+    <link href="~/Content/DataTables/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>*@
+
+
+
+
+
+
+@using (Html.BeginForm("CreateCompanyPermissions", "ControllerFolder", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="text-center" id="styletext"> Company Permission @ViewBag.Title</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12 order-md-1">
+                            @*@Html.AntiForgeryToken()*@
+                            @*<h4 class="mb-3">Company Information</h4>
+            <hr />*@
+                            @Html.ValidationSummary("", new { @class = "text-error" })
+                            @*<div class="form-group">
+                @Html.LabelFor(m => m.userid, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.userid, new { @class = "form-control" })
+                </div>
+            </div>*@
+                            <div class="row mb-3">
+                                <div class="table-responsive text-nowrap">
+                                    <table id="tblterms" class="table tblterms table-bordered display nowrap table-striped table-hover text-center" cellspacing="0" width="100%">
+
+                                        @*<div class="table-responsive text-nowrap">
+                        <table class="table table-striped">*@
+                                        <thead>
+                                            <tr>
+                                                @*<th style="width:0%;">Product Id</th>*@
+                                                @* <th class="d-none">Category Id</th> ///sample for not visible*@
+
+                                                <th>Check</th>
+                                                <th>CompnaypermissionId</th>
+                                                <th>UserId</th>
+                                                <th>ComId</th>
+                                                <th>Company Name</th>
+                                                <th>Default</th>
+
+
+                                                @*<th style="width:40%;">Product</th>*@
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            @*@foreach (var item in Model)
+                            {*@
+                                            <tr class="txtMultTerms">
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.isChecked)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.CompanyPermissionId)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.UserId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.ComId)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.CompanyName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(i => Model.isDefault)
+                                                </td>
+
+
+                                            </tr>
+                                            @*}*@
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <select id="UserList" class="form-control" asp-items="@ViewBag.UserId ">
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <button type="button" onclick="TermsLoad()" class="btn btn-success btn-block rounded-0">Load</button>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <button id="btnupdate" onclick="Sales_save()" class="btn btn-primary btn-block rounded-0" type="button">Update</button>
+                            </div>
+                            <div class="col-md-4 col-12"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            @*Terms and Condition Initializer*@
+
+
+
+            @*<div class="form-group">
+                    <label class="col-md-2 control-label">
+                        Compnay Permission
+                    </label>
+                    <div class="col-md-10">
+
+                        @foreach (var item in ViewBag.ComId)
+                        {
+                            <input type="checkbox" name="selectedCompanies" value="@item.ComId" class="checkbox-inline" />
+                            @item.CompanyName
+                        }
+                    </div>
+                </div>*@
+            @*<div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" class="btn btn-default" value="Create" />
+                    </div>
+                </div>*@
+
+        </div>
+    </div>
+
+
+}
+
+@*@section Scripts {
+        @sc.Render("~/bundles/jqueryval")
+    }*@
+
+@section scripts{
+
+    <script type="text/javascript">
+
+    function Sales_save() {
+
+
+        var CompanyPermission = [];
+        // Step 1: Read View Data and Create JSON Object
+        // Creating SalesSub Json Object
+
+
+        var salessub = { "isChecked": 0, "CompanyPermissionId": 0, "UserId": "", "ComId": "", "CompanyName": "", "isDefault": 0 };
+
+
+
+        ////sales subs data
+        var oTable = $('#tblterms').dataTable().fnGetData();
+        var oTableNode = $('#tblterms').DataTable().rows().nodes();
+        for (var i = 0; i < oTable.length; i++) {
+            //console.log(oTableNode[i].cells[2].children[0]);
+            if ($(oTableNode[i].cells[0].children[0]).is(":checked")) {
+                salessub.isChecked = 1;
+            }
+            else {
+                salessub.isChecked = 0;
+            }
+
+
+            //alert(oTable[i][3]);
+
+            salessub.CompanyPermissionId = oTable[i][1];
+            salessub.UserId = oTable[i][2];
+            salessub.ComId = oTable[i][3];
+            salessub.CompanyName = oTable[i][4];
+
+            if ($(oTableNode[i].cells[2].children[0]).is(":checked")) {
+
+                salessub.isDefault = 1;
+            }
+            else {
+                salessub.isDefault = 0;
+            }
+
+            // adding to SalesMain.SalesSub List Item
+            CompanyPermission.push(salessub);
+            //salesmain.SalesSubs.push(salessub);
+            salessub = { "isChecked": "", "CompanyPermissionId": "", "UserId": "", "ComId": "", "CompanyName": "", "isDefault": "" };
+
+        }
+
+
+
+        console.log(CompanyPermission);
+
+
+        var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+        //var strfy = JSON.stringify({ strfy: CompanyPermissions });
+        $.ajax({
+                url: '@Url.Action("Save", "ControllerFolder")',
+            data: { CompanyPermission: CompanyPermission },
+                type: 'POST',
+               // headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                //contentType: 'application/json;',
+                dataType: 'json',
+               success: function (data) {
+                if (data.Success == 1) {
+                    alert('data update success');
+                }
+            },
+            error: function (ex) {
+                toastr.error("Sorry, an error occured . . . .");
+            }
+        });
+
+
+        @*$.ajax({
+            type: 'POST',
+            //contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Save", "CompanyPermissions")',
+            dataType: 'json',
+            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+            //async: true,
+            data: { CompanyPermission: CompanyPermission},
+            success: function (data) {
+                if (data.Success == 1) {
+                    alert('data update success');
+                }
+            },
+            error: function (ex) {
+                toastr.error("Sorry, an error occured . . . .");
+            }
+        });*@
+    }
+
+
+        $(document).ready(function () {
+
+
+            $("#UserList").select2();
+
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+            $("#btnupdate").hide();
+
+            $("#UserList").change(function () {
+
+                TermsLoad();
+            });
+
+            // here i have used datatables.js (jQuery Data Table)
+            $('#tblterms').dataTable({
+                "aoColumns": [
+                    { "name": "isChecked", "sClass": "", "visible": true },
+                    { "name": "CompanyPermissionId", "sClass": "CompanyPermissionId", "visible": false },
+                    { "name": "UserId", "sClass": "UserId", "visible": false },
+                    { "name": "ComId", "sClass": "ComId", "visible": false },
+                    { "name": "CompanyName", "sClass": "CompanyName", "visible": true },
+                    { "name": "isDefault", "sClass": "", "visible": true }
+                ],
+                columnDefs: [
+                    {
+                        'render': function (data) {
+
+                                return '<input type="checkbox" id="chkboxChecked" value=' + data + ' class="isChecked" >';
+
+
+                        }, targets: 0
+                    },
+                    {
+                        'render': function (data, type, row) {
+
+                            return '<input type="checkbox" id="chkboxDefault" value=' + data + ' class="isDefault">';
+                        },
+                        'targets': 5
+                    }],
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sRowSelector": "td:not(:first-child)"
+                },
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false
+            })
+
+            TermsLoad();
+        });
+
+
+         function TermsLoad() {
+
+                var table = $('#tblterms').DataTable();
+                table
+                    .clear()
+                    .draw();
+
+
+                table.row($(this).parents('tr')).remove().draw();
+
+                $("#btnupdate").show();
+                var UserId = $("#UserList").val();
+                //alert(UserId);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("getUserCompany", "ControllerFolder")',
+                    dataType: 'json',
+                    async: false,
+                    data: { UserId: UserId },
+                    success: function (data) {
+
+                        table.clear();
+                        for (var i = 0; i < data.length; i++) {
+                            $('#tblterms').dataTable().fnAddData([data[i].isChecked, data[i].CompanyPermissionId, data[i].UserId, data[i].ComId, data[i].CompanyName, data[i].isDefault]);
+                        }
+
+                        table = $('#tblterms').DataTable();
+                        table.draw();
+
+                        //alert('test');
+                        $(function () {
+                            $('.isChecked').each(function (e) {
+                                //alert($(this).val());
+                                if ($(this).val() == '1') {
+                                    $(this).attr("checked", "checked");
+                                    //alert('Checked');
+                                }
+                            });
+
+
+                            $('.isDefault').each(function (e) {
+
+                                //alert($(this).val());
+                                if ($(this).val() == '1') {
+                                    $(this).attr("checked", "checked");
+                                    // alert('Checked');
+                                }
+
+
+
+                            });
+                            //alert('isDefault done');
+
+                        });
+
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+                });
+
+
+
+            }
+
+    </script>
+}
+@*<div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="ComId" class="control-label"></label>
+                    <select asp-for="ComId"
+                            class="form-control"
+                            asp-items="@ViewBag.ComId ">
+                    </select>
+                    <span asp-validation-for="ComId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="isDefault" class="control-label"></label>
+                    <input asp-for="isDefault" class="form-control" />
+                    <span asp-validation-for="isDefault" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="isChecked" class="control-label"></label>
+                    <input asp-for="isChecked" class="form-control" />
+                    <span asp-validation-for="isChecked" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <select asp-for="UserId"
+                            class="form-control"
+                            asp-items="@ViewBag.UserId ">
+                    </select>
+                </div>
+                <div class="form-group">
+
+                    <button type="button" onclick="TermsLoad()" class="btn btn-success btn-block">Load</button>
+
+
+                    <button id="btnupdate" class="btn btn-primary btn-block" type="button" onclick="Sales_save()">Update</button>
+
+                </div>
+            </form>
+        </div>
+    </div>*@

@@ -1,0 +1,864 @@
+﻿@{
+    var opt = ViewBag.option;
+    var IsAuto = ViewBag.IsAutoDownloader;
+    int duration = 5;
+}
+
+
+<div class="m-2">
+    @*<div class="pad" style="padding:15px">
+    <progress class="progress" value="0" max="100">0%</progress>
+    <div class="alert alert-success" role="alert" style="display:none">Loading completed!</div>
+    </div>*@
+    <div class="row">
+        <div class="col-md-4 d-flex">
+            <label for="from">From:</label>
+            <input type="datetime-local" id="from" name="from" class="form-control ml-1" />
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <label for="to">To:</label>
+            <input type="datetime-local" id="to" name="to" class="form-control ml-1" />
+        </div>
+        <div>
+            <button type="button" id="@opt" class="btn btn-warning">
+                Download
+                <span class="spinner-border spinner-border-sm my-1 mx-1" role="status" aria-hidden="true" style="display:none" id="spinnerExcel"></span>
+            </button>
+            <span style="background-color:orangered"><input type="checkbox" id="check" value="" />Check for clear log</span>
+        </div>
+
+        <!-- Modal HTML -->
+        <div class="modal" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    </div>
+                    <div class="modal-body" id="messageModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-5 border border-success">
+            <h4 class="text-center header-color">Devices Information</h4>
+            <div id="success-alert" class="alert-success">@ViewBag.result</div>
+            <div id="error-alert" class="alert-success text-warning">@ViewBag.warning</div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Add new
+            </button>
+            <button type="button" class="btn btn-outline-info my-1" id="update">
+                Update
+            </button>
+            <button type="button" class="btn btn-outline-danger my-1" id="delete">
+                Delete
+            </button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title header-color" id="exampleModalLabel">Device Information Entry</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form asp-action="ipSet" method="post">
+
+                                <div class="form-group">
+                                    <label class="control-label">IP Adress</label>
+                                    <input id="DeviceAdress" name="adress" type="text" value="192.168.1.201" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Location</label>
+                                    <input id="Location" type="text" name="location" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">InOut</label>
+                                    <input id="inout" type="text" name="inout" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Port</label>
+                                    <input id="port" type="text" name="port" value="80" class="form-control" />
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">User Id</label>
+                                    <input id="User" type="text" name="name" value="admin" class="form-control" />
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Password</label>
+                                    <input id="Password" type="text" name="password" class="form-control" />
+                                </div>
+                                <button id="add" type="submit" class="btn btn-primary">Add IP Address</button>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p id="deviceData"></p>
+        </div>
+        <div class="col-md-7 border border-success">
+            <h4 class="text-center header-color">Devices Data</h4>
+            <div class="d-md-inline-flex">
+                <button class="btn-outline-success" id="download-csv" style="display:none;">Download to CSV</button>
+                <button class="btn-outline-success" id="download-xlsx" style="display:none">Download to Excel</button>
+                <button class="btn-outline-dark" id="database" style="display:none">Save in SQL Database</button>
+                <button class="btn-outline-info" id="access" style="display:none">Save to Access</button>
+                <button class="btn-outline-secondary" id="word" style="display:none">Download to txt</button>
+                <button class="btn-outline-secondary" id="Oracle" style="display:none">Download to Oracle</button>
+            </div>
+            <p id="eventTable"></p>
+        </div>
+
+
+
+    </div>
+    <link href="https://unpkg.com/tabulator-tables@6.2.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.0/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+</div>
+
+@section Styles {
+    <style>
+        .header-color {
+            color: rgb(197 194 194);
+        }
+
+        .modal-dialog.modal-dialog-centered.modal-dialog-top {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+    </style>
+}
+@section Scripts {
+    <script>
+        function startSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'block';
+        }
+        function stopSpinnerExcel() {
+            document.getElementById('spinnerExcel').style.display = 'none';
+        };
+        var SelectedDevice;
+        var SearchData;
+        var table1;
+        var duration;
+        var DwonloadData = {};
+        var warning;
+
+
+        var formattedDateTime
+        //         $(document).ready(function() {
+        //                 // setInterval(function() {
+        //                 // var d = new Date();
+        //                 // let year = d.getFullYear();
+        //                 // let month = (d.getMonth() + 1).toString().padStart(2, '0');
+        //                 // let Pdate = d.getDate().toString().padStart(2, '0');
+        //                 // let date = d.getDate().toString().padStart(2, '0');
+        //                 // let hours = d.getHours().toString().padStart(2, '0');
+        //                 // let minutes = (d.getMinutes() + @duration).toString().padStart(2, '0');
+        //                 // let seconds = d.getSeconds().toString().padStart(2, '0');
+        //                 // if(minutes >= 60)
+        //                 // {
+        //                 //    let add = Math.floor(minutes / 60);
+        //                 //    minutes = minutes % 60;
+        //                 //    if (minutes < 10) {
+        //                 //      minutes = '0' + minutes;
+        //                 //    }
+        //                 //    hours = parseInt(hours, 10) + add;
+        //                 // }
+        //                 // if(hours >= 24)
+        //                 // {
+        //                 //     let add = Math.floor(hours / 60);
+        //                 //     hours = hours % 24;
+        //                 //     date = parseInt(date, 10) + add;
+        //                 // }
+        //                 // var formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + seconds;
+
+        //                 // var startDate = year + '-' + month + '-' + Pdate + 'T00:00:01';
+
+        //                 // document.getElementById("from").defaultValue = startDate;
+        //                 // document.getElementById("to").defaultValue = formattedDateTime;
+        //                 // if(@IsAuto == 1)
+        //                 // {
+        //                 //     $('#@opt').click();
+        //                 // }
+
+        //                 // }, @duration * 60 * 1000); // 5 minutes in milliseconds
+
+
+        //                         var formattedDateTime;
+        //     var d = new Date();
+        //     var year = d.getFullYear();
+        //     var month = (d.getMonth() + 1).toString().padStart(2, '0');
+        //     var Pdate = d.getDate().toString().padStart(2, '0');
+        //     var date = d.getDate().toString().padStart(2, '0');
+        //     var hours = d.getHours().toString().padStart(2, '0');
+        //     var minutes = (d.getMinutes() + @duration).toString().padStart(2, '0');
+
+        //     var seconds = d.getSeconds().toString().padStart(2, '0');
+
+        //     if (minutes >= 60) {
+        //         var add = Math.floor(minutes / 60);
+        //         minutes = minutes % 60;
+        //         if (minutes < 10) {
+        //             minutes = '0' + minutes;
+        //         }
+        //         hours = parseInt(hours, 10) + add;
+        //     }
+
+        //     if (hours >= 24) {
+        //         var add = Math.floor(hours / 60);
+        //         hours = hours % 24;
+        //         date = parseInt(date, 10) + add;
+        //     }
+
+        //     formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + seconds;
+        //     var startDate = year + '-' + month + '-' + Pdate + 'T00:00:01';
+
+        //     document.getElementById("from").defaultValue = startDate;
+        //     document.getElementById("to").defaultValue = formattedDateTime;
+
+        //     // Ensure @IsAuto and @opt are properly rendered
+        //     var isAuto = @IsAuto;
+        //     var opt = '@opt';
+
+        //     if (isAuto == 1) {
+        //         $('#' + opt).click();
+        //     }
+        // }, @duration * 60 * 1000); // 5 minutes in milliseconds
+
+
+        //         });
+
+
+
+        toastr.options = {
+            "closeButton": true,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "1000",
+            "hideDuration": "5000",
+            "timeOut": "1500",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        function deviceInfo() {
+            toastr.info("loading...");
+            $.ajax({
+                    url: '@Url.Action("deviceInfo", "eventManagement")',
+                method: "get",
+                dataType: 'Json',
+                success: function(data) {
+                        console.log(data);
+                    var tabledata = data;
+                    var table = new Tabulator("#deviceData", {
+                        height: "auto",
+                        width: "auto",
+
+                        layout: "fitDataStretch",
+                        selectable: true,
+
+                        data: tabledata, //assign data to table
+                        /* autoColumns: true,*/ //create columns from data field names
+                        columns: [
+                            {
+                                formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+                                    cell.getRow().toggleSelect();
+                                }
+                            },
+
+                                { title: "Ip Address", field: "IpAddress", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+                                { title: "Location", field: "Location", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+                                { title: "In Out", field: "InOut", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "list", editorParams: { values: { '1': "Out", '0': "In" } } },
+                                { title: "User Id", field: "Hikuser", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+                                { title: "Password", field: "Hikpassword", hozAlign: "lcentereft", editor: "input" },
+                                    { title: "Id", field: "Id", visible: false },
+                                    { title: "Comid", field: "ComId", visible: false }
+                        ]
+                    })
+
+                    table.on("rowSelectionChanged", function(data, rows) {
+
+                        SelectedDevice = data;
+                    })
+                }
+            })
+        }
+        $(document).ready(function() {
+
+            console.log("hello kamrul");
+            $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
+                $("#success-alert").slideUp(500);
+            });
+            $("#error-alert").fadeTo(2000, 500).slideUp(500, function() {
+                $("#error-alert").slideUp(500);
+            });
+            var d = new Date();
+            let year = d.getFullYear();
+            let month = (d.getMonth() + 1).toString().padStart(2, '0');
+            let Pdate = d.getDate().toString().padStart(2, '0');
+            let date = d.getDate().toString().padStart(2, '0');
+            let hours = d.getHours().toString().padStart(2, '0');
+            let minutes = (d.getMinutes() + @duration).toString().padStart(2, '0');
+            let seconds = d.getSeconds().toString().padStart(2, '0');
+
+            if(minutes >= 60)
+              {
+                  let add = Math.floor(minutes / 60);
+                  minutes = minutes % 60;
+                  if (minutes < 10) {
+                    minutes = '0' + minutes;
+                  }
+                  hours = parseInt(hours, 10) + add;
+              }
+            if(hours >= 24)
+            {
+                let add = Math.floor(hours / 60);
+                hours = hours % 24;
+                date = parseInt(date, 10) + add;
+            }
+
+            var formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + seconds;
+
+
+
+            var startDate = year + '-' + month + '-' + Pdate + 'T00:00:01';
+
+
+            document.getElementById("from").defaultValue = startDate;
+
+
+
+            document.getElementById("to").defaultValue = formattedDateTime;
+
+
+            deviceInfo();
+
+            // $.ajax({
+                     
+            //         url: '@Url.Action("deviceInfo", "eventManagement")',
+            //     method: "get",
+            //     dataType: 'Json',
+            //     success: function(data) {
+            //         var tabledata = data;
+            //         var table = new Tabulator("#deviceData", {
+            //             height: "400px",
+            //             width: "auto",
+            //             pagination: "local",
+            //             paginationSize: 10,
+            //             paginationSizeSelector: [10, 20, 50, 100],
+            //             layout: "fitDataStretch",
+            //             selectable: true,
+
+            //             data: tabledata, //assign data to table
+            //             /* autoColumns: true,*/ //create columns from data field names
+            //             columns: [
+            //                 {
+            //                     formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+            //                         cell.getRow().toggleSelect();
+            //                     }
+            //                 },
+
+            //                 { title: "Ip Address", field: "ipAddress", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+            //                 { title: "Location", field: "location", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+            //                 { title: "In Out", field: "inout", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "list", editorParams: { values: { 0: "In", 1: "Out" } } },
+            //                 { title: "User Id", field: "hikuser", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+            //                 { title: "Password", field: "hikpassword", hozAlign: "lcentereft", editor: "input" }
+            //             ]
+            //         })
+            //         table.on("rowSelectionChanged", function(data, rows) {
+
+            //             SelectedDevice = data;
+            //         })
+            //     }
+            // })
+
+
+
+
+        });
+
+        $('#update').click(function() {
+            $.ajax({
+                url: '@Url.Action("update", "eventManagement")',
+                method: "POST",
+                dataType: 'Json',
+                data: {
+
+                    Device: SelectedDevice
+                },
+                complete: function() {
+                    alert("updated");
+
+                },
+                //success: function (data) {
+                //    alert(data);
+
+                //}
+
+            })
+        });
+
+        $('#delete').click(function() {
+            $.ajax({
+                url: '@Url.Action("delete", "eventManagement")',
+                method: "POST",
+                dataType: 'Json',
+                data: {
+
+                    Device: SelectedDevice
+                },
+                complete: function() {
+                    alert(" Device has been deleted");
+
+                    deviceInfo();
+                },
+                //success: function (data) {
+                //    alert(data);
+
+                //}
+
+            })
+        });
+
+        function search() {
+            startSpinnerExcel();
+            if (SelectedDevice != "") {
+
+                const start = Date.now();
+                toastr.success("Data Loaded")
+                var fdate = document.getElementById("from").value
+                var tdate = document.getElementById("to").value
+                $.ajax({
+                    url: '@Url.Action("getEvent", "eventManagement")',
+                    method: "POST",
+                    dataType: 'Json',
+                    async: false,
+                    data:
+                    {
+                        fdate: fdate,
+                        tdate: tdate,
+                        Device: SelectedDevice
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er))
+                    },
+                    success: function(data) {
+                        if (data != 'noDevice') {
+                            SearchData = data;
+                            DwonloadData = data;
+                            var tabledata = data;
+                            table1 = new Tabulator("#eventTable",
+                                {
+                                    downloadConfig:
+                                    {
+                                        columnHeaders: false, //do not include column headers in downloaded table
+                                        columnCalcs: false, //do not include column calcs in downloaded table
+                                    },
+                                    height: "auto",
+                                    /*printRowRange: "active",*/
+                                    layout: "fitDataStretch",
+                                    /* selectable: true,*/
+                                    pagination: "local",
+                                    paginationSize: 20,
+                                    paginationSizeSelector: [20, 40, 50],
+                                    data: tabledata, //assign data to table
+                                    autoColumns: true,
+                                    columns: [
+                                        {
+                                            formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function(e, cell) {
+                                                cell.getRow().toggleSelect();
+                                            }
+                                        },
+
+                                        { title: "CardNo", field: "cardNo", hozAlign: "center", sorter: "number", headerFilter: "input", },
+                                        { title: "deviceNo", field: "deviceNo", hozAlign: "center", sorter: "number", headerFilter: "input", },
+                                        { title: "date", field: "date", hozAlign: "center", sorter: "date", sorterParams: { format: "DD/MM/YY" }, headerFilter: "input" },
+                                        { title: "time", field: "time", hozAlign: "center", sorter: "number", headerFilter: "input", editor: "input" },
+                                    ]
+
+                                });
+
+
+
+                        }
+                        else {
+                            alert("No device is connected")
+                            warning = 'yes'
+                            stopSpinnerExcel()
+                        }
+
+                    }
+
+
+                })
+
+            }
+            else {
+                alert("Select your desired device")
+                    //showModalWithTimeout("Select your desired device", 5000);
+                warning = 'yes'
+                stopSpinnerExcel()
+            }
+            stopSpinnerExcel()
+        }
+
+        document.getElementById("download-csv").addEventListener("click", function() {
+            startSpinnerExcel();
+            search();
+            if (warning != 'yes' && SearchData.length != 0) {
+                setTimeout(csv, 1000);
+                function csv() {
+                    table1.download("csv", "data.txt");
+                    setTimeout(clearLog, 1000)
+
+                    function clearLog() {
+                        if ($('#check').is(":checked") && SelectedDevice != "") {
+                            var tdate = document.getElementById("to").value
+                            $.ajax({
+                                url: '@Url.Action("clearEvent", "eventManagement")',
+                                method: "Post",
+                                dataType: 'Json',
+                                data: {
+
+                                    Device: SelectedDevice,
+
+                                    time: tdate
+
+                                },
+                                success: function(data) {
+                                    alert("previous events are deleted");
+
+                                },
+                                //success: function (data) {
+                                //    alert(data);
+
+                                //}
+
+                            })
+                        }
+                    }
+                }
+
+            }
+            else { alert("No data to download")
+            }
+
+        })
+
+
+
+
+        document.getElementById("download-xlsx").addEventListener("click", function() {
+            startSpinnerExcel();
+            search();
+            if (warning != 'yes' && SearchData.length != 0) {
+                setTimeout(xls, 1000);
+                function xls() {
+                    table1.download("xlsx", "data.xlsx", { sheetName: "MyData" })
+                    setTimeout(clearLog, 1000)
+
+                    function clearLog() {
+                        if ($('#check').is(":checked") && SelectedDevice != "") {
+                            var tdate = document.getElementById("to").value
+                            $.ajax({
+                                url: '@Url.Action("clearEvent", "eventManagement")',
+                                method: "Post",
+                                dataType: 'Json',
+                                data: {
+
+                                    Device: SelectedDevice,
+
+                                    time: tdate
+
+                                },
+                                success: function(data) {
+                                    //alert("previous events are deleted");
+                                    showModalWithTimeout("previous events are deleted", 2000);
+                                },
+                                //success: function (data) {
+                                //    alert(data);
+
+                                //}
+
+                            })
+                        }
+                    }
+                }
+            }
+            else {
+                    //alert("No data to download");
+                    showModalWithTimeout("No data to download", 2000);
+                }
+
+
+        })
+               function showModal(message) {
+            var modalTitle = document.getElementById("messageModalLabel");
+            var modalBody = document.getElementById("messageModalBody");
+
+            modalTitle.textContent = "Message";
+            modalBody.textContent = message;
+
+
+            $('#messageModal').modal('show');
+        }
+
+        function showModalWithTimeout(message, duration) {
+            showModal(message);
+            setTimeout(function() {
+                // Hide the modal after the specified duration
+                $('#messageModal').modal('hide');
+            }, duration);
+        }
+        //@*$("#search").click(function () {
+    //var fdate = document.getElementById("from").value
+    //var tdate = document.getElementById("to").value
+    //$.ajax({
+    //url: '@Url.Action("getEvent", "eventManagement")',
+    //method: "POST",
+    //dataType: 'Json',
+    //data: {
+    //fdate: fdate,
+    //tdate: tdate,
+    //Device: SelectedDevice
+    //},
+    //error: function (er) {
+    //alert(JSON.stringify(er))
+    //},
+    //success: function (data) {
+    //SearchData = data;
+    //DwonloadData = data;
+    //var tabledata = data;
+    //var table = new Tabulator("#eventTable", {
+    //downloadConfig: {
+    //columnHeaders: false, //do not include column headers in downloaded table
+    //columnCalcs: false, //do not include column calcs in downloaded table
+    //},
+    height: "auto",
+    printRowRange: "active",
+    layout: "fitDataStretch",
+    selectable: true,
+    pagination: "local",
+    paginationSize: 20,
+    paginationSizeSelector: [20, 40,50],
+    data: tabledata, //assign data to table
+    autoColumns: true,
+    });
+    document.getElementById("download-csv").addEventListener("click", function () {
+    table.download("csv", "data.csv");
+    });
+    document.getElementById("download-xlsx").addEventListener("click", function () {
+    table.download("xlsx", "data.xlsx", { sheetName: "MyData" });
+    });
+    if (data.length > 0) {
+    document.getElementById("download-csv").style.display = "block";
+    document.getElementById("access").style.display = "block";
+    document.getElementById("download-xlsx").style.display = "block";
+    document.getElementById("database").style.display = "block";
+    document.getElementById("word").style.display = "block";
+    }
+    alert("Data Collected Successfully!")
+    }
+    })
+    })*@
+
+            $("#database").click(function() {
+                search();
+                $.ajax({
+                    url: '@Url.Action("saveToDB", "eventManagement")',
+                    method: "POST",
+                    dataType: 'Json',
+                    data: {
+                        Sdata: SearchData
+                    },
+                    success: function(data) {
+                        alert("Data Saved Successfully!")
+                    }
+                });
+            })
+        $("#txt").click(function() {
+            if (SelectedDevice != "") {
+                const start = Date.now();
+                toastr.success("Data Loaded")
+                var fdate = document.getElementById("from").value
+                var tdate = document.getElementById("to").value
+                $.ajax({
+                    url: '@Url.Action("getEvent", "eventManagement")',
+                    method: "POST",
+                    dataType: 'Json',
+                    data: {
+                        fdate: fdate,
+                        tdate: tdate,
+                        Device: SelectedDevice
+                    },
+                    error: function(er) {
+                        alert(JSON.stringify(er))
+                    },
+                    success: function(data) {
+                        if (data != 'noDevice') {
+                            SearchData = data;
+                            DwonloadData = data;
+                            var tabledata = data;
+                            table1 = new Tabulator("#eventTable", {
+                                downloadConfig: {
+                                    columnHeaders: false, //do not include column headers in downloaded table
+                                    columnCalcs: false, //do not include column calcs in downloaded table
+                                },
+                                height: "auto",
+                                printRowRange: "active",
+                                layout: "fitDataStretch",
+                                selectable: true,
+                                pagination: "local",
+                                paginationSize: 20,
+                                paginationSizeSelector: [20, 40, 50],
+                                data: tabledata, //assign data to table
+                                autoColumns: true,
+
+                            });
+                            if (data.length != 0) {
+                                $.ajax({
+                                    url: '@Url.Action("saveTxt", "eventManagement")',
+                                    method: "POST",
+                                    dataType: 'Json',
+                                    async: 'false',
+                                    data: {
+                                        fileData: SearchData
+                                    },
+
+                                    error: function(er) {
+                                        alert(JSON.stringify(er))
+                                    },
+                                    success: function(data) {
+                                        alert("Data Imported Successfully!");
+
+
+
+                                        if ($('#check').is(":checked") && SelectedDevice != "") {
+                                            var tdate = document.getElementById("to").value
+                                            $.ajax({
+                                                url: '@Url.Action("clearEvent", "eventManagement")',
+                                                method: "Post",
+                                                dataType: 'Json',
+                                                data: {
+
+                                                    Device: SelectedDevice,
+
+                                                    time: tdate
+
+                                                },
+                                                success: function(data) {
+                                                    alert("previous events are deleted");
+
+                                                },
+                                                //success: function (data) {
+                                                //    alert(data);
+
+                                                //}
+
+                                            })
+                                        }
+
+                                    }
+
+                                })
+                            } else { alert("No data to download") }
+                        }
+                        else {
+                            alert("Device not connected")
+                        }
+                    }
+                })
+
+            }
+            else {
+                alert("Select your desired device")
+            }
+
+
+
+        })
+        $("#access").click(function() {
+            $.ajax({
+                url: '@Url.Action("saveToMA", "eventManagement")',
+                method: "POST",
+                dataType: 'Json',
+                data: {
+                    fileData: SearchData
+                },
+                error: function(er) {
+                    alert(JSON.stringify(er))
+                },
+                success: function(data) {
+                    if (data != 'noDevice') {
+                        alert("Data Download Successfully!")
+                    }
+                    else {
+                        alert("Device not connected")
+                    }
+                }
+
+            })
+        })
+
+                        //$('#storage').click(function() {
+
+
+                        //    if ($('#check').is(":checked") && SelectedDevice != "") {
+                        //        var tdate = document.getElementById("to").value
+                        //        $.ajax({
+                        //            url: '@Url.Action("clearEvent", "eventManagement")',
+                        //            method: "Post",
+                        //            dataType: 'Json',
+                        //            data: {
+
+                        //                Device: SelectedDevice,
+
+                        //                time: tdate
+
+                        //            },
+                        //            success: function(data) {
+                        //                alert(data);
+
+                        //            },
+                        //            //success: function (data) {
+                        //            //    alert(data);
+
+                        //            //}
+
+                        //        })
+                        //    }
+                        //});
+
+
+
+
+    </script>
+    <script src="~/lib/tabulator/js/tabulator.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+}
+

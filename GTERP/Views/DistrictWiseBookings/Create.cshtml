@@ -1,0 +1,415 @@
+﻿@model IEnumerable<GTERP.Models.DistrictWiseBooking>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid" style="max-width:1300px">
+    <div class="row card p-4">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <h4>District Wise Booking Create</h4>
+                <div class="form-row p-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                    <div class="form-group col-md-3">
+                        <label class="control-label">Allotment Type</label>
+                        <select id="AllotmentType" class="form-control" asp-items="ViewBag.AllotmentType">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label class="control-label">Year</label>
+                        <select id="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYearId"></select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Month</label>
+                        <select id="FiscalMonthId" class="form-control" asp-items="ViewBag.FiscalMonthId">
+                            <option>Please Select Month</option>
+                        </select>
+                    </div>
+
+
+                    @*<div class="form-group col-md-6">
+            <label asp-for="DistId" class="control-label"></label>
+            <select asp-for="DistId" class="form-control" asp-items="ViewBag.DistId"></select>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Qty" class="control-label"></label>
+            <input asp-for="Qty" class="form-control" />
+            <span asp-validation-for="Qty" class="text-danger"></span>
+        </div>*@
+                </div>
+                <br />
+                <div class="card p-4">
+                    <div class="table-responsive text-nowrap">
+                        @*<partial name="_BookingList" />*@
+                        <table id="tblDistWiseBookindata" class="tblDistWiseBookindata table table-striped table-bordered table-sm responsive nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    @*<th>Dist Wise Booking</th>
+        <th>Year Id</th>
+        <th>Month Id</th>*@
+                                    <th>DistWiseBooking Id</th>
+                                    <th>Year Name Id</th>
+                                    <th>Month Name Id</th>
+                                    <th>District Id</th>
+                                    <th>Allotment Type</th>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>District</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @*@if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayTextFor(m => item.DistWiseBookingId)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.FiscalYearId)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.FiscalMonthId)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.DistId)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.YearName.YearEng)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.MonthName.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.Cat_District.DistName)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(m => item.Qty)
+                        </td>
+                    </tr>
+                }
+            }*@
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="text-right" colspan="7">
+                                        <h4>
+                                            Total Value :
+                                        </h4>
+                                    </td>
+                                    <td colspan="1">
+                                        <h4 class="ttlBooking">0.00</h4>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div>
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <div class="text-center">
+
+                                    <span>
+                                        <input type="button" class="btn btn-warning" id="selectall" name="selectall" value="Select All" />
+                                    </span>
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Booking_Save()">Save</button>
+                                    </span>
+
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                            else if (ViewBag.Title == "Edit")
+                            {
+                                <div class="text-center">
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Load</a>
+                                    </span>
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Booking_Save()">Update</button>
+                                    </span>
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                            else if (ViewBag.Title == "Delete")
+                            {
+                                <div class="text-center">
+                                    <span>
+                                        <button type="button" class="btn btn-primary" onclick="Requisition_delete()">Delete</button>
+                                    </span>
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        $('#FiscalYearId').select2();
+        $('#FiscalMonthId').select2();
+        $('#AllotmentType').select2();
+
+
+        GetMonthByYears();
+
+
+        $('#FiscalYearId').change(function () {
+
+            GetMonthByYears();
+        })
+
+        function GetMonthByYears() {
+
+            var Year = $('#FiscalYearId option:selected').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetMonthByYear", "Booking")',
+                dataType: 'json',
+                data: { FYId: Year },
+                success: function (data) {
+                    //console.log(data)
+                    //alert(data);
+                    var html = '<option value="0">Select Month</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $('#FiscalMonthId').html(html);
+                    $('#FiscalMonthId').attr('disabled', false);
+                },
+                error: function (ex) {
+                    toastr.error('Faild' + ex);
+                }
+            });
+            return false;
+        }
+
+
+
+
+
+
+        var Booking = [];
+        var tblDistWiseBookindata;
+        tblDistWiseBookindata = $('#tblDistWiseBookindata').DataTable({
+            select: true,
+            select:'multi',
+            "aoColumns": [
+                { "sClass": "DistWiseBookingId", "visible": false },
+                { "sClass": "FiscalYearId", "visible": false },
+                { "sClass": "FiscalMonthId", "visible": false },
+                { "sClass": "DistId", "visible": false },
+                { "sClass": "AllotmentType", "visible": true },
+                { "sClass": "YearEng", "visible": true },
+                { "sClass": "Name", "visible": true },
+                { "sClass": "DistName", "visible": true },
+                { "sClass": "Qty", "visible": true }
+            ],
+            columnDefs: [
+                {
+                    'targets': 8,
+                    'render': function (data, type, row) {
+                        return '<input class="form-control form-control-sm" id="Qty" name="AllotmentQty" type="text" data-val="true" value=' + data + '>'
+                    }
+                }
+
+            ],
+            rowCallBack: function (row) {
+                $(row).addClass('txtdealer');
+            },
+            'bLengthChange': false,
+            'bFilter': false,
+            'bSort': false,
+            'bInfo': false,
+            'paging': false,
+            'searching': true
+        });
+
+        $('#tblDistWiseBookindata').keyup(function () {
+            bookingDataCalculation()
+        })
+
+        $('#FiscalMonthId').select2({})
+            .on('select2:select', function (e) {
+                if ($('#FiscalMonthId').val() > 0) {
+                    //tblDistWiseBookindata.clear().draw();
+                    DealerLoad();
+                } else {
+                    alert('Please Select Month Information First');
+                }
+            })
+
+
+
+        function DealerLoad() {
+            var Year = $('#FiscalYearId').val();
+            var Month = $('#FiscalMonthId').val();
+            var AllotmentType = $('#AllotmentType').val();
+
+
+
+            tblDistWiseBookindata.clear().draw();
+            //alert('Hit Dealer Load');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetAllDistrict", "DistrictWiseBookings")',
+                dataType: 'json',
+                data: { AllotmentType: AllotmentType, Year: Year, Month: Month},
+                async: false,
+                success: function (data) {
+                    //console.log(data);
+                    if (data != 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            $('#tblDistWiseBookindata').dataTable().fnAddData([
+                                data[i].DistWiseBookingId,
+                                data[i].FiscalYearId,
+                                data[i].FiscalMonthId,
+                                data[i].DistId,
+                                data[i].AllotmentType,
+                                data[i].YearName,
+                                data[i].MonthName,
+                                data[i].DistName,
+                                data[i].Qty
+                            ])
+                        }
+
+                        bookingDataCalculation();
+                    }
+                    else {
+                        alert('No Record Pending');
+                    }
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            })
+        }
+        $('#selectall').click(function () {
+
+            var btn = $('#selectall').val();
+                if (btn == "Select All") {
+                    $('#tblDistWiseBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+                    });
+                    $('#selectall').val('DeSelect All');
+                } else {
+                    $('#tblDistWiseBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        };
+                    });
+                    $('#selectall').val('Select All');
+                }
+        })
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var date = new Date();
+        var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+
+
+        function bookingDataCalculation() {
+            $('.ttlBooking').text(0.00);
+
+            var totalbooking = 0.00
+            //var oTable = tblBookindata.rows('.selected').nodes().toArray();
+            //var rows = tblBookindata.rows('.selected').data().toArray();
+            var oTable = tblDistWiseBookindata.rows().nodes();
+            var rows = tblDistWiseBookindata.rows().data();
+
+            for (var i = 0; i < rows.length; i++) {
+                var $bookingqty = oTable[i].cells[4].children[0].value;
+
+                totalbooking += parseFloat($bookingqty);
+            }
+
+            $('.ttlBooking').val(totalbooking.toLocaleString());
+            $('.ttlBooking').text(totalbooking.toLocaleString());
+        }
+
+        function Booking_Save() {
+            districtWiseBookings = [];
+            var districtWiseBooking = {
+                DistWiseBookingId: 0, FiscalYearId: 0, FiscalMonthId: 0, DistId: 0,AllotmentType :"", DtInput: "", Qty: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated:""
+            }
+
+            var rows = tblDistWiseBookindata.rows('.selected').nodes().toArray();
+            var BookingData = tblDistWiseBookindata.rows('.selected').data().toArray();
+            //console.log(rows);
+            //console.log(BookingData);
+            for (var i = 0; i < BookingData.length; i++) {
+
+                console.log(rows[i].cells[4].children[0].value)
+                if (rows[i].cells[4].children[0].value > 0) {
+
+                    districtWiseBooking.DistWiseBookingId = BookingData[i][0];
+                    districtWiseBooking.FiscalYearId = BookingData[i][1];//$('#FiscalYearId option:selected').val();
+                    districtWiseBooking.FiscalMonthId = BookingData[i][2];//$('#FiscalMonthId option:selected').val();
+                    districtWiseBooking.DistId = BookingData[i][3];
+
+                    districtWiseBooking.AllotmentType = BookingData[i][4];
+
+
+
+                    districtWiseBooking.Qty = rows[i].cells[4].children[0].value;
+                    districtWiseBooking.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                    districtWiseBooking.PcName = "";
+                    districtWiseBooking.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                    districtWiseBooking.DateAdded = today;
+                    districtWiseBooking.DtInput = today;
+                    districtWiseBookings.push(districtWiseBooking);
+
+                    var districtWiseBooking = {
+                        DistWiseBookingId: 0, FiscalYearId: 0, FiscalMonthId: 0, DistId: 0, AllotmentType: "", DtInput: "", Qty: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated: ""
+                    }
+                }
+            }
+
+           
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Create", "DistrictWiseBookings")',
+                dataType: 'json',
+                async: false,
+                //dataType:'application/json',
+                data: { districtWiseBooking: districtWiseBookings },
+                success: function (data) {
+                    console.log(data)
+                    if (data.Success == "1") {
+                         window.location.href = '@Url.Action("Index", "DistrictWiseBookings")';
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                },
+                error: function (ex) {
+
+                }
+            });
+        }
+
+
+    </script>
+
+}

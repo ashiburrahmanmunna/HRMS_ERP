@@ -1,0 +1,694 @@
+﻿@model GTERP.Controllers.PBC_Automation.TaskAssignController.TaskAssignVM
+
+@* task assign create form *@
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+
+    <input type="hidden" asp-for="ComId" value= "ViewBag.ComId" />
+
+    @if (ViewBag.action == "Create")
+    {
+        <div class="form-header btn-info" style="margin-right:30px">
+            <i class="fas fa-plus-square"></i> Create Task Assign Form
+            <div id="loading" style="display: inline;">
+                <div id="loadingGif" style="display: inline;">
+                    @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                </div>
+            </div>
+        </div>
+
+        <div class="row container-fluid justify-content-between">
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group row mb-2 input-group">
+                        <span class="input-group-prepend">
+                            <label class="col-form-label input-group-text">Employee</label>
+                        </span>
+                        <select asp-for="EmpId" class="form-select col-9" asp-items="ViewBag.EmpId">
+                            <option value="" selected>--Select One--</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group row mb-2 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Duration</label>
+                        </span>
+                        <select asp-for="Duration" class="form-select col-9">
+                            <option value="" selected>--Select One--</option>
+                            @{
+                                for (var i = 1; i <= 12; i++)
+                                {
+                                    <option value="M-@i">M-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group row mb-2 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Year</label>
+                        </span>
+                        <select asp-for="Year" class="form-select col-9">
+                            <option selected value="">--Select Year--</option>
+                            @{
+                                for (var i = 2022; i <= 2050; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="form-group row mb-2 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label-lg input-group-text">Quarter</label>
+                        </span>
+                        <select asp-for="Quarter" class="form-control col-9">
+                            <option value="" selected>--Select Quarter--</option>
+                            @{
+                                for (var i = 1; i <= 7; i++)
+                                {
+                                    <option value="Q-@i">Q-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Assign Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="AssignDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control" width="100" />
+
+                        </div>
+                    </div>
+                    <div class="form-group  mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Submission Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="SubmiteDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control col-9" />
+
+                        </div>
+                    </div>
+                    <div class="form-group mt-2  mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <input type="file" asp-for="Documents"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_T_Task, new { @class = "form-control formInput" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_T_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_K_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_K_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_M_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_M_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_BV_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_BV_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group row" style="display:flex;justify-content:end;flex-direction:row;">
+            
+            <div class="col-4">
+
+                <button type="submit" class="btn btn-success rounded-0">Save</button>
+                <button type="submit" class="btn btn-warning rounded-0" disabled style="cursor:not-allowed">Update</button>
+                <button type="submit" class="btn btn-danger rounded-0" disabled style="cursor:not-allowed">Delete</button>
+                <a asp-action="Index" class="btn btn-info rounded-0">Back</a>
+
+            </div>
+        </div>
+
+    }
+</form>
+
+
+
+@* task assign edit form *@
+<form method="post" asp-action="Edit" asp-controller="TaskAssign" enctype="multipart/form-data">
+    <input type="hidden" asp-for="TaskAssignId" />
+    <input type="hidden" asp-for="ComId" value="ViewBag.ComId" />
+    @if (ViewBag.action == "Edit")
+    {
+        <div class="form-header btn-warning" style="margin-right:30px">
+            <i class="fa fa-edit"></i> Task Assign Edit
+            <div id="loading" style="display: inline;">
+                <div id="loadingGif" style="display: inline;">
+                    @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                </div>
+            </div>
+        </div>
+
+        <div class="row container-fluid justify-content-between">
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group row mb-1 input-group">
+                        <span class="input-group-prepend">
+                            <label class="col-form-label input-group-text">Employee</label>
+                        </span>
+                        <select asp-for="EmpId" class="form-select col-9" asp-items="ViewBag.EmpId">
+                            <option value="" selected>--Select One--</option>
+                        </select>
+                    </div>
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Duration</label>
+                        </span>
+                        <select asp-for="Duration" class="form-select col-9">
+                            <option value="" selected>--Select One--</option>
+                            @{
+                                for (var i = 1; i <= 12; i++)
+                                {
+                                    <option value="M-@i">M-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Year</label>
+                        </span>
+                        <select asp-for="Year" class="form-select col-9">
+                            <option selected value="">--Select Year--</option>
+                            @{
+                                for (var i = 2022; i <= 2050; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label-lg input-group-text">Quarter</label>
+                        </span>
+                        <select asp-for="Quarter" class="form-control col-9">
+                            <option value="" selected>--Select Quarter--</option>
+                            @{
+                                for (var i = 1; i <= 7; i++)
+                                {
+                                    <option value="Q-@i">Q-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Assign Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="AssignDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control" width="100" />
+                        </div>
+                    </div>
+                    <div class="form-group  mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Submission Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="SubmiteDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control col-9" />
+
+                        </div>
+                    </div>
+                    <div class="form-group  mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <input type="file" asp-for="Documents" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_T_Task, new { @class = "form-control formInput" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_T_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_K_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_K_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_M_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_M_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_BV_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_BV_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group row" style="display:flex;justify-content:end;flex-direction:row;">
+           
+            <div class="col-4">
+                <button type="submit" class="btn btn-success rounded-0" disabled style="cursor:not-allowed">Save</button>
+                <button type="submit" class="btn btn-warning rounded-0" id="editBtn">Update</button>
+                <button type="submit" class="btn btn-danger rounded-0" id="deleteBtn" disabled style="cursor:not-allowed">Delete</button>
+                <a asp-action="Index" class="btn btn-info rounded-0">Back</a>
+            </div>
+        </div>
+    }
+</form>
+
+
+@* task assign delete form *@
+<form method="post" asp-action="Delete">
+    <input type="hidden" asp-for="TaskAssignId" />
+    @if (ViewBag.action == "Delete")
+    {
+        <div class="form-header btn-danger" style="margin-right:30px">
+            <i class="fas fa-trash"></i> Create Task Assign Form
+            <div id="loading" style="display: inline;">
+                <div id="loadingGif" style="display: inline;">
+                    @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                </div>
+            </div>
+        </div>
+
+        <div class="row container-fluid justify-content-between">
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group row mb-1 input-group">
+                        <span class="input-group-prepend">
+                            <label class="col-form-label input-group-text">Employee</label>
+                        </span>
+                        <select asp-for="EmpId" class="form-select col-9" asp-items="ViewBag.EmpId">
+                            <option value="" selected>--Select One--</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Duration</label>
+                        </span>
+                        <select asp-for="Duration" class="form-select col-9">
+                            <option value="" selected>--Select One--</option>
+                            @{
+                                for (var i = 1; i <= 12; i++)
+                                {
+                                    <option value="M-@i">M-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label input-group-text">Year</label>
+                        </span>
+                        <select asp-for="Year" class="form-select col-9">
+                            <option selected value="">--Select Year--</option>
+                            @{
+                                for (var i = 2022; i <= 2050; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="form-group row mb-1 input-group">
+                        <span class=" input-group-prepend">
+                            <label class="col-form-label-lg input-group-text">Quarter</label>
+                        </span>
+                        <select asp-for="Quarter" class="form-control col-9">
+                            <option value="" selected>--Select Quarter--</option>
+                            @{
+                                for (var i = 1; i <= 7; i++)
+                                {
+                                    <option value="Q-@i">Q-@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Assign Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="AssignDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control" width="100" />
+
+                        </div>
+                    </div>
+                    <div class="form-group  mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Submission Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="SubmiteDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control col-9" />
+
+                        </div>
+                    </div>
+                    <div class="form-group  mb-1">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <input type="file" asp-for="Documents" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card mb-2 rounded-0" style="width:48%">
+                <div class="card-body ml-3">
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_T_Task, new { @class = "form-control formInput" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Time Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_T_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_K_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+
+                                    Knowledge Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_K_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_M_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    Money Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_M_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Task
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.Type_BV_Task, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="input-group row">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    B.Value Description
+                                </span>
+                            </div>
+                            @Html.TextAreaFor(m => m.Type_BV_Description, new { @class = "form-control formInput", @style = "height:40px" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group row" style="display:flex;justify-content:end;flex-direction:row;">
+            
+            <div class="col-4">
+                <button type="submit" class="btn btn-success rounded-0" disabled style="cursor:not-allowed">Save</button>
+                <button type="submit" class="btn btn-warning rounded-0" id="editBtn" disabled style="cursor:not-allowed">Update</button>
+                <button type="submit" class="btn btn-danger rounded-0" id="deleteBtn">Delete</button>
+                <a asp-action="Index" class="btn btn-info rounded-0">Back</a>
+            </div>
+        </div>
+    }
+</form>
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            var empInfos =@Html.Raw(Json.Serialize(ViewBag.EmpInfo));
+
+            $("#AssignDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#AssignDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#AssignDate").datepicker("option", "dateFormat", "dd-M-yy");
+                }
+            });
+
+            $("#SubmiteDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#SubmiteDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#SubmiteDate").datepicker("option", "dateFormat", "dd-M-yy");
+                }
+            });
+
+            $("#EmpId").change(function () {
+                var selectedEmp = empInfos.find(searchEmp);
+                if (selectedEmp != null) {
+                    $("#DesigName").val(selectedEmp.DesigName);
+                    $("#DeptName").val(selectedEmp.DeptName);
+                    $("#SectName").val(selectedEmp.SectName);
+                }
+            });
+
+            $("#EmpId").select2();
+            console.log($("#DeptName").val());
+        })
+
+        function searchEmp(empInfos) {
+            var empid = $("#EmpId option:selected").val();
+            if (empid == "")
+                return;
+                return empInfos.EmpId == empid;
+
+        }
+
+        $("#deleteBtn").click(() => {
+            confirm("Do you want to delete this data");
+        })
+
+    </script>
+}

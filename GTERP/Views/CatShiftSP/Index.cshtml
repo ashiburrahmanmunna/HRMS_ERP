@@ -1,0 +1,289 @@
+﻿@model IEnumerable<GTERP.Models.Cat_Shift>
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row mb-2">
+            @*<div class="col-md-3 col-12">
+                    @Html.ActionLink("Shift Entry", "CreateShift", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+                </div>*@
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">Shift List</h2>
+            </div>
+        </div>
+    </div>
+
+    <form class="card p-2 table-responsive mb-4">
+        <table id="tbllist" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+            <thead class="text-nowrap">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftIn)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftOut)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftLate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegHour)
+                    </th>
+
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShiftName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShiftIn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShiftOut)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ShiftLate)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RegHour)
+                        </td>
+
+                        <td class="text-nowrap">
+                            <span data-toggle="tooltip" title="Edit!">
+                                @Html.ActionLink(" ", "Create", new { id = item.ShiftId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                            </span>
+                            @*<span data-toggle="tooltip" title="Delete!">
+                                @Html.ActionLink(" ", "DeleteShift", new { Id = item.ShiftId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                            </span>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+
+
+
+    <form class="card p-2 table-responsive">
+        @{ IEnumerable<HR_Cat_Shift_SP> NewShift = ViewBag.NewShift;}
+
+        <div class="text-center">
+            <div class="row mb-2">                
+                <div class="col-md-9 col-12">
+                    <h2 id="styletext"> Special Shift List</h2>
+                </div>
+            </div>
+        </div>
+
+        <table id="tbllist1" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+            <thead class="text-nowrap">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftIn)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftOut)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ShiftLate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegHour)
+                    </th>
+                    <th>
+                        Shift Date
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in NewShift)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => s.Cat_Shift.ShiftName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => s.ShiftIn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => s.ShiftOut)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => s.ShiftLate)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => s.RegHour)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => s.ShiftDate)
+                        </td>
+                        <td class="text-nowrap text-center">
+                            <span data-toggle="tooltip" title="Edit!">
+                                @Html.ActionLink(" ", "EditShiftSP", new { id = s.SP_ShiftId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                            </span>
+                            <span data-toggle="tooltip" title="Delete!">
+                                @Html.ActionLink(" ", "DeleteShiftSP", new { Id = s.SP_ShiftId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+          
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+ 
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+
+            });
+            $('#tbllist1').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+              
+
+                "searching": true,
+                "paging": false,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                "scrollX": false,
+                "scrollY": false,
+                "scrollCollapse": true,
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+
+            });
+        });
+
+                                        //$(".search_input").addClass('form-control input-lg col-xs-12');
+    </script>
+}
+

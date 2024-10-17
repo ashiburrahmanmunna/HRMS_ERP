@@ -1,0 +1,477 @@
+﻿@model IEnumerable<GTERP.ViewModels.SalaryCheck>
+@{
+    ViewBag.Title = "Salary Check";
+    //getting Approval List values
+    List<HR_Emp_Salary> ApproveEmpList = ViewBag.EmpApprovetype;
+    var ApproveEmpname = ViewBag.empType;
+    List<HR_Emp_Salary> AllApproveEmpList =ViewBag.AllEmpApprovetype; 
+    var gs = ViewBag.GS;
+
+}
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="text-center">
+        <div class="row mb-1">
+            <div class="col-md-9 col-12">
+                <div class="input-group mb-1">
+                    <select asp-items="ViewBag.ProssType" class="form-control" id="prossType"></select>
+                </div>
+                </div>
+                <div class="col-md-3 col-12">
+                <input type="button" id="btnLaod" onclick="sendData()" value="Load" class="btn btn-warning btn-block rounded-0 mb-1" />
+                </div>
+
+            </div>
+
+    </div>
+    <form class="card p-2">
+        <div class="row" style="margin: 2px">
+            <div class="col-6">
+            </div>
+            <div class="col-6">
+                <div style="display: flex; align-items: center;" class="float-right">
+                    @*<button type="button" class="btn btn-outline-primary" onclick="downloadPDF()" style="margin-right: 2px;">PDF</button>*@
+                    <button id="download-btns" onclick="downloadExcel()" class="btn btn-outline-success">Export</button>
+                    <button id="download-btn" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                    <select id="page-size" style="width: 80px;">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                        <option value="5000">5000</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-12">
+            <div id="jsGrid" style="height: 300px"></div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $("#prossType").select2();
+            
+        });
+                    
+    </script>
+    <script>
+        var pageSize = $("#page-size").val();
+        var prosstype = $("#prossType").val();
+        var url;
+        var search;
+        function initJsGrid() {
+            var jsGridItemsDB = {
+                loadData: function (filter) {
+                    pageSize: pageSize,
+                        url = '@Url.Action("SalaryCheckList", "Payroll")' + '?pageIndex=' + filter.pageIndex + '&pageSize=' + filter.pageSize;
+
+
+                    url += '&prossType=' + $("#prossType").val();
+                    url += '&searchquery=' + JSON.stringify(filter);
+                    search = JSON.stringify(filter);
+                    console.log(filter);
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        //data: { searchquery: JSON.stringify(filter) },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    })
+
+                        .done(function (result) {
+                            result.EmployeeList.push({
+                                EmpCode: "", EmpName: "", DesigName: "", SubCategoryName: "", EmpTypeName: "", DeptName: "", SectName: "", SubSectName: "",
+                                UnitName: "", FloorName: "", LineName: "", DtJoin: "", BankName: "", BankAccount: "", PayModeName: "", PaySource: "", Present: "", 
+                                Absent: "", WDay: "",HDay: "", CL: "", SL: "", EL: "", ML: "", SPL: "", LWP: "", PDay: "", GS: result.Total.GS,
+                                BS: result.Total.BS, HR: result.Total.HR, MA: result.Total.MA, FoodAllow: result.Total.FoodAllow, ConvAllow: result.Total.ConvAllow,
+                                AttBonus: result.Total.AttBonus, OtherAllow: result.Total.OtherAllow, CurrEL: result.Total.CurrEL, ELAmt: result.Total.ELAmt,
+                                OTHrTtl: result.Total.OTHrTtl, OT: result.Total.OT, 
+                                TotalPayable: result.Total.TotalPayable,
+                                AB: result.Total.AB, ADV: result.Total.ADV, PF: result.Total.PF, IncomeTax: result.Total.IncomeTax, Stamp: result.Total.Stamp,
+                                OthersDeduct: result.Total.OthersDeduct,
+                                TotalDeduct: result.Total.TotalDeduct,
+                                NetSalaryPayable: result.Total.NetSalaryPayable,
+                                OTHRBuyer: result.Total.OTHRBuyer, OTAmtBuyer: result.Total.OTAmtBuyer,
+                                ExOTHr: result.Total.ExOTHr, ExOTAmount: result.Total.ExOTAmount,
+                                DynamicOTHr: result.Total.DynamicOTHr, DynamicOTAmt: result.Total.DynamicOTAmt,
+                                DynamicExOTHr: result.Total.DynamicExOTHr, DynamicExOTAmount: result.Total.DynamicExOTAmount,
+                                HDayBonus: result.Total.HDayBonus,
+                                WHDayOTHr: result.Total.WHDayOTHr, WHDayOTAmt: result.Total.WHDayOTAmt,
+                                TotalPayableB: result.Total.TotalPayableB,                                
+                                NetSalary: result.Total.NetSalary, NetSalaryB: result.Total.NetSalaryB,
+                                TotalDeductB: result.Total.TotalDeductB, NetSalaryPayableB: result.Total.NetSalaryPayableB,
+                                DynamicNetSalary: result.Total.DynamicNetSalary, DynamicTotalPayable: result.Total.DynamicTotalPayable,
+                                DynamicTotalDeduct: result.Total.DynamicTotalDeduct, DynamicNetSalaryPayable: result.Total.DynamicNetSalaryPayable,
+                                CashPF: result.Total.CashPF, BankPF: result.Total.BankPF,
+                                GrossCash: result.Total.GrossCash, GrossBank: result.Total.GrossBank,
+                                CashPay: result.Total.CashPay, BankPay: result.Total.BankPay,
+                                AttAllow: result.Total.AttAllow, DD: result.Total.DD
+                            });
+                                   
+                            console.log(result);
+                            d.resolve(result);
+                            //console.log(result.ProductList);
+
+                        });
+                    return d.promise().then(function (q) {
+
+                        //console.log(q);
+                        return {
+
+                            data: q.EmployeeList,
+                            itemsCount: parseInt(q.PageInfo.TotalRecordCount)
+                        }
+                    });
+                }
+
+            }
+
+            var child = [];
+            //alert(globalPageSize);
+            var serial = 0;
+
+            $("#jsGrid").jsGrid({
+
+                width: "100%",
+                //height: 400,
+                filtering: true,
+                //editing: true,
+                autoload: true,
+                pageSize: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                paging: true,
+                controller: jsGridItemsDB,
+                pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                pagePrevText: "<",
+                pageNextText: ">",
+                // selecting: true,
+
+                fields: [
+                    { name: "EmpCode", type: "text", width: 100, title: "Emp Code" },
+                    { name: "EmpName", type: "text", width: 150, title: "Emp Name" },
+                    {
+                        name: "DesigName",
+                        type: "text",
+                        width: 150,
+                        title: "Designation",
+                        editing: true,
+                    },
+
+                    { name: "GradeName", type: "text", width: 150, title: "Grade" },
+                    { name: "SubCategoryName", type: "text", width: 150, title: "Category" },
+                    { name: "EmpTypeName", type: "text", width: 150, title: "EmpType" },
+                    { name: "DeptName", type: "text", width: 150, title: "Department" },
+                    { name: "SectName", type: "text", width: 150, title: "Section" },
+                    { name: "SubSectName", type: "text", width: 150, title: "SubSection" },
+                    { name: "UnitName", type: "text", width: 150, title: "Unit" },
+                    { name: "FloorName", type: "text", width: 150, title: "Floor" },
+                    { name: "LineName", type: "text", width: 150, title: "Line" },
+                    { name: "DtJoin", title: "Join Date", width: 150, type: "date", itemTemplate: function (value) {
+                        if (value) {
+                            var date = new Date(value);
+                            var day = ("0" + date.getDate()).slice(-2);
+                            var month = date.toLocaleString("default", { month: "short" });
+                            var year = date.getFullYear();
+                            return day + "-" + month + "-" + year;
+                        }
+                        return "";
+                        }
+                    },
+                    { name: "BankName", type: "text", width: 150, title: "BankName" },
+                    { name: "BranchName", type: "text", width: 170, title: "Branch Name" },                   
+                    { name: "AccountNumber", type: "text", width: 150, title: "Bank Acc. No." },
+                    { name: "PayModeName", type: "text", width: 150, title: "PayMode" },
+                    { name: "PaySource", type: "text", width: 150, title: "Status" },
+                    { name: "Present", type: "text", width: 150, title: "Present" },
+                    { name: "Absent", type: "text", width: 150, title: "Absent" },
+                    { name: "WDay", type: "text", width: 150, title: "WDay" },
+                    { name: "HDay", type: "text", width: 150, title: "HDay" },
+                    { name: "CL", type: "text", width: 150, title: "CL" },
+                    { name: "SL", type: "text", width: 150, title: "SL" },
+                    { name: "EL", type: "text", width: 150, title: "EL" },
+                    { name: "ML", type: "text", width: 150, title: "ML" },
+                    { name: "SPL", type: "text", width: 150, title: "SPL" },
+                    { name: "LWP", type: "text", width: 150, title: "LWP" },
+                    { name: "PDay", type: "text", width: 150, title: "PDay" },
+                    { name: "GS", type: "text", width: 150, title: "Gross Salary" },
+                    { name: "BS", type: "text", width: 150, title: "Basic Salary" },
+                    { name: "HR", type: "text", width: 150, title: "House Rent" },
+                    { name: "MA", type: "text", width: 150, title: "MA" },
+                    { name: "FoodAllow", type: "text", width: 150, title: "FA" },
+                    { name: "ConvAllow", type: "text", width: 150, title: "Trn" },
+                    { name: "AttBonus", type: "text", width: 150, title: "Att. Bonus" },
+                    { name: "OtherAllow", type: "text", width: 150, title: "OtherAllow" },
+                    { name: "CurrEL", type: "text", width: 150, title: "EL Day" },
+                    { name: "ELAmt", type: "text", width: 150, title: "EL Amount" },
+                    { name: "OTHrTtl", type: "text", width: 150, title: "OTHour" },
+                    { name: "OT", type: "text", width: 150, title: "OT Amount" },                    
+                    { name: "TotalPayable", type: "text", width: 150, title: "Total Payable" },               
+
+                    { name: "AB", type: "text", width: 150, title: "Absent Amount" },
+                    { name: "ADV", type: "text", width: 150, title: "Adv" },
+                    { name: "PF", type: "text", width: 150, title: "PF" },
+                    { name: "IncomeTax", type: "text", width: 150, title: "Income Tax" },
+                    { name: "Stamp", type: "text", width: 150, title: "Stamp" },
+                    { name: "OthersDeduct", type: "text", width: 150, title: "Others Deduction" },
+                    { name: "TotalDeduct", type: "text", width: 150, title: "Total Deduct" },
+                    { name: "NetSalaryPayable", type: "text", width: 150, title: "Net Salary Payable" },
+
+                    { name: "CashPF", type: "text", width: 150, title: "CashPF" },
+                    { name: "BankPF", type: "text", width: 150, title: "BankPF" },
+                    { name: "GrossCash", type: "text", width: 150, title: "GrossCash" },
+                    { name: "GrossBank", type: "text", width: 150, title: "GrossBank" },
+                    { name: "CashPay", type: "text", width: 150, title: "CashPay" },
+                    { name: "BankPay", type: "text", width: 150, title: "BankPay" },
+                    { name: "AttAllow", type: "text", width: 150, title: "Special Allow." },
+                    { name: "DD", type: "text", width: 150, title: "Day Deduct" },
+
+                    { name: "OTHRBuyer", type: "text", width: 150, title: "Reg. OTHour" },
+                    { name: "OTAmtBuyer", type: "text", width: 150, title: "Reg. OT Amount" },
+                    { name: "ExOTHr", type: "text", width: 150, title: "Ex. OTHour" },                    
+                    { name: "ExOTAmount", type: "text", width: 150, title: "Ex. OT Amount" },
+                    { name: "DynamicOTHr", type: "text", width: 120, title: "Dynamic OT" },
+                    { name: "DynamicOTAmt", type: "text", width: 170, title: "Dynamic OT Amount" },
+                    { name: "DynamicExOTHr", type: "text", width: 120, title: "Dynamic Extra OT" },
+                    { name: "DynamicExOTAmount", type: "text", width: 170, title: "Dynamic Extra OT Amount" },
+                    { name: "WDayP", type: "text", width: 170, title: "WDayP" },
+                    { name: "HDayP", type: "text", width: 170, title: "HDayP" },
+                    { name: "HDayBonus", type: "text", width: 170, title: "Holiday Allow." },
+                    { name: "WHDayOTHr", type: "text", width: 150, title: "WHDay OTHour",editing: true },
+                    { name: "WHDayOTAmt", type: "text", width: 150, title: "WHDay OT Amount" },                                   
+                    { name: "NetSalary", type: "text", width: 150, title: "Net Salary" },
+                    { name: "NetSalaryB", type: "text", width: 150, title: "Net Salary**" },
+                    { name: "DynamicNetSalary", type: "text", width: 150, title: "Dynamic Net Salary" },
+                    { name: "TotalPayableB", type: "text", width: 150, title: "Total Payable**" },
+                    { name: "DynamicTotalPayable", type: "text", width: 150, title: "Dynamic Total Payable" },
+                    { name: "TotalDeductB", type: "text", width: 150, title: "Total Deduct**" },
+                    { name: "DynamicTotalDeduct", type: "text", width: 150, title: "Dynamic Total Deduct" },
+                    { name: "NetSalaryPayableB", type: "text", width: 170, title: "Net Salary Payable**" },
+                    { name: "DynamicNetSalaryPayable", type: "text", width: 170, title: "Dynamic NetSalary Payable" },
+                    { name: "NID", type: "text", width: 170, title: "NID" }
+                ],
+
+
+            });
+        }
+
+        $("#page-size").on("change", function () {
+            var newPageSize = $(this).val();
+            $("#jsGrid").jsGrid("option", "pageSize", newPageSize);
+            $("#jsGrid").jsGrid("loadData");
+        });
+        $("#prossType").on("change", function () {
+            var newprosstype = $(this).val();
+            $("#jsGrid").jsGrid("option", "prossType", newprosstype);
+            $("#jsGrid").jsGrid("loadData");
+        });
+        function filterItemTemplate() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+
+        function sendData() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+
+        function handleClick() {
+            $("#jsGrid").jsGrid("loadData");
+        }
+        initJsGrid();
+
+        function downloadExcel() {
+            var url = '@Url.Action("GetEmployeesAll", "Payroll")' + '?';
+            url += '&prossType=' + $("#prossType").val();
+            url += '&searchquery=' + search;
+            $.ajax({
+                url: url,
+                method: 'GET',
+                async:false,
+                success: function (response) {
+                    console.log(response);
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+
+                        // Convert the data to an Excel file using a library like SheetJS
+                        const workbook = XLSX.utils.book_new();
+                        const sheet = XLSX.utils.json_to_sheet(data);
+                        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+                        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const url = window.URL.createObjectURL(blob);
+
+                        // Create a temporary link to download the file
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'data.xlsx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+
+        function downloadPDF() {
+            var url = '@Url.Action("GetEmployeesAll", "Payroll")' + '?';
+            url += '&prossType=' + $("#prossType").val();
+            url += '&searchquery=' + search;
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+
+                        // Define the PDF document structure
+                        var docDefinition = {
+                            content: [
+                                { text: 'Salary Data', style: 'header' },
+                                { text: '\n' },
+                                {
+                                    table: {
+                                        headerRows: 1,
+                                        widths: ['*', '*', '*', '*', '*'/*, '*', '*', '*', '*', '*', '*', '*'*/],
+                                        body: [
+                                            ['Employee Code', 'Employee Name', 'Join Date', 'Designation', 'Net Salary Payable'/*, 'Section', 'Department', 'Mobile', 'Punch Date', 'Punch Time', 'Latitude', 'Longitude'*/],
+                                            ...data.map(employee => [
+                                                employee.EmpCode,
+                                                employee.EmpName,
+                                                formatDate(employee.DtJoin),
+                                                employee.DesigName,
+                                                employee.NetSalaryPayable
+                                                //employee.SectName,
+                                                //employee.DeptName,
+                                                //employee.Mobile,
+                                                //formatDate(employee.DtPunchDate),
+                                                //formatTime(employee.DtPunchTime),
+                                                //employee.Latitude,
+                                                //employee.Longitude
+                                            ])
+                                        ]
+                                    }
+                                }
+                            ],
+                            styles: {
+                                header: {
+                                    fontSize: 18,
+                                    bold: true,
+                                    alignment: 'center',
+                                    margin: [0, 0, 0, 10]
+                                }
+                            }
+                        };
+
+                        // Format date in desired format
+                        function formatDate(date) {
+                            return moment(date).format('DD-MMM-YYYY');
+                        }
+
+                        // Format time in desired format
+                        function formatTime(time) {
+                            return moment(time).format('hh:mm:ss A');
+                        }
+
+                        // Generate the PDF
+                        var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+                        pdfDocGenerator.download('Salary_data.pdf');
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+
+    </script>
+    <script>
+        var downloadBtn = document.getElementById("download-btn");
+        downloadBtn.addEventListener("click", function () {
+            // Get table header
+            var tableHeader = [];
+            $('#jsGrid th').each(function (colIndex, col) {
+                tableHeader.push(col.textContent);
+            });
+
+            // Get table data
+            var tableData = [];
+            $('#jsGrid .jsgrid-grid-body tr').each(function (rowIndex, row) {
+                var rowData = [];
+                $(row).find('.jsgrid-cell').each(function (colIndex, col) {
+                    rowData.push(col.textContent);
+                });
+                tableData.push(rowData);
+            });
+
+            // Add header to table data
+            tableData.unshift(tableHeader);
+
+            // Create workbook and sheet
+            var workbook = XLSX.utils.book_new();
+            var worksheet = XLSX.utils.aoa_to_sheet(tableData);
+
+            // Add sheet to workbook and download file
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            XLSX.writeFile(workbook, "data.xlsx");
+        });
+
+    </script>
+    
+
+
+}
+
+

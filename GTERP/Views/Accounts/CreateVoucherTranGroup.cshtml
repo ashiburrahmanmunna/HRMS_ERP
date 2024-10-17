@@ -1,0 +1,125 @@
+﻿@model GTERP.Models.VoucherTranGroup
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+<body>
+    @using (Html.BeginForm("CreateVoucherTranGroup", "Accounts", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container">
+            <div id="modalbodyrakin" class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="text-center" id="styletext">Voucher Transaction Group</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-md-12 order-md-1">
+                                <h4 class="mb-3">Voucher Transaction Group</h4>
+                                <div class="needs-validation" novalidate>
+                                    <div class="row">
+
+                                        <br>
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        @if (Model != null)
+                                        {
+                                            <input type="hidden" id="VoucherTranGroupId" name="VoucherTranGroupId" value="@Model.VoucherTranGroupId" />
+                                            <input type="hidden" id="userid" name="userid" value="@Model.UserId" />
+                                            <input type="hidden" id="comid" name="comid" value="@Model.ComId" />
+                                        }
+                                        else
+                                        {
+                                            <input type="hidden" id="comid" name="comid" value="" />
+                                            <input type="hidden" id="userid" name="userid" value="" />
+                                        }
+
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.VoucherTranGroupName, htmlAttributes: new { @class = "control-label" })
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.VoucherTranGroupName, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.VoucherTranGroupName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>                               
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-3 col-12">
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Create" class="btn btn-primary btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block rounded-0" type="button" onclick="Products_save()">Save</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block rounded-0" type="button" onclick="Products_save()">Update</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-lg btn-block rounded-0" type="button" onclick="VoucherTranGroup_delete()">Delete</button>
+                                    }
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    @Html.ActionLink("Back", "VoucherTranGroupList", "Accounts", null, new { @class = "btn btn-info btn-block rounded-0" })
+                                </div>
+                                <div class="col-md-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+     }
+</body>
+
+@section Scripts{
+    <script type="text/javascript">
+
+     function VoucherTranGroup_delete() {
+
+         var VoucherTranGroupId = $("#VoucherTranGroupId").val();
+         //alert(VoucherTranGroupId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteVoucherTranGroup", "Accounts")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: VoucherTranGroupId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+
+                    if (result.Success == "1") {
+                        window.location.href = '@Url.Action("VoucherTranGroupList", "Accounts")';
+                    }
+                    else {
+                        alert(result.ex);
+                    }
+                }
+            });
+    }
+</script>
+}

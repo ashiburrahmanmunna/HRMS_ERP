@@ -1,0 +1,747 @@
+﻿@model IEnumerable<RawDataVM>
+@using GTERP.ViewModels
+
+@{
+    var role = ViewBag.Role;
+    var str = "";
+}
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    .jsgrid-pager-container {
+        display: block !important;
+    }
+
+    .jsgrid-grid-body {
+        height: 400px;
+    }
+    .custom-btn {
+        color: blue;
+    }
+
+</style>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-md-12 col-12">
+
+            <div class="bringshadow boxStyle" style="height: 80px; padding-right: 5px; margin-bottom: 5px;padding:14px;border-radius:3px;border:solid 1px rgba(0,0,0,0.15);">
+                
+                
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="input-group mb-2">
+
+                                @*<select asp-items="@ViewBag.EmpId" name="period" id="Emp" class="dropdown" onchange="data()"> 
+                                    <option value="" selected>--All--</option>
+                                </select>*@
+                                 <input type="text" id="Emp" class="form-control" placeholder="Select Employee then Enter" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        From Date:
+                                    </span>
+                                </div>
+
+                                <input type="text" value="" id="from" name="from" class="form-control" autocomplete="off" @*onblur="sendData()*@" />
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        To Date :
+                                    </span>
+                                </div>
+
+                                <input type="text" value="" id="to" name="to" class="form-control" autocomplete="off" @*onblur="sendData()" *@/>
+                            </div>
+                        </div>
+                <div class="col-md-2 col-6">
+                    <button type="button" class="btn btn-warning custom-btn" onclick="sendData()" style="width: 130px">Load</button>
+                </div>
+
+                    </div>
+            </div>
+            <div class="card p-3 table-responsive">
+                <div class="row" style="margin: 2px">
+                    <div class="col-6">
+                        
+                    </div>
+                    <div class="col-6">
+                        <div style="display: flex; align-items: center;" class="float-right">
+                        <button type="button" class="btn btn-outline-primary" onclick="downloadPDF()" style="margin-right: 2px;">PDF</button>
+                        <button id="download-btns" onclick="downloadExcel()" class="btn btn-outline-success" >Excel</button>
+                            <button id="download-btn" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                            <select id="page-size" style="width: 80px;">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="col-12 col-md-12">
+                    <div id="jsGrid" style="height: 300px"></div>
+                </div>
+
+                @*</table>*@
+                <br />
+            </div>
+        </div>
+        @section Scripts{
+            <!-- HTML code -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+
+            <script>
+                $(function () {
+                    $("#from").datepicker({
+                        dateFormat: 'dd-M-yy'
+                    });
+                    $("#to").datepicker({
+                        dateFormat: 'dd-M-yy'
+                    });
+                });
+
+            </script>
+            <script>
+            var emText;
+            function data(empId){
+                emText = Number(empId);
+            }
+                var pageSize = $("#page-size").val();
+                var emp = $("#Emp").val();
+                var url;
+                var search;
+                function initJsGrid() {
+                    var jsGridItemsDB = {
+                        loadData: function (filter) {
+                            pageSize: pageSize,
+                            url = '@Url.Action("GetPunchData", "RawDataView")' + '?pageIndex=' + filter.pageIndex + '&pageSize=' + filter.pageSize;
+                            
+                            if ($("#from").val() != "" && $("#to").val() != "") {
+                                url += '&From=' + $("#from").val();
+                                url += '&To=' + $("#to").val();
+                            }
+                        url += '&Emp=' + emText;
+                            url += '&searchquery=' + JSON.stringify(filter);
+                            search = JSON.stringify(filter);
+                            console.log(filter);
+                            var d = $.Deferred();
+                            $.ajax({
+                                type: "GET",
+                                url: url,
+                                //data: { searchquery: JSON.stringify(filter) },
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json"
+                            })
+
+                                .done(function (result) {
+                                    //console.log(result);
+                                    d.resolve(result);
+                                    //console.log(result.ProductList);
+
+                                });
+                            return d.promise().then(function (q) {
+
+                                //console.log(q);
+                                return {
+
+                                    data: q.EmployeeList,
+                                    itemsCount: parseInt(q.PageInfo.TotalRecordCount)
+                                }
+                            });
+                        }
+
+                    }
+
+                    var child = [];
+                    //alert(globalPageSize);
+                    var serial = 0;
+                    var role = '@ViewBag.Role';
+
+                    if(role !== "User")
+                    {
+                        $("#jsGrid").jsGrid({
+
+                        width: "100%",
+                        //height: 400,
+                        filtering: true,
+                        //editing: true,
+                        autoload: true,
+                        pageSize: 10,
+                        pageLoading: true,
+                        pageIndex: 1,
+                        paging: true,
+                        controller: jsGridItemsDB,
+                        pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                        pagePrevText: "<",
+                        pageNextText: ">",
+                        // selecting: true,
+
+                        fields: [
+                            { name: "EmpCode", type: "text", width: 100, title: "Emp Code" },
+                            { name: "EmpName", type: "text", width: 150, title: "Emp Name" },
+                            {
+                                name: "DtJoin", title: "Joining Date", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            { name: "DesigName", type: "text", width: 150, title: "Designation" },
+                            { name: "DeptName", type: "text", width: 150, title: "Department" },
+                            { name: "SectName", type: "text", width: 150, title: "Section" },
+                            { name: "Mobile", type: "text", width: 150, title: "Mobile No" },
+                            { name: "DeviceNo", type: "text", width: 150, title: "Device No" },
+                            {
+                                name: "DtPunchDate", title: "PunchDate", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            {
+                                name: "DtPunchTime", title: "Time", type: "text", width: 150, itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        return date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' });
+                                    }
+                                    return "";
+                                }
+                            },
+                            { name: "Latitude", type: "text", width: 150, title: "Latitude" },
+                            { name: "Longitude", type: "text", width: 150, title: "Longitude" },
+                            { name: "PunchLocation", type: "text", width: 150, title: "Punch Location" },
+                            { name: "InOut", type: "text", width: 150, title: "In Out" },
+                            //{ name: "PicFront", type: "text", width: 150, title: "Picture Front" },
+                            {
+                                name: "PicFront",
+                                title: "PicFront",
+                                type: "text",
+                                width: 100,
+                                itemTemplate: function (value, item) {
+                                    if (value) {
+                                        // Column value is not null, show the image stored as byte
+                                        return "<img src='data:image/jpeg;base64," + value + "' width='70' height='70' />";
+                                    } else {
+                                        // Column value is null, show a default image
+                                        return "<img src='/Content/img/0.png' width='50' height='50' />";;
+                                    }
+                                }
+                            },
+                            {
+                                name: "PicBack",
+                                title: "PicBack",
+                                type: "text",
+                                width: 100,
+                                itemTemplate: function (value, item) {
+                                    if (value) {
+                                        // Column value is not null, show the image stored as byte
+                                        return "<img src='data:image/jpeg;base64," + value + "' width='70' height='70' />";
+                                    } else {
+                                        // Column value is null, show a default image
+                                        return "<img src='/Content/img/0.png' width='50' height='50' />";;
+                                    }
+                                }
+                            },
+                            //{
+                            //    name: "Print",
+                            //    title: "Print",
+                            //    itemTemplate: function (value, item) {
+                            //        return $("<td>").append(
+                            //            $("<a>").attr("href", "@Url.Action("Prints", "RawDataView")?id=" + item.EmpId + "&type=pdf")
+                            //                .attr("target", "_blank")
+                            //                .addClass("far fa-file-pdf btn btn-success btn-xs")
+                            //        );
+                            //    }
+                            //},
+                            //{
+                            //    name: "Edit",
+                            //    title: "Edit",
+                            //    itemTemplate: function (value, item) {
+                            //        return $("<td>").css("width", "50px").append(
+                            //            $("<a>").attr("href", "@Url.Action("EditPunchData", "RawDataView")?id=" + item.aid + "&type=edit")
+                            //                .attr("target", "_blank")
+                            //                .addClass("far fa-edit btn btn-info btn-xs")
+                            //        );
+                            //    }
+                            //},
+                            {
+                                name: "Delete",
+                                title: "Delete",
+                                itemTemplate: function (value, item) {
+                                    return $("<td>").css("width", "50px").append(
+                                        $("<a>").attr("href", "javascript:void(0);") // Set the href to "javascript:void(0);" to prevent navigation
+                                            .attr("onclick", "confirmDelete(" + item.aId + ");")
+                                            .addClass("fas fa-trash-alt btn btn-danger btn-xs")
+                                    );
+                                }
+                            }
+
+
+
+
+                        ],
+
+
+                    });
+                    }
+                    else
+                    {
+                        $("#jsGrid").jsGrid({
+
+                        width: "100%",
+                        //height: 400,
+                        filtering: true,
+                        //editing: true,
+                        autoload: true,
+                        pageSize: 10,
+                        pageLoading: true,
+                        pageIndex: 1,
+                        paging: true,
+                        controller: jsGridItemsDB,
+                        pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                        pagePrevText: "<",
+                        pageNextText: ">",
+                        // selecting: true,
+
+                    fields: [
+                        { name: "EmpCode", type: "text", width: 100, title: "Emp Code" },
+                        { name: "EmpName", type: "text", width: 150, title: "Emp Name" },
+                        {
+                        name: "DtJoin", title: "Joining Date", width: 150, type: "date", itemTemplate: function (value) {
+                            if (value) {
+                                var date = new Date(value);
+                                var day = ("0" + date.getDate()).slice(-2);
+                                var month = date.toLocaleString("default", { month: "short" });
+                                var year = date.getFullYear();
+                                return day + "-" + month + "-" + year;
+                            }
+                            return "";
+                            }
+                        },
+                        { name: "DesigName", type: "text", width: 150, title: "Designation" },
+                        { name: "DeptName", type: "text", width: 150, title: "Department" },
+                        { name: "SectName", type: "text", width: 150, title: "Section" },
+                        { name: "Mobile", type: "text", width: 150, title: "Mobile No" },
+                        { name: "DeviceNo", type: "text", width: 150, title: "Device No" },
+                    {
+                        name: "DtPunchDate", title: "PunchDate", width: 150, type: "date", itemTemplate: function (value) {
+                            if (value) {
+                                var date = new Date(value);
+                                var day = ("0" + date.getDate()).slice(-2);
+                                var month = date.toLocaleString("default", { month: "short" });
+                                var year = date.getFullYear();
+                                return day + "-" + month + "-" + year;
+                            }
+                            return "";
+                        }
+                        },
+                        {
+                        name: "DtPunchTime", title: "Time", type: "text", width: 150, itemTemplate: function(value) {
+                            if (value) {
+                              var date = new Date(value);
+                            return date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' });
+                             }
+                           return "";
+                          }
+                        },
+                        { name: "Latitude", type: "text", width: 150, title: "Latitude" },
+                        { name: "Longitude", type: "text", width: 150, title: "Longitude" },
+                        { name: "PunchLocation", type: "text", width: 150, title: "Punch Location" },
+                        { name: "InOut", type: "text", width: 150, title: "In Out" },
+                        //{ name: "PicFront", type: "text", width: 150, title: "Picture Front" },
+                        {
+                            name: "PicFront",
+                            title: "PicFront",
+                            type: "text",
+                            width: 100,
+                            itemTemplate: function (value, item) {
+                                if (value) {
+                                    // Column value is not null, show the image stored as byte
+                                    return "<img src='data:image/jpeg;base64," + value + "' width='70' height='70' />";
+                                } else {
+                                    // Column value is null, show a default image
+                                    return "<img src='/Content/img/0.png' width='50' height='50' />";;
+                                }
+                            }
+                        },
+                        {
+                            name: "PicBack",
+                            title: "PicBack",
+                            type: "text",
+                            width: 100,
+                            itemTemplate: function (value, item) { 
+                                if (value) {
+                                    // Column value is not null, show the image stored as byte
+                                    return "<img src='data:image/jpeg;base64," + value + "' width='70' height='70' />";
+                                } else {
+                                    // Column value is null, show a default image
+                                    return "<img src='/Content/img/0.png' width='50' height='50' />";;
+                                }
+                            }
+                        },
+                        //{
+                        //    name: "Print",
+                        //    title: "Print",
+                        //    itemTemplate: function (value, item) {
+                        //        return $("<td>").append(
+                        //            $("<a>").attr("href", "@Url.Action("Prints", "RawDataView")?id=" + item.EmpId + "&type=pdf")
+                        //                .attr("target", "_blank")
+                        //                .addClass("far fa-file-pdf btn btn-success btn-xs")
+                        //        );
+                        //    }
+                        //},
+
+                    ],
+
+
+                    });
+                    }
+                    
+                }
+                $("#page-size").on("change", function () {
+                    var newPageSize = $(this).val();
+                    $("#jsGrid").jsGrid("option", "pageSize", newPageSize);
+                    $("#jsGrid").jsGrid("loadData");
+                });
+                function filterItemTemplate() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+                function confirmDelete(itemId) {
+                    var confirmed = confirm("Are you sure you want to delete this item?");
+                    if (confirmed) {
+                        // Perform the delete action here, e.g., redirect to the delete URL
+                        window.location.href = "@Url.Action("DeletePunchData", "RawDataView")?id=" + itemId;
+                    }
+                }
+
+                function sendData() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+
+                function handleClick() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+                initJsGrid();
+
+        function downloadExcel() {
+            var url = '@Url.Action("GetEmployeesAll", "RawDataView")' + '?';
+            if ($("#from").val() != "" && $("#to").val() != "") {
+                url += '&From=' + $("#from").val();
+                url += '&To=' + $("#to").val();
+            }
+            url += '&Emp=' + emText;
+            url += '&searchquery=' + search;
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+                            data.forEach(employee => {
+                                employee.DtPunchDate = formatDate1(employee.DtPunchDate);
+                                employee.DtJoin = formatDate1(employee.DtJoin);
+                                employee.DtPunchTime = getTimeFromDateTime(employee.DtPunchTime);
+                            });
+                        // Convert the data to an Excel file using a library like SheetJS
+                        const workbook = XLSX.utils.book_new();
+                        const sheet = XLSX.utils.json_to_sheet(data);
+                        XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+                        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const url = window.URL.createObjectURL(blob);
+
+                        // Create a temporary link to download the file
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'data.xlsx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+            function formatDate1(dateString) {
+                if (!dateString) {
+                    return ''; // Handle empty or null input
+                }
+
+                const date = new Date(dateString);
+
+                if (isNaN(date.getTime())) {
+                    return ''; // Handle invalid date input
+                }
+
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = date.toLocaleString('default', { month: 'short' });
+                const year = date.getFullYear();
+
+                return `${day}-${month}-${year}`;
+            }
+
+            function getTimeFromDateTime(dateTimeString) {
+                // Parse the datetime string into a Date object
+                const dateTime = new Date(dateTimeString);
+
+                // Check if the parsing was successful
+                if (!isNaN(dateTime.getTime())) {
+                    // Get the hour, minute, and second components
+                    const hour = dateTime.getHours().toString().padStart(2, '0');
+                    const minute = dateTime.getMinutes().toString().padStart(2, '0');
+                    const second = dateTime.getSeconds().toString().padStart(2, '0');
+
+                    // Construct the time string in HH:mm:ss format
+                    return `${hour}:${minute}:${second}`;
+                } else {
+                    // Parsing failed, return an error or an appropriate message
+                    return 'Invalid Date';
+                }
+            }
+
+        function downloadPDF() {
+            var url = '@Url.Action("GetEmployeesAll", "RawDataView")' + '?';
+            if ($("#from").val() != "" && $("#to").val() != "") {
+                url += '&From=' + $("#from").val();
+                url += '&To=' + $("#to").val();
+            }
+            url += '&Emp=' + emText;
+            url += '&searchquery=' + search;
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    if (response.Success === 1) {
+                        const data = response.EmployeeList;
+
+                        // Define the PDF document structure
+                        var docDefinition = {
+                            content: [
+                                { text: 'Employee Data', style: 'header' },
+                                { text: '\n' },
+                                {
+                                    table: {
+                                        headerRows: 1,
+                                        widths: ['*', '*', '*', '*', '*'/*, '*', '*', '*', '*', '*', '*', '*'*/],
+                                        body: [
+                                            ['Employee ID', 'Employee Code', 'Employee Name', 'Join Date', 'Designation'/*, 'Section', 'Department', 'Mobile', 'Punch Date', 'Punch Time', 'Latitude', 'Longitude'*/],
+                                            ...data.map(employee => [
+                                                employee.EmpId,
+                                                employee.EmpCode,
+                                                employee.EmpName,
+                                                formatDate(employee.DtJoin),
+                                                employee.DesigName
+                                                //employee.SectName,
+                                                //employee.DeptName,
+                                                //employee.Mobile,
+                                                //formatDate(employee.DtPunchDate),
+                                                //formatTime(employee.DtPunchTime),
+                                                //employee.Latitude,
+                                                //employee.Longitude
+                                            ])
+                                        ]
+                                    }
+                                }
+                            ],
+                            styles: {
+                                header: {
+                                    fontSize: 18,
+                                    bold: true,
+                                    alignment: 'center',
+                                    margin: [0, 0, 0, 10]
+                                }
+                            }
+                        };
+
+                        // Format date in desired format
+                        function formatDate(date) {
+                            return moment(date).format('DD-MMM-YYYY');
+                        }
+
+                        // Format time in desired format
+                        function formatTime(time) {
+                            return moment(time).format('hh:mm:ss A');
+                        }
+
+                        // Generate the PDF
+                        var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+                        pdfDocGenerator.download('employee_data.pdf');
+                    } else {
+                        console.log('Error: ' + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed:', error);
+                }
+            });
+        }
+
+
+
+
+
+
+            </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <script>
+        var downloadBtn = document.getElementById("download-btn");
+        downloadBtn.addEventListener("click", function () {
+            // Get table header
+            var tableHeader = [];
+            $('#jsGrid th').each(function (colIndex, col) {
+                tableHeader.push(col.textContent);
+            });
+
+            // Get table data
+            var tableData = [];
+            $('#jsGrid .jsgrid-grid-body tr').each(function (rowIndex, row) {
+                var rowData = [];
+                $(row).find('.jsgrid-cell').each(function (colIndex, col) {
+                    rowData.push(col.textContent);
+                });
+                tableData.push(rowData);
+            });
+
+            // Add header to table data
+            tableData.unshift(tableHeader);
+
+            // Create workbook and sheet
+            var workbook = XLSX.utils.book_new();
+            var worksheet = XLSX.utils.aoa_to_sheet(tableData);
+
+            // Add sheet to workbook and download file
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            XLSX.writeFile(workbook, "data.xlsx");
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $("#Emp").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployees", "RawDataView")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp").val(ui.item.label);
+                    data(ui.item.value);
+                    return false;
+                }
+            });
+
+            $("#Emp").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    data(0);
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+    </script>
+    <script>
+    $(function () {
+    var currentDate = new Date();
+    var formattedDate = formatDate(currentDate);
+    $("#from").val(formattedDate);
+    $("#to").val(formattedDate);
+    });
+
+    function formatDate(date) {
+    var months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+  
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+  
+    var formattedDate = day + "-" + months[monthIndex] + "-" + year;
+  
+    return formattedDate;
+}
+</script>
+
+}
+
+
+
+    

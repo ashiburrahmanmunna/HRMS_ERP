@@ -1,0 +1,104 @@
+﻿
+@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Section> sections = new List<Cat_Section>();
+    sections = ViewBag.Sections;
+}
+
+
+    <div class="mb-0">
+        <input type="text" class="sectionSearch form-control" placeholder="Search . . ."/>
+    </div>
+
+<div>
+    <table id="commonTable" class="commonTable table table-hover table-striped trow mb-0 text-center" width="100%">
+        <thead>
+            <tr>
+                <th class="d-none">Section Id</th>
+                <th>Section Name</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 228px;">
+    <table id="sectionTable" class="sectionTable table table-hover table-striped trow text-center">
+
+        <thead class="d-none">
+            <tr>
+                <th>Section Id</th>
+                <th>Section Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+
+                <td class="d-none">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+
+            </tr>
+
+            @if (sections.Count > 0)
+            {
+                foreach (Cat_Section aSection in sections)
+                {
+                    <tr id="myrow">
+
+                        <td class="d-none">
+                            @aSection.SectId
+                        </td>
+
+                        <td>
+                            @aSection.SectName
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".sectionSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+
+                var i = 0;
+
+                $('#sectionTable tbody tr').each(function () {
+
+                    var sectionId = $.trim($(this).children("td:eq(0)").html());
+                    var sectionName = $.trim($(this).children("td:eq(1)").html());
+
+
+                    if (sectionId.toLowerCase().indexOf(searchText) === -1 &&
+                        sectionName.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+    }

@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Newtonsoft.Json;
+
+@{
+    string storeJson = string.Empty;
+    storeJson = HttpContextAccessor.HttpContext.Session.GetString("ComList") ?? "";
+    List<Company> companyList = JsonConvert.DeserializeObject<List<Company>>(storeJson);
+    companyList = companyList.OrderBy(x => x.CompanyName).ToList();
+}
+
+
+
+<div class="mx-auto col-md-6 col-12">
+    <div class="card text-center">
+        <div class="card-header">
+            <h5>Select Company</h5>
+            <a class="navbar-brand" href="~/TutorialCertificate/GetAllModuleName"> Attend Training, Get Certificate </a>
+        </div>
+        <div class="card-body">
+            @if (companyList != null)
+            {
+                @foreach (var item in companyList)
+                {
+                    <div class="row">
+                    <div class="col-md-10 offset-md-1 col-12">
+                        <div class="text-center">
+                            <div class="text-white mb-2">
+                                    <a asp-controller="Home" asp-action="ViewProducts" asp-route-comId="@item.CompanyCode" class="btn btn-outline-info btn-block" style="color:black">@item.CompanyName</a>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+

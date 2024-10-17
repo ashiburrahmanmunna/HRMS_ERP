@@ -1,0 +1,2747 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.Models.FA_Master
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var comid = HttpContextAccessor.HttpContext.Session.GetString("comid");
+    comid = comid.ToString();
+}
+
+
+<style>
+
+    input:disabled, select:disabled, textarea:disabled {
+        cursor: not-allowed;
+        opacity: .6;
+    }
+
+    input, select {
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        background-color: #f0eaea;
+    }
+
+    header {
+        background-color: #bde9ba;
+    }
+
+    article {
+        padding: 5px;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+        width: 70%;
+        min-height: 500px;
+    }
+
+    header {
+        padding: 0px;
+        text-align: center;
+        border-bottom: 1px solid skyblue;
+    }
+
+    aside {
+        margin-top: 5px;
+        background-color: #f0eaea;
+        padding: 5px;
+        text-align: left;
+        /*font-style: italic;*/
+        border-right: 1px solid skyblue;
+        width: 25%;
+    }
+
+    section {
+        padding: 5px;
+        border: 1px solid skyblue;
+        margin-top: 5px;
+        border-radius: 10px;
+    }
+
+    footer {
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    nav {
+        text-align: center;
+    }
+
+    ul li {
+/*        display: inline;*/
+        padding-left: 5px;
+        padding-right: 5px;
+/*        text-align: left;*/
+        font-size: 14px;
+/*        font-weight: 400;*/
+    }
+
+    .bb {
+        border-top: 1px solid skyblue;
+    }
+
+    .hh {
+        min-height: 500px;
+        max-height: 800px;
+    }
+
+    .rr {
+        width: 5%;
+    }
+
+    .ll {
+        width: 95%;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+    }
+
+    #exampleModal {
+        top: 15%;
+        outline: none;
+    }
+    /*.modal-dialog {
+        width: 750px;
+        margin: auto;
+    }*/
+</style>
+
+<div class="container ">
+    <section class="row">
+        <header class="col-md-12">
+
+            <div class="row py-2">
+                <div class="col-md-6"><h3 class="text-left" id="title">Asset @ViewBag.Title</h3></div>
+                <div class="col-md-6 text-right" id="divbtnsubmit" >
+                    <input type="button" id="btnsubmit" value="Save" name="Asset_Create" class="btn btn-sm btn-primary text-right" />
+                </div>
+                @*<div class="col-md-6 text-right" id="divbtnaddprocess" >
+                    <input type="button" id="btnaddprocess" value="Save" name="Asset_Create" class="btn btn-sm btn-primary text-right" />
+                </div>*@
+            </div>
+
+        </header>
+        <aside >
+            <div id="divshowproducinfo" >
+                <h4>Product Info</h4>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Product Name</label>
+                    <div class="col-md-12 text-left">
+                        <span id="pn" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Product Code</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="pc" style="font-size: 13px;font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Account Name</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="an" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Account Code</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="ac" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div id="divshowassetinfo" >
+                <h4>Asset Info</h4>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Asset Name</label>
+                    <div class="col-md-12 text-left">
+                        <span id="asn" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Asset Code</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="asc" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Depreciation Name</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="dn" style="font-size: 13px;font-weight: bold"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-12 text-left">Depreciation Frequency</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="df" style="font-size: 13px; font-weight: bold"></span>
+                    </div>
+                </div>
+                @*<div class="form-group">
+                    <label class="control-label col-md-12 text-left">Depreciation Expense Account</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="dea" style="font-weight:bold"></span>
+                    </div>
+                </div>*@
+                @*<div class="form-group">
+                    <label class="control-label col-md-12 text-left">Accumulate Depreciation Account</label>
+                    <div class="col-md-12 text-left">
+
+                        <span id="adc" style="font-weight:bold"></span>
+                    </div>
+                </div>*@
+
+            </div>
+
+        </aside>
+        <article >
+            <div>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div id="divAsset_Create" >
+                    <partial name="Edit.cshtml" />
+                </div>
+
+                <div id="divAsset_Assign" >
+                    <partial name="eee.cshtml" />
+                </div>
+
+                <div id="divAsset_Sell" class="row"  width="100%">
+                    <div class="col-md-12">
+                        <div class="row card-header mb-2 m-0">
+                        <div class="col-md-6">
+                        <h4 class="text-left" id="title">Sales information</h4>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button type="button" id="btnsalelist" name="Sold_Assets_List" class="btntab btn btn-sm btn-outline-info">
+                                Sales List
+                                <span>
+                                    <img src="~/icons8-list-view-30.png" />
+                                </span>
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+               
+                    <input type="hidden" name="name" id="FA_SellId1" value="" />
+                    <div class="col-md-12 mt-3">
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label for="#FA_MasterId1" class="control-label col-12">Fixed Asset</label>
+                                        </span>
+                                    </div>
+                                    <select id="FA_MasterId1" class="form-control col-12" asp-items="ViewBag.FA"></select>
+                                </div>
+                                @*<div class="form-group m-1">
+                                </div>*@
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label for="#FA_DetailsId1" class="control-label">Sub Asset</label>
+                                        </span>
+                                    </div>
+                                    <select id="FA_DetailsId1" class="form-control" asp-items="ViewBag.Details"></select>
+                                </div>
+                                @*<div class="form-group m-1">
+                             
+                                </div>*@
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label for="#SellsPrice1" class="control-label">Sells Price</label>
+                                        </span>
+                                    </div>
+                                    <input id="SellsPrice1" class="form-control" />
+                                </div>
+                                @*<div class="form-group m-1">
+                                </div>*@
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            <label for="Description1" class="control-label">Description</label>
+                                        </span>
+                                    </div>
+                                    <input id="Description1" class="form-control" />
+                                </div>
+                                @*<div class="form-group m-1">
+                                </div>*@
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <div class="mb-3 spn" id="spn3">
+                                    <button id="bsss" class="btn btn-info btn-block rounded-0">Add</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    @*<table>
+                        <tr class="row col-md-12">
+                            <td class="col-md-4">
+                          
+                            </td>
+                            <td class="col-md-4">
+                          
+                            </td>
+                            <td class="col-md-4">
+                         
+                            </td>
+
+                        </tr>
+                        <tr class="row col-md-12">
+                            <td class="col-md-9">
+                           
+                            </td>
+                            <td class="col-md-3">
+                            
+                            </td>
+                        </tr>
+
+                    </table>*@
+                    <hr />
+                    <div id="divsaleslist" >
+
+                        <h4>Sales Items</h4>
+                        <table id="tblsalesrowlist" class="table  table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        FA_SellId
+                                    </th>
+                                    <th>
+                                        FA_MasterId
+                                    </th>
+                                    <th>
+                                        Fixed Asset
+                                    </th>
+                                    <th>
+                                        FA_DetailsId
+                                    </th>
+                                    <th>
+                                        Fixed Asset Sub
+                                    </th>
+                                    <th>
+                                        SellsPrice
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+
+
+                                    <th>IsDetete</th>
+
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+        </article>
+        <div id="divFixed_Asset_Documentation" class="ll" >
+
+            <iframe src="~/Content/Fixed Asset Documentation.pdf" type="application/pdf" style="width:100%; height:500px" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen></iframe>
+        </div>
+        <div id="divAsset_List" class="ll">
+            <div class="hh card p-2" style="overflow:scroll">
+                <partial name="Index.cshtml" />
+
+            </div>
+        </div>
+
+        <div id="divAsset_Item_List" class="ll" >
+            <div class="hh card p-2" style="overflow:scroll">
+                <partial name="SubAssets.cshtml" />
+
+            </div>
+        </div>
+
+        <div id="divSold_Assets_List" class="ll" >
+            <div class="hh card p-2" style="overflow:scroll">
+                <partial name="SaleList.cshtml" />
+
+            </div>
+        </div>
+
+        <div id="divDepreciation_Schedule_List" class="ll" >
+            <div class="hh card p-2" style="overflow:scroll">
+                <partial name="SeeDepreciation.cshtml" />
+
+            </div>
+        </div>
+
+        <div id="divAlready_Dep_Schedule_List" class="ll" >
+            <div class="hh card p-2" style="overflow:scroll">
+                <partial name="See_Already_Dep.cshtml" />
+
+            </div>
+        </div>
+
+
+        <div id="divAsset_Depreciation_List" style="display:none;" class="ll">
+            <div class="hh card p-2" style="overflow:scroll">
+                <table id="tblAssetDepriciation" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                FA_MasterId
+                            </th>
+                            <th>
+                                Asset Name
+                            </th>
+                            <th>
+                                FA_DetailsId
+                            </th>
+                            <th>
+                                Asset Code
+                            </th>
+                            <th>
+                                FoDId
+                            </th>
+                            <th>
+                                Frequency of Depreciation
+                            </th>
+                            <th>
+                                Total Number of Depreciation
+                            </th>
+                            <th>
+                                DMId
+                            </th>
+                            <th>
+                                Depreciation Method
+                            </th>
+                            <th>Dep Start Date</th>
+                            <th>Salvage Value</th>
+                            <th>Depreciation Rate</th>
+
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+        <div class="rr p-4">
+            <div class="row text-center">
+                <button type="button" id="btnlist" name="Asset_List" class="btntab">
+
+                    <span>
+                        <img src="~/icons8-list-view-30.png" />
+                    </span>
+                </button>
+            </div>
+            <br />
+            <div class="row">
+                <button type="button" id="btnadd" name="Asset_Create" class="btntab">
+
+                    <span>
+                        <img src="~/icons8-company-assets-30.png" />
+                    </span>
+                </button>
+            </div>
+            <br />
+            <div class="row">
+                <button type="button" id="btnassign" name="Asset_Assign" class="btntab">
+
+                    <span>
+                        <img src="~/icons8-new-product-30.png" />
+                    </span>
+                </button>
+            </div>
+            <br />
+            <div class="row text-center">
+                <button type="button" id="btnsell" name="Asset_Sell" class="btntab">
+
+                    <span>
+                        <img src="~/icons8-minus-30.png" />
+                    </span>
+                </button>
+            </div>
+            <br />
+
+            <div class="row text-center">
+                <button type="button" id="btnDocumentation" name="Fixed_Asset_Documentation" class="btntab">
+
+                    <span>
+                        <img src="~/icons8-profit-report-30.png" />
+                    </span>
+                </button>
+            </div>
+            <br />
+            <div class="row text-center">
+                <button type="button" id="btnrefresh" onclick="Refresh()">
+
+                    <span>
+                        <img src="~/icons8-refresh-shield-30.png" />
+                    </span>
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+
+
+
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        var activediv;
+        var activediv2;
+        var activediv3;
+        var tblassetlist;
+        var tblassetitemlist;
+        var tbldetails;
+        var tbldepriciation;
+        var tblmaster;
+        var tblsalesrowlist;
+        var tblsoldassetlist;
+        var tblSee_Dep;
+        var antiForgeryToken;
+        var clickedtable;
+        var selectedItem;
+        var backdiv1;
+        var backdiv2;
+        var flag = 'temp';
+        var tblSee_Already_Dep;
+        var productid;
+
+        $(document).ready(function () {
+
+            //var newOption = new Option('--Please Select--', '-0', true);
+            ////$('#ProductId').prepend(newOption).trigger('change');
+            $('#ProductId').select2( );
+            ////$('#FA_MasterIdp').prepend(newOption).trigger('change');
+            $('#FA_MasterIdp').select2();
+            ////$('#AssignTo').prepend(newOption).trigger('change');
+            $('#AssignTo').select2();
+            ////$('#DMId').prepend(newOption).trigger('change');
+            $('#DMId').select2();
+            ////$('#AccId_DepreciationExpense').prepend(newOption).trigger('change');
+            $('#AccId_DepreciationExpense').select2();
+            ////$('#AccId_AccumulatedDepreciation').prepend(newOption).trigger('change');
+            $('#AccId_AccumulatedDepreciation').select2();
+            ////$('#FoD').prepend(newOption).trigger('change');
+            $('#FoD').select2();
+            ////$('#FA_DetailsId').prepend(newOption).trigger('change');
+            $('#FA_DetailsId').select2();
+            ////$('#FA_MasterId').prepend(newOption).trigger('change');
+            //$('#FA_MasterId').select2();
+
+
+            //$('select').prepend(newOption).trigger('change');
+            //$('select').select2();
+
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+            activediv = "divAsset_List";
+            if (activediv == "divAsset_List") {
+                getAssetList();
+            }
+
+            $(".btntab").click(function () {
+
+                var name = $(this).attr('name');
+                titlename = name.replace('_', ' ');
+                $("#title").empty();
+                $("#title").append(`${titlename}`);
+                $('#btnsubmit').attr('name', name);
+                var divname = `div${name}`;
+                //if (divname != 'divDepreciation_Schedule_List') {
+                    $(`#${divname}`).show();
+                //}
+
+
+                if (divname!=activediv) {
+                    $(`#${activediv}`).hide();
+                    $(`#${activediv2}`).hide();
+                }
+
+                if (divname.endsWith('List')) {
+                    $('#divbtnsubmit').hide();
+                    $('aside').hide();
+                    $('article').hide();
+                    if (divname =='divAsset_List') {
+                        getAssetList();
+                    }
+                    if (divname =='divAsset_Item_List') {
+                        GetAssetItems();
+                    }
+                    if (divname == 'divSold_Assets_List') {
+                        getSoldAssetList();
+                    }
+                    if (divname == 'divAsset_Depreciation_List') {
+
+                        depreciationprocess();
+                    }
+                    if (divname == 'divDepreciation_Schedule_List') {
+                        $('#btnsubmit').attr('name', 'Asset_Assign');
+                        $('#divbtnsubmit').show();
+                        backdiv1 = activediv;
+                        backdiv2 = activediv2;
+                        getTemSchedule();
+                    }
+
+
+                } else {
+                    if (divname == 'divFixed_Asset_Documentation') {
+                        $('#divbtnsubmit').hide();
+                        $('aside').hide();
+                        $('article').hide();
+                    } else {
+                        $('#divbtnsubmit').show();
+                        $('aside').show();
+                        $('article').show();
+                    }
+
+                }
+                InitilizeSelectLists();
+                activediv = divname;
+            });
+
+            //var arr=[];
+            //$("#ProductId").on("select2:select select2:unselect", function (e) {
+
+            //    //this returns all the selected item
+            //    //var id = $(this).select2('data');
+            //    var id = e.params.data.id;
+            //   // var text = $(this).select2('data');
+            //    var text = e.params.data.text;
+            //    console.log(id);
+            //    console.log(text);
+
+            //    //Gets the last selected item
+            //    var lastSelectedItem = e.params.data.id;
+            //    var obj = '{"'+id+'":"'+text+'"}';
+            //    arr.push(obj);
+            //    console.log(arr);
+
+            //})
+
+            $("#ProductId").change(function () {
+                if (mode = 'edit') {
+                    consumptionid = productid;
+                }
+                else {
+                    var consumptionid = $("#ProductId option:selected").val();
+                }
+                $.ajax({
+                    url: '@Url.Action("getOnChangeProduct", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { consumptionid: consumptionid },
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            var d = data.list;
+                            $("#pn").empty();
+                            $("#pn").text(d[0].ProductName);
+                            $("#pc").empty();
+                            $("#pc").text(d[0].ProductCode);
+                            $("#an").empty();
+                            $("#an").text(d[0].AccName);
+                            $("#ac").empty();
+                            $("#ac").text(d[0].AccCode);
+                            $("#divshowproducinfo").show();
+                            activediv2 = 'divshowproducinfo';
+
+                        }
+                    }
+
+                });
+            });
+
+            $("#FA_MasterIdp").change(function () {
+                var FA_MasterIdp = $("#FA_MasterIdp option:selected").val();
+                $.ajax({
+                    url: '@Url.Action("getOnChangeFA_MasterIdp", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: FA_MasterIdp },
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            var d = data.list;
+                            if (d == 'no') {
+                                $("#divshowassetinfo").hide();
+                            }
+                            else {
+                                $("#asn").empty();
+                                $("#asn").text(d[0].ProductName);
+                                $("#asc").empty();
+                                $("#asc").text(d[0].ProductCode);
+                                $("#dn").empty();
+                                $("#dn").text(d[0].DMName);
+                                $("#df").empty();
+                                $("#df").text(d[0].Title);
+                                $("#divshowassetinfo").show();
+                                activediv2 = 'divshowassetinfo';
+                            }
+                        }
+                    }
+
+                });
+            });
+
+            //$("#btnSeeDepSchedule").click(function () {
+
+            //    getTemSchedule();
+            //});
+
+            function depreciationprocess() {
+                $.ajax({
+                    url: '@Url.Action("GetDepProccess", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        //console.log(data);
+                        //alert('hit');
+                        if (status == 'success') {
+                            $('#tblAssetDepriciation').DataTable().clear().draw();
+                            var d = data.list;
+                            for (var i = 0; i < d.length; i++) {
+
+                                $('#tblAssetDepriciation').dataTable().fnAddData([
+                                    d[i].FA_MasterId,
+                                    d[i].ProductName,
+                                    d[i].FA_DetailsId,
+                                    d[i].AssetItem,
+                                    d[i].FoDId,
+                                    d[i].Title,
+                                    d[i].TNoD,
+                                    d[i].DMId,
+                                    d[i].DMName,
+                                    d[i].DSDate,
+                                    d[i].EVAULife,
+                                    d[i].DepRate,
+                                    '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-file-pdf btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"depreciation\" value=\"' + d[i].FA_DetailsId + '\" target=\"_blank\"></a></span>'
+
+
+                                ]);
+                            }
+                            toastr.success('Data loaded Successfully');
+
+                        };
+                    },
+                });
+            };
+
+            function getSoldAssetList() {
+                $.ajax({
+                    url: '@Url.Action("GetSoldAssetList", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+
+                    success: function (data, status, xhr) {
+                        //console.log(data);
+                        if (status == 'success') {
+                            $('#tblSold_Asset_List').DataTable().clear().draw();
+
+                            var d = data;
+                            for (var i = 0; i < d.length; i++) {
+                                $('#tblSold_Asset_List').dataTable().fnAddData([
+
+
+                                    d[i].AssetItem,
+                                    d[i].SellsPrice,
+                                    d[i].Description,
+                                    d[i].ProductCode,
+                                    d[i].FA_SellId
+                                    //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                                ]);
+                            }
+
+                            toastr.success('Data loaded Successfully');
+                        };
+                    },
+                });
+            };
+
+            function getTemSchedule() {
+               var AssetListToAssign = [];
+                    var oTablerequisitionSub = $('#tbldetails').dataTable().fnGetData();
+
+                    if (oTablerequisitionSub.length == 0) {
+                        alert('Please Fill Necessary Data.');
+                        return true;
+                    };
+                    for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                        AssignAsset.FA_DetailsId = oTablerequisitionSub[i][0];
+                        AssignAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                        AssignAsset.AssetItem  = oTablerequisitionSub[i][2];
+                        //AssignAsset.IssuNo = oTablerequisitionSub[i][3];
+                        AssignAsset.IssueDate = oTablerequisitionSub[i][3];
+                        AssignAsset.AssignTo = oTablerequisitionSub[i][4];
+                        AssignAsset.UsefullLife = oTablerequisitionSub[i][6];
+                        AssignAsset.RemainingYear = oTablerequisitionSub[i][7];
+                        AssignAsset.PurchaseDate = oTablerequisitionSub[i][10];
+                        AssignAsset.PurchaseValue = oTablerequisitionSub[i][9];
+                        AssignAsset.EVAULife = oTablerequisitionSub[i][8];
+                        AssignAsset.AssignToDept = oTablerequisitionSub[i][11];
+                        AssignAsset.WrittenDownValue = oTablerequisitionSub[i][13];
+
+                        AssignAsset.IsDelete = oTablerequisitionSub[i][14];
+                        AssignAsset.CalculateDepreciation = oTablerequisitionSub[i][15];
+                        AssignAsset.ComId = '@comid' ;
+
+                        AssetListToAssign.push(AssignAsset);
+
+                        AssignAsset = {
+                            FA_DetailsId: 0,
+                            FA_MasterId: 0,
+                            AssetItem: '',
+                            //IssuNo: '',
+                            IssueDate: '',
+                            PurchaseDate: '',
+                            PurchaseValue: 0,
+                            IssueDate: '',
+                            AssignTo: '',
+                            UsefullLife: 0,
+                            RemainingYear: 0,
+                            EVAULife: 0,
+                            AssignToDept: 0,
+                            WrittenDownValue: 0,
+                            ComId: '',
+                            IsDelete: false,
+                            CalculateDepreciation: false
+
+                        };
+                    };
+
+                if (AssetListToAssign.length > 0) {
+                    $('#tblSee_Dep').DataTable().clear().draw();
+                        $.ajax({
+                            url: '@Url.Action("TemAssignAsset", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { assetListToAssign: AssetListToAssign },
+                            success: function (data, status, xhr) {
+                                if (data.success == 1) {
+
+                                    var d = data.list;
+                                    if (d.length>0) {
+                                        $(`#${activediv}`).hide();
+                                        $(`#${activediv2}`).hide();
+                                        $("#divDepreciation_Schedule_List").show();
+                                        for (var i = 0; i < d.length; i++) {
+
+
+                                            $('#tblSee_Dep').dataTable().fnAddData([
+
+
+                                            d[i].DepreciationScheduleId,
+                                            d[i].AssetItem,
+                                            d[i].ScheduleDate,
+                                            d[i].DepAmount,
+                                            d[i].AccumulateDepAmount,
+                                            d[i].AccumulateDepBooked,
+                                            d[i].AccumulateDepRemain,
+                                            d[i].JournalEntry,
+                                            '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ']);
+                                        }
+                                        toastr.success('Depreciation Scheduled Loaded');
+                                    }
+                                    //clear_form_elements(`div${name}`);
+                                    if (d .length<=0) {
+                                       // $("#divAsset_Item_List").show();
+                                        toastr.success('Depreciation Schedules cannot be created');
+                                    }
+
+                                };
+                                if (data.error == 1) {
+                                    toastr.error('Depreciation schedule cannot be created');}
+                            },
+                        });
+                    }
+            };
+
+            function getAssetList() {
+                $.ajax({
+                            url: '@Url.Action("Index", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType:'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            $('#tblAsset_List').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            console.log(d);
+
+                            for (var i = 0; i < d.length; i++) {
+
+                                var DepreciationCode;
+                                var DepreciationAccountName;
+                                var AccDepreciationCode;
+                                var AccDepreciationAccountName;
+
+
+
+                                if (d[i].DepreciationHead != null) {
+                                    DepreciationCode = d[i].DepreciationHead.AccCode;
+                                    DepreciationAccountName = d[i].DepreciationHead.AccName;
+
+                                } else {
+                                    DepreciationCode = '=N/A=';
+                                    DepreciationAccountName = '=N/A=';
+                                }
+
+
+                                if (d[i].AccumulatedDepreciationHead != null) {
+                                    AccDepreciationCode = d[i].AccumulatedDepreciationHead.AccCode;
+                                    AccDepreciationAccountName = d[i].AccumulatedDepreciationHead.AccName;
+
+                                } else {
+                                    AccDepreciationCode = '=N/A=';
+                                    AccDepreciationAccountName = '=N/A=';
+                                }
+
+
+
+                                $('#tblAsset_List').dataTable().fnAddData([
+                                    d[i].AssetCode,
+                                    d[i].Percentage,
+                                    DepreciationCode, DepreciationAccountName,
+                                    AccDepreciationCode, AccDepreciationAccountName,
+                                    d[i].ComId,
+                                    d[i].DepreciationMethod.DMName,
+                                    d[i].Product.ProductName,
+                                    d[i].DepreciationFrequency.Title,
+                                    { IsInProcess: d[i].IsInProcess, FA_MasterId: d[i].FA_MasterId}
+
+                                    //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                                ]);
+                            }
+
+                            toastr.success('Data loaded Successfully');
+                        };
+                    },
+                });
+            };
+
+
+            tblmaster = $('#tblmaster').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_MasterId", "visible": false },
+                    { "sClass": "ProductId", "visible": false },
+                    { "sClass": "Product", "visible": true },
+                    { "sClass": "ProductCode", "visible": true },
+                    { "sClass": "DMId", "visible": false },
+                    { "sClass": "Percentage", "visible": true },
+                    //{ "sClass": "SalvagePercentage", "visible": true },
+                    { "sClass": "AccId_DepreciationExpense", "visible": false },
+                    { "sClass": "DepreciationHead", "visible": true },
+                    { "sClass": "AccId_AccumulatedDepreciation", "visible": false },
+                    { "sClass": "AccumulatedDepreciationHead", "visible": true },
+                    { "sClass": "FoD", "visible": true },
+                    { "sClass": "IsDelete", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tbldetails = $('#tbldetails').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_DetailsId", "visible": false },//0
+                    { "sClass": "FA_MasterId", "visible": false },//1
+                    { "sClass": "AssetItem", "visible": true },//2
+                    //{ "sClass": "IssuNo", "visible": true },
+                    { "sClass": "IssueDate", "visible": true },//3
+                    { "sClass": "AssignToId", "visible": false },//4
+                    { "sClass": "AssignTo", "visible": true },//5
+                    { "sClass": "UsefullLife", "visible": true },//6
+                    { "sClass": "RemainingYear", "visible": true },//7
+                    { "sClass": "RemainingMonth", "visible": true },//8
+                    { "sClass": "EVAULife", "visible": true },//9
+                    { "sClass": "PurchaseValue", "visible": true },//10
+                    { "sClass": "PurchaseDate", "visible": true },//11
+                    { "sClass": "AssignToDeptId", "visible": false }, //12
+                    { "sClass": "AssignToDept", "visible": true }, //13
+                    { "sClass": "WrittenDownValue", "visible": true }, //14
+
+                    { "sClass": "IsDelete", "visible": false },//15
+                    { "sClass": "CalculateDepreciation", "visible": true },//16
+                    { "sClass": "Action", "visible": true }//17
+
+
+                ],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblsalesrowlist = $('#tblsalesrowlist').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_SellId", "visible": false },
+                    { "sClass": "FA_MasterId", "visible": false },
+                    { "sClass": "FA_Master", "visible": true },
+                    { "sClass": "FA_DetailsId", "visible": false },
+                    { "sClass": "FA_Details", "visible": true },
+                    { "sClass": "SellsPrice", "visible": true },
+                    { "sClass": "Description", "visible": true },
+                    { "sClass": "IsDelete", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+
+
+
+            tblsoldassetlist = $('#tblSold_Asset_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_Details", "visible": true },
+                    { "sClass": "SellsPrice", "visible": true },
+                    { "sClass": "Description", "visible": true },
+                    { "sClass": "FA_Master", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+                 columnDefs:[ {
+                        "render": function (FA_MasterId) {
+
+                            var myUrledit = '@Url.Action("Edit", "FA_Master")/' + FA_MasterId;
+                            var myUrldelete = '@Url.Action("Delete", "FA_Master")/' + FA_MasterId;
+                            var myUrlprint = '@Url.Action("Print", "FA_Master")/' + FA_MasterId + '?type=pdf';
+
+
+                         return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"sale\" value=\"' + FA_MasterId + '\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"sale\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+
+                    }, targets:4
+                    }],
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "paging": true,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tbldepriciation = $('#tblAssetDepriciation').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_MasterId", "visible": false },
+                    { "sClass": "ProdctName", "visible": true },
+                    { "sClass": "FA_DetailsId", "visible": false },
+                    { "sClass": "AssetItem", "visible": true },
+                    { "sClass": "FoDId", "visible": false },
+                    { "sClass": "Frequency", "visible": true },
+                    { "sClass": "TNoD", "visible": true },
+                    { "sClass": "DMId", "visible": false },
+                    { "sClass": "DepMethod", "visible": true },
+                    { "sClass": "DSDate", "visible": true },
+                    { "sClass": "EVAULife", "visible": true },
+                    { "sClass": "DRate", "visible": true },
+                    { "sClass": "Action", "visible": true }
+
+                ],
+                "dom": 'Bfrtip',
+                "buttons": [
+                    {
+                        text: 'Save Process',
+                        action: function (e, dt, node, config) {
+                            var AssetListToProcess = [];
+                            var tblAssetDepriciation = $('#tblAssetDepriciation').dataTable().fnGetData();
+                            if (tbldepriciation.rows({ selected: true }).count() == 0) {
+                                toastr.error('Please Select Recordrs From List.');
+                                return false;
+                            };
+                            tbldepriciation
+                                .rows({ selected: true })
+                                .every(function (rowIdx, tableLoop, rowLoop) {
+                                    //for (var i = 0; i < tblAssetDepriciation.length; i++) {
+                                    process.FA_DetailsId = tblAssetDepriciation[rowIdx][2];
+                                    process.DSDate = tblAssetDepriciation[rowIdx][9];
+                                    process.DepAmount = tblAssetDepriciation[rowIdx][11];
+                                    AssetListToProcess.push(process);
+                                    process = {
+                                        ProcessRecordId: 0,
+                                        FA_DetailsId: 0,
+                                        DSDate: '',
+                                        DEntryDate: '',
+                                        NextDepDate: '',
+                                        DepAmount: 0.00
+                                    };
+                                    //};
+                                });
+
+                            if (AssetListToProcess.length > 0) {
+                                $.ajax({
+                                    url: '@Url.Action("SaveProcess", "FA_Master")',
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                                    data: { assetListToProcess: AssetListToProcess },
+                                    success: function (data, status, xhr) {
+                                        if (data.result == '1') {
+                                            //$('#tblsalesrowlist').DataTable().clear().draw();
+                                            //$("#divsaleslist").hide();
+                                            //clear_form_elements(`div${name}`);
+                                            $('#tblAssetDepriciation tr').removeClass('selected');
+                                            toastr.success('Depreciation Process Saved Successfully');
+                                        }
+                                        else {
+                                            toastr.error('Cannot process your request');
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                ],
+                //"bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "paging": true,
+                select: {
+                    style: 'multi',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblassetitemlist = $('#tblAssetItem_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "AssetItem", "visible": true },
+                    { "sClass": "PurchaseDate", "visible": false },
+                    { "sClass": "PurchaseValue", "visible": false },
+                    { "sClass": "IssueDate", "visible": true },
+                    { "sClass": "AssignTo", "visible": true },
+                    { "sClass": "UsefullLife", "visible": true },
+                    { "sClass": "RemainingYear", "visible": true },
+                    { "sClass": "CurrentStatus", "visible": true },
+                    { "sClass": "DepreciationAction", "visible": true },
+                    { "sClass": "EVAULife", "visible": true },
+                    { "sClass": "Action", "visible": true }
+
+                ],
+                columnDefs: [
+                    {
+                        "render": function (data) {
+
+                            var myUrledit = '@Url.Action("Edit", "FA_Master")/' + data.FA_DetailsId;
+                            var myUrldelete = '@Url.Action("Delete", "FA_Master")/' + data.FA_DetailsId;
+                            var myUrlprint = '@Url.Action("Print", "FA_Master")/' + data.FA_DetailsId + '?type=pdf';
+
+                            if (data.depstatus == 1 || data.depstatus == 4) {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit disabled\" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete disabled\" name=\"details\" value=\"' + data.FA_DetailsId + '\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                            }
+                           else  {
+                               return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                   '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"details\" value=\"' + data.FA_DetailsId + '\" target=\"_blank\"></a></span>' +
+                                   '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                            }
+
+                        }, targets: 10
+                    },
+                     {
+                        "render": function (data) {
+
+                             if (data.depstatus == 2) {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="You can see and save depreciation schedule "> <button  class=\"btn btn-sm btn-info btn-xs depstart\" name=\"Start_Dep\" value=\"' + data.FA_DetailsId + '\">Start</button></span></div>';
+                            }
+                             if (data.depstatus == 1) {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="You can see depreciation schedule "> <button  class=\"btn btn-sm btn-info btn-xs depstart\" name=\"See_Dep\" value=\"' + data.FA_DetailsId + '\">Schedules</button></span></div>';
+                             }
+                             if (data.depstatus == 4 || data.depstatus == 5) {
+                                 return '<span>==N/A==</span>';
+                             }
+                        }, targets: 8
+                    }
+                ],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                //"bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "paging": true,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblassetlist = $('#tblAsset_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "ProductCode", "visible": true },
+                    { "sClass": "Percentage", "visible": true },
+                    { "sClass": "AccId_DepreciationExpense", "visible": false },
+                    { "sClass": "DepreciationHead", "visible": true },
+                    { "sClass": "AccId_AccumulatedDepreciation", "visible": false },
+                    { "sClass": "AccumulatedDepreciationHead", "visible": true },
+                    { "sClass": "ComId", "visible": false },
+                    { "sClass": "DMName", "visible": true },
+                    { "sClass": "ProductName", "visible": true },
+                    { "sClass": "Title", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+                ],
+                columnDefs:[ {
+                        "render": function (data) {
+
+                        var myUrledit = '@Url.Action("Edit", "FA_Master")/' + data.FA_MasterId;
+                        var myUrldelete = '@Url.Action("Delete", "FA_Master")/' + data.FA_MasterId;
+                        var myUrlprint = '@Url.Action("FA_Master_Accu_Dep", "FA_Master")/' + data.FA_MasterId + '?type=pdf';
+
+                        //{ IsInProcess: d[i].IsInProcess, FA_MasterId: d[i].FA_MasterId }
+                        console.log()
+                        if (data.IsInProcess == true) {
+                            return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit disabled\" name=\"master\" value=\"' + FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete disabled\" name=\"master\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                        }
+                        else {
+                            return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"master\" value=\"' + data.FA_MasterId + '\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"master\" value=\"' + data.FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Accumulate Depreciation"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                        }
+                    },
+                    targets: 10
+                    }],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                //"bLengthChange": true,
+                "bFilter": true,
+                //"bSort": true,
+                "bInfo": true,
+                "paging": true,
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblSee_Dep = $('#tblSee_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+                "dom": 'Bfrtip',
+
+                "buttons": [
+                    {
+                        text: 'Back',
+                        action: function (e, dt, node, config) {
+
+                            //if (flag == 'temp') {
+                                $(`#${activediv}`).hide();
+                                $(`#${activediv2}`).hide();
+                                //$('#divDepreciation_Schedule_List').hide();
+                                var s = 'Asset_Assign';
+                                titlename = s.replace('_', ' ');
+                                $("#title").empty();
+                                $("#title").append(`${titlename}`);
+                                $('#btnsubmit').attr('name', 'Asset_Assign');
+                                $(`#${backdiv1}`).show();
+                                $(`#${backdiv2}`).show();
+                                //$('#divAsset_Assign').show();
+                                //$('#divtbldetails').show();
+
+                                $('#divbtnsubmit').show();
+                                $('aside').show();
+                                $('article').show();
+                            activediv = 'divAsset_Assign';
+                            activediv2 = 'divtbldetails';
+                            //}
+
+                        }
+                    }
+                ],
+
+                 @*columnDefs:[ {
+                        "render": function (FA_MasterId) {
+
+                            var myUrledit = '@Url.Action("Edit", "FA_Master")/' + FA_MasterId;
+                            var myUrldelete = '@Url.Action("Delete", "FA_Master")/' + FA_MasterId;
+                            var myUrlprint = '@Url.Action("Print", "FA_Master")/' + FA_MasterId + '?type=pdf';
+
+
+                         return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"sale\" value=\"' + FA_MasterId + '\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"sale\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+
+                    }, targets:4
+                    }],*@
+                //"bLengthChange": true,
+                "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+            tblSee_Already_Dep = $('#tblSee_Already_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": false }
+
+
+                ],
+                "dom": 'Bfrtip',
+
+                "buttons": [
+                    {
+                        text: 'Back',
+                        action: function (e, dt, node, config) {
+
+                            $("#btnitemlist").trigger('click');
+                        }
+                    }
+                ],
+
+
+            "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+
+            $("#btnaddrow").click(function () {
+
+                var lifespan = parseFloat($('#UsefullLife').val());
+
+                var prdid = $('#AssetItem').val();
+                if (prdid < 1) {
+                    toastr.error('Please Select the Item');
+                    return true;
+                }
+
+                if (lifespan > 0) {
+                    $("#divtbldetails").show();
+                    $("#QtySpan").text('');
+                    var oTabletbldetails = $('#tbldetails').dataTable().fnGetData();
+                    var calculate;
+                    var selectedEmpName;
+                    var selectedDeptName;
+
+                    if ($.fn.DataTable.isDataTable('#tbldetails')) {
+                        var ifExist = false;
+
+
+                        if (tbldetails.rows('.selected').any()) {
+
+
+                            for (var i = 0; i < oTabletbldetails.length; i++) {
+                                var item = oTabletbldetails[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    var ind2 = tbldetails.row('.selected').index();
+                                    if (i != ind2) {
+                                        toastr.error('Multiple asset of same name is not allowed');
+                                        ifExist = true;
+                                        return;
+                                    }
+                                }
+
+                            }
+
+                            if (ifExist == false) {
+
+                            if ($('#CalculateDepreciation').is(":checked")) {
+                                calculate = true;
+                            } else {
+                                calculate = false;
+                            }
+                                tbldetails
+                                    .rows({ selected: true })
+                                    .every(function (rowIdx, tableLoop, rowLoop) {
+                                        tbldetails.cell(rowIdx, 0).data($("#FA_DetailsIdp").val() || 0);
+                                        tbldetails.cell(rowIdx, 1).data($('#FA_MasterIdp option:selected').val() || 0);
+                                        tbldetails.cell(rowIdx, 2).data($('#AssetItem').val());
+                                        //tbldetails.cell(rowIdx, 3).data($('#IssuNo').val());
+                                        tbldetails.cell(rowIdx, 3).data($('#IssueDate').val());
+                                        tbldetails.cell(rowIdx, 4).data($('#AssignTo option:selected').val() || 0);
+                                        tbldetails.cell(rowIdx, 5).data($('#AssignTo option:selected').text());
+                                        tbldetails.cell(rowIdx, 6).data($('#UsefullLife').val());
+                                        tbldetails.cell(rowIdx, 7).data($('#RemainingYear').val() || 0);
+                                        tbldetails.cell(rowIdx, 8).data($('#RemainingMonth').val() || 0);
+                                        tbldetails.cell(rowIdx, 9).data($('#EVAULife').val());
+                                        tbldetails.cell(rowIdx, 10).data($('#PurchaseValue').val());
+                                        tbldetails.cell(rowIdx, 11).data($('#PurchaseDate').val());
+                                        tbldetails.cell(rowIdx, 12).data($('#AssignToDept option:selected').val());
+                                        tbldetails.cell(rowIdx, 13).data($('#AssignToDept option:selected').text());
+                                        tbldetails.cell(rowIdx, 14).data($('#WrittenDownValue').val()||0);
+                                        tbldetails.cell(rowIdx, 15).data(calculate);
+                                        tbldetails.cell(rowIdx, 16).data($('#CalculateDepreciation').val());
+                                        tbldetails.cell(rowIdx, 17).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                    })
+
+                                    .draw();
+
+                                tbldetails.$('tr.selected').removeClass('selected');
+
+
+                                $("#btnaddrow").text("Add");
+                                $("#Cancel").remove();
+
+                            }
+
+                        }
+                        else {
+                            for (var i = 0; i < oTabletbldetails.length; i++) {
+                                var item = oTabletbldetails[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    toastr.error('Multiple asset of same name is not allowed');
+                                    //ifExist = true;
+                                    return;
+                                }
+
+                            }
+                            //var calculate;
+                            if ($('#CalculateDepreciation').is(":checked")) {
+                                calculate = true;
+                            } else {
+                                calculate = false;
+                            }
+
+                            if ($('#AssignTo option:selected').val()!='no') {
+                                selectedEmpName = $('#AssignTo option:selected').text();
+                            }
+                            else {
+                                selectedEmpName = null;
+                            }
+                            if ($('#AssignToDept option:selected').val() != 'no') {
+                                selectedDeptName = $('#AssignToDept option:selected').text();
+                            }
+                            else {
+                                selectedDeptName = null;
+                            }
+
+                            $('#tbldetails').dataTable().fnAddData([
+                                $("#FA_DetailsIdp").val()||0,
+                                $('#FA_MasterIdp option:selected').val()||0,
+                                $('#AssetItem').val(),
+                                //$('#IssuNo').val(),
+                                $('#IssueDate').val(),
+                                $('#AssignTo option:selected').val()||0,
+                                selectedEmpName,
+                                $('#UsefullLife').val(),
+                                $('#RemainingYear').val() || 0,
+                                $('#RemainingMonth').val() || 0,
+                                $('#EVAULife').val(),
+                                $('#PurchaseValue').val(),
+                                $('#PurchaseDate').val(),
+                                $('#AssignToDept option:selected').val(),
+                                selectedDeptName,
+                                $('#WrittenDownValue').val(),
+                                false,
+                                calculate,
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                            ]);
+                            tbldetails = $('#tbldetails').DataTable();
+                            $("#btnaddrow").text("Add");
+                            tbldetails.draw();
+
+                        }
+                        tbldetails = $('#tbldetails').DataTable();
+                        clear_form_elements("divdet");
+                        $('#CalculateDepreciation').val(false);
+                    }
+                }
+                else {
+                    $("#lifespanSpan").text('Please Fill Up the lifespan.');
+                    toastr.error('Please Fill Up the Aset Code.');
+                }
+            });
+
+            $("#btnaddmasterrow").click(function () {
+
+                var parcent = parseFloat($('#Percentage').val()).toLocaleString();
+
+                var prdid = $('#ProductId option:selected').val();
+                if (prdid < 1) {
+                    toastr.error('Please Select the Item');
+                    return true;
+                }
+
+                if (parcent > 0) {
+                    $("#divassetmasterlist").show();
+                    $("#QtySpan").text('');
+                    var oTabletblmaster = $('#tblmaster').dataTable().fnGetData();
+
+
+                    if ($.fn.DataTable.isDataTable('#tblmaster')) {
+                        var ifExist = false;
+
+
+                        if (tblmaster.rows('.selected').any()) {
+
+
+                            for (var i = 0; i < oTabletblmaster.length; i++) {
+                                var item = oTabletblmaster[i][3];
+                                //alert(item)
+                                if (prdid == item) {
+                                    var ind2 = tblmaster.row('.selected').index();
+                                    if (i != ind2) {
+                                        toastr.error('Multiple asset of same name is not allowed');
+                                        ifExist = true;
+                                        return;
+                                    }
+                                }
+
+                            }
+
+                            if (ifExist == false) {
+
+                                tblmaster
+                                    .rows({ selected: true })
+                                    .every(function (rowIdx, tableLoop, rowLoop) {
+                                        //tbldetails.cell(rowIdx, 0).data("");
+                                        tblmaster.cell(rowIdx, 0).data($('#FA_MasterId').val() || 0);
+                                        tblmaster.cell(rowIdx, 1).data($('#ProductId option:selected').val() || 0);
+                                        tblmaster.cell(rowIdx, 2).data($('#ProductId option:selected').text() || 0);
+                                        tblmaster.cell(rowIdx, 3).data($('#ProductCode').val());
+                                        tblmaster.cell(rowIdx, 4).data($('#DMId option:selected').val());
+                                        tblmaster.cell(rowIdx, 5).data($('#Percentage').val());
+                                        tblmaster.cell(rowIdx, 6).data($('#AccId_DepreciationExpense option:selected').val()||0);
+                                        tblmaster.cell(rowIdx, 7).data($('#AccId_DepreciationExpense option:selected').text());
+                                        tblmaster.cell(rowIdx, 8).data($('#AccId_AccumulatedDepreciation option:selected').val() || 0);
+                                        tblmaster.cell(rowIdx, 9).data($('#AccId_AccumulatedDepreciation option:selected').text());
+                                        tblmaster.cell(rowIdx, 10).data($('#FoD option:selected').val() || 0);
+                                        tblmaster.cell(rowIdx, 11).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                    })
+
+                                    .draw();
+
+                                tblmaster.$('tr.selected').removeClass('selected');
+
+
+                                $("#addBtn").text("Add");
+                                $("#Cancel").remove();
+
+                            }
+
+                        }
+                        else {
+                            for (var i = 0; i < oTabletblmaster.length; i++) {
+                                var item = oTabletblmaster[i][3];
+                                //alert(item)
+                                if (prdid == item) {
+                                    toastr.error('Multiple asset of same name is not allowed');
+                                    //ifExist = true;
+                                    return;
+                                }
+
+                            }
+
+                            $('#tblmaster').dataTable().fnAddData([
+                                $('#FA_MasterId').val()||0,
+                                $('#ProductId option:selected').val()||0,
+                                $('#ProductId option:selected').text()||0,
+                                $('#AssetCode').val(),
+                                $('#DMId option:selected').val(),
+                                $('#Percentage').val(),
+                                //$('#SalvagePercentage').val(),
+                                $('#AccId_DepreciationExpense option:selected').val()||0,//6
+                                $('#AccId_DepreciationExpense option:selected').text(),
+                                $('#AccId_AccumulatedDepreciation option:selected').val()||0,//8
+                                $('#AccId_AccumulatedDepreciation option:selected').text(),
+                                $('#FoD option:selected').val()||0,//10
+                                false,
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                            ]);
+                            tblmaster = $('#tblmaster').DataTable();
+                            $("#addBtn").text("Add");
+                            tblmaster.draw();
+                        }
+                        tblmaster = $('#tblmaster').DataTable();
+                        $('#ProductCode').val("");
+                        $('#Percentage').val("");
+                        //$('#SalvagePercentage').val("");
+                    }
+                }
+                else {
+                    $("#lifespanSpan").text('Please Fill Up the lifespan.');
+                    toastr.error('Please Fill Up the Depreciation Percentage.');
+                }
+            });
+
+            $("#bsss").click(function() {
+
+                var SellsPrice = parseFloat($('#SellsPrice1').val());
+
+                var prdid = $('#FA_DetailsId1 option:selected').val();
+                if (prdid < 1) {
+                    toastr.error('Please Select the Item');
+                    return true;
+                }
+
+                if (SellsPrice > 0) {
+                    $("#divsaleslist").show();
+                    $("#QtySpan").text('');
+                    var oTabletblsalesrowlist = $('#tblsalesrowlist').dataTable().fnGetData();
+
+
+                    if ($.fn.DataTable.isDataTable('#tblsalesrowlist')) {
+                        var ifExist = false;
+
+
+                        if (tblsalesrowlist.rows('.selected').any()) {
+
+
+                            for (var i = 0; i < oTabletblsalesrowlist.length; i++) {
+                                var item = oTabletblsalesrowlist[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    var ind2 = tblsalesrowlist.row('.selected').index();
+                                    if (i != ind2) {
+                                        toastr.error('Multiple asset of same name is not allowed');
+                                        ifExist = true;
+                                        return;
+                                    }
+                                }
+
+                            }
+
+                            if (ifExist == false) {
+
+                                tblsalesrowlist
+                                    .rows({ selected: true })
+                                    .every(function (rowIdx, tableLoop, rowLoop) {
+                                        tblsalesrowlist.cell(rowIdx, 0).data($('#FA_SellId1').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 1).data($('#FA_MasterId1 option:selected').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 2).data($('#FA_MasterId1 option:selected').text());
+                                        tblsalesrowlist.cell(rowIdx, 3).data($('#FA_DetailsId1 option:selected').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 4).data($('#FA_DetailsId1 option:selected').text());
+                                        tblsalesrowlist.cell(rowIdx, 5).data($('#SellsPrice1').val());
+                                        tblsalesrowlist.cell(rowIdx, 6).data($('#Description1').val());
+                                        tblsalesrowlist.cell(rowIdx, 7).data(false);
+                                        tblsalesrowlist.cell(rowIdx, 8).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                    })
+
+                                    .draw();
+
+                                tblsalesrowlist.$('tr.selected').removeClass('selected');
+
+
+                                $("#addBtn").text("Add");
+                                $("#Cancel").remove();
+
+                            }
+
+                        }
+                        else {
+                            for (var i = 0; i < oTabletblsalesrowlist.length; i++) {
+                                var item = oTabletblsalesrowlist[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    toastr.error('Multiple asset of same name is not allowed');
+                                    //ifExist = true;
+                                    return;
+                                }
+
+                            }
+
+                            $('#tblsalesrowlist').dataTable().fnAddData([
+                                $('#FA_SellId1').val() || 0,
+                                $('#FA_MasterId1 option:selected').val() || 0,
+                                $('#FA_MasterId1 option:selected').text(),
+                                $('#FA_DetailsId1 option:selected').val() || 0,
+                                $('#FA_DetailsId1 option:selected').text(),
+                                $('#SellsPrice1').val(),
+                                $('#Description1').val(),
+                                false,
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                            ]);
+                            tblsalesrowlist = $('#tblsalesrowlist').DataTable();
+                            $("#addBtn").text("Add");
+                            tblsalesrowlist.draw();
+                        }
+                        tblsalesrowlist = $('#tblsalesrowlist').DataTable();
+                        $('#ProductBrand').val("");
+                        $('#ProductModel').val("");
+                        $('#PurReqlifespan').val("");
+                        $('#Note').val("");
+                    }
+                }
+                else {
+                    $("#lifespanSpan").text('Please Fill Up the lifespan.');
+                    toastr.error('Please Fill Up the lifespan.');
+                }
+            });
+
+
+            var Asset = {
+
+                FA_MasterId: 0,
+                ProductId: 0,
+                ProductCode: '',
+                DMId: 0,
+                Percentage: '',
+                AccId_DepreciationExpense: 0,
+                AccId_AccumulatedDepreciation: 0,
+                FoD: 0,
+                ComId: '',
+                IsDelete:false
+
+            };
+
+            var AssignAsset = {
+                FA_DetailsId: 0,
+                FA_MasterId: 0,
+                AssetItem: '',
+                //IssuNo: '',
+                IssueDate: '',
+                PurchaseDate: '',
+                PurchaseValue: 0,
+                IssueDate: '',
+                AssignTo: '',
+                UsefullLife: 0,
+                RemainingYear: 0,
+                RemainingMonth: 0,
+                EVAULife: 0,
+                AssignToDept: 0,
+                WrittenDownValue: 0,
+                ComId: '',
+                IsDelete: false,
+                CalculateDepreciation: false
+
+
+            };
+
+            var SellAsset = {
+                FA_SellId: 0,
+                FA_DetailsId: 0,
+                FA_MasterId: 0,
+                SellsPrice: 0,
+                Description: '',
+                IsDelete: false
+
+
+            };
+
+            var Depreciation = {
+                DepreciationId: 0,
+                FoDId: 0,
+                TNoD: 0,
+                DMId: 0,
+                DSDate: '',
+                EVAULife: '',
+                DRate: 0,
+                ComId: false
+
+
+            };
+
+            var process = {
+                ProcessRecordId:0,
+                FA_DetailsId:0,
+                DSDate:'',
+                DEntryDate:'',
+                NextDepDate:'',
+                DepAmount:0.00
+            };
+
+            $('#btnsubmit').click(function () {
+
+                var name = $(this).attr('name');
+                //alert(name);
+
+                if (name == 'Asset_Create') {
+
+                    var AssetList = [];
+                    var oTablerequisitionSub = $('#tblmaster').dataTable().fnGetData();
+
+                    if (oTablerequisitionSub.length == 0) {
+                        alert('Please Fill Necessary Data.');
+                        return false;
+                    };
+                    for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                        Asset.FA_MasterId = oTablerequisitionSub[i][0];
+                        Asset.ProductId = oTablerequisitionSub[i][1];
+                        Asset.ProductCode  = oTablerequisitionSub[i][3];
+                        Asset.DMId = oTablerequisitionSub[i][4];
+                        Asset.Percentage = oTablerequisitionSub[i][5];
+                        Asset.AccId_DepreciationExpense = oTablerequisitionSub[i][7];
+                        Asset.AccId_AccumulatedDepreciation = oTablerequisitionSub[i][9];
+                        Asset.FoD = oTablerequisitionSub[i][11];
+                        Asset.IsDelete = oTablerequisitionSub[i][12];
+                        Asset.ComId = '@comid' ;
+
+                        AssetList.push(Asset);
+
+                        Asset = {
+
+                            FA_MasterId: 0,
+                            ProductId: 0,
+                            ProductCode: '',
+                            DMId: 0,
+                            Percentage: '',
+                            AccId_DepreciationExpense: 0,
+                            AccId_AccumulatedDepreciation: 0,
+                            FoD: 0,
+                            ComId: '',
+                            IsDelete:false
+
+                        };
+                    };
+
+                    if (AssetList.length > 0) {
+                        $.ajax({
+                            url: '@Url.Action("Create", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { assetlist: AssetList },
+                            success: function (data, status, xhr) {
+                                if (status == 'success') {
+                                    $('#tbldetails').DataTable().clear().draw();
+                                    $("#divshowproducinfo").hide();
+                                    $("#divassetmasterlist").hide();
+                                    clear_form_elements(`div${name}`);
+                                    toastr.success('Asset Created Successfully');
+                                };
+                            },
+                        });
+                    }
+
+                }
+
+                if (name == 'Asset_Assign') {
+                    var AssetListToAssign = [];
+                    var oTablerequisitionSub = $('#tbldetails').dataTable().fnGetData();
+
+                    if (oTablerequisitionSub.length == 0) {
+                        alert('Please Fill Necessary Data.');
+                        return false;
+                    };
+                    for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                        AssignAsset.FA_DetailsId = oTablerequisitionSub[i][0];
+                        AssignAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                        AssignAsset.AssetItem  = oTablerequisitionSub[i][2];
+                        //AssignAsset.IssuNo = oTablerequisitionSub[i][3];
+                        AssignAsset.PurchaseDate = oTablerequisitionSub[i][11];
+                        AssignAsset.PurchaseValue = oTablerequisitionSub[i][10];
+                        AssignAsset.IssueDate = oTablerequisitionSub[i][3];
+                        AssignAsset.AssignTo = oTablerequisitionSub[i][4];
+                        AssignAsset.UsefullLife = oTablerequisitionSub[i][6];
+                        AssignAsset.RemainingYear = oTablerequisitionSub[i][7];
+                        AssignAsset.RemainingMonth = oTablerequisitionSub[i][8];
+                        AssignAsset.EVAULife = oTablerequisitionSub[i][9];
+                        AssignAsset.AssignToDept = oTablerequisitionSub[i][12];
+                        AssignAsset.WrittenDownValue = oTablerequisitionSub[i][14];
+                        AssignAsset.IsDelete = oTablerequisitionSub[i][15];
+                        AssignAsset.CalculateDepreciation = oTablerequisitionSub[i][16];
+                        AssignAsset.ComId = '@comid' ;
+
+                        AssetListToAssign.push(AssignAsset);
+
+                        AssignAsset = {
+                            FA_DetailsId: 0,
+                            FA_MasterId: 0,
+                            AssetItem: '',
+                            //IssuNo: '',
+                            IssueDate: '',
+                            PurchaseDate: '',
+                            PurchaseValue: 0,
+                            IssueDate: '',
+                            AssignTo: '',
+                            UsefullLife: 0,
+                            RemainingYear: 0,
+                            RemainingMonth: 0,
+                            EVAULife: 0,
+                            AssignToDept: 0,
+                            WrittenDownValue: 0,
+                            ComId: '',
+                            IsDelete: false,
+                            CalculateDepreciation: false
+
+                        };
+                    };
+
+                    if (AssetListToAssign.length > 0) {
+                        $.ajax({
+                            url: '@Url.Action("AssignAsset", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { assetListToAssign: AssetListToAssign },
+                            success: function (data, status, xhr) {
+                                if (data.success == 1) {
+                                    $('#tbldetails').DataTable().clear().draw();
+                                    $("#divshowassetinfo").hide();
+                                    $("#divtbldetails").hide();
+                                    clear_form_elements(`div${name}`);
+                                    toastr.success('Asset Created Successfully');
+                                };
+                                if (data.error == 1) {
+                                    toastr.error('Asset can not be created');}
+                            },
+                        });
+                    }
+                }
+                if (name == 'Asset_Sell') {
+                    var AssetListToSale = [];
+                    var oTablerequisitionSub = $('#tblsalesrowlist').dataTable().fnGetData();
+
+                    if (oTablerequisitionSub.length == 0) {
+                        alert('Please Fill Necessary Data.');
+                        return false;
+                    };
+                    for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                        SellAsset.FA_SellId = oTablerequisitionSub[i][0];
+                        SellAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                        SellAsset.FA_DetailsId  = oTablerequisitionSub[i][3];
+                        SellAsset.SellsPrice = oTablerequisitionSub[i][5];
+                        SellAsset.Description = oTablerequisitionSub[i][6];
+
+                        AssetListToSale.push(SellAsset);
+
+                         SellAsset = {
+                            FA_SellId: 0,
+                            FA_DetailsId: 0,
+                            FA_MasterId: 0,
+                            SellsPrice: 0,
+                            Description: '',
+                             IsDelete: false
+                         };
+                    };
+
+                    if (AssetListToSale.length > 0) {
+                        $.ajax({
+                            url: '@Url.Action("SeleAsset", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { assetListToSale: AssetListToSale },
+                            success: function (data, status, xhr) {
+                                if (data.success == '1') {
+                                    $('#tblsalesrowlist').DataTable().clear().draw();
+                                    $("#divsaleslist").hide();
+                                    clear_form_elements(`div${name}`);
+                                    toastr.success('Asset Created Successfully');
+                                }
+                                if (data.error == '1') {
+                                    toastr.error(data.message);
+                                }
+                                ;
+                            },
+                        });
+                    }
+                }
+
+            });
+
+            //$('#ProductId').attr('disabled', true);
+
+            $("#btnadd").attr('title', 'New asset');
+            $("#btnsell").attr('title', 'Sell asset');
+            $("#btnlist").attr('title', 'Asset List');
+            $("#btnassign").attr('title', 'Asset Assign');
+            $("#btnCalculation").attr('title', 'Asset Depreciation');
+            $("#btnrefresh").attr('title', 'Page Reload');
+
+            $('#FA_MasterId1').change(function () {
+
+                var FA_MasterIds = $('#FA_MasterId1 option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("getsolditem", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                        data: { id: FA_MasterIds },
+                        success: function (data, status, xhr) {
+                            $("#FA_DetailsId1 option").remove();
+
+                            createSelectList(data.list)
+                            $('#FA_DetailsId1').attr('disabled', false);
+                            //if (selectedItem!=null) {
+                            //    $("#ProductId").val(selectedItem).change();
+                            //}
+                            //selectedItem = null;
+                        }
+
+                    });
+            });
+
+
+
+            $('#tblmaster tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tblmaster')) {
+
+                    tblmaster
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#btnaddmasterrow").text("Modify");
+                            if ($("#spn1").children('#Cancel')) {
+                                $("#spn1").children('#Cancel').remove();
+                                $("#spn1").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn1").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tblmaster.rows('.selected').data();
+                            //console.log(f[0][2]);
+
+                            selectedItem = `${f[0][2]}`;
+
+                            $('#FA_MasterId').val(`${f[0][0]}`);
+                            $('#ProductId option:selected').val(`${f[0][1]}`).change();
+                            $('#ProductCode').val(`${f[0][3]}`);
+                            $('#DMId option:selected').val(`${f[0][4]}`).change();
+                            $('#Percentage').val(`${f[0][5]}`);
+                            $('#AccId_DepreciationExpense option:selected').val(`${f[0][6]}`).change();
+                            $('#AccId_AccumulatedDepreciation option:selected').val(`${f[0][8]}`).change();
+                            $('#FoD option:selected').val(`${f[0][10]}`).change();
+
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#btnaddmasterrow").text("Add");
+                            $("#spn1").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#ProductCode').val("");
+                            $('#Percentage').val("");
+
+
+                        });
+                };
+
+
+
+                //if ($(this).hasClass('selected')) {
+                //    //$("#UpBtn").show();
+                //    $("#addBtn").text("Modify");
+                //}
+                //else {
+                //    table.$('tr.selected').removeClass('selected');
+                //    $(this).addClass('selected');
+                //}
+                //if ($(this).hasClass("selected")) {
+
+                //}
+            });
+
+            $('#tblmaster tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tblmaster')) {
+
+                    tblmaster
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#btnaddmasterrow").text("Modify");
+                            if ($("#spn1").children('#Cancel')) {
+                                $("#spn1").children('#Cancel').remove();
+                                $("#spn1").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn1").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tblmaster.rows('.selected').data();
+                            //console.log(f[0][2]);
+
+                            selectedItem = `${f[0][2]}`;
+
+                            $('#FA_MasterId').val(`${f[0][0]}`);
+                            $('#ProductId option:selected').val(`${f[0][1]}`).change();
+                            $('#ProductCode').val(`${f[0][3]}`);
+                            $('#DMId option:selected').val(`${f[0][4]}`).change();
+                            $('#Percentage').val(`${f[0][5]}`);
+                            $('#AccId_DepreciationExpense').val(`${f[0][6]}`).change();
+                            $('#AccId_AccumulatedDepreciation').val(`${f[0][7]}`).change();
+                            $('#FoD option:selected').val(`${f[0][8]}`).change();
+
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#btnaddmasterrow").text("Add");
+                            $("#spn1").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#ProductCode').val("");
+                            $('#Percentage').val("");
+
+
+                        });
+                };
+
+
+
+                //if ($(this).hasClass('selected')) {
+                //    //$("#UpBtn").show();
+                //    $("#addBtn").text("Modify");
+                //}
+                //else {
+                //    table.$('tr.selected').removeClass('selected');
+                //    $(this).addClass('selected');
+                //}
+                //if ($(this).hasClass("selected")) {
+
+                //}
+            });
+
+            $('#tbldetails tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tbldetails')) {
+
+                    tbldetails
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#btnaddrow").text("Modify");
+                            if ($("#spn2").children('#Cancel')) {
+                                $("#spn2").children('#Cancel').remove();
+                                $("#spn2").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn2").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tbldetails.rows('.selected').data();
+                            console.log(f[0]);
+
+                            selectedItem = `${f[0][2]}`;
+
+
+
+                            $('#FA_DetailsIdp').val(`${f[0][0]}`);
+                            $('#FA_MasterIdp').val(`${f[0][1]}`).change();
+                            $('#AssetItem').val(`${f[0][2]}`);
+                            $('#IssueDate').val(`${f[0][3]}`);
+                            $('#PurchaseDate').val(`${f[0][11]}`);
+                            $('#AssignTo').val(`${f[0][4]}`).change();
+                            $('#EVAULife').val(`${f[0][9]}`);
+                            $('#RemainingYear').val(`${f[0][7]}`);
+                            $('#UsefullLife').val(`${f[0][6]}`);
+
+                            ////
+
+                            $('#WrittenDownValue').val(`${f[0][14]}`);
+                            $('#PurchaseValue').val(`${f[0][10]}`);
+                            $('#RemainingMonth').val(`${f[0][8]}`);
+
+
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#btnaddrow").text("Add");
+                            $("#spn2").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#FA_DetailsIdp').val(0);
+                            $('#FA_MasterIdp').val(0);
+                            $('#AssetItem').val('');
+                            $('#IssuNo').val('');
+                            $('#PurchaseDate').val('');
+                            $('#AssignTo').val(0);
+                            $('#EVAULife').val(0);
+                            $('#RemainingYear').val(0);
+                            $('#UsefullLife').val(0);
+
+                            ////
+
+                            $('#WrittenDownValue').val(0);
+                            $('#PurchaseValue').val(0);
+                            $('#RemainingMonth').val(0);
+
+                        });
+                };
+
+            });
+
+            $('#tblsalesrowlist tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tblsalesrowlist')) {
+
+                    tblsalesrowlist
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#bsss").text("Modify");
+                            if ($("#spn3").children('#Cancel')) {
+                                $("#spn3").children('#Cancel').remove();
+                                $("#spn3").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn3").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tblsalesrowlist.rows('.selected').data();
+                            //console.log(f[0][2]);
+
+                            selectedItem = `${f[0][2]}`;
+
+                            $('#FA_SellId1').val(`${f[0][0]}`);
+                            $('#FA_MasterId1').val(`${f[0][1]}`).change();
+                            $('#FA_DetailsId1').val(`${f[0][3]}`).change();
+                            $('#SellsPrice1').val(`${f[0][5]}`);
+                            $('#Description1').val(`${f[0][6]}`);
+
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#bsss").text("Add");
+                            $("#spn3").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#FA_SellId').val(0);
+                            $('#FA_MasterId').val(-1).change();
+                            $('#FA_DetailsId').val(-1).change();
+                            $('#SellsPrice').val('');
+                            $('#Description').val('');
+
+
+                        });
+                };
+
+
+            });
+
+
+        });
+
+        $(document).on('click', '.dlttrash', function () {
+
+            var d = $(this).data();
+            var tablename = this.parentNode.parentNode.parentNode.parentNode.id;
+            var div = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tbldetails.cell(l, 10).data(true);
+                    $(this).parent().parent().hide();
+                }
+
+                else {
+                    var table = $(`#${tablename}`).DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#spn").children('#Cancel')) {
+                        $("#spn").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $(`#${tablename}`).height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+
+                var table = $(`#${tablename}`).DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($(".spn").children('#Cancel')) {
+                    $(".spn").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $(`#${tablename}`).height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+            var t = $(`#${tablename}`).dataTable().fnGetData();
+            if (t.length==0) {
+                $(`#${div}`).hide();
+            }
+
+        });
+
+        $(document).on('click', '.depstart', function ()  {
+            var na = $(this).attr('name');
+            if (na == 'See_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("SeeDepSchedule", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+
+                            $('#tblSee_Already_Dep').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            if (d != null) {
+                                $("#divAsset_Item_List").hide();
+                                backdiv1 = 'divAsset_Item_List';
+                                $("#divAlready_Dep_Schedule_List").show();
+                                activediv = 'divAlready_Dep_Schedule_List';
+
+
+                                //$("#divtbldetails").hide();
+                                //$("#divDepreciation_Schedule_List").show();
+
+                                for (var i = 0; i < d.length; i++) {
+
+                                    $('#tblSee_Already_Dep').dataTable().fnAddData([
+                                        d[i].DepreciationScheduleId,
+                                        d[i].AssetItem,
+                                        d[i].ScheduleDate,
+                                        d[i].DepAmount,
+                                        d[i].AccumulateDepAmount,
+                                        d[i].AccumulateDepBooked,
+                                        d[i].AccumulateDepRemain,
+                                        d[i].JournalEntry,
+                                        '<a data-itemId="0" href="#" class="dlttrash deleteItem"><i class="fa fa-trash"></i></a>'
+                                    ]);
+                                }
+
+                                //flag = 'fixed';
+
+                            }
+
+                            //clear_form_elements(`div${name}`);
+
+                            toastr.success('Depreciation Scheduled Loaded');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Depreciation schedule cannot be created');
+                        }
+                    },
+                });
+
+
+            }
+            if (na == 'Start_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("StartDepSchedule", "FA_Master")',
+                    type: 'POST',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+                            GetAssetItems();
+                            toastr.success('Depreciation Schedule Created Successfully');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Asset can not be create');
+                        }
+                    }
+                });
+
+            }
+        });
+
+        $(document).on('click', '.cancel', function () {
+
+            if ($.fn.DataTable.isDataTable('#tbldetails')) {
+                if (tbldetails.rows('.selected').any()) {
+                    $('#tbldetails tr.selected').removeClass('selected');
+                }
+                $("#addBtn").text("Add");
+                $(this).remove();
+                $('#CategoryId').val("0").change();
+                $('#ProductId').val("-1").change();
+                $('#ProductBrand').val("");
+                $('#ProductModel').val("");
+                $('#PurReqQty').val("");
+                $('#Note').val("");
+            }
+        });
+
+        $(document).on('click', '.edit', function () {
+
+            var name = $(this).attr('name');
+            var id = $(this).attr('value');
+            if (name == 'master') {
+                    //window.setTimeout(function () {
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id,type:name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+                                $('#mode').val('Edit');
+                                $("#btnadd").trigger('click');
+                                var d = data.list;
+                                productid = d.ProductId;
+                                $('#FA_MasterId').val(`${d.FA_MasterId}`).change();
+                                $('#ProductId option:selected').val(d.ProductId).change();
+                                $('#ProductCode').val(d.ProductCode);
+                                $('#DMId').val(d.DMId).change();
+                                $('#Percentage').val(d.Percentage);
+                                $('#AccId_DepreciationExpense').val(d.AccId_DepreciationExpense).change();
+                                $('#AccId_AccumulatedDepreciation').val(d.AccId_AccumulatedDepreciation).change();
+                                $('#FoD').val(d.FoD).change();
+
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+            if (name == 'details') {
+                $('#mode').val('Edit');
+                $("#divAsset_Item_List").hide();
+                $("#divshowproducinfo").hide();
+                $("#divAsset_Item_List").hide();
+                //window.setTimeout(function () {
+                $("#btnassign").trigger('click');
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id, type: name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+
+                                var d = data.list;
+                               // console.log(d);
+
+                                $("#FA_DetailsIdp").val(d.FA_DetailsId);
+                                $('#FA_MasterIdp').val(d.FA_MasterId).change();
+                                $('#AssetItem').val(d.AssetItem);
+                                $('#IssuNo').val(d.IssuNo);
+                                $('#PurchaseDate').val(dateformat(d.PurchaseDate));
+                                $('#IssueDate').val(dateformat(d.IssueDate));
+                                $('#AssignTo').val(d.AssignTo).change();
+                                $('#AssignToDept').val(d.AssignToDept).change();
+                                $('#EVAULife').val(d.EVAULife);
+
+                                $('#WrittenDownValue').val(d.WrittenDownValue);
+                                $('#PurchaseValue').val(d.PurchaseValue);
+
+
+
+                                $('#RemainingYear').val(d.RemainingYear);
+                                $('#RemainingMonth').val(d.RemainingMonth);
+                                $('#UsefullLife').val(d.UsefullLife);
+
+
+
+
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+            if (name == 'sale') {
+                    //window.setTimeout(function () {
+                    $.ajax({
+                        url: '@Url.Action("Edit", "FA_Master")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: { id: id, type: name },
+                        success: function (data, status, xhr) {
+                            //console.log(data.list);
+                            //alert('hit');
+
+                            if (status == 'success') {
+                                //alert('success');
+
+                                var d = data.list;
+                                $('#FA_SellId1').val(d.FA_SellId);
+                                $('#FA_MasterId1').val(d.FA_MasterId);
+                                $('#FA_DetailsId1').val(d.FA_DetailsId);
+                                $('#SellsPrice1').val(d.SellsPrice);
+                                $('#Description1').val(d.Description);
+
+
+                                $('#mode').val('Edit');
+                                $("#btnsell").trigger('click');
+
+
+                            };
+                        },
+                    });
+                    //}, 200);
+            }
+        });
+
+        function dateformat(datetime) {
+            d = new Date(datetime);
+            var month = d.getMonth() + 1;
+            var date = d.getDate();
+            var year = d.getFullYear();
+            return `${year}-${month}-${date}`;
+        }
+
+        function InitilizeSelectLists() {
+            $.ajax({
+                url: '@Url.Action("InitializeSelectList", "FA_Master")',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data, status, xhr) {
+
+                    if (status == 'success') {
+
+                        if (data.master) {
+                            $('#FA_MasterIdp').empty();
+                            $('#FA_MasterIdp').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.master.length; ++i) {
+                                optionValue = data.master[i].Value;
+                                optionText = data.master[i].Text;
+                                $('#FA_MasterIdp').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+                        if (data.sale) {
+                            $('#FA_DetailsId1').empty();
+                            $('#FA_DetailsId1').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.sale.length; ++i) {
+                                optionValue = data.sale[i].Value;
+                                optionText = data.sale[i].Text;
+                                $('#FA_DetailsId1').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+
+                    };
+                },
+            });
+
+        }
+
+        function clear_form_elements(div_name) {
+            $("#" + div_name).find(':input').each(function () {
+                switch (this.type) {
+                    case 'password':
+                    case 'text':
+                    case 'textarea':
+                    case 'file':
+                    case 'select-one':
+                    case 'select-multiple':
+                    case 'date':
+                    case 'number':
+                    case 'tel':
+                    case 'email':
+                        jQuery(this).val('');
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        this.checked = false;
+                        break;
+                }
+            });
+        }
+
+        function createSelectList(selItem) {
+
+            $('#FA_DetailsId1').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#FA_DetailsId1').append(new Option(optionText, optionValue));
+            }
+        }
+
+        function Refresh() {
+            var url = '@Url.Action("Create", "FA_Master")';
+                    window.location.href = url;
+        }
+        function GetAssetItems() {
+                 $.ajax({
+                            url: '@Url.Action("GetAssetItems", "FA_Master")',
+                            type: 'GET',
+                            dataType: 'json',
+                             contentType: 'application/json',
+                             success: function (data, status, xhr) {
+                                 //console.log(data);
+                                 //alert('hit');
+
+                                 if (status == 'success') {
+                                     $('#tblAssetItem_List').DataTable().clear().draw();
+
+                                    var d=data;
+                                    for (var i = 0; i < d.length; i++) {
+
+
+
+                                        //{ "sClass": "ProductCode", "visible": true },
+                                        //{ "sClass": "Percentage", "visible": true },
+                                        //{ "sClass": "AccId_DepreciationExpense", "visible": true },
+                                        //{ "sClass": "AccId_AccumulatedDepreciation", "visible": true },
+                                        //{ "sClass": "ComId", "visible": false },
+                                        //{ "sClass": "DMName", "visible": true },
+                                        //{ "sClass": "ProductName", "visible": true },
+                                        //{ "sClass": "Title", "visible": true },
+                                        //{ "sClass": "Action", "visible": true }
+
+
+                                        $('#tblAssetItem_List').dataTable().fnAddData([
+                                            d[i].Text,
+                                            d[i].PurchaseDate,
+                                            d[i].PurchaseValue,
+                                            d[i].IssueDate,
+                                            d[i].EmpName,
+                                            d[i].UsefullLife,
+                                            d[i].RemainingYear,
+                                            d[i].Title,
+                                            { FA_DetailsId: d[i].FA_DetailsId, IsDepRunning: d[i].IsDepRunning, depstatus: d[i].FA_Dep_StatusId},
+                                            d[i].EVAULife,
+                                            { FA_DetailsId: d[i].FA_DetailsId, IsDepRunning: d[i].IsDepRunning, depstatus: d[i].FA_Dep_StatusId}
+
+                                            //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+
+                                        ]);
+                                     }
+
+                                    toastr.success('Data loaded Successfully');
+
+                                };
+                            },
+                        });
+            };
+
+        //function SelectEmployee(selItem) {
+        //    for (var i = 0; i < selItem.length; ++i) {
+        //        optionValue = selItem[i].EmpId;
+        //        optionText = selItem[i].EmpCode + ' ' + selItem[i].EmpName;
+        //        $('#ProductId').append(new Option(optionText, optionValue));
+        //    }
+        //};
+        $.LoadingOverlaySetup({
+            background: "rgba(0, 0, 0, 0.5)",
+            //fontawesome: "fas fa-cog fa-spin",
+            imageAnimation: "1.5s fadein",
+            imageColor: "#ffcc00"
+        });
+        $(document).ajaxStart(function () {
+            $.LoadingOverlay("show");
+
+        });
+        $(document).ajaxStop(function () {
+           $.LoadingOverlay("hide");
+
+        });
+    </script>
+}

@@ -1,0 +1,864 @@
+﻿
+@model IEnumerable<EmpList>
+@{
+    ViewBag.Title = "Total Employee List";
+}
+@using GTERP.ViewModels
+
+
+<style>
+
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    .jsgrid-pager-container {
+        display: block !important;
+    }
+    .jsgrid-grid-body{
+        height: 400px;
+    }
+</style>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+
+            @*<div class="col">
+                    @Html.ActionLink("Employee Creation", "Create", null, null, new { @class = "btn btn-outline-info btn-block", @id = "btnBack" })
+                </div>*@
+            <div class="col">
+
+            </div>
+            @*<div class="col-lg-7">
+
+                </div>*@
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-md-12 col-12">
+
+            <div class="bringshadow boxStyle" style="padding-right: 5px; margin-bottom: 5px;padding:14px;border-radius:3px;border:solid 1px rgba(0,0,0,0.15);">
+                <div class="pl-4 d-inline" style="font-weight: bold; color: black">
+                    <label><input type="radio" id="all" name="optSts" checked="checked" value="All" onclick="handleClick()" /> All</label>&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" id="joining" name="optSts" value="Joining" onclick="handleClick()" /> New Joining</label>&nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" id="released" name="optSts" value="Released" onclick="handleClick()" /> Released</label>&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="float-right">
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">
+                                    Duration
+                                </span>
+
+                                <select asp-items="@ViewBag.period" name="period" id="select1" class="dropdown" onchange="sendData()">
+                                    @*<option value="" selected>--Please Select--</option>*@
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        From Date:
+                                    </span>
+                                </div>
+
+                                <input type="text" value="" id="from" name="from" class="form-control" autocomplete="off" onblur="sendData()" />
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        To Date :
+                                    </span>
+                                </div>
+
+                                <input type="text" value="" id="to" name="to" class="form-control" autocomplete="off" onblur="sendData()" />
+                            </div>
+                        </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="card p-3 table-responsive">
+        <div class="row" style="margin: 2px">
+            <div class="col-6">
+                @*<input type="text" id="search-text" onkeyup="filterItemTemplate()" placeholder="Search..." style="width: 150px margin: auto">*@
+            </div>
+            <div class="col-6">
+                <div style="display: flex; align-items: center;" class="float-right">
+
+                            <button id="download-btns" onclick="downloadExcel()" class="btn btn-outline-success">Export</button>
+                    <button id="download-btn" class="btn btn-success" style="margin-left: 2px; margin-right: 2px;"><i class="mdi mdi-file-excel"></i></button>
+                            <select id="page-size" style="width: 80px;">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                </div>
+
+            </div>
+        </div>
+        
+        
+        <div class="col-12 col-md-12">
+            <div id="jsGrid" style="height: 300px"></div>
+        </div>
+
+        @*</table>*@
+        <br />
+    </div>
+</div>
+@section Scripts{
+            <!-- HTML code -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+
+    <script>
+        $(function () {
+                    $("#from").datepicker({
+                        dateFormat: 'dd-MMM-yyyy'
+                    });
+                    $("#to").datepicker({
+                        dateFormat: 'dd-MMM-yyyy'
+                    });
+                });
+
+    </script>
+    <script>
+               var today = new Date();
+                var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var year = today.getFullYear();
+                var month = today.getMonth();
+                var firstDay = '1-' + monthNames[month] + '-' + year;
+                document.getElementById('from').value = firstDay;
+
+                var lastDay = new Date(year, month + 1, 0).getDate();
+                var formattedLastDay = lastDay + '-' + monthNames[month] + '-' + year;
+                document.getElementById('to').value = formattedLastDay;
+    </script>
+    <script>
+                var pageSize = $("#page-size").val();
+                var url;
+                var search;
+                function initJsGrid() {
+                    var jsGridItemsDB = {
+                        loadData: function (filter) {
+                            pageSize: pageSize,
+                            url = '@Url.Action("GetEmployees", "HR")' + '?pageIndex=' + filter.pageIndex + '&pageSize=' + filter.pageSize;
+                            //if ($("#search-text").val() != "") {
+                            //    url += '&searchQuery=' + $("#search-text").val();
+                            //}
+                            if ($("#from").val() != "" && $("#to").val() != "") {
+                                url += '&From=' + $("#from").val();
+                                url += '&To=' + $("#to").val();
+                            }
+                            if (document.getElementById("all").checked) {
+                                url += '&criteria=' + document.getElementById("all").value;
+                            }
+                            if (document.getElementById("joining").checked) {
+                                url += '&criteria=' + document.getElementById("joining").value;
+                            }
+                            if (document.getElementById("released").checked) {
+                                url += '&criteria=' + document.getElementById("released").value;
+                            }
+                            url += '&searchquery=' + JSON.stringify(filter);
+                            search = JSON.stringify(filter);
+                            console.log(filter);
+                            var d = $.Deferred();
+                            $.ajax({
+                                type: "GET",
+                                url: url,
+                                //data: { searchquery: JSON.stringify(filter) },
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json"
+                            })
+
+                                .done(function (result) {
+                                    //console.log(result);
+                                    d.resolve(result);
+                                    //console.log(result.ProductList);
+
+                                });
+                            return d.promise().then(function (q) {
+
+                                //console.log(q);
+                                return {
+
+                                    data: q.EmployeeList,
+                                    itemsCount: parseInt(q.PageInfo.TotalRecordCount)
+                                }
+                            });
+                        }
+
+                    }
+
+                    var child = [];
+                    //alert(globalPageSize);
+                    var serial = 0;
+
+                    $("#jsGrid").jsGrid({
+
+                        width: "100%",
+                        //height: 400,
+                        filtering: true,
+                        //editing: true,
+                        autoload: true,
+                        pageSize: 10,
+                        pageLoading: true,
+                        pageIndex: 1,
+                        paging: true,
+                        controller: jsGridItemsDB,
+                        pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                        pagePrevText: "<",
+                        pageNextText: ">",
+                        // selecting: true,
+
+                        fields: [
+                            { name: "EmpCode", type: "text", width: 100, title: "Emp.Code" },
+                            { name: "EmpName", type: "text", width: 150, title: "Emp.Name" },
+                            { name: "EmpNameB", type: "text", width: 150, title: "EmpNameB" },
+                            { name: "EmpSpouse", type: "text", width: 150, title: "EmpSpouse" },
+                            { name: "EmpSpouseB", type: "text", width: 150, title: "EmpSpouseB" },
+                            { name: "EmpFather", type: "text", width: 150, title: "EmpFather" },
+                            { name: "EmpFatherB", type: "text", width: 150, title: "EmpFatherB" },
+                            { name: "EmpMother", type: "text", width: 150, title: "EmpMother" },
+                            { name: "EmpMotherB", type: "text", width: 150, title: "EmpMotherB" },
+                            { name: "BankAccNo", type: "text", width: 150, title: "BankAccNo" },
+                            { name: "ReligionName", type: "text", width: 150, title: "ReligionName" },
+                            { name: "BloodName", type: "text", width: 150, title: "BloodName" },
+                            { name: "UnitName", type: "text", width: 150, title: "UnitName" },
+                            { name: "LineName", type: "text", width: 150, title: "LineName" },
+                            { name: "FloorName", type: "text", width: 150, title: "FloorName" },
+                            { name: "CategoryName", type: "text", width: 150, title: "CategoryName" },
+                            { name: "DeptName", type: "text", width: 150, title: "DeptName" },
+                            { name: "ShiftName", type: "text", width: 150, title: "ShiftName" },
+                            { name: "Skill", type: "text", width: 150, title: "Skill" },
+                            { name: "EmpCurrCityVill", type: "text", width: 150, title: "PresentAddress" },
+                            { name: "PerVillName", type: "text", width: 150, title: "PermanentAddress" },
+                            { name: "Educations", type: "text", width: 150, title: "Education" },
+                            { name: "Experiences", type: "text", width: 150, title: "Experience" },
+                            { name: "DesigName", type: "text", width: 150, title: "DesigName" },
+                            { name: "SectName", type: "text", width: 150, title: "SectName" },
+                            { name: "SubSectName", type: "text", width: 150, title: "SubSectName" },
+                            {
+                                name: "DtBirth", title: "DtBirth", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            {
+                                name: "DtJoin", title: "Joining Date", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            {
+                                name: "DtIncrement", title: "DtIncrement", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            {
+                                name: "DtConfirm", title: "DtConfirm", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            {
+                                name: "DtPf", title: "PF Date", width: 150, type: "date", itemTemplate: function (value) {
+                                    if (value) {
+                                        var date = new Date(value);
+                                        var day = ("0" + date.getDate()).slice(-2);
+                                        var month = date.toLocaleString("default", { month: "short" });
+                                        var year = date.getFullYear();
+                                        return day + "-" + month + "-" + year;
+                                    }
+                                    return "";
+                                }
+                            },
+                            { name: "EmpTypeName", type: "text", width: 150, title: "Employee Type" },
+                            { name: "GenderName", type: "text", width: 150, title: "Gender" },
+                            { name: "NID", type: "text", width: 150, title: "NID" },
+                            { name: "FingerId", type: "text", width: 150, title: "FingerId" },
+                            { name: "EmpPhone1", type: "text", width: 150, title: "EmpPhone1" },
+                            { name: "EmpPhone2", type: "text", width: 150, title: "EmpPhone2" },
+                            {
+                                name: "IsInactive", type: "checkbox", width: 150, title: "IsInactive",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                        $("#jsGrid").jsGrid("search", { IsInactive: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                       // console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                       // console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            { name: "CurrDistName", type: "text", width: 150, title: "CurrDistName" },
+                            { name: "PerDistName", type: "text", width: 150, title: "PerDistName" },
+                            { name: "EmpEmail", type: "text", width: 150, title: "EmpEmail" },
+                            { name: "EmpRemarks", type: "text", width: 150, title: "EmpRemarks" },
+                            { name: "GradeName", type: "text", width: 150, title: "Grade" },
+                            { name: "EmpNomineeName1", type: "text", width: 160, title: "EmpNomineeName1" },
+                            { name: "EmpNomineeMobile1", type: "text", width: 160, title: "EmpNomineeMobile1" },
+                            { name: "EmpNomineeNID1", type: "text", width: 160, title: "EmpNomineeNID1" },
+                            { name: "EmpNomineeRelation1", type: "text", width: 170, title: "EmpNomineeRelation1" },
+                            { name: "EmpNomineeAddress1", type: "text", width: 170, title: "EmpNomineeAddress1" },
+                            { name: "EmpNomineeName2", type: "text", width: 160, title: "EmpNomineeName2" },
+                            { name: "BirthCertificate", type: "text", width: 160, title: "BirthCertificate" },
+                            {
+                                name: "IsAllowPF", type: "checkbox", width: 150, title: "IsAllowPF",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsAllowPF: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                       // console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                       // console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            { name: "Salary", type: "text", width: 170, title: "Salary" },
+                            { name: "BusStopName", type: "text", width: 160, title: "BusStopName" },
+                            { name: "EmpNomineeMobile2", type: "text", width: 160, title: "EmpNomineeMobile2" },
+                            { name: "EmpNomineeNID2", type: "text", width: 160, title: "EmpNomineeNID2" },
+                            { name: "EmpNomineeRelation2", type: "text", width: 170, title: "EmpNomineeRelation2" },
+                            { name: "EmpNomineeAddress2", type: "text", width: 170, title: "EmpNomineeAddress2" },
+                            {
+                                name: "IsAllowOT",
+                                type: "checkbox",
+                                width: 150,
+                                title: "Is Allow OT",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsAllowOT: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                       // console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                       // console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            {
+                                name: "IsLunchAllow",
+                                type: "checkbox",
+                                width: 150,
+                                title: "IsLunchAllow",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsLunchAllow: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                        //console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                        //console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            {
+                                name: "IsTrnAllow",
+                                type: "checkbox",
+                                width: 150,
+                                title: "IsTrnAllow",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsTrnAllow: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                        //console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                        //console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            {
+                                name: "IsLunchDed",
+                                type: "checkbox",
+                                width: 150,
+                                title: "IsLunchDed",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsLunchDed: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                       // console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                        //console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            {
+                                name: "IsTrnDed",
+                                type: "checkbox",
+                                width: 150,
+                                title: "IsTrnDed",
+                                filterTemplate: function () {
+                                    var $select = $("<select>");
+                                    $select.append("<option value=''>-- All --</option>");
+                                    $select.append("<option value='1'>Yes</option>");
+                                    $select.append("<option value='0'>No</option>");
+
+                                    $select.change(function () {
+                                    var value = $(this).val();
+                                    $("#jsGrid").jsGrid("search", { IsTrnDed: value });
+                                    });
+
+                                    return $select;
+                                },
+                                filterValue: function () {
+                                    if (this.filterControl) {
+                                        //console.log('Filter Control Value:', this.filterControl.val());
+                                        var filterValue = this.filterControl.val();
+                                        if (filterValue === '') {
+                                            return undefined;
+                                        }
+                                        return filterValue === 'true';
+                                    } else {
+                                       // console.log('Filter Control is undefined');
+                                        return undefined;
+                                    }
+                                },
+                                itemTemplate: function (value) {
+                                    return value ? "Yes" : "No";
+                                }
+                            },
+                            {
+                                name: "EmpId",
+                                title: "Print",
+                                itemTemplate: function (value, item) {
+                                    return $("<td>").append(
+                                        $("<a>").attr("href", "@Url.Action("Print", "HR")?id=" + item.EmpId + "&type=excel")
+                                            .attr("target", "_blank")
+                                            .addClass("far fa-file-pdf btn btn-success btn-xs")
+                                    );
+                                }
+                            }
+                        ],
+                        
+
+                    });
+                }
+                $("#page-size").on("change", function () {
+                    var newPageSize = $(this).val();
+                    $("#jsGrid").jsGrid("option", "pageSize", newPageSize);
+                    $("#jsGrid").jsGrid("loadData");
+                });
+                function filterItemTemplate() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+
+                function sendData() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+
+                function handleClick() {
+                    $("#jsGrid").jsGrid("loadData");
+                }
+                initJsGrid();
+
+                function downloadExcel() {
+                    var url = '@Url.Action("GetEmployeesAll", "HR")' + '?';
+                    if ($("#from").val() != "" && $("#to").val() != "") {
+                        url += '&From=' + $("#from").val();
+                        url += '&To=' + $("#to").val();
+                    }
+                    if (document.getElementById("all").checked) {
+                        url += '&criteria=' + document.getElementById("all").value;
+                    }
+                    if (document.getElementById("joining").checked) {
+                        url += '&criteria=' + document.getElementById("joining").value;
+                    }
+                    if (document.getElementById("released").checked) {
+                        url += '&criteria=' + document.getElementById("released").value;
+                    }
+                    url += '&searchquery=' + search;
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        success: function (response) {
+                            if (response.Success === 1) {
+                                const data = response.EmployeeList;
+
+                                                data.forEach(employee => {
+                                    employee.DtBirth = formatDate(employee.DtBirth);
+                                    employee.DtConfirm = formatDate(employee.DtConfirm);
+                                    employee.DtIncrement = formatDate(employee.DtIncrement);
+                                    employee.DtJoin = formatDate(employee.DtJoin);
+                                });
+                                const workbook = XLSX.utils.book_new();
+                                const sheet = XLSX.utils.json_to_sheet(data);
+                                XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+                                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                                const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                const url = window.URL.createObjectURL(blob);
+
+                                // Create a temporary link to download the file
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = 'data.xlsx';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            } else {
+                                console.log('Error: ' + response.error);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log('AJAX request failed:', error);
+                        }
+                    });
+                }
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = date.toLocaleString('default', { month: 'short' });
+                    const year = date.getFullYear();
+
+                    return `${day}-${month}-${year}`;
+                }
+
+
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <script>
+        var downloadBtn = document.getElementById("download-btn");
+        downloadBtn.addEventListener("click", function () {
+            // Get table header
+            var tableHeader = [];
+            $('#jsGrid th').each(function (colIndex, col) {
+                tableHeader.push(col.textContent);
+            });
+
+            // Get table data
+            var tableData = [];
+            $('#jsGrid .jsgrid-grid-body tr').each(function (rowIndex, row) {
+                var rowData = [];
+                $(row).find('.jsgrid-cell').each(function (colIndex, col) {
+                    rowData.push(col.textContent);
+                });
+                tableData.push(rowData);
+            });
+
+            // Add header to table data
+            tableData.unshift(tableHeader);
+
+            // Create workbook and sheet
+            var workbook = XLSX.utils.book_new();
+            var worksheet = XLSX.utils.aoa_to_sheet(tableData);
+
+            // Add sheet to workbook and download file
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            XLSX.writeFile(workbook, "data.xlsx");
+        });
+
+    </script>
+    <script>
+                $('#select1').on('change', function () {
+                    var period = $(this).val();
+                    setDateRange(period);
+                });
+                
+           function setDateRange(period) {
+                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                    if (period == "This Week") {
+                        let d = new Date();
+                        let d2 = new Date();
+                        const daysToSaturday = 6 - d.getDay(); // days remaining until Saturday
+                        d2.setDate(d2.getDate() + daysToSaturday - 7); // set to Saturday
+                        d.setDate(d2.getDate() + 5); // set to Friday
+
+                        let currentdate = d;
+                        let today = d2;
+                        let finaldateformat = currentdate.getDate() + "-" + months[currentdate.getMonth()] + "-" + currentdate.getFullYear();
+                        let finaldateformat2 = today.getDate() + "-" + months[today.getMonth()] + "-" + today.getFullYear();
+
+                        $("#from").val(finaldateformat2);
+                        $("#to").val(finaldateformat);
+                    }
+
+
+                    else if (period == "This Month") {
+                        let d = new Date(), y = d.getFullYear(), m = d.getMonth();
+                        let firstDay = new Date(y, m, 1)
+                        let lastDay = new Date(y, m + 1, 0);
+                        d.setDate(d.getDate());
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+                    }
+
+                    else if (period == "This Year") {
+                        let d = new Date(),
+                            y = d.getFullYear();
+                        let firstDay = new Date(y, 0, 1);
+                        let lastDay = new Date(y, 11, 31); // set last day to 31-Dec-2023
+                        d.setDate(d.getDate());
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+
+                    }
+
+                    else if (period == "Prev Month") {
+                        let d = new Date();
+                        let y = d.getFullYear();
+                        let m = d.getMonth() - 1;
+                        if (m < 0) {
+                            m = 11;
+                            y--;
+                        }
+                        let firstDay = new Date(y, m, 1);
+                        let lastDay = new Date(y, m + 1, 0); // set previous to 1-mar to 31-mar
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+
+
+                    }
+
+                    else if (period == "Prev Quarter") {
+                        let d = new Date();
+                        let y = d.getFullYear();
+                        let m = d.getMonth();
+                        let q = Math.floor(m / 3) - 1;
+                        if (q < 0) {
+                            q = 3 + q;
+                            y--;
+                        }
+                        let firstDay = new Date(y, q * 3, 1);
+                        let lastDay = new Date(y, q * 3 + 3, 0);
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+                    }
+
+                    else if (period == "Prev 6 Month") {
+                        let d = new Date();
+                        let sixMonthsAgo = new Date(d.getFullYear(), d.getMonth() - 6, 1);
+                        let firstDay = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), 1);
+                        let lastDay = new Date(d.getFullYear(), d.getMonth(), 0);
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+
+                    }
+
+                    else if (period == "Prev Year") {
+                        let d = new Date();
+                        let y = d.getFullYear() - 1; // subtract 1 from the current year to get the previous year
+                        let firstDay = new Date(y, 0, 1); // set first day to 1-Jan of previous year
+                        let lastDay = new Date(y, 11, 31); // set last day to 31-Dec of previous year
+
+                        let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                        let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                        $("#from").val(finaldateformat);
+                        $("#to").val(finaldateformat2);
+
+
+                    }
+                }
+    </script>
+
+
+
+}           
+
+
+

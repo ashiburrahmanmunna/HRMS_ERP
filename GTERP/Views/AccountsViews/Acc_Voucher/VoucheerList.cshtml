@@ -1,0 +1,655 @@
+﻿
+@model IEnumerable<GTERP.Models.Acc_VoucherMain>
+@{
+    List<GTERP.Models.Acc_VoucherNoPrefix> VoucherTypes = ViewBag.Acc_VoucherNoPrefix;
+}
+<style>
+    /*    .far, .fas, .mdi {
+        font-size: 1.5em;
+    }*/
+</style>
+<body>
+    @using (Html.BeginForm())
+    {
+        <div class="container-fluid">
+            <div class="card p-2 mb-2">
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <div class="input-group mb-2">
+                            @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, null, new { id = "UserList", @class = "form-control form-control-sm" })
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    <label for="FDate">From Date</label>
+                                </span>
+                            </div>
+                            @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    <label for="TDate">To Date</label>
+                                </span>
+                            </div>
+                            @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <h2 id="styletext" class="center">Voucher List</h2>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                    </div>
+                    @*<div class="col-md-1 col-12">
+                        <input type="submit" value="Load" class="btn btn-success btn-block rounded-0" />
+                    </div>*@
+
+                    @foreach (var item in VoucherTypes)
+                    {
+
+                        <div class="col-md-2 col-12">
+                            @Html.ActionLink(item.vVoucherTypes.VoucherTypeName, "Create", new { Type = item.vVoucherTypes.VoucherTypeNameShort }, new { @class = @item.vVoucherTypes.VoucherTypeButtonClass })
+                        </div>
+                        @*<div class="col-md-2 col-12">
+                                @Html.ActionLink(item.VoucherTypeName, "Create", new { Type = item.VoucherTypeNameShort }, new { @class = "btn btn-success btn-block" "btn btn-success btn-block" })
+
+                            </div>
+                            <div class="col-md-2 col-12">
+                                @Html.ActionLink(item.VoucherTypeName, "Create", new { Type = item.VoucherTypeNameShort }, new { @class = "btn btn-warning btn-block" })
+                            </div>
+                            <div class="col-md-2 col-12">
+                                @Html.ActionLink(item.VoucherTypeName, "Create", new { Type = item.VoucherTypeNameShort }, new { @class = "btn btn-info btn-block" })
+                            </div>*@
+                    }
+
+
+
+                </div>
+            </div>
+
+            <div class="card p-2">
+                <div class="table-responsive">
+                    <table id="tbllist" class="dataTable table table-striped table-bordered table-hover" width="100%">
+                        @*<thead class="text-nowrap">
+                            <tr>
+                                <th>
+                                    Voucher No
+                                </th>
+                                <th>
+                                    Voucher Type
+                                </th>
+                                <th>
+                                    Voucher Date
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Posted
+                                </th>
+                                <th></th>
+                            </tr>
+                        <thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.VoucherNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Acc_VoucherType.VoucherTypeName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.VoucherDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.VoucherDesc)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.VAmount)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.isPosted)
+                                        </td>
+
+                                        <td class="text-nowrap">
+                                            <span data-toggle="tooltip" title="Voucher Print!">
+                                                @Html.ActionLink(" ", "Print", new { Id = item.VoucherId }, new { @target = "_blank", @class = "far fa-file-pdf text-success px-1 h4" })
+                                            </span>
+                                            @if (@item.Acc_VoucherType.VoucherTypeName.ToUpper() == "Bank Payment".ToUpper())
+                                            {
+                                                <span data-toggle="tooltip" title="Check Print!">
+
+                                                    @Html.ActionLink(" ", "PrintCheck", new { Id = item.VoucherId }, new { @target = "_blank", @class = "far fa-credit-card text-primary px-1 h4" })
+
+                                                </span>
+                                            }
+                                            <span data-toggle="tooltip" title="Copy!">
+                                                @Html.ActionLink(" ", "CreateCopy", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "fas fa-copy text-info px-1 h4", @target = "_blank" })
+                                            </span>
+                                            @if (item.isPosted == false)
+                                            {
+                                                <span data-toggle="tooltip" title="Edit!">
+                                                    @Html.ActionLink(" ", "Create", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "fas fa-edit text-warning px-1 h4", @target = "_blank" })
+                                                </span>
+
+                                                <span data-toggle="tooltip" title="Delete!">
+                                                    @Html.ActionLink(" ", "Delete", new { VoucherId = item.VoucherId }, new { @class = "far fa-trash-alt text-danger px-1 h4" })
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span data-toggle="tooltip" title="View!">
+                                                    @Html.ActionLink(" ", "View", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "mdi mdi-eye text-info px-1 h4", @target = "_blank" })
+                                                </span>
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="col-md-2 col-12 text-right py-2">
+                                <td>
+                                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+                                </td>
+                            </tr>
+                        </tfoot>*@
+                    </table>
+                </div>
+
+
+
+            </div>
+
+
+            <div class="card p-2 my-3">
+                <div class="row">
+                    <div class="col-md-3 col-12 col-12">
+                        <div class="input-group mb-2">
+                            @Html.DropDownList("FiscalYearId", ViewBag.FiscalYearId as List<SelectListItem>, null, new { id = "FiscalYearId", @class = "form-control form-control-sm" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-12 col-12">
+                        <div class="input-group mb-2">
+                            @Html.DropDownList("FiscalMonthId", ViewBag.FiscalMonthId as List<SelectListItem>, null, new { id = "FiscalMonthId", @class = "form-control form-control-sm" })
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12 col-12">
+                        <div class="input-group mb-2">
+                            @Html.DropDownList("IntegrationSettingMainId", ViewBag.IntegrationSettingMainId as List<SelectListItem>, null, new { id = "IntegrationSettingMainId", @class = "form-control form-control-sm" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-12 col-12">
+                        <input type="button" value="Load" id="btnLoad" class="btn btn-success btn-block rounded-0" />
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    }
+</body>
+
+
+@section Scripts{
+    <script type="text/javascript">
+                    $('input[name=RptType]').click(function () {
+                    var reporttypeind = $("input[name=RptType]:checked").val();
+                    //alert(reporttype);
+
+                        $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("SetSessionInd", "Acc_Voucher")',
+                        dataType: 'json',
+                        async: true,
+                            data: { reporttype: reporttypeind},
+                            success: function (response) {
+                              //  window.location.href = response.Url;
+
+                                //window.open(response.Url, '_blank')
+                            },
+                            error: function (ex) {
+                                alert('Failed.' + ex);
+                            }
+
+                        });
+
+                    });
+
+
+        var type = "VPB";
+        //var abcd = $("#IntegrationSettingMainId option:selected").text();
+        $("#IntegrationSettingMainId").change(function () {
+            //$("#FiscalMonthId").empty();
+            $.ajax({
+                url: '@Url.Action("VoucherTypeByIntegrationId", "Acc_Voucher")',
+                data: { id: $("#IntegrationSettingMainId option:selected").val() }, //use id here
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    //alert(result.VoucherTypeName);
+                    console.log(result.VoucherTypeName);
+                    type = result.VoucherTypeName;
+                    console.log(type);
+
+                }
+            });
+        });
+
+
+        @*$("#IntegrationSettingMainId").select2(
+
+             $.ajax({
+                url: '@Url.Action("VoucherTypeByIntegrationId", "Acc_Voucher")',
+                data: { id: $("#IntegrationSettingMainId").val() }, //use id here
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                }
+            });
+
+        );*@
+
+
+
+        $("#UserList").select2();
+        $("#FiscalYearId").select2();
+        $("#FiscalMonthId").select2();
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+
+        var table;
+        $("#btnLoad").click(function () {
+
+            var abcd = $("#IntegrationSettingMainId option:selected").text();
+            //alert(abcd);
+
+            //var type = "VPB";
+
+            //if (abcd == "Issue Voucher") {
+            //    type = "VJR";
+            //}
+            //else if (abcd.includes('MRR Voucher') || abcd.includes('Depreciation')) // == "MRR Voucher")
+            //{
+            //    //alert('mrr hit');
+            //    type = "VJR";
+            //}
+            //else {
+            //    type = "VPB";
+
+            //}
+
+            var voucherid = "0";
+            var fiscalMonthId = $("#FiscalMonthId").val();
+            var IntegrationSettingMainId = $("#IntegrationSettingMainId").val();
+
+            window.location.href = `@Url.Action("Create", "Acc_Voucher")?type=${type}&voucherid=${voucherid}&fiscalMonthId=${fiscalMonthId}&IntegrationSettingMainId=${IntegrationSettingMainId}`
+
+        });
+         $("#FiscalYearId").change(function () {
+            $("#FiscalMonthId").empty();
+            $.ajax({
+                url: '@Url.Action("GetFiscalMonth", "Acc_Voucher")',
+                data: { id: $("#FiscalYearId").val() }, //use id here
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                    for (var i = 0; i < result.length; i++) {
+                        $("#FiscalMonthId").append(`<option value="${result[i].FiscalMonthId}">${result[i].MonthName}</option>`);
+                    }
+
+                }
+            });
+        });
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            CurrentDate();
+
+            $(".FromDate").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+            $(".ToDate").datepicker({
+
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+
+            });
+
+            function CurrentDate() {
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString().substr(-2);
+                if ($(".FromDate").val() == '') {
+                    $(".FromDate").val(val);
+                }
+                if ($(".ToDate").val() == '') {
+                    $(".ToDate").val(val);
+                }
+            }
+
+            var userlist = $("#UserList").val();           
+            var fromdate = $("#FromDate").val();
+            var todate = $("#ToDate").val();
+
+            loaddata(fromdate, todate, userlist ,1);
+
+           
+
+            function loaddata( FromDate = "", ToDate = "", userlist = "", isAll = 1) {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tbllist').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+
+                                    }
+                                    else {
+                                        loaddata(fromdate, todate, userlist, 1);
+
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata( fromdate, todate, userlist, 1);
+                                    //table.ajax.reload();
+
+
+                                })
+                        $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+                    "columnDefs": [
+                        // Hide second, third and fourth columns
+                        { "visible": false, "targets": [] }
+                    ],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+                            //{
+                            //    extend: 'copy',
+                            //    text: '<i class="mdi mdi-content-copy"></i>',
+                            //    className: 'btn-primary',
+                            //    titleAttr: 'Copy to Clipboard'
+                            //},
+                            //{
+                            //    extend: 'csv',
+                            //    text: '<i class="mdi mdi-note-outline"></i>',
+                            //    className: 'btn-secondary',
+                            //    titleAttr: 'Export to csv'
+                            //},
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success',
+                                titleAttr: 'Export to excel'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                orientation: 'landscape',
+                                pageSize: 'LEGAL',
+                                text: '<i class="mdi mdi-file-pdf"></i>',
+                                className: 'btn-danger mr-2',
+                                titleAttr: 'Export to PDF'
+                                //,exportOptions: {
+                                //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                //}
+
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("Get", "Acc_Voucher")",
+                        "data": { FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), UserList: $("#UserList").val(), isAll: isAll },
+
+                        //"url": "/Cities/GetListViewModel",
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": [
+                        { "title": "Voucher Id", "data": "VoucherId", "visible": false },
+                        { "title": "Voucher No", "data": "VoucherNo", "searchable": true },
+                        { "title": "Voucher Type", "data": "VoucherTypeName" }, 
+
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format', "data": "VoucherDate", "title": "Voucher Date", "searchable": false
+                        },
+                        { "title": "VoucherDesc", "data": "VoucherDesc" },
+                        { "title": "Currency", "data": "Currency" },
+
+                        { "title": "VAmount", "data": "VAmount" },
+                        { "title": "Status", "data": "Status", "searchable": false },
+
+                       {
+                            "data": {
+                               VoucherId: "VoucherId" //,
+                               //VoucherTypeName:"VoucherTypeName",
+                               //isPosted:"isPosted"                               
+                           },
+
+                           "render": function (data, type, row) {
+                                var myUrlprint = '@Url.Action("Print", "Acc_Voucher")/' + data.VoucherId;
+                               var myUrlprintCheck = '@Url.Action("PrintCheck", "Acc_Voucher")/' + data.VoucherId;
+                               var myUrlCreateCopy = '@Url.Action("CreateCopy", "Acc_Voucher")?Type=' + data.VoucherTypeNameShort + '&VoucherId=' + data.VoucherId;
+                               var myUrledit = '@Url.Action("Create", "Acc_Voucher")?Type=' + data.VoucherTypeNameShort + '&VoucherId=' + data.VoucherId;
+                               var myUrldelete = '@Url.Action("Delete", "Acc_Voucher")?Type=' + data.VoucherTypeNameShort + '&VoucherId=' + data.VoucherId;
+                               var myUrlView = '@Url.Action("View", "Acc_Voucher")?Type=' + data.VoucherTypeNameShort + '&VoucherId=' + data.VoucherId;
+
+                               var buttons = '<span data-toggle="tooltip" title="Print"> <a href=\"' + myUrlprint + '\" class=\"far fa-file-pdf text-success px-1 h4\" target=\"_blank\"></a></span>';
+                               if (data.VoucherTypeName == "Bank Payment") {
+                                   buttons += '<span data-toggle="tooltip" title="Check Print"> <a href=\"' + myUrlprintCheck + '\" class=\"far fa-credit-card text-primary px-1 h4\" target=\"_blank\"></a></span>'
+                               }
+
+                               buttons += '<span data-toggle="tooltip" title="Copy"> <a href=\"' + myUrlCreateCopy + '\" class=\"fas fa-copy text-info px-1 h4\" target=\"_blank\"></a></span>'
+
+                               if (!data.isPosted) {
+                                   buttons += '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit text-warning px-1 h4\" target=\"_blank\"></a></span>' +
+                                       '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt text-danger px-1 h4\" target=\"_blank\"></a></span>';
+                               } else {
+                                   buttons += '<span data-toggle="tooltip" title="View"> <a href=\"' + myUrlView + '\" class=\"mdi mdi-eye text-info px-1 h4\" target=\"_blank\"></a></span>';
+                               }
+
+                               return buttons;
+
+                           }
+
+                            @*<span data-toggle="tooltip" title="Voucher Print!">
+                                            @Html.ActionLink(" ", "Print", new { Id = item.VoucherId }, new { @target = "_blank", @class = "far fa-file-pdf text-success px-1 h4" })
+                                        </span>
+                                        @if (@item.Acc_VoucherType.VoucherTypeName.ToUpper() == "Bank Payment".ToUpper())
+                                        {
+                                            <span data-toggle="tooltip" title="Check Print!">
+
+                                                @Html.ActionLink(" ", "PrintCheck", new { Id = item.VoucherId }, new { @target = "_blank", @class = "far fa-credit-card text-primary px-1 h4" })
+
+                                            </span>
+                                        }
+                                        <span data-toggle="tooltip" title="Copy!">
+                                            @Html.ActionLink(" ", "CreateCopy", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "fas fa-copy text-info px-1 h4", @target = "_blank" })
+                                        </span>
+                                        @if (item.isPosted == false)
+                                        {
+                                            <span data-toggle="tooltip" title="Edit!">
+                                                @Html.ActionLink(" ", "Create", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "fas fa-edit text-warning px-1 h4", @target = "_blank" })
+                                            </span>
+
+                                            <span data-toggle="tooltip" title="Delete!">
+                                                @Html.ActionLink(" ", "Delete", new { VoucherId = item.VoucherId }, new { @class = "far fa-trash-alt text-danger px-1 h4" })
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span data-toggle="tooltip" title="View!">
+                                                @Html.ActionLink(" ", "View", new { Type = item.Acc_VoucherType.VoucherTypeNameShort, VoucherId = item.VoucherId }, new { @class = "mdi mdi-eye text-info px-1 h4", @target = "_blank" })
+                                            </span>
+                                        }*@
+                        }
+                    ],
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    "destroy": true
+                });
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+
+            // var table = $('#tbllist').DataTable({
+            //    dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+            //    //columns: [
+            //    //{ name: 'Group', "sClass": "Group", "visible": true },
+            //    //{ name: 'Code' , "sClass": "Code", "visible": true},
+            //    //{ name: 'ShortName' , "sClass": "ShortName", "visible": true },
+            //    //{ name: 'Action', "sClass": "Action", "visible": true }
+            //    //],
+            //    //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+            //    //buttons: [
+            //    //    'copy', 'csv', 'excel', 'pdf'
+            //    //],
+            //    buttons: {
+            //        dom: {
+            //            button: {
+            //                className: 'btn rounded-0'
+            //            }
+            //        },
+            //        buttons: [
+
+            //            {
+            //                extend: 'excel',
+            //                text: '<i class="mdi mdi-file-excel"></i>',
+            //                className: 'btn-success',
+            //                titleAttr: 'Export to excel'
+            //            }
+
+            //        ]
+            //    },
+            //    "searching": true,
+            //    "paging": false,
+            //    "ordering": true,
+            //    "info": true,
+            //    "iDisplayLength": 20,
+            //    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+            //    "scrollX": true,
+            //    "scrollY": "60vh",
+            //    "scrollCollapse": true,
+            //    language: {
+            //        sLengthMenu: "_MENU_",
+            //        search: "",
+            //        searchPlaceholder: "Search..."
+            //    }
+            //    ////"fixedColumns": {
+            //    ////    "leftColumns": 2,
+
+            //    ////},
+            //    //"sScrollXInner": "100%",
+            //    //dom: 'Blfrtip',
+            //    ////,"fixedHeader": true
+            //});
+
+
+
+        });
+    </script>
+}
+
+

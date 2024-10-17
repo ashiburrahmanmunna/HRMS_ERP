@@ -1,0 +1,158 @@
+﻿@model GTERP.Models.Cat_BankBranch
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateBankBranch", "HRVariables", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6  offset-md-3 col-12">
+                @if (Model != null)
+                {
+                <input type="hidden" id="BranchId" name="BranchId" value="@Model.BranchId" />
+                }
+                else
+                {
+                <input type="hidden" asp-for="BranchId" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div class="card-header">
+                        <h4 id="styletext">Bank Branch @ViewBag.Title</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <form class="needs-validation" novalidate>
+                            <input type="hidden" asp-for="ComId"/>
+                            <input type="hidden" asp-for="UserId"/>
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.BranchCode)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.BranchCode, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.BranchCode, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.BranchName)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.BranchName, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.BranchName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.BranchAddress)
+                                                </span>
+                                            </div>
+                                            @Html.EditorFor(model => model.BranchAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.BranchAddress, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="BankBranch_delete()">Delete</button>
+                                }
+
+
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "BankBranchList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+       
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+    $("#BranchId").select2();
+
+    function BankBranch_delete() {
+
+        var BranchId = $("#BranchId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteBankBranch", "HRVariables")',
+                data: JSON.stringify({ id: BranchId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("BankBranchList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

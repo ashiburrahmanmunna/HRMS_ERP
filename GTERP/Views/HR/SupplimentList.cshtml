@@ -1,0 +1,664 @@
+﻿@model GTERP.ViewModels.SupplimentViewModel
+
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    List<GTERP.ViewModels.SupplimentViewModel> suppliments = ViewBag.Suppliments;
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="card">
+        <h4 class="form-header btn-info">
+            <i class="far fa-file-alt"></i>  Suppliment
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+                        <dv class="row">
+                            <div class="col-md-4 col-12 ">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> @Html.LabelFor(model => model.DtInput)</span>
+                                    </div>
+                                    <input type="text" asp-for="DtInput" name="DtBirth" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.DtInput, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"> <label>Section</label></span>
+                                    </div>
+                                    <select asp-items="ViewBag.SectId" id="SectId" class="form-control">
+                                        <option value="0">==All==</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            @*<div class="col-md-3 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"> <label>Designation</label></span>
+                                        </div>
+                                        <select asp-items="ViewBag.DesigId" class="form-control">
+                                            <option value="0">==All==</option>
+                                        </select>
+                                    </div>
+                                </div>*@
+
+
+                            <div class="col-md-2 col-12 mb-2">
+                                <input type="button" value="Load" class="btn btn-warning btn-block rounded-0" id="btnLoad" />
+                            </div>
+                            <div class="col-md-2 col-12 mb-2">
+                                <input type="button" value="Save" class="btn btn-success btn-block rounded-0" id="btnSave" />
+                            </div>
+
+                    </div>
+                    <hr />
+                    <div class="table-responsive">
+                        <input type="button" class="btn btn-warning float-right rounded-0" value="Select All" id="btnSelect" />
+                        <table id="tblEmp" class="table table-hover table-striped text-nowrap" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>EmpId</th>
+                                    <th>Emp Code</th>
+                                    <th>Emp Name</th>
+                                    <th>Designation</th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>Duration</th>
+                                    <th>Basic</th>
+                                    <th>Is Basic</th>
+                                    <th>Is HR</th>
+                                    <th>Is Wash</th>
+                                    <th>Is MA</th>
+                                    <th>Is Co. PF</th>
+                                    <th>Is Risk</th>
+                                    <th>Is Edu.</th>
+                                    <th>Is HR Exp Ded.</th>
+                                    <th>Persantage</th>
+                                    <th>Is OPF</th>
+                                    <th>Is Add PF</th>
+                                    <th>Is OA</th>
+                                    <th>Is WF Sub</th>
+                                    <th>Is RS</th>
+                                    <th>Is HB Loan</th>
+                                    <th>Is MC Loan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (suppliments != null)
+                                {
+                                    foreach (var item in suppliments)
+                                    {
+                                        <tr>
+                                            <td>@item.EmpId</td>
+                                            <td>@item.EmpCode</td>
+                                            <td>@item.EmpName</td>
+
+                                            <td>@item.Designation</td>
+                                            <td>
+                                                @String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(item.DtFrom).ToShortDateString()))
+                                            </td>
+                                            <td>
+                                                @String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(item.DtTo).ToShortDateString()))
+                                            </td>
+                                            <td>@item.Duration</td>
+                                            <td>@item.Basic</td>
+                                            <td>@item.IsBS</td>
+                                            <td>@item.IsHR</td>
+                                            <td>@item.IsWash</td>
+                                            <td>@item.IsMA</td>
+                                            <td>@item.IsCPF</td>
+                                            <td>@item.IsRisk</td>
+                                            <td>@item.IsEdu</td>
+                                            <td>@item.IsHRExpDed</td>
+                                            <td>@item.Persantage</td>
+                                            <td>@item.IsOPF</td>
+                                            <td>@item.IsAddPF</td>
+                                            <td>@item.IsOA</td>
+                                            <td>@item.IsWFSub</td>
+                                            <td>@item.IsRS</td>
+                                            <td>@item.IsHBLoan</td>
+                                            <td>@item.IsMCLoan</td>
+                                        </tr>
+                                    }
+                                }
+
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+
+
+
+        @*var da =@Html.Raw(Json.Serialize(ViewBag.Date));
+        if (da == null) {
+            $("#DtInput").val(CurrentDate(new Date()));
+        } else {
+            $("#DtInput").val(CurrentDate(da));
+        }*@
+        $("#btnLoad").click(function () {
+            var date = $("#DtInput").val();
+            var sectId = $("#SectId").val();
+            window.location.href = '@Url.Action("SupplimentList","HR")?dtInput=' + date + '&sectId=' + sectId;
+            //DailyEmpFixedAttandanceData();
+        });
+
+        function initializeGrid(data) {
+            $('#tblEmp').DataTable().clear().draw();
+            console.log(data);
+            for (var i = 0; i < data.length; i++) {
+                //if (data[i].Remarks.length > 1) {alert(data[i].Remarks) };
+
+
+                $('#tblEmp').dataTable().fnAddData(
+                    [
+                        data[i].EmpId,
+                        data[i].EmpCode,
+                        data[i].EmpName,
+                        data[i].EmpType,
+                        data[i].DeptName,
+                        data[i].SectName,
+                        data[i].DesigName,
+                        data[i].BS,
+                        data[i].DtInput,
+                        data[i].IsSummer,
+                        data[i].IsWinter,
+                        data[i].IsRainCoat
+                    ]
+                );
+            }
+        };
+
+
+        function DailyEmpFixedAttandanceData() {
+
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+            let date = $("#DtInput").val();
+
+             $.ajax({
+                  type: 'GET',
+                  //url: '/FixedAtt/Index',
+                  url: '@Url.Action("GetData", "SummerWinterAllow")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                 //async: true,
+                 data: { date: date },
+                 success: function (data) {
+                     initializeGrid(data);
+                 },
+                 error: function (ex) {
+                     toastr.error("Sorry, an error occured . . . .");
+                 }
+            });
+
+        };
+
+        $(document).ready(function () {
+
+            $("#DtInput").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtInput").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtInput").datepicker("option", "dateFormat", 'dd-M-yy');
+                }
+            });
+
+            // row select
+            $("#btnSelect").click(function () {
+
+                if ($("#btnSelect").val() == "Select All") {
+                    $('#tblEmp tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+
+                    });
+                    $("#btnSelect").val("De Select");
+                } else {
+                    $('#tblEmp tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                    });
+                    $("#btnSelect").val("Select All");
+                }
+            });
+
+
+            table = $('#tblEmp').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"fl>tip',
+                'aoColumns': [
+                    { 'sClass': 'EmpId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'EmpName', 'visible': true },
+                    { 'sClass': 'Designation', 'visible': true },
+                    { 'sClass': 'DtFrom', 'visible': true },
+                    { 'sClass': 'DtTo', 'visible': true },
+                    { 'sClass': 'Duration', 'visible': true },
+                    { 'sClass': 'Basic', 'visible': true },
+                    { 'sClass': 'IsBS', 'visible': true },
+                    { 'sClass': 'IsHR', 'visible': true },
+                    { 'sClass': 'IsWash', 'visible': true },
+                    { 'sClass': 'IsMA', 'visible': true },
+                    { 'sClass': 'IsCPF', 'visible': true },
+                    { 'sClass': 'IsRisk', 'visible': true },
+                    { 'sClass': 'IsEdu', 'visible': true },
+                    { 'sClass': 'IsHRExpDed', 'visible': true },
+                    { 'sClass': 'Persantage', 'visible': true },
+                    { 'sClass': 'IsOPF', 'visible': true },
+                    { 'sClass': 'IsAddPF', 'visible': true },
+                    { 'sClass': 'IsOA', 'visible': true },
+                    { 'sClass': 'IsWFSub', 'visible': true },
+                    { 'sClass': 'IsRS', 'visible': true },
+                    { 'sClass': 'IsHBLoan', 'visible': true },
+                    { 'sClass': 'IsMCLoan', 'visible': true }
+                ],
+                'columnDefs': [
+                    {
+                        'targets': 4,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data) {
+                            return `<input type="textbox" style="width:120px;" class="form-control cellFromDate" value="${data}">`;
+                            }
+                    },
+                    {
+                        'targets': 5,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data) {
+                            return `<input type="textbox" style="width:120px;" class="form-control cellToDate" value="${data}">`;
+                            }
+                    },
+                    {'targets': 8,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsBS]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsBS]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 9,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsHR]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsHR]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 10,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsWash]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsWash]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 11,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsMA]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsMA]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 12,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsCPF]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsCPF]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 13,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsRisk]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsRisk]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 14,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsEdu]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsEdu]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 15,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsHRExpDed]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsHRExpDed]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {
+                        'targets': 16, 'searchable': false, 'orderable': false, 'className': 'dt-body-center',
+                        'render': function (data) {
+                            return `<input type="textbox" style="width:120px;" class="form-control" value="${data}">`;
+                        }
+                    },
+                    {'targets': 17,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsOPF]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsOPF]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 18,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsAddPF]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsAddPF]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 19,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsOA]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsOA]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 20,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsWFSub]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsWFSub]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 21,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsRS]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsRS]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 22,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsHBLoan]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsHBLoan]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+                    {'targets': 23,'searchable': false,'orderable': false,'className': 'dt-body-center',
+                        'render': function (data, type, full, meta) {
+                            if (data == "True")
+                                return '<input type="checkbox" name="id[IsMCLoan]" checked value="'+ $('<div/>').text(data).html() + '">';
+                            else
+                                return '<input type="checkbox" name="id[IsMCLoan]" value="'+ $('<div/>').text(data).html() + '">';
+                        }
+                    },
+
+                ],
+                "fnDrawCallback": function () {
+                    $('.cellFromDate').datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        //dateFormat: 'dd-M-yy'
+                        onSelect: function (date) {
+                            // Your CSS changes, just in case you still need them
+                            $('a.ui-state-default').removeClass('ui-state-highlight');
+                            $(this).addClass('ui-state-highlight');
+                            var dateFormat = $(this).datepicker("option", "dateFormat");
+                            //setter
+                            $(this).datepicker("option", "dateFormat", 'dd-M-yy');
+
+                            //call funciton for date differ calculation
+                            //datediffCalculation(table.rows($(this).closest('tr')).data(), table.rows($(this).closest('tr')).nodes())
+                            datediffCalculation($(this).closest('tr'));
+
+
+                            //console.log(table.rows($(this).closest('tr')).data());
+                            //console.log(table.rows($(this).closest('tr')).nodes());
+                        }
+                    });
+                    $('.cellToDate').datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function (date) {
+                            // Your CSS changes, just in case you still need them
+                            $('a.ui-state-default').removeClass('ui-state-highlight');
+                            $(this).addClass('ui-state-highlight');
+                            var dateFormat = $(this).datepicker("option", "dateFormat");
+                            //setter
+                            $(this).datepicker("option", "dateFormat", 'dd-M-yy');
+                            //call funciton for date differ calculation
+                            //datediffCalculation(table.rows($(this).closest('tr')).data(), table.rows($(this).closest('tr')).nodes())
+                            datediffCalculation($(this).closest('tr'));
+                        }
+                    });
+                },
+                //"order": [[4, "asc"]],
+                select: {
+                    style: 'multi'
+                    ,selector: 'tr>td:nth-child(1),tr>td:nth-child(2),tr>td:nth-child(3),tr>td:nth-child(6),tr>td:nth-child(7)'
+
+                },
+                'paging': true,
+                'info': false,
+                "language": {
+
+                    sLengthMenu: " _MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                //"scrollY": 455,
+                //"scrollX": true
+            });
+
+            function datediffCalculation(sRow) {
+
+                //var data = table.rows(sRow).data()
+                var nodes = table.rows(sRow).nodes();
+                var dt1 = $(nodes[0].cells[3].children[0]).val();
+                var dt2 = $(nodes[0].cells[4].children[0]).val();
+
+
+
+                var date1 = new Date(dt1); //May 28 2019
+                var date2 = new Date(dt2);
+                //date2.setDate(22);
+                // 7
+                var dif = dayDifference(date1, date2);
+                if (dif < 1) {
+                    toastr.error("To date should be Greater than From date!!!");
+                    table.cell(table.row(sRow).index(), 6).data(0).draw();
+                    return false;
+                }
+
+                //console.log(table.row(sRow).index());
+                table.cell(table.row(sRow).index(), 6).data(dif).draw();
+                //console.log();
+            }
+
+            const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+            function dayDifference(date1, date2) {
+
+                var timeDiff = date2.getTime() - date1.getTime();
+                var diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY)+1; // note
+                return diffDays;
+            }
+
+            //$('#IsSummer').on('click', function () {
+            //    // Check/uncheck all checkboxes in the table
+            //    var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+            //    $('input[name="id[summer]"]', rows).prop('checked', this.checked);
+            //});
+            //$('#IsWinter').on('click', function () {
+            //    // Check/uncheck all checkboxes in the table
+            //    var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+            //    $('input[name="id[winter]"]', rows).prop('checked', this.checked);
+            //});
+            //$('#IsRaincoat').on('click', function () {
+            //    // Check/uncheck all checkboxes in the table
+            //    var rows = table.rows('.selected',{ 'search': 'applied' }).nodes();
+            //    $('input[name="id[raincoat]"]', rows).prop('checked', this.checked);
+            //});
+
+            //name = 'bla[]'
+            //name = "id[summer]"
+            $("#btnSave").click(function () {
+
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                var DtInput = $('#DtInput').val();
+
+                if (DtInput == "") {
+                    $('#DtInput').focus();
+                    return false;
+                }
+
+                var suppliments =[];
+
+                var data = table.rows('.selected').data();
+                var rows = table.rows('.selected').nodes();
+
+                for (var i = 0; i < data.length; i++) {
+                    var Hr_Emp_Suppliment = {
+                        SupplimentId:0,EmpId: '', DtInput: DtInput, DtFrom: "", DtTo: "", Duration: "", Basic: "",
+                         IsBS: false, IsHR: false, IsWash: false, IsMA: false, IsCPF: false,
+                        IsRisk: false, IsEdu: false, IsHRExpDed:false, Persantage: "", IsOPF: false, IsAddPF: false, IsOA: false,
+                         IsWFSub: false, IsRS: false, IsHBLoan: false, IsMCLoan: false,
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(new Date()), UpdateByUserId:'@HttpContextAccessor.HttpContext.Session.GetString("userid")', DateUpdated: CurrentDate(new Date())
+                        }
+
+                    Hr_Emp_Suppliment.EmpId = data[i][0];
+                    Hr_Emp_Suppliment.DtInput = DtInput;
+                    Hr_Emp_Suppliment.DtFrom = rows[i].cells[3].children[0].value;
+                    Hr_Emp_Suppliment.DtTo = rows[i].cells[4].children[0].value;
+                    Hr_Emp_Suppliment.Duration = data[i][6];
+                    Hr_Emp_Suppliment.Basic = data[i][7];
+
+                    Hr_Emp_Suppliment.Persantage = rows[i].cells[15].children[0].value;
+
+                    if ($('input[name="id[IsBS]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsBS = true;
+
+                    if ($('input[name="id[IsHR]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsHR = true;
+
+                    if ($('input[name="id[IsWash]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsWash = true;
+
+                    if ($('input[name="id[IsMA]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsMA = true;
+
+                    if ($('input[name="id[IsCPF]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsCPF = true;
+
+                    if ($('input[name="id[IsRisk]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsRisk = true;
+
+                    if ($('input[name="id[IsEdu]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsEdu = true;
+
+                    if ($('input[name="id[IsHRExpDed]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsHRExpDed = true;
+
+                    if ($('input[name="id[IsOPF]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsOPF = true;
+
+                    if ($('input[name="id[IsAddPF]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsAddPF = true;
+
+                    if ($('input[name="id[IsOA]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsOA = true;
+
+                    if ($('input[name="id[IsWFSub]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsWFSub = true;
+
+                    if ($('input[name="id[IsRS]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsRS = true;
+
+                    if ($('input[name="id[IsHBLoan]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsHBLoan = true;
+
+                    if ($('input[name="id[IsMCLoan]"]', rows[i]).is(':checked'))
+                        Hr_Emp_Suppliment.IsMCLoan = true;
+
+                    suppliments.push(Hr_Emp_Suppliment);
+                };
+
+
+                if (suppliments.length < 1) {
+                    toastr.warning("Select Employee");
+                    return false;
+                }
+
+
+                 $.ajax({
+                     type: 'POST',
+                     url: '@Url.Action("CreateSuppliment", "HR")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                     dataType: 'json',
+                     headers : { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                     data: { suppliments: suppliments},
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            window.location.href='@Url.Action("SupplimentList", "HR")'
+                        } else if (data.Success == "2") {
+                            customFile('2', data.ex);
+                        }
+                        else
+                            toastr.error(result.ex);
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+                });
+            });
+        });
+
+
+
+
+
+        function CurrentDate(date) {
+            var date = new Date(date);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+
+
+    </script>
+}

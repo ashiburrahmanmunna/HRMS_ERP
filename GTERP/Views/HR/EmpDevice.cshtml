@@ -1,0 +1,207 @@
+﻿@model GTERP.Models.HR_Emp_Info
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<h4 id="styletext">Device Entry </h4>
+
+<form method="post" asp-action="EmpDevice" asp-controller="HR" enctype="multipart/form-data">
+    <input type="hidden" asp-for="EmpId" id="EmpId" />
+    <input type="hidden" asp-for="ComId" />
+    <div id="Education">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tblEducation">
+                <thead class="text-center">
+                    <tr>
+                        <th style="display:none">
+                            EmpDeviceId
+                        </th>
+                        <th style="display:none">
+                            Employee
+                        </th>
+                        <th>
+                            Device Type
+                        </th>
+                        <th>
+                            Device Model
+                        </th>
+                        <th>
+                            Device Brand
+                        </th>
+                        <th>
+                            Date Issue
+                        </th>
+                        @*<th>
+                            Project Roll
+                        </th>*@
+                        <th>
+                            Project Description
+                        </th>
+                        <th>
+                            <input type="button" class="btn btn-sm btn-info btn-block" id="addProject" value="Add" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+
+                        foreach (var item in Model.HR_Emp_Devices)
+                        {
+                            <tr>
+                                <td style="display:none">
+                                    <input class="form-control" type="text" name="Devices[0].EmpDeviceId" value="0" />
+                                </td>
+                                <td style="display:none">
+                                    @*<input type="text" asp-for="@item.EmpId" name="@item.EmpId" value="@item.EmpId" class="form-control" autocomplete="off" readonly />*@
+                                    @Html.DropDownListFor(m => item.EmpId, (SelectList)ViewData["EmpId"], new { @class = "form-control" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(m => item.DeviceType, (SelectList)ViewData["DeviceList"], new { @class = "form-control" })
+                                    @*<input type="text" asp-for="@item.DeviceType" class="form-control" autocomplete="off" />*@
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="@item.DeviceModel" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="@item.DeviceBrand" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="date" asp-for="@item.dtIssue" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="@item.Remarks" class="form-control" autocomplete="off" />
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-sm btn-danger deleteEdu" value="Remove" />
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row text-center">
+            <span class="col-md-3"></span>
+            <span class="col-md-3 col-12">
+                @if (ViewBag.Title == "Create")
+                {
+                    <input type="button" id="eduSave" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                }
+                else if (ViewBag.Title == "Edit")
+                {
+                    <input type="button" id="eduSave" value="Update" class="btn btn-warning btn-block rounded-0" />
+                }
+
+            </span>
+            <span class="col-md-3 col-12">
+                @Html.ActionLink("Back", "EmployeeInfoList", "HR", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+            </span>
+            <span class="col-md-3"></span>
+
+
+        </div>
+    </div>
+</form>
+
+@section Scripts
+    {
+    <script>
+
+        $(document).ready(() => {
+            $("#addProject").click(function () {
+                //if ($('#EmpId').val() > 0) {
+                $("#tblEducation tbody").append(`
+                       <tr>
+                           <td style="display:none"><input class="form-control" type="text" name="Devices[0].EmpDeviceId" value="0" /></td>
+
+                                   <td style="display:none" id="hiddenColumn">
+                                <select class="form-control" name="HR_Emp_Devices[0].EmpId">
+                                    @foreach (var empid in (SelectList)ViewData["EmpId"])
+                                    {
+                                         <option value="@empid.Value">@empid.Text</option>
+                                    }
+                                </select>
+                            </td>
+                                    <td>
+                                        <select class="form-control" name="HR_Emp_Devices[0].DeviceType">
+                                            @foreach (var item in (SelectList)ViewData["DeviceList"])
+                                            {
+                                                 <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                           <td><input class="form-control" type="text" name="HR_Emp_Devices[0].DeviceModel" value="" /></td>
+                           <td><input class="form-control" type="text" name="HR_Emp_Devices[0].DeviceBrand" value="" /></td>
+                           <td><input class="form-control" type="date" name="HR_Emp_Devices[0].dtIssue" value="" /></td>
+                           <td><input class="form-control" type="text" name="HR_Emp_Devices[0].Remarks" value="" /></td>
+                           \<td><input class="btn btn-danger btn-sm deleteEdu" type="button" value="Remove" /></td>
+
+                        </tr>
+                            `);
+
+
+                
+            });
+            // remove row from Education
+            $("#tblEducation").on("click", ".deleteEdu", function () {
+                $(this).closest("tr").remove();
+            });
+
+            var empeducation = {
+                EmpId: 0, EmpDeviceId: 0, ComId: 0, DeviceType: "", DeviceModel: "", DeviceBrand: "", dtIssue: "", Remarks: ""
+            }
+
+            var HR_Emp_Devices = [];
+
+            $("#eduSave").click(function () {
+                //HR_Emp_Educations = new Array();
+                HR_Emp_Devices = [];
+                $("#tblEducation tbody tr").each(function (i, el) {
+                    empeducation = {
+                        EmpId: $("#EmpId").val(),
+                        DeviceType: $(this).find('td').eq(2).find('select').val(),
+                        DeviceModel: $(this).find('td').eq(3).find('input[type=text]').val(),
+                        DeviceBrand: $(this).find('td').eq(4).find('input[type=text]').val(),
+                        dtIssue: $(this).find('td').eq(5).find('input[type=date]').val(),
+                        Remarks: $(this).find('td').eq(6).find('input[type=text]').val(),
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                    }
+                    HR_Emp_Devices.push(empeducation);
+                    console.log(empeducation);
+                    empeducation = { EmpId: 0, EmpDeviceId: 0, ComId: 0, DeviceType: "", DeviceModel: "", DeviceBrand: "", dtIssue: "", Remarks: "" }
+                });
+
+                var formData = new FormData();
+
+                formData.append("HR_Emp_Devices", JSON.stringify(HR_Emp_Devices));
+
+                //$("#tblEducation tbody tr").each(function (i, el) {
+                //    var fileInput = $(this).find('td').eq(7).find('input[type=file]').prop('files')[0];
+                //    formData.append("Files[" + i + "]", fileInput);
+                //});
+
+
+
+
+                $.ajax({
+                    url: '@Url.Action("EmpDevice", "HR")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // do not process data
+                    contentType: false, // do not force content type
+                    success: function (result) {
+                        customFile('2', result.ex);
+                        window.location.href = '@Url.Action("EmpDeviceUpdate","HR")';
+                    },
+                    error: function (ex) {
+                        customFile('3', ex);
+                    }
+                });
+            });
+        })
+
+    </script>
+}

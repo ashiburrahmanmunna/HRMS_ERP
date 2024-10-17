@@ -1,0 +1,1418 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model GTERP.Models.FA_Sell
+
+@{
+    // ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var comid = HttpContextAccessor.HttpContext.Session.GetString("comid");
+    comid = comid.ToString();
+}
+
+
+<style>
+
+    input:disabled, select:disabled, textarea:disabled {
+        cursor: not-allowed;
+        opacity: .6;
+    }
+
+    input, select {
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        background-color: #f0eaea;
+    }
+
+    header {
+        background-color: #bde9ba;
+    }
+
+    article {
+        padding: 5px;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+        width: 70%;
+        min-height: 500px;
+    }
+
+    header {
+        padding: 0px;
+        text-align: center;
+        border-bottom: 1px solid skyblue;
+    }
+
+    aside {
+        margin-top: 5px;
+        background-color: #f0eaea;
+        padding: 5px;
+        text-align: left;
+        /*font-style: italic;*/
+        border-right: 1px solid skyblue;
+        width: 25%;
+    }
+
+    section {
+        padding: 5px;
+        border: 1px solid skyblue;
+        margin-top: 5px;
+        border-radius: 10px;
+    }
+
+    footer {
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .bb {
+        border-top: 1px solid skyblue;
+    }
+
+    .hh {
+        min-height: 500px;
+        max-height: 800px;
+    }
+
+    .rr {
+        width: 5%;
+    }
+
+    .ll {
+        width: 95%;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+    }
+
+    #exampleModal {
+        top: 15%;
+        outline: none;
+    }
+    /*.modal-dialog {
+        width: 750px;
+        margin: auto;
+    }*/
+</style>
+
+<div class="container ">
+    @Html.AntiForgeryToken()
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10 col-12"><h3 class="text-left" id="title">Asset @ViewBag.Title</h3></div>
+                <div class="col-md-2 col-12 text-right" id="divbtnsubmit">
+                    <input type="button" id="btnsubmit" value="Save" name="Asset_Create" class="btn btn-primary btn-block rounded-0" />
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-12">
+                    <div class="card d-none" id="divshowassetinfo">
+                        <div class="card-header">
+                            <h4>Asset Info</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div>Asset Name</div>
+                                <div>
+                                    <span id="asn" style="font-size: 13px; font-weight: bold"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>Asset Code</div>
+                                <div>
+                                    <span id="asc" style="font-size: 13px; font-weight: bold"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>Depreciation Name</div>
+                                <div>
+                                    <span id="dn" style="font-size: 13px;font-weight: bold"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>Depreciation Frequency</div>
+                                <div>
+                                    <span id="df" style="font-size: 13px; font-weight: bold"></span>
+                                </div>
+                            </div>
+                            @*<div class="form-group">
+                                    <div>Depreciation Expense Account</div>
+                                    <div>
+
+                                        <span id="dea" style="font-weight:bold"></span>
+                                    </div>
+                                </div>*@
+                            @*<div class="form-group">
+                                    <div>Accumulate Depreciation Account</div>
+                                    <div>
+
+                                        <span id="adc" style="font-weight:bold"></span>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 col-12">
+                    <div class="card" id="divAsset_Sell">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-9 col-12">
+                                    <h4 id="title">Sales information</h4>
+                                </div>
+                                <div class="col-md-3 col-12 text-right">
+                                    <a id="btnsalelist" asp-action="FASalesList" name="Sold_Assets_List" class="btntab btn btn-sm btn-outline-info btn-block rounded-0">
+                                        Sales List
+                                        <span>
+                                            <img src="~/icons8-list-view-30.png" />
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 col-12">
+                                    <input type="hidden" name="name" asp-for="FA_SellId" />
+                                </div>
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text ">
+                                                Fixed Asset
+                                            </span>
+                                        </div>
+                                        <select asp-for="FA_MasterId" class="form-control" asp-items="ViewBag.FA">
+                                            <option selected value="no">--Please Select--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Sub Asset
+                                            </span>
+                                        </div>
+                                        <select asp-for="FA_DetailsId" class="form-control" asp-items="ViewBag.Details">
+                                            @*<option selected value="no">--Please Select--</option>*@
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Description
+                                            </span>
+                                        </div>
+                                        <textarea asp-for="Description" class="form-control"></textarea>
+                                        @*<input asp-for="Description" class="form-control" />*@
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Sells Price
+                                            </span>
+                                        </div>
+                                        <input asp-for="SellsPrice" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Cost Price
+                                            </span>
+                                        </div>
+                                        <input asp-for="CostPrice" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Quantity
+                                            </span>
+                                        </div>
+                                        <input asp-for="Qty" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="MRRNo"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="MRRNo" class="form-control" />
+                                        <span asp-validation-for="MRRNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="MRRDate"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="MRRDate" class="form-control" type="date" />
+                                        <span asp-validation-for="MRRDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="VoucherNo"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="VoucherNo" class="form-control" />
+                                        <span asp-validation-for="VoucherNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="VoucherDate"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="VoucherDate" class="form-control" type="date" />
+                                        <span asp-validation-for="VoucherDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="Rate"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Rate" class="form-control" />
+                                        <span asp-validation-for="Rate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text py-0">
+                                                <label asp-for="SalesDate"></label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="SalesDate" class="form-control" type="date" />
+                                        <span asp-validation-for="SalesDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="mb-2 spn" id="spn3">
+                                        <button id="bsss" class="btn btn-info btn-block rounded-0">Add</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <input asp-for="CalculateDepreciation" />
+                                    <label asp-for="CalculateDepreciation"></label>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div id="divsaleslist" style="display:none" width="100%" class="table-responsive">
+                                    <h4>Sales Items</h4>
+                                    <table id="tblsalesrowlist" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    FA_SellId
+                                                </th>
+                                                <th>
+                                                    FA_MasterId
+                                                </th>
+                                                <th>
+                                                    Fixed Asset
+                                                </th>
+                                                <th>
+                                                    FA_DetailsId
+                                                </th>
+                                                <th>
+                                                    Fixed Asset Sub
+                                                </th>
+                                                <th>
+                                                    MRR No
+                                                </th>
+                                                <th>
+                                                    MRR Date
+                                                </th>
+                                                <th>
+                                                    Voucher No
+                                                </th>
+                                                <th>
+                                                    Voucher Date
+                                                </th>
+
+                                                <th>
+                                                    Rate
+                                                </th>
+                                                <th>
+                                                    Sales Date
+                                                </th>
+
+                                                <th>
+                                                    SellsPrice
+                                                </th>
+                                                <th>
+                                                    Cost Price
+                                                </th>
+
+                                                <th>
+                                                    Description
+                                                </th>
+
+                                                <th>
+                                                    Qty
+                                                </th>
+
+                                                <th>IsDetete</th>
+
+                                                <th>Action</th>
+                                                <th>
+                                                    Depreciation Cal.
+                                                </th>
+                                                <th>
+                                                    More..
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" id="depmodal" style="display:none" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
+
+<div class="modal fade bd-example-modal-lg my-2" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header btn-success">
+                <h5>Depreciation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="p-3 my-2">
+                <partial name="SeeDepreciation.cshtml" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var tblsalesrowlist;
+        var antiForgeryToken;
+        var clickedtable;
+        var selectedItem;
+        var tblSee_Dep;
+        var flag = 'temp';
+        var productid;
+        var salesid;
+        var mode;
+        var detailsid;
+
+        $(document).ready(function () {
+            mode = '@ViewData["Title"]';
+
+            @*var newOption;
+            if ('@ViewData["Title"]' == 'Create') {
+                newOption = new Option('--Please Select--', '-0', true, true);
+            } else {
+                newOption = new Option('--Please Select--', '-0', false, false);
+            }*@
+            $('#ProductId').select2();
+            //$('#ProductId').prepend(newOption).trigger('change');
+            $('#FA_MasterId').select2();
+            //$('#FA_MasterId').prepend(newOption).trigger('change');
+            $('#FA_DetailsId').select2();
+            //$('#FA_DetailsId').prepend(newOption).trigger('change');
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+
+            salesid = $('#FA_SellId').val() || 0;
+            if (salesid > 0) {
+                detailsid = '@ViewData["DetailsId"]';
+                $("#bsss").hide();
+                $("#btnsalelist").hide();
+                if (mode == "Delete") {
+                    $('#btnsubmit').val("Delete");
+                    $('#btnsubmit').removeClass("btn-primary");
+                    $('#btnsubmit').addClass("btn-danger");
+
+                }
+                else {
+                    $('#btnsubmit').val("Update");
+                }
+            }
+
+            $("#FA_MasterId").change(function () {
+                var FA_MasterIdp = $("#FA_MasterId option:selected").val();
+                $.ajax({
+                    url: '@Url.Action("getOnChangeFA_MasterIdp", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: FA_MasterIdp },
+                    contentType: 'application/json',
+                    success: function (data, status, xhr) {
+                        if (status == 'success') {
+                            var d = data.list;
+                            if (d == 'no') {
+                                $("#divshowassetinfo").hide();
+                            }
+                            else {
+                                if (d.length>0) {
+                                    $("#asn").empty();
+                                    $("#asn").text(d[0].ProductName);
+                                    $("#asc").empty();
+                                    $("#asc").text(d[0].ProductCode);
+                                    $("#dn").empty();
+                                    $("#dn").text(d[0].DMName);
+                                    $("#df").empty();
+                                    $("#df").text(d[0].Title);
+                                    $("#divshowassetinfo").show();
+                                }
+
+                               // activediv2 = 'divshowassetinfo';
+                            }
+                        }
+                    }
+
+                });
+            });
+
+            function getSoldAssetList() {
+                $.ajax({
+                    url: '@Url.Action("GetSoldAssetList", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+
+                    success: function (data, status, xhr) {
+                        //console.log(data);
+                        if (status == 'success') {
+                            $('#tblSold_Asset_List').DataTable().clear().draw();
+
+                            var d = data;
+                            for (var i = 0; i < d.length; i++) {
+                                $('#tblSold_Asset_List').dataTable().fnAddData([
+
+
+                                    d[i].AssetItem,
+                                    d[i].SellsPrice,
+                                    d[i].Description,
+                                    d[i].ProductCode,
+                                    d[i].FA_SellId
+                                    //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+                                ]);
+                            }
+
+                            toastr.success('Data loaded Successfully');
+                        };
+                    },
+                });
+            };
+
+            tblsalesrowlist = $('#tblsalesrowlist').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_SellId", "visible": false }, //0
+                    { "sClass": "FA_MasterId", "visible": false }, //1
+                    { "sClass": "FA_Master", "visible": true }, //2
+                    { "sClass": "FA_DetailsId", "visible": false },  //3
+                    { "sClass": "FA_Details", "visible": true }, //4
+
+                    { "sClass": "MRRNo", "visible": true }, //5
+                    { "sClass": "MRRDate", "visible": true }, //6
+                    { "sClass": "VoucherNo", "visible": true }, //7
+                    { "sClass": "VoucherDate", "visible": true }, //8
+                    { "sClass": "Rate", "visible": true }, //9
+                    { "sClass": "SalesDate", "visible": true }, //10
+
+                    { "sClass": "SellsPrice", "visible": true }, //11
+                    { "sClass": "CostPrice", "visible": true }, //12
+                    { "sClass": "Description", "visible": true }, //13
+                    { "sClass": "Qty", "visible": true }, //14
+                    { "sClass": "IsDelete", "visible": false }, //15
+                    { "sClass": "Action", "visible": true }, //16
+                    { "sClass": "DepreciationCal", "visible": true }, //17
+                    { "sClass": "More..", "visible": true } //18
+                ],
+                columnDefs: [
+                    {
+
+                        "render": function (data) {
+
+                            return '<button type="button" name="Depreciation_Schedule_List" class="btnSeeDepSchedule btn btn-sm btn-outline-info">Dep Schedule</button>';
+
+                        }, targets: 18
+
+                    }],
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                "language": {
+
+                    sLengthMenu: " _MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                "select": {
+                    style: 'single',
+                    // style: 'os',
+                    //selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblsoldassetlist = $('#tblSold_Asset_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "FA_Details", "visible": true },
+                    { "sClass": "SellsPrice", "visible": true },
+                    { "sClass": "Description", "visible": true },
+                    { "sClass": "FA_Master", "visible": false },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+                 columnDefs:[ {
+                        "render": function (FA_MasterId) {
+
+                            var myUrledit = '@Url.Action("Edit", "FA_Master")/' + FA_MasterId;
+                            var myUrldelete = '@Url.Action("Delete", "FA_Master")/' + FA_MasterId;
+                            var myUrlprint = '@Url.Action("Print", "FA_Master")/' + FA_MasterId + '?type=pdf';
+
+
+                         return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a  class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"sale\" value=\"' + FA_MasterId + '\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Delete"> <a  class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block delete\" name=\"sale\" value=\"' + FA_MasterId + '\" target=\"_blank\"></a></span>' +
+                             '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+
+                    }, targets:4
+                    }],
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "paging": true,
+                "language": {
+                    sLengthMenu: " _MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                select: {
+                    style: 'single',
+                    // style: 'os',
+                    selector: 'td:first-child'
+                }
+            }).draw();
+
+            tblSee_Dep = $('#tblSee_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": true }
+
+
+                ],
+
+                //"bLengthChange": true,
+                "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+
+
+            $("#bsss").click(function() {
+
+                var SellsPrice = parseFloat($('#SellsPrice').val());
+
+                var prdid = $('#FA_DetailsId option:selected').val();
+                if (prdid < 1) {
+                    toastr.error('Please Select the Item');
+                    return true;
+                }
+                var calculate;
+                if (SellsPrice > 0) {
+                    $("#divsaleslist").show();
+                    $("#QtySpan").text('');
+                    var oTabletblsalesrowlist = $('#tblsalesrowlist').dataTable().fnGetData();
+
+
+                    if ($.fn.DataTable.isDataTable('#tblsalesrowlist')) {
+                        var ifExist = false;
+
+
+                        if (tblsalesrowlist.rows('.selected').any()) {
+
+
+                            for (var i = 0; i < oTabletblsalesrowlist.length; i++) {
+                                var item = oTabletblsalesrowlist[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    var ind2 = tblsalesrowlist.row('.selected').index();
+                                    if (i != ind2) {
+                                        toastr.error('Multiple asset of same name is not allowed');
+                                        ifExist = true;
+                                        return;
+                                    }
+                                }
+
+                            }
+
+
+
+                            if (ifExist == false) {
+
+                                tblsalesrowlist
+                                    .rows({ selected: true })
+                                    .every(function (rowIdx, tableLoop, rowLoop) {
+                                        tblsalesrowlist.cell(rowIdx, 0).data($('#FA_SellId').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 1).data($('#FA_MasterId option:selected').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 2).data($('#FA_MasterId option:selected').text());
+                                        tblsalesrowlist.cell(rowIdx, 3).data($('#FA_DetailsId option:selected').val() || 0);
+                                        tblsalesrowlist.cell(rowIdx, 4).data($('#FA_DetailsId option:selected').text());
+
+                                        tblsalesrowlist.cell(rowIdx, 5).data($('#MRRNo').val());
+                                        tblsalesrowlist.cell(rowIdx, 6).data($('#MRRDate').val());
+                                        tblsalesrowlist.cell(rowIdx, 7).data($('#VoucherNo').val());
+                                        tblsalesrowlist.cell(rowIdx, 8).data($('#VoucherDate').val());
+                                        tblsalesrowlist.cell(rowIdx, 9).data($('#Rate').val());
+                                        tblsalesrowlist.cell(rowIdx, 10).data($('#SalesDate').val());
+
+                                        tblsalesrowlist.cell(rowIdx, 11).data($('#SellsPrice').val());
+                                        tblsalesrowlist.cell(rowIdx, 12).data($('#CostPrice').val());
+                                        tblsalesrowlist.cell(rowIdx, 13).data($('#Description').val());
+                                        tblsalesrowlist.cell(rowIdx, 14).data($('#Qty').val());
+                                        tblsalesrowlist.cell(rowIdx, 15).data(false);
+                                        tblsalesrowlist.cell(rowIdx, 16).data('<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ');
+
+                                    })
+
+                                    .draw();
+
+                                tblsalesrowlist.$('tr.selected').removeClass('selected');
+
+
+                                $("#addBtn").text("Add");
+                                $("#Cancel").remove();
+
+                            }
+
+                        }
+                        else {
+                            for (var i = 0; i < oTabletblsalesrowlist.length; i++) {
+                                var item = oTabletblsalesrowlist[i][2];
+                                //alert(item)
+                                if (prdid == item) {
+                                    toastr.error('Multiple asset of same name is not allowed');
+                                    //ifExist = true;
+                                    return;
+                                }
+
+                            }
+
+                            if ($('#CalculateDepreciation').is(":checked")) {
+                                calculate = true;
+                            } else {
+                                calculate = false;
+                            }
+
+                            $('#tblsalesrowlist').dataTable().fnAddData([
+                                $('#FA_SellId').val() || 0,
+                                $('#FA_MasterId option:selected').val() || 0,
+                                $('#FA_MasterId option:selected').text(),
+                                $('#FA_DetailsId option:selected').val() || 0,
+                                $('#FA_DetailsId option:selected').text(),
+
+                                $('#MRRNo').val(),
+                                $('#MRRDate').val(),
+                                $('#VoucherNo').val(),
+                                $('#VoucherDate').val(),
+                                $('#Rate').val(),
+                                $('#SalesDate').val(),
+
+                                $('#SellsPrice').val(),
+                                $('#CostPrice').val(),
+                                $('#Description').val(),
+                                $('#Qty').val(),
+                                false,
+                                '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ',
+                                calculate,
+                                ''
+                            ]);
+                            tblsalesrowlist = $('#tblsalesrowlist').DataTable();
+                            $("#addBtn").text("Add");
+                            tblsalesrowlist.draw();
+                        }
+                        tblsalesrowlist = $('#tblsalesrowlist').DataTable();
+                        $('#ProductBrand').val("");
+                        $('#ProductModel').val("");
+                        $('#PurReqlifespan').val("");
+                        $('#Note').val("");
+                    }
+                }
+                else {
+                    //$("#lifespanSpan").text('Please Fill Up the lifespan.');
+                    toastr.error('Please Fill Up required field.');
+                }
+            });
+
+
+            var Asset = {
+
+                FA_MasterId: 0,
+                ProductId: 0,
+                ProductCode: '',
+                DMId: 0,
+                Percentage: '',
+                AccId_DepreciationExpense: 0,
+                AccId_AccumulatedDepreciation: 0,
+                FoD: 0,
+                ComId: '',
+                IsDelete:false
+
+            };
+
+            var AssignAsset = {
+                FA_DetailsId: 0,
+                FA_MasterId: 0,
+                AssetItem: '',
+                //IssuNo: '',
+                IssueDate: '',
+                PurchaseDate: '',
+                PurchaseValue: 0,
+                IssueDate: '',
+                AssignTo: '',
+                UsefullLife: 0,
+                RemainingYear: 0,
+                RemainingMonth: 0,
+                EVAULife: 0,
+                AssignToDept: 0,
+                WrittenDownValue: 0,
+                ComId: '',
+                IsDelete: false,
+                CalculateDepreciation: false
+
+
+            };
+
+            var SellAsset = {
+                FA_SellId: 0,
+                FA_DetailsId: 0,
+                FA_MasterId: 0,
+                MRRNo: '',
+                MRRDate: '',
+                VoucherNo: '',
+                VoucherDate: '',
+                Rate: '',
+                SalesDate: '',
+
+                SellsPrice: 0,
+                CostPrice: 0,
+                Qty: 0,
+                Description: '',
+                IsDelete: false,
+                CalculateDepreciation: false
+
+            };
+
+
+
+            $('#btnsubmit').click(function () {
+                if (mode == "Delete") {
+                    //ajax for delete post
+                    var id = salesid;
+                    //alert(id);
+                    //window.setTimeout(function () {
+                    if (confirm("Are you sure to delete this record?")) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { type: "sales", id: id},
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                            //contentType: 'application/json',
+                            success: function (data, status, xhr) {
+                                if (data.result == 1) {
+
+                                    $('#tblAssetItem_List').DataTable().clear().draw();
+                                    //getAssetList();
+                                    toastr.success("Record delete success.")
+                                    var url = '@Url.Action("FASalesList", "FA_Master")';
+                        window.location.href = url;
+                                } else {
+                                    toastr.error("Error occured during delete.");
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else {
+                    var AssetListToSale = [];
+                    if (salesid > 0) {
+                        var calculate = false;
+                        if ($('#CalculateDepreciation').is(":checked")) {
+                            calculate = true;
+                        } else {
+                            calculate = false;
+                        }
+                        SellAsset.FA_SellId = $('#FA_SellId').val() | 0;
+                        SellAsset.FA_MasterId = $('#FA_MasterId option:selected').val() | 0;
+                        SellAsset.FA_DetailsId = $('#FA_DetailsId option:selected').val() | 0;
+                        SellAsset.MRRNo = $('#MRRNo').val() ;
+                        SellAsset.MRRDate = $('#MRRDate').val() ;
+                        SellAsset.VoucherNo = $('#VoucherNo').val() ;
+                        SellAsset.VoucherDate = $('#VoucherDate').val() ;
+                        SellAsset.Rate = $('#Rate').val() | 0;
+                        SellAsset.SalesDate = $('#SalesDate').val() ;
+                        SellAsset.SellsPrice = $('#SellsPrice').val() | 0;
+                        SellAsset.CostPrice = $('#CostPrice').val() | 0;
+                        SellAsset.Qty = $('#Qty').val() | 0;
+                        SellAsset.Description = $('#Description').val();
+                        SellAsset.CalculateDepreciation = calculate;
+                        AssetListToSale.push(SellAsset);
+
+                        SellAsset = {
+                            FA_SellId: 0,
+                            FA_DetailsId: 0,
+                            FA_MasterId: 0,
+                            MRRNo: '',
+                            MRRDate: '',
+                            VoucherNo: '',
+                            VoucherDate: '',
+                            Rate: '',
+                            SalesDate: '',
+                            SellsPrice: 0,
+                            CostPrice: 0,
+                            Qty: 0,
+                            Description: '',
+                            CalculateDepreciation: false,
+                            IsDelete: false
+                        };
+                        if (AssetListToSale.length > 0) {
+                            $.ajax({
+                                url: '@Url.Action("SeleAsset", "FA_Master")',
+                                type: 'POST',
+                                dataType: 'json',
+                                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                                data: { assetListToSale: AssetListToSale },
+                                success: function (data, status, xhr) {
+                                    if (data.success == '1') {
+                                        $('#tblsalesrowlist').DataTable().clear().draw();
+                                        $("#divsaleslist").hide();
+                                        clear_form_elements(`div${name}`);
+                                        toastr.success('Asset has saled Successfully');
+                                         var url = '@Url.Action("FASalesList", "FA_Master")';
+                        window.location.href = url;
+                                    }
+                                    if (data.error == '1') {
+                                        toastr.error(data.message);
+                                    }
+                                    ;
+                                },
+                            });
+                        }
+
+
+                    }
+                    else {
+                        var oTablerequisitionSub = $('#tblsalesrowlist').dataTable().fnGetData();
+
+                        if (oTablerequisitionSub.length == 0) {
+                            alert('Please Fill Necessary Data.');
+                            return false;
+                        };
+                        for (var i = 0; i < oTablerequisitionSub.length; i++) {
+                            SellAsset.FA_SellId = oTablerequisitionSub[i][0];
+                            SellAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                            SellAsset.FA_DetailsId = oTablerequisitionSub[i][3];
+
+                            SellAsset.MRRNo = oTablerequisitionSub[i][5];
+                            SellAsset.MRRDate = oTablerequisitionSub[i][6];
+                            SellAsset.VoucherNo = oTablerequisitionSub[i][7];
+                            SellAsset.VoucherDate = oTablerequisitionSub[i][8];
+                            SellAsset.Rate = oTablerequisitionSub[i][9];
+                            SellAsset.SalesDate = oTablerequisitionSub[i][10];
+
+                            SellAsset.SellsPrice = oTablerequisitionSub[i][11];
+                            SellAsset.CostPrice = oTablerequisitionSub[i][12];
+                            SellAsset.Description = oTablerequisitionSub[i][13];
+                            SellAsset.Qty = oTablerequisitionSub[i][14];
+                            SellAsset.CalculateDepreciation = oTablerequisitionSub[i][17];
+                            AssetListToSale.push(SellAsset);
+
+                            SellAsset = {
+                                FA_SellId: 0,
+                                FA_DetailsId: 0,
+                                FA_MasterId: 0,
+                                MRRNo: '',
+                                MRRDate: '',
+                                VoucherNo: '',
+                                VoucherDate: '',
+                                Rate: '',
+                                SalesDate: '',
+                                SellsPrice: 0,
+                                CostPrice: 0,
+                                Qty: 0,
+                                Description: '',
+                                IsDelete: false,
+                                CalculateDepreciation: false
+                            };
+                        };
+
+                        if (AssetListToSale.length > 0) {
+                            $.ajax({
+                                url: '@Url.Action("SeleAsset", "FA_Master")',
+                                type: 'POST',
+                                dataType: 'json',
+                                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                                data: { assetListToSale: AssetListToSale },
+                                success: function (data, status, xhr) {
+                                    if (data.success == '1') {
+                                        $('#tblsalesrowlist').DataTable().clear().draw();
+                                        $("#divsaleslist").hide();
+                                        clear_form_elements(`div${name}`);
+                                        toastr.success('Asset has saled Successfully');
+                                    }
+                                    if (data.error == '1') {
+                                        toastr.error(data.message);
+                                    }
+                                    ;
+                                },
+                            });
+                        }
+
+                    }
+                }
+
+            });
+
+
+
+            $('#FA_MasterId').change(function () {
+
+                var FA_MasterIds = $('#FA_MasterId option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("getsolditem", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                        data: { id: FA_MasterIds },
+                        success: function (data, status, xhr) {
+                            $("#FA_DetailsId option").remove();
+
+                            createSelectList(data.list)
+                            $('#FA_DetailsId').attr('disabled', false);
+
+
+                        }
+
+                    });
+            });
+
+
+
+            $('#tblsalesrowlist tbody').on('click', 'tr', function () {
+
+                if ($.fn.DataTable.isDataTable('#tblsalesrowlist')) {
+
+                    tblsalesrowlist
+                        .on('select', function (e, dt, type, indexes) {
+
+                            $("#bsss").text("Modify");
+                            if ($("#spn3").children('#Cancel')) {
+                                $("#spn3").children('#Cancel').remove();
+                                $("#spn3").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+                            else {
+                                $("#spn3").append('<button type="button" id="Cancel" class="btn btn-danger cancel">Cancel</button>');
+                            }
+
+
+                            var f = tblsalesrowlist.rows('.selected').data();
+                            //console.log(f[0][2]);
+
+                            selectedItem = `${f[0][2]}`;
+
+                            $('#FA_SellId').val(`${f[0][0]}`);
+                            $('#FA_MasterId').val(`${f[0][1]}`).change();
+                            $('#FA_DetailsId').val(`${f[0][3]}`).change();
+
+                            $('#MRRNo').val(`${f[0][5]}`);
+                            $('#MRRDate').val(`${f[0][6]}`);
+                            $('#VoucherNo').val(`${f[0][7]}`);
+                            $('#VoucherDate').val(`${f[0][8]}`);
+                            $('#Rate').val(`${f[0][9]}`);
+                            $('#SalesDate').val(`${f[0][10]}`);
+
+                            $('#SellsPrice').val(`${f[0][11]}`);
+                            $('#CostPrice').val(`${f[0][12]}`);
+                           
+                            $('#Description').val(`${f[0][13]}`);
+                            $('#Qty').val(`${f[0][14]}`);
+
+                        })
+                        .on('deselect', function (e, dt, type, indexes) {
+                            selectedItem = null;
+                            $("#bsss").text("Add");
+                            $("#spn3").children('#Cancel').remove();
+                            $(".cancel").trigger("click");
+
+                            $('#FA_SellId').val(0);
+                            $('#FA_MasterId').val(-1).change();
+                            $('#FA_DetailsId').val(-1).change();
+
+                            $('#MRRNo').val('');
+                            $('#MRRDate').val('');
+                            $('#VoucherNo').val('');
+                            $('#VoucherDate').val('');
+                            $('#Rate').val('');
+                            $('#SalesDate').val('');
+
+                            $('#SellsPrice').val('');
+                            $('#CostPrice').val('');
+                            $('#Qty').val('');
+                            $('#Description').val('');
+
+
+                        });
+                };
+
+
+            });
+
+             $(document).on('click', '.btnSeeDepSchedule', function () {
+            var i = $(this).parent().parent().index();
+                 var oTablerequisitionSub = $('#tblsalesrowlist').dataTable().fnGetData();
+
+            if (oTablerequisitionSub.length == 0) {
+                alert('Please Fill Necessary Data.');
+                return true;
+            };
+                 var AssetListToAssign = [];
+
+                 var SellAsset = {
+                     FA_SellId: 0,
+                     FA_DetailsId: 0,
+                     FA_MasterId: 0,
+                     MRRNo: '',
+                     MRRDate: '',
+                     VoucherNo: '',
+                     VoucherDate: '',
+                     Rate: '',
+                     SalesDate: '',
+
+                     SellsPrice: 0,
+                     CostPrice: 0,
+                     Qty: 0,
+                     Description: '',
+                     IsDelete: false,
+                     CalculateDepreciation: false
+
+                 };
+
+                 SellAsset.FA_SellId = oTablerequisitionSub[i][0];
+                 SellAsset.FA_MasterId = oTablerequisitionSub[i][1];
+                 SellAsset.FA_DetailsId = oTablerequisitionSub[i][3];
+
+                 SellAsset.MRRNo = oTablerequisitionSub[i][5];
+                 SellAsset.MRRDate = oTablerequisitionSub[i][6];
+                 SellAsset.VoucherNo = oTablerequisitionSub[i][7];
+                 SellAsset.VoucherDate = oTablerequisitionSub[i][8];
+                 SellAsset.Rate = oTablerequisitionSub[i][9];
+                 SellAsset.SalesDate = oTablerequisitionSub[i][10];
+
+                 SellAsset.SellsPrice = oTablerequisitionSub[i][11];
+                 SellAsset.CostPrice = oTablerequisitionSub[i][12];
+                 SellAsset.Description = oTablerequisitionSub[i][12];
+                 SellAsset.Qty = oTablerequisitionSub[i][14];
+                 SellAsset.CalculateDepreciation = oTablerequisitionSub[i][17];
+                 SellAsset.ComId = '@comid';
+                 AssetListToAssign.push(SellAsset);  
+
+                 SellAsset = {
+                     FA_SellId: 0,
+                     FA_DetailsId: 0,
+                     FA_MasterId: 0,
+                     MRRNo: '',
+                     MRRDate: '',
+                     VoucherNo: '',
+                     VoucherDate: '',
+                     Rate: '',
+                     SalesDate: '',
+
+                     SellsPrice: 0,
+                     CostPrice: 0,
+                     Qty: 0,
+                     Description: '',
+                     IsDelete: false,
+                     CalculateDepreciation: false
+                 };
+
+
+
+                 if (AssetListToAssign.length > 0) {
+                    $('#tblSee_Dep').DataTable().clear().draw();
+                        $.ajax({
+                            url: '@Url.Action("TemAssignSaleAsset", "FA_Master")',
+                            type: 'POST',
+                            dataType: 'json',
+                            headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                            data: { AssetListToAssign: AssetListToAssign },
+                            success: function (data, status, xhr) {
+                                if (data.success == 1) {
+
+                                    var d = data.list;
+                                    if (d.length>0) {
+
+                                        $("#divDepreciation_Schedule_List").show();
+                                        for (var i = 0; i < d.length; i++) {
+
+
+                                            $('#tblSee_Dep').dataTable().fnAddData([
+
+
+                                                d[i].DepreciationScheduleSaleId,
+                                            d[i].AssetItem,
+                                            d[i].ScheduleDate,
+                                            d[i].DepAmount,
+                                            d[i].AccumulateDepAmount,
+                                            d[i].AccumulateDepBooked,
+                                            d[i].AccumulateDepRemain,
+                                            d[i].JournalEntry,
+                                            '<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > ']);
+                                        }
+                                        toastr.success('Depreciation Scheduled Loaded');
+                                    }
+                                    //clear_form_elements(`div${name}`);
+                                    if (d .length<=0) {
+                                       // $("#divAsset_Item_List").show();
+                                        toastr.error('Depreciation Schedules cannot be created');
+                                    }
+
+                                };
+                                if (data.error == 1) {
+                                    toastr.error('Depreciation schedule cannot be created');}
+                            },
+                        });
+                }
+                $("#depmodal").trigger("click");
+
+        });
+
+
+
+        });
+
+        $(document).on('click', '.dlttrash', function () {
+
+            var d = $(this).data();
+            var tablename = this.parentNode.parentNode.parentNode.parentNode.id;
+            var div = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+            var mode = $("#mode").val();
+            if (mode == "Edit") {
+
+                var prsubid = d["html"];
+                if (prsubid != null) {
+                    var l = $(this).parent().parent().index();
+                    tbldetails.cell(l, 10).data(true);
+                    $(this).parent().parent().hide();
+                }
+
+                else {
+                    var table = $(`#${tablename}`).DataTable();
+                    table.row($(this).parents('tr')).remove().draw();
+                    if ($("#spn").children('#Cancel')) {
+                        $("#spn").children('#Cancel').remove();
+                    }
+                    $("#addBtn").text("Add");
+                    var x = "500.00";
+                    var y = $(`#${tablename}`).height();
+                    var z = parseFloat(x) + parseFloat(y);
+                    $('html, body').animate({ scrollTop: z }, 500);
+                }
+            }
+            else {
+
+                var table = $(`#${tablename}`).DataTable();
+                table.row($(this).parents('tr')).remove().draw();
+                if ($(".spn").children('#Cancel')) {
+                    $(".spn").children('#Cancel').remove();
+                }
+                $("#addBtn").text("Add");
+                var x = "500.00";
+                var y = $(`#${tablename}`).height();
+                var z = parseFloat(x) + parseFloat(y);
+                $('html, body').animate({ scrollTop: z }, 500);
+            }
+            var t = $(`#${tablename}`).dataTable().fnGetData();
+            if (t.length==0) {
+                $(`#${div}`).hide();
+            }
+
+        });
+
+
+        $(document).on('click', '.cancel', function () {
+
+            if ($.fn.DataTable.isDataTable('#tblsalesrowlist')) {
+                if (tblsalesrowlist.rows('.selected').any()) {
+                    $('#tblsalesrowlist tr.selected').removeClass('selected');
+                }
+                $("#addBtn").text("Add");
+                $(this).remove();
+                $('#FA_SellId').val(0);
+                $('#FA_MasterId').val(-1).change();
+                $('#FA_DetailsId').val(-1).change();
+
+                $('#MRRNo').val('');
+                $('#MRRDate').val('');
+                $('#VoucherNo').val('');
+                $('#VoucherDate').val('');
+                $('#Rate').val('');
+                $('#SalesDate').val('');
+
+                $('#SellsPrice').val('');
+                $('#CostPrice').val('');
+                $('#Qty').val('');
+                $('#Description').val('');
+            }
+        });
+
+        function dateformat(datetime) {
+            d = new Date(datetime);
+            var month = d.getMonth() + 1;
+            var date = d.getDate();
+            var year = d.getFullYear();
+            return `${year}-${month}-${date}`;
+        }
+
+        function InitilizeSelectLists() {
+            $.ajax({
+                url: '@Url.Action("InitializeSelectList", "FA_Master")',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data, status, xhr) {
+
+                    if (status == 'success') {
+
+                        if (data.master) {
+                            $('#FA_MasterIdp').empty();
+                            $('#FA_MasterIdp').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.master.length; ++i) {
+                                optionValue = data.master[i].Value;
+                                optionText = data.master[i].Text;
+                                $('#FA_MasterIdp').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+                        if (data.sale) {
+                            $('#FA_DetailsId1').empty();
+                            $('#FA_DetailsId1').append(new Option("--Select--", "-1"));
+                            for (var i = 0; i < data.sale.length; ++i) {
+                                optionValue = data.sale[i].Value;
+                                optionText = data.sale[i].Text;
+                                $('#FA_DetailsId1').append(new Option(optionText, optionValue));
+                            }
+
+                        }
+
+                    };
+                },
+            });
+
+        }
+
+        function clear_form_elements(div_name) {
+            $("#" + div_name).find(':input').each(function () {
+                switch (this.type) {
+                    case 'password':
+                    case 'text':
+                    case 'textarea':
+                    case 'file':
+                    case 'select-one':
+                    case 'select-multiple':
+                    case 'date':
+                    case 'number':
+                    case 'tel':
+                    case 'email':
+                        jQuery(this).val('');
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        this.checked = false;
+                        break;
+                }
+            });
+        }
+
+        function createSelectList(selItem) {
+
+           // $('#FA_DetailsId').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#FA_DetailsId').append(new Option(optionText, optionValue));
+            }
+            if (salesid>0) {
+                $('#FA_DetailsId').val(detailsid).change();
+            }
+        }
+
+        $.LoadingOverlaySetup({
+            background: "rgba(0, 0, 0, 0.5)",
+            //fontawesome: "fas fa-cog fa-spin",
+            imageAnimation: "1.5s fadein",
+            imageColor: "#DCDCDC"
+        });
+        $(document).ajaxStart(function () {
+            $.LoadingOverlay("show");
+        });
+        $(document).ajaxStop(function () {
+           $.LoadingOverlay("hide");
+
+        });
+    </script>
+}

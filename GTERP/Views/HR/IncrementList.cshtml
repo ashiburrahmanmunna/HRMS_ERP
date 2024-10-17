@@ -1,0 +1,1927 @@
+﻿@model GTERP.Models.HR_Emp_Increment
+@using GTERP.Models
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    ViewBag.Title = "Increment";
+
+    List<HR_Emp_Increment> increments = new List<HR_Emp_Increment>();
+    increments = ViewBag.increment;
+}
+
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+
+<div class="divforfull" style="display: none;">&nbsp;</div>
+
+<div class="myMessage" style="width: 30%; display: none;">
+    <input type="hidden" id="IsDoller" name="IsDoller" value="@ViewBag.IsDoller" />
+    <br /><br /><br /><br />
+    <center>
+        <div class="card bg-primary">
+            <div class="card-header">Message</div>
+            <div class="card-body messageDiv">
+            </div>
+        </div>
+    </center>
+</div>
+
+@*Upload Excel File Start*@
+<div class="my-2">
+    <form method="post" enctype="multipart/form-data" asp-action="IncrementUploadFile">
+        <div class="input-group input-group w-50" style="margin:0 auto;">
+            <span class="input-group-btn input-group-prepend">
+                <span class="btn btn-info rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+            </span>
+            <span class="form-control border border-info" style="background: #f2f2f2e6;"></span>
+            <button class="rounded-0 btn btn-info btn-sm" type="submit" id="btnUpload">Upload</button>
+            <div style="padding-left:5px;">
+                <a href="~/HR/DownloadIncrementFile?file=SampleFormatIncrement.xls" title="Download Sample Format"
+                   class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i> Sample Format</a>
+            </div>
+        </div>
+    </form>
+</div>
+@*Upload Excel File End*@
+
+<div class="card">
+    <div class="form-header btn-info">
+        <i class="fa fa-plus" aria-hidden="true"></i> INCREMENT
+        <div id="loading" style="display: none;">
+            <div id="loadingGif" style="display:inline;">
+                @*<img src="~/Files/loading.gif" style="height:16px;display:inline;" />*@
+            </div>
+        </div>
+    </div>
+    <span style="height:1px;display:block;"></span>
+
+    <div class="container-fluid">
+
+        <div class="row nopadding no-gutter">
+            <div class="col-md-7 col-12 nopadding" id="mainDiv">
+                <fieldset class="incrementInputFieldSet table-responsive mt-2" style="border: solid 1px rgba(0, 0, 0, 0.3);border-radius: 2px; padding: 20px;border-top: 4px solid #518aa5; padding-bottom: 0; padding-top: 15px;">
+                    <div class="row">
+                        @Html.HiddenFor(model => model.IncId, new { id = "IncId" })
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Employee Code
+                                    </span>
+                                </div>
+                                <select asp-for="EmpId" asp-items="ViewBag.EmpId" id="EmpId" class="EmpId form-control" name="EmpId" data-val="true">
+                                    <option>Select Employee</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.IncTypeId)
+                                    </span>
+                                </div>
+                                <select asp-for="IncTypeId" asp-items="ViewBag.IncTypeId" style="text-align: center;" id="IncTypeId" class="IncTypeId form-control" name="IncTypeId" data-val="true">
+                                    <option value="0" selected>Select Type</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+
+                                        @Html.DisplayNameFor(m => m.DtIncrement)
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.DtIncrement, new { @class = "form-control", id = "DtIncrement" })
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.DtJoin)
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.DtJoin, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "readonly", id = "DtJoin" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        @Html.DisplayNameFor(m => m.HR_Emp_Info.EmpName)
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.HR_Emp_Info.EmpName, new { @class = "form-control", @readonly = "readonly", id = "EmpName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Designation
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_DesignationNew.DesigName, new { @class = "form-control", @readonly = "readonly", id = "DesigName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Section
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_SectionNew.SectName, new { @class = "form-control", @readonly = "readonly", id = "SectName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Empoyee Type
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Cat_Emp_TypeNew.EmpTypeName, new { @class = "form-control", @readonly = "readonly", id = "EmpTypeName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Designation
+                            </div>
+
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mt-2 mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Designation
+                                    </span>
+                                </div>
+                                <div asp-for="OldDesigId" asp-items="ViewBag.OldDesigId" id="OldDesigId" name="OldDesigId">
+                                    @Html.TextBoxFor(m => m.Cat_DesignationOld.DesigName, new { @class = "form-control", @readonly = "readonly", id = "DesigNameOld" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2 mt-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        New Designation
+                                    </span>
+                                </div>
+
+                                <select asp-for="NewDesigId" asp-items="ViewBag.NewDesigId" style="text-align: center;" id="NewDesigId" class="NewSectId form-control" name="NewDesigId" data-val="true" disabled="disabled">
+                                    <option id=""></option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Section
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mt-2 mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Section
+                                    </span>
+                                </div>
+                                <div asp-for="OldSectId" asp-items="ViewBag.OldSectId" id="OldSectId" name="OldSectId">
+                                    @Html.TextBoxFor(m => m.Cat_SectionOld.SectName, new { @class = "form-control", @readonly = "readonly", id = "SectNameOld" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2 mt-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        New Section
+                                    </span>
+                                </div>
+
+                                <select asp-for="NewSectId" asp-items="ViewBag.NewSectId" style="text-align: center;" id="NewSectId" class="NewSectId form-control" name="NewSectId" data-val="true" disabled="disabled">
+                                    <option id=""></option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Emp Type
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mt-2 mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Emp Type
+                                    </span>
+                                </div>
+                                <div asp-for="OldEmpTypeId" asp-items="ViewBag.OldEmpTypeId" id="OldStatus" name="OldStatus">
+                                    @Html.TextBoxFor(m => m.Cat_Emp_TypeOld.EmpTypeName, new { @class = "form-control", @readonly = "readonly", id = "EmpTypeNameOld" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2 mt-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        New Emp Type
+                                    </span>
+                                </div>
+
+                                <select asp-for="NewEmpTypeId" asp-items="ViewBag.NewEmpTypeId" style="text-align: center;" id="NewStatus" class="NewSectId form-control" name="NewStatus" data-val="true" disabled="disabled">
+                                    <option id=""></option>
+                                </select>
+
+                            </div>
+                        </div> 
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Grade
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mt-2 mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        Grade
+                                    </span>
+                                </div>
+                                <div asp-for="OldGradeId" asp-items="ViewBag.OldGradeId" id="OldGradeId" name="OldGradeId">
+                                    @Html.TextBoxFor(m => m.Cat_GradeOld.GradeName, new { @class = "form-control", @readonly = "readonly", id = "GradeNameOld" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="input-group mb-2 mt-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        New Grade
+                                    </span>
+                                </div>
+
+                                <select asp-for="NewGradeId" asp-items="ViewBag.NewGradeId" style="text-align: center;" id="NewGradeId" class="NewSectId form-control" name="NewGradeId" data-val="true" disabled="disabled">
+                                    <option id=""></option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Previous Salary Amount
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 text-center mt-2 px-4">
+                            <div class="container row">
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>GS</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.OldSalary, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>BS</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.OldBS, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>HR</div>
+                                    <div>
+
+                                        @Html.TextBoxFor(m => m.OldHR, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>TA</div>
+                                    <div>
+
+                                        @Html.TextBoxFor(m => m.OldTA, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>FA</div>
+                                    <div>
+
+                                        @Html.TextBoxFor(m => m.OldFA, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>MA</div>
+                                    <div>
+
+                                        @Html.TextBoxFor(m => m.OldMA, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 mt-2">
+                            <div class="formTitle">
+                                Increment
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 text-center mt-2 px-4 mb-1">
+                            <div class="container row">
+                                <div class="col-md-3 col-4 p-0">
+                                    <div>Amount</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-control text-center amt" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-5 pl-0">
+                                    <div> %</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.Percentage, new { @class = "form-control text-center amt" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 text-center mt-2 px-4 mb-1">
+                            <div class="container row">
+
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>NEW GS</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewSalary, new { @class = "form-control text-center", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>NEW BS</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewBS, new { @class = "form-control text-center"/*, @readonly = "readonly"*/ })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>HR</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewHR, new { @class = "form-control text-center"/*, @readonly = "readonly"*/ })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>TA</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewTA, new { @class = "form-control text-center" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>FA</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewFA, new { @class = "form-control text-center" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-4 p-0">
+                                    <div>MA</div>
+                                    <div>
+                                        @Html.TextBoxFor(m => m.NewMA, new { @class = "form-control text-center" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-12 text-center my-2">
+                            <div id="buttonDiv">
+                                <button id="save" class="btn btn-primary rounded-0">
+                                    <i class="glyphicon glyphicon-floppy-saved"></i>
+                                    Save
+                                </button>
+                                <button id="update" class="btn btn-primary rounded-0">
+                                    <i class="glyphicon glyphicon-floppy-saved"></i>
+                                    Update
+                                </button>
+
+                                <button id="delete" class="btn btn-danger rounded-0">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                    Delete
+                                </button>
+                                <button id="clear" class="btn btn-warning rounded-0">
+                                    <i class="glyphicon glyphicon-cloud-download"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-5 col-12 nopadding mt-2" id="incrementDetailsDiv">
+                <fieldset id="detailsField" class="mx-auto" style="border: solid 1px rgba(0, 0, 0, 0.3);border-radius: 2px; padding: 8px;border-top: 4px solid #518aa5;">
+
+                    <div class="formTitle border p-2  text-center">
+                        <span class="mt-2">Increment Details</span>
+                    </div>
+
+                    <div class="mCustomScrollbar  table-responsive mt-2" style="height: 320px;" data-mcs-theme="minimal-dark">
+                        @*<partial name="_IncrementGrid"/>*@
+                        <table class="incrementTable table table-hover table-striped mx-auto" id="incrementTable">
+
+                            <thead>
+
+                                <tr>
+                                    @*<th class="d-none">Increment Id</th>*@
+                                    <th>Increment Id</th>
+                                    <th>Employee Code</th>
+                                    <th>Increment Type</th>
+                                    <th style="width:100px;">Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+                                @if (increments.Count() > 0)
+                                {
+                                    @foreach (var anIncrement in increments)
+                                    {
+
+                                        <tr>
+                                            @*<td class="d-none">@anIncrement.IncId</td>*@
+                                            <td>@anIncrement.IncId</td>
+                                            <td>@anIncrement.HR_Emp_Info.EmpCode</td>
+                                            <td>@anIncrement.HR_IncType.IncType</td>
+                                            <td>@String.Format("{0:dd-MMM-yyyy}", Convert.ToDateTime(Convert.ToDateTime(anIncrement.DtInput).ToShortDateString()))</td>
+                                            <td class="text-center">@anIncrement.Amount</td>
+                                        </tr>
+
+
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+    <p></p>
+</div>
+
+@section Scripts{
+    <script>
+        var isDollerValue;
+
+
+
+        $(document).ready(function () {           
+            isDollerValue = '@ViewBag.IsDoller';
+        });
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function() {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            saveIncrement();
+
+                        },
+                        No: function() {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function(event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+
+        $(document).ready(function() {
+            $('#DtIncrement').val(CurrentDate());
+
+            var a = $("#EmpId").select2();
+            // console.log(a);
+            $("#Percentage").on("keyup", function() {
+
+                var bs = $("#OldBS").val();
+
+                var empid = $("#EmpId").val();
+
+                console.log(empid);
+
+                if (empid == "0") {
+                    return false;
+                }
+                /*console.log("Hi" + data);*/
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetSalaryInfo", "HR")',
+                    dataType: 'json',
+                    data: { empId: empid, BS: bs },
+                    success: function(data) {
+
+                        forPercentage(data);
+
+                    },
+
+                    error: function(er) {
+                    }
+
+
+                });
+
+
+            });
+
+            $("#Amount").on("keyup", function() {
+
+                var amount = $("#Amount").val();
+                var empid = $("#EmpId").val();
+                if (empid == "0") {
+                    return false;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetSalaryInfo", "HR")',
+                    dataType: 'json',
+                    data: { empId: empid, Amount: amount },
+                    success: function(data) {
+
+                        forAmount(data);
+                    },
+                    error: function(er) {
+
+                    }
+                });
+            });
+
+            function forPercentage(data) {
+                var bs = parseInt($("#NewBS").val());
+                var oldSalary = parseInt($("#OldSalary").val());
+                var newBasic = Number(oldSalary + (oldSalary / 100) * $("#Percentage").val());
+
+                //$("#Amount").val(Math.round((oldSalary / 100) * $("#Percentage").val()));
+                //$("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                //$("#NewBS").val(Math.round(((newBasic - 1850) / 1.5)));
+                //$("#NewHR").val(Math.round((newBasic - 1850) / 1.5) * .50);
+                var emptypeid = $('#NewStatus').val();
+
+                //alert(emptypeid);
+                $("#Amount").val((isDollerValue == 0)?(Math.round((oldSalary / 100) * $("#Percentage").val())):((oldSalary / 100) * $("#Percentage").val()).toFixed(3));
+
+                //$("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                //$("#NewBS").val(Math.round(((newBasic - 1850) / 1.5)));
+                //$("#NewHR").val(Math.round((newBasic - 1850) / 1.5) * .50);
+
+                // hr_setting data
+                let setting = JSON.stringify(data);
+                let HR = JSON.parse(setting).HR;
+                //console.log(HR);
+                if (HR != null) {
+
+                    let bs_setting = JSON.parse(setting).HR.BS;
+                    let hr_setting = JSON.parse(setting).HR.HR;
+                    let ma_setting = JSON.parse(setting).HR.MA;
+                    let fa_setting = JSON.parse(setting).HR.FA;
+                    let ta_setting = JSON.parse(setting).HR.CA;
+                    let is_ca_differ = JSON.parse(setting).HR.IsCADifference;
+                    let is_fa_differ = JSON.parse(setting).HR.IsFADifference;
+                    //var newBasic = Number(oldSalary + (oldSalary / 100) * $("#Percentage").val());
+                    //alert(newBasic);
+
+                    if (emptypeid == 1 && is_ca_differ == true && is_fa_differ == true) {
+                        $("#NewSalary").val((isDollerValue == 0) ? (Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val())):(oldSalary + (oldSalary / 100) * $("#Percentage").val()).toFixed(3));
+                        //$("#NewBS").val(Math.round(((newBasic - 1850) / 1.5)));
+                        //$("#NewHR").val(Math.round((newBasic - 1850) / 1.5) * .50);
+
+                        $("#NewBS").val((isDollerValue == 0) ? (Math.round(((newBasic) - ma_setting) / 1.5)) : (((newBasic) - ma_setting) / 1.5).toFixed(3));
+                        $("#NewHR").val((isDollerValue == 0) ? Math.round((((newBasic) - ma_setting) / 1.5) * hr_setting) : ((((newBasic) - ma_setting) / 1.5) * hr_setting).toFixed(3));
+
+                        // $("#NewMA").val(Math.round(ma_setting));
+                        // $("#NewTA").val(Math.round(ta_setting));
+                        // $("#NewFA").val(Math.round(fa_setting));
+                        $("#NewMA").val(isDollerValue == 1 ? ma_setting.toFixed(3) : Math.round(ma_setting));
+                        $("#NewTA").val(isDollerValue == 1 ? ta_setting.toFixed(3) : Math.round(ta_setting));
+                        $("#NewFA").val(isDollerValue == 1 ? fa_setting.toFixed(3) : Math.round(fa_setting));
+
+
+                    }
+                    else if (emptypeid == 1 && is_ca_differ == false && is_fa_differ == false) {
+
+                        // $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                        // $("#NewBS").val(Math.round((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5));
+                        // //$("#NewHR").val($("#NewBS").val(Math.round(((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+                        // $("#NewHR").val(Math.round(((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+                        // $("#NewMA").val(Math.round(ma_setting));
+                        // $("#NewTA").val(Math.round(ta_setting));
+                        // $("#NewFA").val(Math.round(fa_setting));
+
+
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + (oldSalary / 100) * $("#Percentage").val()).toFixed(3) : Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+
+                        $("#NewBS").val(isDollerValue == 1 ? ((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5).toFixed(3) : Math.round((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5));
+
+                        $("#NewHR").val(isDollerValue == 1 ? (((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting).toFixed(3) : Math.round(((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+
+                        $("#NewMA").val(isDollerValue == 1 ? ma_setting.toFixed(3) : Math.round(ma_setting));
+
+                        $("#NewTA").val(isDollerValue == 1 ? ta_setting.toFixed(3) : Math.round(ta_setting));
+
+                        $("#NewFA").val(isDollerValue == 1 ? fa_setting.toFixed(3) : Math.round(fa_setting));
+
+
+                    }
+                    else if (emptypeid != 1 && is_ca_differ == false && is_fa_differ == true) {
+
+                        // $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + (oldSalary / 100) * $("#Percentage").val()).toFixed(3) : Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+
+
+                        // if (bs_setting != 0) {
+                        //     $("#NewBS").val(Math.round((newBasic * bs_setting)));
+                        //     if (hr_setting < 1) { $("#NewHR").val(Math.round((newBasic * hr_setting))); }
+                        //     else { $("#NewHR").val(Math.round(hr_setting)); }
+                        // }
+                        // else {
+                        //     $("#NewBS").val(Math.round((newBasic - (ma_setting + ta_setting)) / 1.5));
+                        //     if (hr_setting < 1) { $("#NewHR").val(Math.round(((newBasic - (ma_setting + ta_setting)) / 1.5) * hr_setting)); }
+                        //     else { $("#NewHR").val(Math.round(hr_setting)); }
+                        // }
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? ((newBasic * bs_setting).toFixed(3)) : Math.round(newBasic * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((newBasic * hr_setting)).toFixed(3)) : Math.round(newBasic * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? (((newBasic - (ma_setting + ta_setting)) / 1.5).toFixed(3)) : Math.round((newBasic - (ma_setting + ta_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((newBasic - (ma_setting + ta_setting)) / 1.5 * hr_setting).toFixed(3)) : Math.round(((newBasic - (ma_setting + ta_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        }
+
+
+
+                        // if (ma_setting < 1) { $("#NewMA").val(Math.round(newBasic * ma_setting)); }
+                        // else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                        // if (ta_setting < 1) { $("#NewTA").val(Math.round(newBasic * ta_setting)); }
+                        // else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                        // if (fa_setting < 1) { $("#NewFA").val(Math.round(newBasic * fa_setting)); }
+                        // else { $("#NewFA").val(Math.round(fa_setting)); }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting.toFixed(3)) : Math.round(newBasic * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting.toFixed(3)) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting.toFixed(3)) : Math.round(newBasic * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting.toFixed(3)) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting.toFixed(3)) : Math.round(newBasic * fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting.toFixed(3)) : Math.round(fa_setting));
+                        }
+
+
+
+                    }
+                    // else if (emptypeid != 1 && is_ca_differ == true && is_fa_differ == false) {
+                    //     $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+
+                    //     if (bs_setting != 0) {
+                    //         $("#NewBS").val(Math.round((newBasic * bs_setting)));
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round(newBasic * hr_setting)) }
+                    //           else { $("#NewHR").val(Math.round(hr_setting)) }
+                    //     }
+                    //     else {
+                    //         $("#NewBS").val(Math.round((newBasic - (ma_setting + fa_setting)) / 1.5));
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round(((newBasic - (ma_setting + fa_setting)) / 1.5) * hr_setting)); }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+
+
+
+                    //     if (ma_setting < 1) { $("#NewMA").val(Math.round(newBasic * ma_setting)); }
+                    //     else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                    //     if (ta_setting < 1) { $("#NewTA").val(Math.round(newBasic * ta_setting)); }
+                    //     else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                    //     if (fa_setting < 1) { $("#NewFA").val(Math.round(newBasic * fa_setting)); }
+                    //     else { $("#NewFA").val(Math.round(fa_setting)); }
+
+                    // }
+
+                    else if (emptypeid != 1 && is_ca_differ == true && is_fa_differ == false) {
+                        //$("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                        var newSalaryValue = oldSalary + (oldSalary / 100) * $("#Percentage").val();
+                        $("#NewSalary").val(isDollerValue == 1 ? newSalaryValue.toFixed(3) : Math.round(newSalaryValue));
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? (newBasic * bs_setting).toFixed(3) : Math.round(newBasic * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (newBasic * hr_setting).toFixed(3) : Math.round(newBasic * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? ((newBasic - (ma_setting + fa_setting)) / 1.5).toFixed(3) : Math.round((newBasic - (ma_setting + fa_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((newBasic - (ma_setting + fa_setting)) / 1.5) * hr_setting).toFixed(3) : Math.round(((newBasic - (ma_setting + fa_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (newBasic * ma_setting).toFixed(3) : Math.round(newBasic * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting.toFixed(3)) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (newBasic * ta_setting).toFixed(3) : Math.round(newBasic * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting.toFixed(3)) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (newBasic * fa_setting).toFixed(3) : Math.round(newBasic * fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting.toFixed(3)) : Math.round(fa_setting));
+                        }
+                    }
+
+
+
+                    // else {
+                    //     $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+
+                    //     if (bs_setting != 0) {
+                    //         $("#NewBS").val(Math.round((newBasic * bs_setting)));
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round(newBasic * hr_setting)); }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+                    //     else {
+                    //         $("#NewBS").val(Math.round((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5));
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round(((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting)); }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+
+                    //     if (ma_setting < 1) { $("#NewMA").val(Math.round(newBasic * ma_setting)); }
+                    //     else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                    //     if (ta_setting < 1) { $("#NewTA").val(Math.round(newBasic * ta_setting)); }
+                    //     else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                    //     if (fa_setting < 1) { $("#NewFA").val(Math.round(newBasic * fa_setting)); }
+                    //     else { $("#NewFA").val(Math.round(fa_setting)); }
+                    // }
+
+                    else {
+                        $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? (newBasic * bs_setting).toFixed(3) : Math.round(newBasic * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (newBasic * hr_setting).toFixed(3) : Math.round(newBasic * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? (((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5)).toFixed(3) : Math.round((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting).toFixed(3) : Math.round(((newBasic - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting.toFixed(3)) : Math.round(hr_setting));
+                            }
+                        }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (newBasic * ma_setting).toFixed(3) : Math.round(newBasic * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting.toFixed(3)) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (newBasic * ta_setting).toFixed(3) : Math.round(newBasic * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting.toFixed(3)) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (newBasic * fa_setting).toFixed(3) : Math.round(newBasic * fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting.toFixed(3)) : Math.round(fa_setting));
+                        }
+                    }
+
+
+                }
+
+
+
+                // else {
+                //     if (HR == null && emptypeid == 1) {
+
+                //         $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                //         $("#NewBS").val(Math.round(((newBasic - 2450) / 1.5)));
+                //         $("#NewHR").val(Math.round(((newBasic - 2450) / 1.5) * .50));
+                //         $("#NewMA").val(Math.round(750));
+                //         $("#NewTA").val(Math.round(450));
+                //         $("#NewFA").val(Math.round(1250));
+                //     }
+                //     else if (HR == null && emptypeid != null) {
+                //         $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                //         $("#NewBS").val(Math.round((newBasic * .6)));
+                //         $("#NewHR").val(Math.round((newBasic * .3)));
+                //         $("#NewMA").val(Math.round((newBasic * .07)));
+                //         $("#NewTA").val(Math.round((newBasic * .03)));
+                //         $("#NewFA").val(Math.round((newBasic * 0)));
+                //     }
+                // }
+
+                else {
+                    if (HR == null && emptypeid == 1) {
+                        $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                        $("#NewBS").val(isDollerValue == 1 ? ((newBasic - 2450) / 1.5).toFixed(3) : Math.round((newBasic - 2450) / 1.5));
+                        $("#NewHR").val(isDollerValue == 1 ? (((newBasic - 2450) / 1.5) * 0.50).toFixed(3) : Math.round(((newBasic - 2450) / 1.5) * 0.50));
+                        $("#NewMA").val(isDollerValue == 1 ? (750).toFixed(3) : Math.round(750));
+                        $("#NewTA").val(isDollerValue == 1 ? (450).toFixed(3) : Math.round(450));
+                        $("#NewFA").val(isDollerValue == 1 ? (1250).toFixed(3) : Math.round(1250));
+                    }
+                    else if (HR == null && emptypeid != null) {
+                        $("#NewSalary").val(Math.round(oldSalary + (oldSalary / 100) * $("#Percentage").val()));
+                        $("#NewBS").val(isDollerValue == 1 ? (newBasic * 0.6).toFixed(3) : Math.round(newBasic * 0.6));
+                        $("#NewHR").val(isDollerValue == 1 ? (newBasic * 0.3).toFixed(3) : Math.round(newBasic * 0.3));
+                        $("#NewMA").val(isDollerValue == 1 ? (newBasic * 0.07).toFixed(3) : Math.round(newBasic * 0.07));
+                        $("#NewTA").val(isDollerValue == 1 ? (newBasic * 0.03).toFixed(3) : Math.round(newBasic * 0.03));
+                        $("#NewFA").val(isDollerValue == 1 ? (newBasic * 0).toFixed(3) : Math.round(newBasic * 0));
+                    }
+                }
+
+            }
+
+            function forAmount(data) {
+                var bs = parseInt($("#NewBS").val());
+                var oldBS = parseInt($("#OldBS").val());
+                var amount = parseInt($("#Amount").val());
+                var oldSalary = parseInt($("#OldSalary").val());
+                var newSalary = parseInt($("#NewSalary").val());
+                var oldHr = parseInt($("#OldHr").val());
+
+                var emptypeid = $('#NewStatus').val();
+
+                //alert(emptypeid);
+                // $("#Percentage").val((($("#Amount").val() * 100) / oldSalary).toFixed(2) || (($("#NewBS").val() * 100) / oldSalary).toFixed(2));
+                $("#Percentage").val((($("#Amount").val() * 100) / oldSalary).toFixed(isDollerValue == 1 ? 3 : 2) || (($("#NewBS").val() * 100) / oldSalary).toFixed(isDollerValue == 1 ? 3 : 2));
+
+                // hr_setting data
+
+                let setting = JSON.stringify(data);
+                let HR = JSON.parse(setting).HR;
+                /*console.log(HR);*/
+                if (HR != null) {
+                    let bs_setting = JSON.parse(setting).HR.BS;
+                    let hr_setting = JSON.parse(setting).HR.HR;
+                    let ma_setting = JSON.parse(setting).HR.MA;
+                    let fa_setting = JSON.parse(setting).HR.FA;
+                    let ta_setting = JSON.parse(setting).HR.CA;
+                    let is_ca_differ = JSON.parse(setting).HR.IsCADifference;
+                    let is_fa_differ = JSON.parse(setting).HR.IsFADifference;
+
+                    if (emptypeid == 1 && is_ca_differ == true && is_fa_differ == true) {
+
+                        // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        // //$("#NewBS").val(Math.round(((amount + oldSalary) - 1850) / 1.5));
+                        // //$("#NewHR").val(Math.round(((amount + oldSalary) - 1850) / 1.5) * .50);
+
+                        // $("#NewBS").val(Math.round(((amount + oldSalary) - ma_setting) / 1.5));
+                        // $("#NewHR").val(Math.round((((amount + oldSalary) - ma_setting) / 1.5) * hr_setting));
+
+                        // $("#NewMA").val(Math.round(ma_setting));
+                        // $("#NewTA").val(Math.round(ta_setting));
+                        // $("#NewFA").val(Math.round(fa_setting));
+
+
+                        // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+                        $("#NewBS").val(isDollerValue == 1 ? (((amount + oldSalary) - ma_setting) / 1.5).toFixed(3) : Math.round(((amount + oldSalary) - ma_setting) / 1.5));
+                        $("#NewHR").val(isDollerValue == 1 ? ((((amount + oldSalary) - ma_setting) / 1.5) * hr_setting).toFixed(3) : Math.round((((amount + oldSalary) - ma_setting) / 1.5) * hr_setting));
+
+                        $("#NewMA").val(isDollerValue == 1 ? (ma_setting).toFixed(3) : Math.round(ma_setting));
+                        $("#NewTA").val(isDollerValue == 1 ? (ta_setting).toFixed(3) : Math.round(ta_setting));
+                        $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+
+
+
+                    }
+                    else if (emptypeid == 1 && is_ca_differ == false && is_fa_differ == false) {
+
+                        // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        // $("#NewBS").val(Math.round(((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5));
+                        // $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+                        // $("#NewMA").val(Math.round(ma_setting));
+                        // $("#NewTA").val(Math.round(ta_setting));
+                        // $("#NewFA").val(Math.round(fa_setting));
+
+
+                       // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+                        $("#NewBS").val(isDollerValue == 1 ? (((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5).toFixed(3) : Math.round(((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5));
+                        $("#NewHR").val(isDollerValue == 1 ? ((((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting).toFixed(3) : Math.round((((amount + oldSalary) - (ma_setting + fa_setting + ta_setting)) / 1.5) * hr_setting));
+                        $("#NewMA").val(isDollerValue == 1 ? (ma_setting).toFixed(3) : Math.round(ma_setting));
+                        $("#NewTA").val(isDollerValue == 1 ? (ta_setting).toFixed(3) : Math.round(ta_setting));
+                        $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+
+
+                    }
+                    else if (emptypeid != 1 && is_ca_differ == false && is_fa_differ == true) {
+
+                        // $("#NewSalary").val(Math.round(oldSalary + amount));
+
+
+
+                        // if (bs_setting != 0) {
+                        //     $("#NewBS").val(Math.round((amount + oldSalary) * bs_setting))
+                        //     if (hr_setting < 1) { $("#NewHR").val(Math.round((amount + oldSalary) * hr_setting)); }
+                        //     else { $("#NewHR").val(Math.round(hr_setting)); }
+                        // }
+                        // else {
+                        //     $("#NewBS").val(Math.round(((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5))
+                        //     if (hr_setting < 1) { $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5) * hr_setting)); }
+                        //     else { $("#NewHR").val(Math.round(hr_setting)); }
+                        // }
+
+                       // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? (((amount + oldSalary) * bs_setting)).toFixed(3) : Math.round((amount + oldSalary) * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((amount + oldSalary) * hr_setting)).toFixed(3) : Math.round((amount + oldSalary) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? ((((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5)).toFixed(3) : Math.round(((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? ((((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5) * hr_setting).toFixed(3) : Math.round((((amount + oldSalary) - (ma_setting + ta_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        }
+
+
+
+                        //if (hr_setting < 1) {  $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + ta_setting))/ 1.5) * hr_setting)); }
+                        //else { $("#NewHR").val(Math.round(hr_setting)); }
+
+                        // if (ma_setting < 1) { $("#NewMA").val(Math.round((amount + oldSalary) * ma_setting)); }
+                        // else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                        // if (ta_setting < 1) { $("#NewTA").val(Math.round((amount + oldSalary) * ta_setting)); }
+                        // else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                        // if (fa_setting < 1) { $("#NewFA").val(Math.round(fa_setting)); }
+                        // else { $("#NewFA").val(Math.round(fa_setting)); }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (((amount + oldSalary) * ma_setting)).toFixed(3) : Math.round((amount + oldSalary) * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting).toFixed(3) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (((amount + oldSalary) * ta_setting)).toFixed(3) : Math.round((amount + oldSalary) * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting).toFixed(3) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        }
+
+
+
+                    }
+                    // else if (emptypeid != 1 && is_ca_differ == true && is_fa_differ == false) {
+                    //     $("#NewSalary").val(Math.round(oldSalary + amount));
+
+                    //     if (bs_setting != 0) {
+                    //         $("#NewBS").val(Math.round((amount + oldSalary) * bs_setting))
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round((amount + oldSalary) * hr_setting)) }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+                    //     else {
+                    //         $("#NewBS").val(Math.round(((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5))
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5) * hr_setting)) }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+
+                    //     //if (hr_setting < 1) { $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5) * hr_setting)) }
+                    //     //else { $("#NewHR").val(Math.round(hr_setting)); }
+
+                    //     if (ma_setting < 1) { $("#NewMA").val(Math.round((amount + oldSalary) * ma_setting)); }
+                    //     else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                    //     if (ta_setting < 1) { $("#NewTA").val(Math.round((amount + oldSalary) * ta_setting)); }
+                    //     else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                    //     if (fa_setting < 1) { $("#NewFA").val(Math.round(fa_setting)); }
+                    //     else { $("#NewFA").val(Math.round(fa_setting)); }
+                    // }
+
+                    else if (emptypeid != 1 && is_ca_differ == true && is_fa_differ == false) {
+                        // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? (((amount + oldSalary) * bs_setting)).toFixed(3) : Math.round((amount + oldSalary) * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((amount + oldSalary) * hr_setting)).toFixed(3) : Math.round((amount + oldSalary) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? ((((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5)).toFixed(3) : Math.round(((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5) * hr_setting)).toFixed(3) : Math.round((((amount + oldSalary) - (ma_setting + fa_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (((amount + oldSalary) * ma_setting)).toFixed(3) : Math.round((amount + oldSalary) * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting).toFixed(3) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (((amount + oldSalary) * ta_setting)).toFixed(3) : Math.round((amount + oldSalary) * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting).toFixed(3) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        }
+                    }
+
+
+
+
+                    // else {
+                    //     $("#NewSalary").val(Math.round(oldSalary + amount));
+
+                    //     if (bs_setting != 0) {
+                    //         $("#NewBS").val(Math.round((amount + oldSalary) * bs_setting))
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round((amount + oldSalary) * hr_setting)); }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+                    //     else {
+                    //         $("#NewBS").val(Math.round(((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5))
+                    //         if (hr_setting < 1) { $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5) * hr_setting)); }
+                    //         else { $("#NewHR").val(Math.round(hr_setting)); }
+                    //     }
+
+                    //     //if (hr_setting < 1) { $("#NewHR").val(Math.round((((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5) * hr_setting)); }
+                    //     //else { $("#NewHR").val(Math.round(hr_setting)); }
+
+                    //     if (ma_setting < 1) { $("#NewMA").val(Math.round((amount + oldSalary) * ma_setting)); }
+                    //     else { $("#NewMA").val(Math.round(ma_setting)); }
+
+                    //     if (ta_setting < 1) { $("#NewTA").val(Math.round((amount + oldSalary) * ta_setting)); }
+                    //     else { $("#NewTA").val(Math.round(ta_setting)); }
+
+                    //     if (fa_setting < 1) { $("#NewFA").val(Math.round(fa_setting)); }
+                    //     else { $("#NewFA").val(Math.round(fa_setting)); }
+                    // }
+
+
+                    else {
+                        //$("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+
+                        if (bs_setting != 0) {
+                            $("#NewBS").val(isDollerValue == 1 ? (((amount + oldSalary) * bs_setting)).toFixed(3) : Math.round((amount + oldSalary) * bs_setting));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((amount + oldSalary) * hr_setting)).toFixed(3) : Math.round((amount + oldSalary) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        } else {
+                            $("#NewBS").val(isDollerValue == 1 ? ((((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5)).toFixed(3) : Math.round(((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5));
+                            if (hr_setting < 1) {
+                                $("#NewHR").val(isDollerValue == 1 ? (((((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5) * hr_setting)).toFixed(3) : Math.round((((amount + oldSalary) - (ma_setting + ta_setting + fa_setting)) / 1.5) * hr_setting));
+                            } else {
+                                $("#NewHR").val(isDollerValue == 1 ? (hr_setting).toFixed(3) : Math.round(hr_setting));
+                            }
+                        }
+
+                        if (ma_setting < 1) {
+                            $("#NewMA").val(isDollerValue == 1 ? (((amount + oldSalary) * ma_setting)).toFixed(3) : Math.round((amount + oldSalary) * ma_setting));
+                        } else {
+                            $("#NewMA").val(isDollerValue == 1 ? (ma_setting).toFixed(3) : Math.round(ma_setting));
+                        }
+
+                        if (ta_setting < 1) {
+                            $("#NewTA").val(isDollerValue == 1 ? (((amount + oldSalary) * ta_setting)).toFixed(3) : Math.round((amount + oldSalary) * ta_setting));
+                        } else {
+                            $("#NewTA").val(isDollerValue == 1 ? (ta_setting).toFixed(3) : Math.round(ta_setting));
+                        }
+
+                        if (fa_setting < 1) {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        } else {
+                            $("#NewFA").val(isDollerValue == 1 ? (fa_setting).toFixed(3) : Math.round(fa_setting));
+                        }
+                    }
+
+
+
+                }
+                // else 
+                // {
+                //     if (HR == null && emptypeid == 1) {
+                //         $("#NewSalary").val(Math.round(oldSalary + amount));
+                //         $("#NewBS").val(Math.round(((amount + oldSalary) - 2450) / 1.5));
+                //         $("#NewHR").val(Math.round(((amount + oldSalary) - 2450) / 1.5 * 0.50));
+                //         $("#NewMA").val(Math.round(750));
+                //         $("#NewTA").val(Math.round(450));
+                //         $("#NewFA").val(Math.round(1250));
+                //     }
+                //     else if (HR == null && emptypeid != null) {
+                //         $("#NewSalary").val(Math.round(oldSalary + amount));
+                //         $("#NewBS").val(Math.round(((amount + oldSalary) * .6)));
+                //         $("#NewHR").val(Math.round(((amount + oldSalary) * .3)));
+                //         $("#NewMA").val(Math.round(((amount + oldSalary) * .07)));
+                //         $("#NewTA").val(Math.round(((amount + oldSalary) * .03)));
+                //         $("#NewFA").val(Math.round(((amount + oldSalary) * 0)));
+                //     }
+                // }
+
+                else {
+                    if (HR == null && emptypeid == 1) {
+                       // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+                        $("#NewBS").val(isDollerValue == 1 ? ((((amount + oldSalary) - 2450) / 1.5)).toFixed(3) : Math.round(((amount + oldSalary) - 2450) / 1.5));
+                        $("#NewHR").val(isDollerValue == 1 ? ((((amount + oldSalary) - 2450) / 1.5 * 0.50)).toFixed(3) : Math.round(((amount + oldSalary) - 2450) / 1.5 * 0.50));
+                        $("#NewMA").val(isDollerValue == 1 ? (750).toFixed(3) : Math.round(750));
+                        $("#NewTA").val(isDollerValue == 1 ? (450).toFixed(3) : Math.round(450));
+                        $("#NewFA").val(isDollerValue == 1 ? (1250).toFixed(3) : Math.round(1250));
+                    }
+                    else if (HR == null && emptypeid != null) {
+                       // $("#NewSalary").val(Math.round(oldSalary + amount));
+                        $("#NewSalary").val(isDollerValue == 1 ? (oldSalary + amount).toFixed(3) : Math.round(oldSalary + amount));
+
+                        $("#NewBS").val(isDollerValue == 1 ? ((((amount + oldSalary) * 0.6))).toFixed(3) : Math.round(((amount + oldSalary) * 0.6)));
+                        $("#NewHR").val(isDollerValue == 1 ? ((((amount + oldSalary) * 0.3))).toFixed(3) : Math.round(((amount + oldSalary) * 0.3)));
+                        $("#NewMA").val(isDollerValue == 1 ? ((((amount + oldSalary) * 0.07))).toFixed(3) : Math.round(((amount + oldSalary) * 0.07)));
+                        $("#NewTA").val(isDollerValue == 1 ? ((((amount + oldSalary) * 0.03))).toFixed(3) : Math.round(((amount + oldSalary) * 0.03)));
+                        $("#NewFA").val(isDollerValue == 1 ? ((((amount + oldSalary) * 0))).toFixed(3) : Math.round(((amount + oldSalary) * 0)));
+                    }
+                }
+
+
+
+                //$("#NewSalary").val(Math.round(oldSalary + amount));
+                //$("#NewBS").val(Math.round(((amount + oldSalary) - 1850) / 1.5));
+                //$("#NewHR").val(Math.round(((amount + oldSalary) - 1850) / 1.5) * .50);
+
+
+                // for house rent
+                //if (data.HR != null) {
+                //    // console.log(data.HR);
+                //    var hrSetting = data.HR;
+
+                //    if (hrSetting.IsPersentage) {
+                //        var hr = (hrSetting.HR / 100) * bs;
+                //        $("#NewHR").val(Math.round((hr < hrSetting.MinHR) ? hrSetting.MinHR : hr)); // if hr entry by persentage
+                //        $("#NewMA").val(hrSetting.MA);
+                //    }
+                //    else {
+                //        $("#NewHR").val(Math.round((hrSetting.HR < hrSetting.MinHR) ? hrSetting.MinHR : hrSetting.HR));
+                //        $("#NewMA").val(hrSetting.MA);
+                //    }
+
+                //} else {
+                //    //$("#NewHR").val("0");
+                //    //$("#NewMA").val("0");
+                //    //$("#NewTA").val("0");
+                //    //$("#NewFA").val("0");
+                //}
+
+                // for HRexp charge
+                // if (data.HRExp != null) {
+                //     var hRExpSetting = data.HRExp;
+                //     if (data.EmpSalary.BId == "11") {
+                //         if (hRExpSetting.IsPersentage) {
+                //             $("#NewHRExpOther").val(Math.round((hRExpSetting.HRExp / 100) * bs)); // if hr entry by persentage
+                //         }
+                //         else {
+                //             $("#NewHRExpOther").val(Math.round(hRExpSetting.HRExp));
+                //         }
+                //     } else {
+                //         if (hRExpSetting.IsPersentage) {
+                //             $("#NewHRExp").val(Math.round((hRExpSetting.HRExp / 100) * bs)); // if hr entry by persentage
+                //         }
+                //         else {
+                //             $("#NewHRExp").val(Math.round(hRExpSetting.HRExp));
+                //         }
+                //     }
+                // } else {
+                //     $("#NewHRExp").val("0");
+                // }
+
+                if (data.HRExp != null) {
+                    var hRExpSetting = data.HRExp;
+                    if (data.EmpSalary.BId == "11") {
+                        if (hRExpSetting.IsPersentage) {
+                            $("#NewHRExpOther").val(isDollerValue == 1 ? ((hRExpSetting.HRExp / 100) * bs).toFixed(3) : Math.round((hRExpSetting.HRExp / 100) * bs)); // if hr entry by percentage
+                        }
+                        else {
+                            $("#NewHRExpOther").val(isDollerValue == 1 ? (hRExpSetting.HRExp).toFixed(3) : Math.round(hRExpSetting.HRExp));
+                        }
+                    } else {
+                        if (hRExpSetting.IsPersentage) {
+                            $("#NewHRExp").val(isDollerValue == 1 ? ((hRExpSetting.HRExp / 100) * bs).toFixed(3) : Math.round((hRExpSetting.HRExp / 100) * bs)); // if hr entry by percentage
+                        }
+                        else {
+                            $("#NewHRExp").val(isDollerValue == 1 ? (hRExpSetting.HRExp).toFixed(3) : Math.round(hRExpSetting.HRExp));
+                        }
+                    }
+                } else {
+                   // $("#NewHRExp").val("0");
+                    $("#NewHRExp").val(isDollerValue == 1 ? "0.000" : "0");
+
+                }
+
+
+            }
+
+            $('#update').hide();
+            var incrementTable = $('#incrementTable').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+                    { 'sClass': 'IncId', 'visible': false },
+                    { 'sClass': 'EmpCode', 'visible': true },
+                    { 'sClass': 'IncType', 'visible': true },
+                    { 'sClass': 'DtInput', 'visible': true },
+                    { 'sClass': 'Amount', 'visible': true }
+                ],
+                buttons: [
+                    //'copy', 'csv', 'excel', 'pdf'
+                    //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                    {
+                        extend: 'colvis',
+                        "columns": ':not(:last-child)',
+                        text: '<i class="mdi mdi-view-column"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Show / hide columns',
+                        //collectionLayout: 'fixed two-column'
+
+                    },
+
+                    {
+                        extend: 'excel',
+                        text: '<i class="mdi mdi-file-excel"></i>',
+                        className: 'btn-success',
+                        titleAttr: 'Export to excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        text: '<i class="mdi mdi-file-pdf"></i>',
+                        className: 'btn-danger',
+                        titleAttr: 'Export to PDF',
+                        //exportOptions: {
+                        //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        //}
+
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="mdi mdi-printer"></i>',
+                        className: 'btn-info',
+                        titleAttr: 'Print Table'
+                    }
+
+                ],
+                select: true,
+                select: 'single',
+                'paging': false,
+                'info': false
+            });
+
+            $("#DtIncrement").datepicker({
+                onSelect: function(data) {
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtIncrement").datepicker("option", "dateFormat");
+                    $('#DtIncrement').datepicker('option', 'dateFormat', 'dd-MM-yy');
+                },
+                changeMonth: true,
+                changeYear: true,
+                autoclose: true
+            });
+
+            function CurrentDate() {
+                var date = new Date();
+                var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var currentdate = date.getDate() + '-' + month[date.getMonth()] + '-' + date.getFullYear();
+                return currentdate;
+            }
+
+            //document.getElementById("delete").disabled = true;
+
+            var mainHeight = $(".incrementInputFieldSet").height();
+
+            $("#detailsField").height(mainHeight);
+
+            $("#IncTypeId").change(function() {
+                var incrementType = $(this).val();
+                if (incrementType == 2) {
+
+                    $("#Amount").removeAttr("readonly");
+                    $("#Percentage").removeAttr("readonly");
+                    $("#NewDesigId").prop("disabled", "disabled");
+                    $("#NewSectId").prop("disabled", "disabled");
+                    $("#NewStatus").prop("disabled", "disabled");
+                    $("#NewGradeId").prop("disabled", "disabled");
+                    $("#NewEmpCode").prop("readonly", "readonly");
+                } else if (incrementType == 5) {
+
+                    $("#Amount").removeAttr("readonly");
+                    $("#Percentage").removeAttr("readonly");
+                    $("#NewDesigId").removeAttr("disabled");
+                    $("#NewSectId").removeAttr("disabled");
+                    $("#NewStatus").removeAttr("disabled");
+                    $("#NewGradeId").removeAttr("disabled");
+                    $("#NewEmpCode").removeAttr("readonly");
+                } else if (incrementType == 6) {
+
+                    $("#Amount").prop("readonly", "readonly");
+                    $("#Percentage").prop("readonly", "readonly");
+                    $("#NewDesigId").removeAttr("disabled");
+                    $("#NewSectId").removeAttr("disabled");
+                    $("#NewStatus").removeAttr("disabled");
+                    $("#NewGradeId").removeAttr("disabled");
+                    $("#NewEmpCode").removeAttr("readonly");
+                }
+                else if (incrementType == 7) {
+
+                    $("#Amount").removeAttr("readonly");
+                    $("#Percentage").removeAttr("readonly");
+                    $("#NewDesigId").removeAttr("disabled");
+                    $("#NewSectId").removeAttr("disabled");
+                    $("#NewStatus").removeAttr("disabled");
+                    $("#NewGradeId").removeAttr("disabled");
+                    $("#NewEmpCode").removeAttr("readonly");
+                }
+            });
+
+            var originalSalary = 0;
+            var originalBasicSalary = 0;
+            var originalHouseRent = 0;
+            var originalMedicalAllowance = 0;
+            var originalFood = 0;
+            var originalConv = 0;
+
+            $("#EmpId").change(function() {
+                clearData();
+                incrementTable.clear().draw();
+                var employeeId = parseInt($(this).val());
+                $("#loading").css("display", "inline");
+                /*console.log(employeeId);*/
+                //alert('wait');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetEmployeeInfo", "HR")',
+                    dataType: "json",
+                    data: { empid: employeeId },
+                    success: function(data) {
+                        console.log(data);
+
+                        $('#ComId').val(data.EmpInfo[0].ComId);
+                        $("#EmpName").val(data.EmpInfo[0].EmpName);
+                        $("#DtJoin").val(data.EmpInfo[0].DtJoin);
+                        $("#DesigName").val(data.EmpInfo[0].DesigName);
+                        $("#SectName").val(data.EmpInfo[0].SectName);
+                        $("#EmpTypeName").val(data.EmpInfo[0].EmpTypeName);
+                        $("#NewDesigId").val(data.EmpInfo[0].DesigId).change();
+                        $("#NewSectId").val(data.EmpInfo[0].SectId).change();
+                        //console.log(data.EmpInfo[0].NewEmpTypeId);
+                        $("#NewStatus").val(data.EmpInfo[0].EmpTypeId).change();
+                        $("#NewGradeId").val(data.EmpInfo[0].GradeId).change();
+                        //alert('load successfully');
+                        $("#DesigNameOld").val(data.EmpInfo[0].DesigName);
+                        $("#SectNameOld").val(data.EmpInfo[0].SectName);
+                        $("#EmpTypeNameOld").val(data.EmpInfo[0].EmpTypeName);
+                        $("#GradeNameOld").val(data.EmpInfo[0].GradeName);
+                        //alert(data.EmpInfo[0].IncTypeId);
+                        $("#IncTypeId").val(0).change();
+                        // $("#IncTypeId").val((data.EmpInfo[0].IncTypeId == null) ? "0" : data.EmpInfo[0].IncTypeId).change();
+                        $("#DtIncrement").val(data.EmpInfo[0].DtIncrement);
+                        $("#OldDesigId").val(data.EmpInfo[0].DesigId);
+                        $("#NewDesigId").val(data.EmpInfo[0].DesigId);
+                        $("#OldSectId").val(data.EmpInfo[0].SectId);
+                        $("#NewSectId").val(data.EmpInfo[0].SectId);
+                        $("#OldStatus").val(data.EmpInfo[0].EmpTypeId);
+                        $("#NewStatus").val(data.EmpInfo[0].EmpTypeId);
+                        $("#OldGradeId").val(data.EmpInfo[0].GradeId);
+                        $("#NewGradeId").val(data.EmpInfo[0].GradeId);
+                        $("#OldSalary").val(data.SalaryInfo[0].PersonalPay);
+                        $("#OldBS").val(data.SalaryInfo[0].BasicSalary);
+                        $("#OldHR").val(data.SalaryInfo[0].HouseRent);
+                        $("#OldHRExp").val(data.SalaryInfo[0].HrExp);
+                        $("#OldHRExpOther").val(data.SalaryInfo[0].HRExpensesOther);
+                        $("#OldMA").val(data.SalaryInfo[0].MadicalAllow);
+                        $("#OldFA").val(data.SalaryInfo[0].CanteenAllow);
+                        $("#OldTA").val(data.SalaryInfo[0].ConveyanceAllow);
+                        //$("#NewBS").val(data.SalaryInfo[0].BasicSalary);
+                        //$("#NewHR").val(data.SalaryInfo[0].HouseRent);
+                        $("#NewMA").val(data.SalaryInfo[0].MadicalAllow);
+                        $("#NewFA").val(data.SalaryInfo[0].CanteenAllow);
+                        $("#NewTA").val(data.SalaryInfo[0].ConveyanceAllow);
+                        $("#Amount, #Percentage, #NewSalary").val(0);
+
+                        //originalSalary = parseFloat(data[0].OldSalary);
+                        //originalBasicSalary = parseFloat(data.SalaryInfo[0].BasicSalary);
+                        //originalHouseRent = parseFloat(data.SalaryInfo[0].HouseRent);
+                        //originalMedicalAllowance = parseFloat(data.SalaryInfo[0].MadicalAllow);
+                        //originalFood = parseFloat(data.SalaryInfo[0].FoodAllow);
+                        //originalConv = parseFloat(data.SalaryInfo[0].ConveyanceAllow);
+                        $('#save').show();
+                        $('#delete').hide();
+                        $('#update').hide();
+                        incrementData(employeeId);
+                        //console.log(data);
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+
+            });
+
+            function incrementData(employeeId) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LoadIncrementGrid", "HR")',
+                    dataType: "json",
+                    data: { empid: employeeId },
+                    success: function(data) {
+                        for (var i = 0; i < data.length; i++) {
+                            $('#incrementTable').dataTable().fnAddData(
+                                [
+                                    data[i].IncrementId,
+                                    data[i].EmpCode,
+                                    data[i].IncrementType,
+                                    data[i].DtIncrement,
+                                    data[i].Amount
+                                ]
+                            );
+                        }
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+
+            }
+
+
+
+            $('#increment').click(function() {
+
+            });
+
+            function clearData() {
+                $("#OldDesigId").val(null);
+                $("#OldDesigId").change();
+
+                $("#NewDesigId").val(null);
+                $("#NewDesigId").change();
+
+                $("#OldEmpCode").val("");
+                $("#NewEmpCode").val("");
+
+                $("#OldSectId").val(null);
+                $("#OldSectId").change();
+
+                $("#NewSectId").val(null);
+                $("#NewSectId").change();
+
+                $("#OldStatus").val(null);
+                $("#OldStatus").change();
+
+                $("#NewStatus").val(null);
+                $("#NewStatus").change();
+                
+                $("#OldGradeId").val(null);
+                $("#OldGradeId").change(); 
+                
+                $("#NewGradeId").val(null);
+                $("#NewGradeId").change();
+
+                $("#OldSalary").val("");
+                $("#OldBS").val("");
+                $("#OldHR").val("");
+                $("#OldHRExp").val("");
+                $("#OldHRExpOther").val("");
+                $("#OldMA").val("");
+                $("#OldFA").val("");
+                $("#OldTA").val("");
+                $("#NewSalary").val("");
+                $("#NewBS").val("");
+                $("#NewHR").val("");
+                $("#NewHRExp").val("");
+                $("#NewTA").val("");
+                $("#NewFA").val("");
+                $("#NewMA").val("");
+                $("#Amount, #Percentage, #NewSalary").val(0);
+                //$('.incrementTable').empty();
+            }
+
+
+            var employeeId = 0;
+            function checkData() {
+
+                var DtIncrement = $("#DtIncrement").val();
+                employeeId = $("#EmpId").val();
+
+                if (DtIncrement.length === 0 || employeeId.length === 0) {
+                    $(".messageDiv").html("Please provide all information");
+                    $('.myMessage').fadeIn('fast').delay(2200).fadeOut(400);
+                    return false;
+                }
+
+                if ($("#IncTypeId").val() == "0") {
+                    toastr.warning("Select Increment Type");
+                    return false;
+                }
+
+                let NewBS = $.trim($("#NewBS").val());
+                let NewSalary = $.trim($("#NewSalary").val());
+                let NewHR = $.trim($("#NewHR").val());
+                let NewTa = $.trim($("#NewTA").val());
+                let NewFa = $.trim($("#NewFA").val());
+                //console.log(NewBS, NewHR, NewTa, NewFa);
+
+                if (NewTa == "" || NewFa == "") {
+                    toastr.warning("Please provide update salary data");
+                    return false;
+                }
+
+                return true;
+            }
+
+            $("#save").click(function(event) {
+
+                //ConfirmDialog('Have you Checked all data (HR, HRExp, HRExpOther)?');
+                if (confirm('Have you Checked all data (Amount, New GS, New BS, New HR)?')) {
+                    saveIncrement();
+                }
+            });
+            function saveIncrement() {
+                if (!checkData()) {
+                    return false;
+                }
+
+                var anIncrement = {
+                    ComId: $('#ComId').val(),
+                    DtInput: $.trim($("#DtInput").val()),
+                    EmpId: $.trim($("#EmpId").val()),
+                    IncTypeId: $.trim($("#IncTypeId").val()),
+                    OldDesigId: $.trim($("#OldDesigId").val()),
+                    NewDesigId: $.trim($("#NewDesigId").val()),
+                    OldEmpCode: $.trim($("#OldEmpCode").val()),
+                    NewEmpCode: $.trim($("#NewEmpCode").val()),
+                    OldSectId: $.trim($("#OldSectId").val()),
+                    NewSectId: $.trim($("#NewSectId").val()),
+                    OldEmpTypeId: $.trim($("#OldStatus").val()),
+                    NewEmpTypeId: $.trim($("#NewStatus").val()),
+                    OldGradeId: $.trim($("#OldGradeId").val()),
+                    NewGradeId: $.trim($("#NewGradeId").val()),
+                    OldSalary: $.trim($("#OldSalary").val()) || 0,
+                    OldBS: $.trim($("#OldBS").val()) || 0,
+                    OldHR: $.trim($("#OldHR").val()) || 0,
+                    OldHRExp: $.trim($("#OldHRExp").val()) || 0,
+                    OldHRExpOther: $.trim($("#OldHRExpOther").val()) || 0,
+                    OldMA: $.trim($("#OldMA").val()) || 0,
+                    NewSalary: $.trim($("#NewSalary").val()) || $.trim($("#OldSalary").val()),
+                    NewBS: $.trim($("#NewBS").val()) || $.trim($("#OldBS").val()),
+                    NewHR: $.trim($("#NewHR").val()) || $.trim($("#OldHR").val()),
+                    NewHRExp: $.trim($("#NewHRExp").val()) || 0,
+                    NewHRExpOther: $.trim($("#NewHRExpOther").val()) || 0,
+                    NewMA: $.trim($("#NewMA").val()) || 0,
+                    OldFA: $.trim($("#OldFA").val()) || 0,
+                    NewFA: $.trim($("#NewFA").val()) || 0,
+                    OldTA: $.trim($("#OldTA").val()) || 0,
+                    NewTA: $.trim($("#NewTA").val()),
+                    Amount: $.trim($("#Amount").val()) || 0,
+                    Percentage: $.trim($("#Percentage").val()),
+                    DtIncrement: $('#DtIncrement').val(),
+                    OldUnitId: $('#DtIncrement').val(),
+                    NewUnitId: $('#DtIncrement').val(),
+                    OldDeptId: $('#DtIncrement').val(),
+                    NewDeptId: $('#DtIncrement').val(),
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveIncrementInfo", "HR")',
+                    dataType: "json",
+                    data: { hR_Emp_Increment: anIncrement },
+                    success: function(data) {
+                        if (data.Success == "1") {
+                            customFile("1", data.ex);
+                            location.reload();
+                        }
+                        else {
+                            toastr.error(data.ex)
+                        }
+                    },
+                    error: function() {
+                        customFile('3', "Something is wrong! Please Contact Your Admin!");
+                    }
+                });
+
+            }
+            $('#clear').click(function() {
+                clearData();
+                location.reload();
+                $('#save').show();
+                $('#update').hide();
+                $('#delete').hide();
+            });
+
+            var deletableIncrementId = 0;
+
+            //$(document).on("click", ".incrementTable tbody tr", function () {
+            //    $('#delete').show();
+            //    $('#save').hide();
+
+            //    var incrementId = $(this).children("td:eq(0)").text();
+            //    $("tr").removeClass("selectedRow");
+            //    $("td").removeClass("selectedRow");
+            //    $(this).addClass("selectedRow");
+            //    //$(this).children("td").addClass("selectedRow");
+            //    incrementId = $.trim(incrementId);
+            //    deletableIncrementId = incrementId;
+            //});
+
+            var incrows;
+            var incid;
+
+            /////// Update Increment Record///////
+            $(document).on("click", "#incrementTable tbody tr", function(e) {
+
+
+                incrows = incrementTable.rows('.selected').data();
+                incid = incrows[0][0];
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetIncrementInfo", "HR")',
+                    dataType: "json",
+                    data: { IncId: incid },
+                    success: function(data) {
+                        $("#IncId").val(data[0].IncId);
+                        $("#EmpCode").val(data[0].EmpCode);
+                        $("#EmpName").val(data[0].EmpName);
+                        $("#SectName").val(data[0].SectName);
+                        $("#DeptName").val(data[0].DeptName);
+                        $("#DesigName").val(data[0].DesigName);
+                        $("#OldStatus").val(data[0].OldEmpTypeId);
+                        $("#NewStatus").val(data[0].NewEmpTypeId);
+
+                        $("#DesigNameOld").val(data[0].DesigNameOld);
+                        $("#SectNameOld").val(data[0].SectNameOld);
+                        $("#EmpTypeNameOld").val(data[0].EmpTypeNameOld);
+                        $("#GradeNameOld").val(data[0].GradeNameOld);
+
+                        $("#IncType").val(data[0].IncType);
+                        $("#DtIncrement").val(data[0].DtIncrement);
+                        $("#DtInput").val(data[0].DtInput);
+                        $("#IncTypeId").val(data[0].IncTypeId).change();
+                        $("#OldSalary").val(data[0].OldSalary);
+                        $("#OldBS").val(data[0].OldBS);
+                        $("#OldHR").val(data[0].OldHR);
+                        $("#OldHRExp").val(data[0].OldHRExp);
+                        $("#OldHRExpOther").val(data[0].OldHRExpOther);
+                        $("#OldMA").val(data[0].OldMA);
+                        $("#OldConveyance").val(data[0].OldTA);
+                        $("#OldFA").val(data[0].OldFA);
+                        $("#Amount").val(data[0].Amount);
+                        $("#Percentage").val(data[0].Percentage);
+                        $("#NewSalary").val(data[0].NewSalary);
+                        //$("#OldSalary").val(data[0].OldSalary);
+                        $("#OldPA").val(data[0].OldPA);
+                        $("#NewPA").val(data[0].NewPA);
+                        $("#OldDA").val(data[0].OldDA);
+                        $("#NewDA").val(data[0].NewDA);
+                        $("#NewBS").val(data[0].NewBS);
+                        $("#NewHR").val(data[0].NewHR);
+                        $("#NewHRExp").val(data[0].NewHRExp);
+                        $("#NewHRExpOther").val(data[0].NewHRExpOther);
+                        $("#NewMA").val(data[0].NewMA);
+                        $("#NewFA").val(data[0].NewFA);
+                        $("#NewTA").val(data[0].NewTA);
+                        $('#update').show();
+                        $('#delete').show();
+                        $('#save').hide();
+                        /*  console.log(data);*/
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+            });
+
+            $('#update').click(function() {
+
+                if (!checkData()) {
+                    return false;
+                }
+
+                if (!confirm('Have you Checked all data (HR, TA, FA, MA)?')) {
+                    return false;
+                }
+                if (incid < 1) {
+                    toastr.warning("Select increment data");
+                    return false;
+                }
+
+                var anIncrement = {
+
+                    ComId: $('#ComId').val(),
+                    DtInput: $.trim($("#DtInput").val()),
+                    EmpId: $.trim($("#EmpId").val()),
+                    IncTypeId: $.trim($("#IncTypeId").val()),
+                    OldDesigId: $.trim($("#OldDesigId").val()),
+                    NewDesigId: $.trim($("#NewDesigId").val()),
+                    OldEmpCode: $.trim($("#OldEmpCode").val()),
+                    NewEmpCode: $.trim($("#NewEmpCode").val()),
+                    OldSectId: $.trim($("#OldSectId").val()),
+                    NewSectId: $.trim($("#NewSectId").val()),
+                    // OldType: $.trim($("#OldStatus").val()),
+                    // NewType: $.trim($("#NewStatus").val()),
+                    OldEmpTypeId: $.trim($("#OldStatus").val()),
+                    NewEmpTypeId: $.trim($("#NewStatus").val()),
+                    OldGradeId: $.trim($("#OldGradeId").val()),
+                    NewGradeId: $.trim($("#NewGradeId").val()),
+                    OldSalary: $.trim($("#OldSalary").val()) || 0,
+                    OldBS: $.trim($("#OldBS").val()) || 0,
+                    OldHR: $.trim($("#OldHR").val()) || 0,
+                    OldHRExp: $.trim($("#OldHRExp").val()) || 0,
+                    OldHRExpOther: $.trim($("#OldHRExpOther").val()) || 0,
+                    OldMA: $.trim($("#OldMA").val()) || 0,
+                    NewSalary: $.trim($("#NewSalary").val()) || $.trim($("#OldSalary").val()),
+                    NewBS: $.trim($("#NewBS").val()) || $.trim($("#OldBS").val()),
+                    NewHR: $.trim($("#NewHR").val()) || $.trim($("#OldHR").val()),
+                    NewHRExp: $.trim($("#NewHRExp").val()) || 0,
+                    NewHRExpOther: $.trim($("#NewHRExpOther").val()) || 0,
+                    NewMA: $.trim($("#NewMA").val()) || 0,
+                    OldFA: $.trim($("#OldFA").val()) || 0,
+                    NewFA: $.trim($("#NewFA").val()) || 0,
+                    OldTA: $.trim($("#OldTA").val()) || 0,
+                    NewTA: $.trim($("#NewTA").val()) || 0,
+                    Amount: $.trim($("#Amount").val()) || 0,
+                    Percentage: $.trim($("#Percentage").val()) || 0,
+                    DtIncrement: $('#DtIncrement').val(),
+                    IncId: incid
+
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveIncrementInfo", "HR")',
+                    dataType: "json",
+                    data: { hR_Emp_Increment: anIncrement },
+                    success: function(data) {
+                        if (data.Success == "1") {
+                            customFile("1", data.ex);
+                            location.reload();
+
+                            $('#save').show();
+                            $('#delete').hide();
+                            $('#update').hide();
+                        }
+                        else {
+                            toastr.error(data.ex)
+                        }
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+
+                //$.post('/Increment/SaveIncrementInfo', { hR_Emp_Increment: anIncrement }, function (data, status, xhr) {
+                //    if (status == 'success') {
+
+                //        alert('Data Update Successfully');
+                //        location.reload();
+                //    };
+
+                //});
+
+            });
+
+            ///////Delete Increment Record ////////
+            $('#delete').click(function() {
+
+                var r = confirm("Are you sure to delete Increment Information?");
+                if (!r) {
+                    return false;
+                }
+                //var incrows = incrementTable.rows('.selected').data();
+                //var incid = incrows[0][0];
+                if (incid < 1) {
+                    toastr.warning("Select increment data");
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteIncrement", "HR")',
+                    dataType: "json",
+                    data: { id: incid },
+                    success: function(data) {
+                        toastr.success(data.ex);
+                        //alert('Data Deleted Successfully');
+                        location.reload();
+                        $('#save').show();
+                        $('#delete').hide();
+                        $('#update').hide();
+                    },
+                    error: function() {
+                        toastr.success("Something wrong");
+                    }
+                });
+                //$.post('/Increment/Delete', { id: incid }, function (data, status, xhr) {
+                //    if (status == 'success') {
+
+                //        alert('Data Deleted Successfully');
+
+                //    };
+                //    location.reload();
+                //});
+
+            });
+        });
+    </script>
+}

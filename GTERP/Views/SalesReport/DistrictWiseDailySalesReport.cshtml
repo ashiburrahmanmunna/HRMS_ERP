@@ -1,0 +1,278 @@
+﻿@model IEnumerable<GTERP.Controllers.Sales.SalesReport.SalesReportController.DistrictWiseDailySalesVM>
+
+@using (Html.BeginForm())
+{
+    <div class="container-fluid">
+
+        <div class="text-center">
+            <div class="row">
+
+                @*<div class="col">
+                    @Html.ActionLink("District Wise Booking Create", "Create", null, null, new { @class = "btn btn-outline-info btn-block", @id = "btnBack" })
+
+                </div>*@
+
+                <div class="col">
+                    <h2 id="styletext">District Wise Daily Sales List</h2>
+                </div>
+                <br />
+                <div class="col-lg-4">
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="form-group row col-md-2">
+                <label class="control-label"></label>
+                <select id="DistId" class="form-control" asp-items="ViewBag.DistId">
+                    <option>=All=</option>
+                </select>
+            </div>
+            <div class="form-group row col-md-3">
+                <label class="col-2 control-label">From Date:</label>
+                <div class="col-10"><input id="fromdate" class="form-control" /></div>
+            </div>
+            <div class="form-group row col-md-3">
+                <label class="col-2 control-label">To Date:</label>
+                <div class="col-10"><input id="todate" class="form-control" /></div>
+            </div>
+
+            <div class="col-md-1">
+                <input type="submit" value="Load" class="btn btn-success btn-block" />
+            </div>
+
+            <div class="col-md-1 col-12">
+                <button class="btn btn-success mb-2 btn-block" type="button" onclick="ReportPrint('PrintDistrictWiseDailySalse')">Report</button>
+            </div>
+
+            <div class="col-md-2 col-12 round text-left">
+
+                <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+        </div>
+
+        <div id="finalpanel" class="card p-2">
+
+            <div class="table-responsive text-nowrap">
+                <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.DOId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DeliveryNumber)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DODate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DistrictName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Quantity)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TotalPrice)
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DOId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DeliveryNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DODate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DistrictName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                                </td>
+
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "Edit", new { id = item.DOId }, new { @class = "fas fa-edit btn btn-warning btn-xs", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Delete!">
+                                        @Html.ActionLink(" ", "Delete", new { Id = item.DOId }, new { @class = "far fa-trash-alt btn btn-danger btn-xs" })
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+}
+@section Scripts{
+    <script>
+        $('#fromdate,#todate').datepicker({
+            //onSelect: function (date) {
+            //   // var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+            //   // $('#DoDate').datepicker('option', 'dateFormat', 'dd-MM-yy')
+            //},
+            dateFormat: 'dd-MM-yy',
+            changeMonth: true,
+            changeYear: true
+        });
+
+         function ReportPrint(btnvalue) {
+
+             var FromDate = $('#fromdate').val();
+             var ToDate = $('#todate').val();
+             var DistId = $('#DistId').val();
+             //alert(DistId);
+
+              var reporttype = $("input[name=RptType]:checked").val();
+
+            ///alert('Hit');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DistrictWiseDailySalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, District: DistId, FromDate: FromDate, ToDate: ToDate },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+                }
+
+
+
+        $('.tbllist').DataTable();
+
+                        @*var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "DistrictWiseBookings")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "DistWiseBookingId", "data": "DistWiseBookingId", "searchable": true, "visible": false },
+
+                    { "title": "Year", "data": "Year" },
+                    { "title": "Month", "data": "Month" },
+                    { "title": "District", "data": "District" },
+                    { "title": "Allotment Qty", "data": "AllotmentQty", "searchable": true },
+                    //{ "title": "Remaining Qty", "data": "RemainingQty", "searchable": true },
+                    {
+                        "title": "Action",
+                        "data": "DistWiseBookingId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "DistrictWiseBookings")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "DistrictWiseBookings")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        {
+                            extend: 'copy',
+                            text: '<i class="mdi mdi-content-copy"></i>',
+                            className: 'btn-primary',
+                            titleAttr: 'Copy to Clipboard'
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<i class="mdi mdi-note-outline"></i>',
+                            className: 'btn-secondary',
+                            titleAttr: 'Export to csv'
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                "searching": true
+                });*@
+
+    </script>
+}
+

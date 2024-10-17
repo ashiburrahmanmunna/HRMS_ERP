@@ -1,0 +1,513 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@model GTERP.Models.ViewModels.TaxDto
+
+
+@{
+    ViewBag.Title = "Letter";
+    List<Cat_Variable> EmpStatusList = ViewBag.EmpStatusList;
+    List<Cat_Emp_Type> EmpTypeList = ViewBag.EmpTypeList;
+    List<Cat_Unit> UnitList = ViewBag.UnitList;
+    List<Cat_PayMode> PayModeList = ViewBag.PayModeList;
+    List<Acc_FiscalYear> FiscalYearList = ViewBag.FiscalYearList;
+    List<Cat_Department> DepartmentList = ViewBag.DepartmentList;
+    List<Cat_Designation> DesignationList = ViewBag.DesignationList;
+    List<Tax_ClientInfo> ClientList = ViewBag.ClientList;
+    List<HR_ReportType> Reportlist = ViewBag.ReportList;
+
+}
+@*<link href="~/Content/css/malihu-style.css" rel="stylesheet" />*@
+@*<link href="~/css/customFormStyle.css" rel="stylesheet" />*@
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .dataTables_filter input[type=search] {
+        /* width: 100%;*/
+        /*padding: 5px 15px;*/
+        background-color: transparent;
+        transition: transform 250ms ease-in-out;
+        font-size: 11px;
+        line-height: 18px;
+        color: #575756;
+        background-color: transparent;
+        background-image: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' w…5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E); background-repeat: no-repeat; background-size: 18px 18px; background-position: 95% center; border-radius: 50px; border: 1px soLId #575756; transition: all 250ms ease-in-out; backface-visibility: hidden; transform-style: preserve-3d;
+    }
+
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+@using (Html.BeginForm("TaxReport", "Tax", FormMethod.Post))
+{
+    <div class="card">
+        <div class="form-header btn-info">
+            <div class="row">
+                <div class="col-md-6 col-12">
+                    <i class="fas fa-dollar-sign"></i>  Tax Report
+                    <div id="loading" style="display: inLine;">
+                    </div>
+                </div>
+                <div class="col-md-6 col-12 text-right">
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="PDF" name="ReportFormat" type="radio" class="custom-control-input" value="PDF" checked required>
+                        <label class="custom-control-label" for="PDF">PDF</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Word" name="ReportFormat" type="radio" class="custom-control-input" value="Word" required>
+                        <label class="custom-control-label" for="Word">Word</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <input id="Excel" name="ReportFormat" type="radio" class="custom-control-input" value="Excel" required>
+                        <label class="custom-control-label" for="Excel">Excel</label>
+                    </div>
+                    <div class="form-check form-check-inline custom-radio pl-4">
+                        <button type="submit" id="previewBtn" class="btn btn-primary" formtarget="_blank">
+                            <span class="fas fa-eye"> </span> Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <div class="row">
+                <!--Selection fields-->
+                <div class="row">
+                    <div class="col-md-12 col-12 mb-2">
+                        <fieldset class="boxStyle pt-2">
+
+
+                            <div class="row">
+                                <div class="col-md-3 col-12">
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text">
+                                            Duration
+                                        </span>
+
+                                        <select asp-items="@ViewBag.period" name="period" id="select1" class="dropdown">
+                                            <option value="" selected>--Please Select--</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                From Date:
+                                            </span>
+                                        </div>
+
+                                        <input type="text" value="" id="from" name="FromDate" class="form-control" autocomplete="off" onchange="sendData()" />
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                To Date :
+                                            </span>
+                                        </div>
+
+                                        <input type="text" value="" id="to" name="ToDate" class="form-control" autocomplete="off" onchange="sendData()" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height: 635px;position: relative;overflow: visible;">
+                            <table id="FYTable" class="dataTable FiscalYearTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="hidden">FiscalYearId</th>
+                                        <th class="text-center">Fiscal Year</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="hidden">0</td>
+                                        <td>=ALL=</td>
+                                    </tr>
+                                    @foreach (Acc_FiscalYear Departments in FiscalYearList)
+                                    {
+                                        <tr>
+                                            <td class="hidden">@Departments.FiscalYearId</td>
+                                            <td>@Departments.FYName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                    <!--Departments-->
+                    <!--Employee-->
+                    <div class="col-md-3 col-12">
+                        <fieldset class="boxStyle mCustomScrollbar pt-3" data-mcs-theme="minimal-dark" id="edSearch" style="height:635px">
+                            <table id="ClientTable" class="dataTable FiscalYearTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="hidden"></th>
+                                        <th>Code</th>
+                                        <th class="text-center">Client Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="hidden">0</td>
+                                        <td></td>
+                                        <td>=ALL=</td>
+
+                                    </tr>
+                                    @foreach (Tax_ClientInfo clientInfos in ClientList)
+                                    {
+                                        <tr>
+                                            <td class="hidden">@clientInfos.ClientId</td>
+                                            <td>-@clientInfos.ClientCode</td>
+                                            <td>
+                                                @clientInfos.ClientName - ( @clientInfos.ClientCode )
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <fieldset class="boxStyle  pt-3 mCustomScrollbar" data-mcs-theme="minimal-dark" style="height:635px;">
+                            <table id="RptTypeTableabc" class="dataTable FiscalYearTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="hidden">DesigId</th>
+                                        <th class="text-center">Designation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="hidden">0</td>
+                                        <td>=ALL=</td>
+                                    </tr>
+                                    @foreach (Cat_Designation Designations in DesignationList)
+                                    {
+                                        <tr>
+                                            <td class="hidden">@Designations.DesigId</td>
+                                            <td class="py-2">
+                                                @Designations.DesigName
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+
+
+
+
+                    <div class="col-md-3 col-12">
+                        <fieldset class="boxStyle  pt-3 mCustomScrollbar" data-mcs-theme="minimal-dark" style="height:635px;">
+                            <table id="RptTypeTable" class="dataTable FiscalYearTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="hidden">ReportId</th>
+                                        <th class="text-center">Report</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    @foreach (HR_ReportType Reports in Reportlist)
+                                    {
+                                        <tr>
+                                            <td class="d-none">@Reports.ReportId</td>
+                                            <td id="rpt-name" class="py-2">@Reports.ReportName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  
+
+
+
+
+
+                    @Html.HiddenFor(m => m.ClientId)
+                    @Html.HiddenFor(m => m.DesigId)
+                    @Html.HiddenFor(m => m.FiscalYearId)
+                    @Html.HiddenFor(m => m.ReportType)
+                    @Html.HiddenFor(m => m.ReportFormat)
+                    @Html.HiddenFor(m => m.FromDate)
+                    @Html.HiddenFor(m => m.ToDate)
+
+
+
+                </div><!--panel body end-->
+            </div><!--Panel end-->
+        </div><!--Panel end-->
+    </div>
+
+}
+@section Scripts{
+    <script>
+
+
+        //***************************************DOCUMENT READY****************************//
+        $(document).ready(function () {
+            //------------ funciton for remove "Search" text----------//
+            $.fn.removeText = function () {
+                this.each(function () {
+                    var $cont = $(this).contents();
+                    $cont.each(function () {
+                        var $this = $(this);
+                        if (this.nodeType === 3) {
+                            $this.remove();
+                        } else if (this.nodeType === 1) {
+                            $this.removeText();
+                        }
+                    });
+                });
+            }//----end------//
+
+
+            $("#from").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#to").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+
+            CurrentDate();
+            function CurrentDate() {
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString();
+                //alert(val.toString());date.getFullYear().toString()
+
+                if ($("#from").val() == '') {
+                    $("#from").val(val);
+                }
+                if ($("#to").val() == '') {
+                    $("#to").val(val);
+                }
+
+            }
+
+
+
+            
+        });     // document ready End
+        var taxData = {
+            ClientId: 0,
+            DesigId: 0,
+            FiscalYearId: 0,
+            ReportType: "",
+            ReportFormat: "",
+            FromDate: "",
+            ToDate: ""
+        };
+
+        $('#pdSearch').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#ClientTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#FYTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#SectTable').DataTable({ 'select': true, language: { search: '', searchPlaceholder: "Search..." }, "info": false, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#LocationTable').DataTable({ 'select': true, "info": false, language: { search: '', searchPlaceholder: "Search..." }, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#RptTypeTable').DataTable({ 'select': true, "info": false, language: { search: '', searchPlaceholder: "Search..." }, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $('#RptTypeTableabc').DataTable({ 'select': true, "info": false, language: { search: '', searchPlaceholder: "Search..." }, "ordering": false, "paging": false, "lengthChange": false }).row(':eq(0)', { page: 'current' }).select();
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+        $('.dataTables_wrapper .col-md-6').addClass('col-md-12'); // <-- add this line
+        //$('*[type="search"][class="form-control input-sm"]')
+        //    .addClass('col-sm-12');
+        //************************************** PREVIEW BUTTON ****************************//
+        $("#previewBtn").click(function (event) {
+
+            var ClientId = $("#ClientTable  tbody tr.selected td:first-child").text();
+            var DesigId = $("#RptTypeTableabc tbody tr.selected td:first-child").text();
+            var FiscalyearId = $("#FYTable tbody tr.selected td:first-child").text();
+            var rptType = $("#RptTypeTable tbody tr.selected td:nth-child(2)").text();
+            //alert(rptType);
+            var FromDate = $("#from").val();
+            var ToDate = $("#to").val();
+
+            var ReportFormat = $("input[name=ReportFormat]:checked").val();//pdf
+/*            alert(ReportFormat);
+*/            
+            if (ClientId !== "" && DesigId !== ""  && FiscalyearId !== "" && rptType !== "" ) {
+                //alert('enter');
+                $("#ClientId").val(ClientId);
+                $("#DesigId").val(DesigId);
+                $("#FiscalYearId").val(FiscalyearId);
+                $("#ReportType").val(rptType);
+                $("#ReportFormat").val(ReportFormat);
+                $("#FromDate").val(location);
+                $("#ToDate").val(ReportFormat);
+
+            } else {
+                event.preventDefault();
+                alert("Please select data first!");
+            }
+        });
+
+
+        //perrid wise date range
+        $('#select1').on('change', function () {
+            var period = $(this).val();
+            setDateRange(period);
+        });
+
+
+
+
+
+        function setDateRange(period) {
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            if (period == "This Week") {
+                let d = new Date();
+                let d2 = new Date();
+                const daysToSaturday = 6 - d.getDay(); // days remaining until Saturday
+                d2.setDate(d2.getDate() + daysToSaturday - 7); // set to Saturday
+                d.setDate(d2.getDate() + 5); // set to Friday
+
+                let currentdate = d;
+                let today = d2;
+                let finaldateformat = currentdate.getDate() + "-" + months[currentdate.getMonth()] + "-" + currentdate.getFullYear();
+                let finaldateformat2 = today.getDate() + "-" + months[today.getMonth()] + "-" + today.getFullYear();
+
+                $("#from").val(finaldateformat2);
+                $("#to").val(finaldateformat);
+            }
+
+
+            else if (period == "This Month") {
+                let d = new Date(), y = d.getFullYear(), m = d.getMonth();
+                let firstDay = new Date(y, m, 1)
+                let lastDay = new Date(y, m + 1, 0);
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+            }
+
+            else if (period == "This Year") {
+                let d = new Date(), y = d.getFullYear();
+                let firstDay = new Date(y, 0, 1);
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec-2023
+                d.setDate(d.getDate());
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Month") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth() - 1;
+                if (m < 0) {
+                    m = 11;
+                    y--;
+                }
+                let firstDay = new Date(y, m, 1);
+                let lastDay = new Date(y, m + 1, 0); // set previous to 1-mar to 31-mar
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Quarter") {
+                let d = new Date();
+                let y = d.getFullYear();
+                let m = d.getMonth();
+                let q = Math.floor(m / 3) - 1;
+                if (q < 0) {
+                    q = 3 + q;
+                    y--;
+                }
+                let firstDay = new Date(y, q * 3, 1);
+                let lastDay = new Date(y, q * 3 + 3, 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev 6 Month") {
+                let d = new Date();
+                let sixMonthsAgo = new Date(d.getFullYear(), d.getMonth() - 6, 1);
+                let firstDay = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), 1);
+                let lastDay = new Date(d.getFullYear(), d.getMonth(), 0);
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+            else if (period == "Prev Year") {
+                let d = new Date();
+                let y = d.getFullYear() - 1; // subtract 1 from the current year to get the previous year
+                let firstDay = new Date(y, 0, 1); // set first day to 1-Jan of previous year
+                let lastDay = new Date(y, 11, 31); // set last day to 31-Dec of previous year
+
+                let finaldateformat = firstDay.getDate() + "-" + months[firstDay.getMonth()] + "-" + firstDay.getFullYear();
+                let finaldateformat2 = lastDay.getDate() + "-" + months[lastDay.getMonth()] + "-" + lastDay.getFullYear();
+
+                $("#from").val(finaldateformat);
+                $("#to").val(finaldateformat2);
+
+            }
+
+        }
+
+    </script>
+            }

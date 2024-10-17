@@ -1,0 +1,180 @@
+﻿@model GTERP.Models.DownTimeReason
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "DownTimeReason", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="text-center">
+
+            <h1 id="styletext">Down Time Reason </h1>
+            <p class="lead"></p>
+        </div>
+
+        @if (Model != null)
+        {
+            <input type="hidden" id="DownTimeReasonId" name="DownTimeReasonId" value="@Model.DownTimeReasonId" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="DownTimeReasonId" value="0" />
+        }
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-8 offset-md-2 col-12 order-md-1">
+            <div class=" card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="text-center">Down Time Reason @ViewBag.Title</h6>
+                </div>
+                <div class="card-body p-4">
+                <form class="needs-validation card p-4" novalidate>
+                    <div class="container">
+                        <div class="row">
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.Reason)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="Reason" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.DtInput)
+                                        </span>
+                                    </div>
+                                    <input type="date" asp-for="DtInput" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.DtInput, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.SLNo)
+                                        </span>
+                                    </div>
+                                    <input  asp-for="SLNo" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.SLNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                       <div class="col-md-4 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.SLNoB)
+                                        </span>
+                                    </div>
+                                    <input  asp-for="SLNoB" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.SLNoB, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                      
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.Remarks)
+                                        </span>
+                                    </div>
+                                    <textarea asp-for="Remarks" class="form-control"></textarea>
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-12">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger rounded-0 btn-block" type="button" onclick="Strike_delete()">Delete</button>
+                                }
+
+
+                            </div>
+                            <div class="col-md-4 col-12">
+                                @Html.ActionLink("Back", "Index", "DownTimeReason", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+    $("#DeptId").select2();
+
+    function Strike_delete() {
+
+        var DownTimeReasonId = $("#DownTimeReasonId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "DownTimeReason")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: DownTimeReasonId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "DownTimeReason")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

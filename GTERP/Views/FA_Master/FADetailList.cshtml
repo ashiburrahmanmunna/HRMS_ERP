@@ -1,0 +1,410 @@
+﻿
+
+    <div>
+        <div class="row mb-2">
+            <div class="col-md-2 col-12">
+                @Html.ActionLink("Create Sub Asset Item", "FADetailCreate", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-6 col-12 d-block mx-auto">
+                <h2 id="styletext">Asset Sub Item List</h2>
+            </div>
+            <div class="col-md-2 col-12 round text-left pt-2">
+                <fieldset class="float-right">
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+            <div class="col-md-2 col-12"></div>
+        </div>
+    </div>
+
+
+    <div id="divAsset_Item_List">
+        @Html.AntiForgeryToken()
+        @*<div class="row py-2">
+            <div class="col-md-12"><h3 class="text-left" id="title">Asset Sub Item List</h3></div>
+            <div class="col-md-2 col-12">
+                <div class="m-1">
+                    <div>
+                        <a class="btn btn-info btn-block rounded-0" asp-action="FADetailCreate">Create Asset Item</a>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        @*<div class="hh card p-2" style="overflow:scroll">
+            <partial name="SubAssets.cshtml" />
+        </div>*@
+
+
+        <div id="finalpanel" class="card p-2">
+            <div class="table-responsive text-nowrap">
+                <table id="tblAssetItem_List" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>
+                                Asset Item
+                            </th>
+
+                            <th>
+                                Purchase Date
+                            </th>
+                            <th>
+                                Purchase Value
+                            </th>
+                            <th>
+                                Issue Date
+                            </th>
+                            <th>
+                                Assign To Section
+                            </th>
+                            <th>
+                                Usefull Life
+                            </th>
+                            <th>
+                                Remaining Year
+                            </th>
+                            <th>
+                                Depreciation Status
+                            </th>
+                            <th>
+                                Depreciation Action
+                            </th>
+                            <th>
+                                Est. Val. After Useful Life
+                            </th>
+
+                            <th>ActionToDo</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        <button type="button" id="depmodal" style="display:none" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
+
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header btn-success">
+                        <h5>Sedule list</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="card p-3">
+                        <partial name="See_Already_Dep.cshtml" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@section Scripts{ 
+    <script>
+        var tblassetitemlist;
+        var tblSee_Already_Dep;
+        var antiForgeryToken;
+        $(document).ready(function () {
+            antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+            tblassetitemlist = $('#tblAssetItem_List').DataTable({
+                "aoColumns": [
+                    { "sClass": "AssetItem", "visible": true },//0
+                    { "sClass": "PurchaseDate", "visible": false },//1
+                    { "sClass": "PurchaseValue", "visible": false },//2
+                    { "sClass": "IssueDate", "visible": true },//3
+                    { "sClass": "AssignTo", "visible": true },//4
+                    { "sClass": "UsefullLife", "visible": true },//5
+                    { "sClass": "RemainingYear", "visible": true },//6
+                    { "sClass": "CurrentStatus", "visible": true },//7
+                    { "sClass": "DepreciationAction", "visible": true },//8
+                    { "sClass": "EVAULife", "visible": true },//9
+                    { "sClass": "Action", "visible": true }//10
+
+                ],
+                columnDefs: [
+                    {
+                        "render": function (data) {
+                        var myUrledit = '@Url.Action("Edit", "FA_Master")?type=details&id='+data.FA_DetailsId;
+                        var myUrldelete = '@Url.Action("Delete", "FA_Master")?type=details&id=' + data.FA_DetailsId;
+                            var myUrlprint = '@Url.Action("Print", "FA_Master")/' + data.FA_DetailsId + '?type=pdf';
+
+
+                            if (data.JournalEntry == true) {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block \" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Depriciation Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                            }
+                            else if (data.depstatus == 1 || data.depstatus == 4) {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="Depriciation Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                            }
+                           else  {
+                                return ' <div class="row btn-group"><span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-sm btn-warning btn-xs btn-inline-block edit\" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-sm btn-danger btn-xs btn-inline-block \" name=\"details\" value=\"' + data.FA_DetailsId + '\"></a></span>' +
+                                   '<span data-toggle="tooltip" title="Depriciation Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-sm btn-success btn-xs btn-inline-block\" target=\"_blank\"></a></span></div>';
+                            }
+
+                        }, targets: 10
+                    },
+                     {
+                        "render": function (data) {
+
+                             if (data.depstatus == 2) {
+                                 return ' <div class="row btn-group"><span data-toggle="tooltip" title="You can see and save depreciation schedule "> <button  class=\"btn btn-sm btn-info btn-xs depstart\" name=\"Start_Dep\" value=\"' + data.FA_DetailsId + '\">Start</button></span></div>';
+                             }
+                             if (data.depstatus == 1) {
+                                 return ' <div class="row btn-group"><span data-toggle="tooltip" title="You can see depreciation schedule "> <button  class=\"btn btn-sm btn-info btn-xs depstart\" name=\"See_Dep\" value=\"' + data.FA_DetailsId + '\">Schedules</button></span></div>';
+                             }
+                             if (data.depstatus == 4 || data.depstatus == 5 || data.depstatus == 3) {
+                                 return '<span>==N/A==</span>';
+                             }
+                        }, targets: 8
+                    }
+                ],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger mr-2',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //rowCallback: function (row) {
+                //    $(row).addClass('txtProduct');
+                //},
+                //"bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "paging": true,
+                select: {
+                style: 'single',
+                    // style: 'os',
+                selector: 'td:first-child'
+                }
+             }).draw();
+            tblSee_Already_Dep = $('#tblSee_Already_Dep').DataTable({
+                "aoColumns": [
+                    { "sClass": "DepreciationScheduleId", "visible": false },
+                    { "sClass": "FA_DetailsId", "visible": true },
+                    { "sClass": "ScheduleDate", "visible": true },
+                    { "sClass": "DepAmount", "visible": true },
+                    { "sClass": "AccumulateDepAmount", "visible": true },
+                    { "sClass": "AccumulateDepBooked", "visible": true },
+                    { "sClass": "AccumulateDepRemain", "visible": true },
+                    { "sClass": "JournalEntry", "visible": true },
+                    { "sClass": "Action", "visible": false }
+
+
+                ],
+                //"dom": 'Bfrtip',
+
+                //"buttons": [
+                //    {
+                //        text: 'Back',
+                //        action: function (e, dt, node, config) {
+
+                //            $("#btnitemlist").trigger('click');
+                //        }
+                //    }
+                //],
+
+
+                "bFilter": true,
+                //"bSort": true,
+                //"bInfo": true,
+                "paging": true,
+                //select: {
+                //    style: 'single',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //}
+            }).draw();
+
+            GetAssetItems();
+        });
+        $(document).on('click', '.depstart', function () {
+            var na = $(this).attr('name');
+            if (na == 'See_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("SeeDepSchedule", "FA_Master")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+
+                            $('#tblSee_Already_Dep').DataTable().clear().draw();
+
+                            var d = data.list;
+
+                            if (d != null) {
+                                //$("#divAsset_Item_List").hide();
+                                //backdiv1 = 'divAsset_Item_List';
+
+                                //activediv = 'divAlready_Dep_Schedule_List';
+
+
+                                //$("#divtbldetails").hide();
+                                //$("#divDepreciation_Schedule_List").show();
+
+                                for (var i = 0; i < d.length; i++) {
+
+                                    $('#tblSee_Already_Dep').dataTable().fnAddData([
+                                        d[i].DepreciationScheduleId,
+                                        d[i].AssetItem,
+                                        d[i].ScheduleDate,
+                                        d[i].DepAmount,
+                                        d[i].AccumulateDepAmount,
+                                        d[i].AccumulateDepBooked,
+                                        d[i].AccumulateDepRemain,
+                                        d[i].JournalEntry,
+                                        '<a data-itemId="0" href="#" class="dlttrash deleteItem"><i class="fa fa-trash"></i></a>'
+                                    ]);
+                                }
+                                $("#depmodal").trigger("click");
+                                //flag = 'fixed';
+
+                            }
+
+                            //clear_form_elements(`div${name}`);
+
+                            toastr.success('Depreciation Scheduled Loaded');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Depreciation schedule cannot be created');
+                        }
+                    },
+                });
+
+
+            }
+            if (na == 'Start_Dep') {
+                var id = $(this).attr('value');
+                $.ajax({
+                    url: '@Url.Action("StartDepSchedule", "FA_Master")',
+                    type: 'POST',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+
+                    data: { id: id },
+                    success: function (data, status, xhr) {
+                        if (data.success == 1) {
+                            GetAssetItems();
+                            toastr.success('Depreciation Schedule Created Successfully');
+                        };
+                        if (data.error == 1) {
+                            toastr.error('Asset can not be create');
+                        }
+                    }
+                });
+
+            }
+        });
+
+        function GetAssetItems() {
+                 $.ajax({
+                            url: '@Url.Action("GetAssetItems", "FA_Master")',
+                            type: 'GET',
+                            dataType: 'json',
+                             contentType: 'application/json',
+                             success: function (data, status, xhr) {
+                                 //console.log(data);
+                                 //alert('hit');
+
+                                 if (status == 'success') {
+                                     $('#tblAssetItem_List').DataTable().clear().draw();
+
+                                     var d = data;
+                                     console.log(d);
+                                    for (var i = 0; i < d.length; i++) {
+
+                                        $('#tblAssetItem_List').dataTable().fnAddData([
+                                            d[i].Text,
+                                            d[i].PurchaseDate,
+                                            d[i].PurchaseValue,
+                                            d[i].IssueDate,
+                                            d[i].EmpName,
+                                            d[i].UsefullLife,
+                                            d[i].RemainingYear,
+                                            d[i].Title,
+                                            { FA_DetailsId: d[i].FA_DetailsId, IsDepRunning: d[i].IsDepRunning, depstatus: d[i].FA_Dep_StatusId},
+                                            d[i].EVAULife,
+                                            { FA_DetailsId: d[i].FA_DetailsId, IsDepRunning: d[i].IsDepRunning, depstatus: d[i].FA_Dep_StatusId, JournalEntry: d[i].JournalEntry }
+
+                                            //'<a data-itemId="0" href="#" class="dlttrash deleteItem" > <i class="fa fa-trash"></i></a > '
+
+                                        ]);
+                                     }
+
+                                    toastr.success('Data loaded Successfully');
+
+                                };
+                            },
+                        });
+            };
+
+        $.LoadingOverlaySetup({
+            background: "rgba(0, 0, 0, 0.5)",
+            //fontawesome: "fas fa-cog fa-spin",
+            imageAnimation: "1.5s fadein",
+            imageColor: "#DCDCDC"
+        });
+        $(document).ajaxStart(function () {
+            $.LoadingOverlay("show");
+
+        });
+        $(document).ajaxStop(function () {
+            $.LoadingOverlay("hide");
+
+        });
+
+
+    </script>
+}

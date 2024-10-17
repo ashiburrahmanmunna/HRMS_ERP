@@ -1,0 +1,160 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form id="account" method="post">
+                @Html.AntiForgeryToken()
+
+                @*<input asp-for="Input.LoginIP" type="hidden" id="txtIP" />
+                <input asp-for="Input.LoginMac" type="hidden" id="txtMac" />
+                <input asp-for="Input.PCName" type="hidden" id="txtPCName" />
+                <input asp-for="Input.DeviceType" type="hidden" id="txtDevice" />
+                <input asp-for="Input.DisplayName" type="hidden" id="DisplayName" />*@
+
+                <h4>Use a local account to log in.</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label asp-for="Input.RememberMe">
+                            <input asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+                <div class="form-group">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    </p>
+                    <p>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h4>Use another service to log in.</h4>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                            for details on setting up this ASP.NET application to support logging in via external services.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script language="javascript">
+        window.onload = function () {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "http://jsonip.appspot.com/?callback=SetIp";
+            document.getElementsByTagName("head")[0].appendChild(script);
+        };
+        function SetIp(response) {
+            document.getElementById("txtIP").value = response.ip;
+        }
+        //Dectect Device Type
+        var isMobile = {
+            Android: function () {
+                return navigator.userAgent.match(/Android/i);
+            },
+            BlackBerry: function () {
+                return navigator.userAgent.match(/BlackBerry/i);
+            },
+            iOS: function () {
+                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+            },
+            Opera: function () {
+                return navigator.userAgent.match(/Opera Mini/i);
+            },
+            Windows: function () {
+                return navigator.userAgent.match(/IEMobile/i);
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+            }
+        };
+        $(document).ready(function () {
+
+            if (isMobile.any()) {
+                document.getElementById("txtDevice").value = "Mobile";
+            } else {
+                document.getElementById("txtDevice").value = "Computer";
+            }
+
+            //if (isMobile.iOS()) alert('iOS');
+            //
+
+
+            window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;   //compatibility for firefox and chrome
+
+            var pc = new RTCPeerConnection({ iceServers: [] }), noop = function () { };
+            pc.createDataChannel("");    //create a bogus data
+
+            pc.createOffer(pc.setLocalDescription.bind(pc), noop);    // create offer and set local description
+            pc.onicecandidate = function (ice) {  //listen for candidate events
+
+                if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                //var myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
+                var myIP;
+
+
+                if (document.getElementById("txtIP").value.length != 0) {
+                    //document.getElementById("txtIP").value = myIP;
+                    document.getElementById("txtMac").value = "";
+                    document.getElementById("txtPCName").value = "";
+                }
+            };
+
+
+        });
+    </script>
+}

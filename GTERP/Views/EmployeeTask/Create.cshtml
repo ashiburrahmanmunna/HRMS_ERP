@@ -1,0 +1,185 @@
+﻿@model GTERP.Controllers.PBC_Automation.EmployeeTaskController.EmployeeTaskVM
+@*@model GTERP.Models.EmployeeTask*@
+
+<div style="min-height: calc(100vh - 215px)">
+    @if (ViewBag.action == "Create")
+    {
+    <form method="post" asp-action="Create" enctype="multipart/form-data">
+
+        <input type="hidden" id="empId" value="@ViewBag.empId" />
+        <input type="hidden" id="ts" value="@ViewBag.ts" />
+        <input type="hidden" id="comId" value="@ViewBag.ComId" />
+        <input type="hidden" asp-for="StatusDate" id="statusDate" 
+               value="@DateTime.Now.ToString("dd-MMM-yyyy")" />
+        <div class="form-header btn-info" style="margin-right:30px">
+            <i class="fas fa-plus-square"></i> PBC Task Submit Form
+            <div id="loading" style="display: inline;">
+                <div id="loadingGif" style="display: inline;">
+                    @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                </div>
+            </div>
+        </div>
+
+        <div class="row container-fluid justify-content-between">
+
+            <div class="card mb-2 rounded-0 col-12">
+                <div class="card-body ml-3">
+                    <div>
+                        <h3 class="text-center">@ViewBag.Emp</h3>
+                    </div>
+                    <input type="hidden" asp-for="EmpId" value="@ViewBag.EmpId" class="form-control col-12" id="" />
+                    <input type="hidden" asp-for="TaskAssignId" value="@ViewBag.TaskAssignId" class="form-control col-12" id="" />
+                    <input type="hidden" asp-for="ComId" value="@ViewBag.ComId" class="form-control col-12" id="" />
+                    <input type="hidden" asp-for="PBCStatusId" value="1" class="form-control col-12" id="" />
+
+                    <div class="form-group row border input-group">
+                        <span class="input-group-prepend">
+                            <label class="col-form-label input-group-text">Submission Date</label>
+                        </span>
+                        <input type="text" asp-for="SubmitDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control col-12" id="SubmitDate" />
+
+                    </div>
+                    <div class="form-group row input-group">
+                        <span class="input-group-prepend">
+                            <label class="col-form-label input-group-text">User Comments</label>
+                        </span>
+                        @Html.TextAreaFor(m => m.User_Comments, new { @class = "form-control formInput", @style = "height:40px", id = "userComment" })
+
+                    </div>
+                    <div class="form-group row input-group">
+                        <span class="input-group-prepend">
+
+                        </span>
+                        <input asp-for="Files" type="file" id="file" class="form form-control" multiple />
+                    </div>
+                    <div class="form-group form-check row border input-group ">
+                        <div class="ml-3">
+                            <input type="checkbox" asp-for="IsComplete" class="form-control-sm form-check-input" id="isComplete" style="width: 25px" />
+                            <span class="input-group-prepend">
+                                <label class="form-check-label col-form-label ml-3 ">Is Completed</label>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group row" style="display:flex;justify-content:end;flex-direction:row;">
+            <div class="col-3">
+                <button type="submit" class="btn btn-success rounded-0">Save</button>
+                <button type="submit" class="btn btn-warning rounded-0" id="editBtn" disabled style=" cursor:not-allowed">Update</button>
+                <a asp-action="Index" class="btn btn-info rounded-0">Back</a>
+            </div>
+        </div>
+
+
+    </form>
+    }
+
+
+    @*Edit form*@
+
+    @if (ViewBag.action == "Edit")
+    {
+        <form method="post" asp-action="Edit" enctype="multipart/form-data">
+
+            @*<input type="hidden" id="empId" value="@ViewBag.empId" />
+            <input type="hidden" id="ts" value="@ViewBag.ts" />*@
+            <div class="form-header btn-warning" style="margin-right:30px">
+                <i class="fas fa-edit"></i> PBC Employee Task Edit Form
+                <div id="loading" style="display: inline;">
+                    <div id="loadingGif" style="display: inline;">
+                        @*<img src="~/Files/loading.gif" style="height: 16px; display: inline;" />*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="row container-fluid justify-content-between">
+
+                <div class="card mb-2 rounded-0 col-12">
+                    <div class="card-body ml-3">
+                        <div>
+                            <h3 class="text-center">@ViewBag.Emp</h3>
+                        </div>
+                        <input type="hidden" asp-for="EmpId" value="@ViewBag.EmpId" class="form-control col-12" id="" />
+                        <input type="hidden" asp-for="TaskAssignId" value="@ViewBag.TaskAssignId" class="form-control col-12" id="" />
+                        <input type="hidden" asp-for="ComId" value="@ViewBag.ComId" class="form-control col-12" id="" />
+                        <input type="hidden" asp-for="StatusDate" id="statusDate"
+                               value="@DateTime.Now.ToString("dd-MMM-yyyy")" />
+                        <input type="hidden" asp-for="EmployeeTaskId" class="form-control col-12" />
+                        <input type="hidden" asp-for="PBCStatusId" value="1" class="form-control col-12" id="" />
+                        <div class="form-group row border input-group">
+                            <span class="input-group-prepend">
+                                <label class="col-form-label input-group-text">Submission Date</label>
+                            </span>
+                            <input type="text" asp-for="SubmitDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" class="form-control col-12" id="SubmitDate" />
+
+                        </div>
+                        <div class="form-group row input-group">
+                            <span class="input-group-prepend">
+                                <label class="col-form-label input-group-text">User Comments</label>
+                            </span>
+                            @Html.TextAreaFor(m => m.User_Comments, new { @class = "form-control formInput", @style = "height:40px", id = "userComment" })
+
+                        </div>
+                        <div class="form-group row input-group">
+                            <span class="input-group-prepend">
+
+                            </span>
+                            <input asp-for="Files" type="file" id="file" class="form form-control" multiple />
+                            <a class="p-2" asp-action="Download" asp-route-filename="@ViewBag.Files">@ViewBag.Files</a>
+                        </div>
+                        <div class="form-group form-check row border input-group ">
+                            <div class="ml-3">
+                                <input type="checkbox" asp-for="IsComplete" class="form-control-sm form-check-input" id="isComplete" style="width: 25px" />
+                                <span class="input-group-prepend">
+                                    <label class="form-check-label col-form-label ml-3 ">Is Completed</label>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group row" style="display:flex;justify-content:end;flex-direction:row;">
+                <div class="col-3">
+                    <button type="submit" class="btn btn-success rounded-0" disabled style=" cursor:not-allowed">Save</button>
+                    <button type="submit" class="btn btn-warning rounded-0" id="editBtn" >Update</button>
+                    <a asp-action="Index" class="btn btn-info rounded-0">Back</a>
+                </div>
+            </div>
+
+
+        </form>
+    }
+
+</div>
+
+@section Scripts{
+    
+    <script>
+        $(document).ready(function () {
+            var eid = $("#empId").val();
+            console.log(eid)
+
+
+            $("#SubmitDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#SubmitDate").datepicker("option", "dateFormat");
+                    //setter
+                    $("#SubmitDate").datepicker("option", "dateFormat", "dd-M-yy");
+                }
+            });
+
+        });
+    </script>
+
+ }
+   

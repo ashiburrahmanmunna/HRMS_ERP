@@ -1,0 +1,152 @@
+﻿@model GTERP.Models.Module_Menu_Action
+
+
+
+<style>
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateModuleMenuAction", "ModuleMenuAction", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="row">
+
+            </div>
+
+        </div>
+
+        <input type="hidden" asp-for="Id" id="Id" />
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div id="modalbodyfahad" class="card">
+                    <div class="card-header">
+                        <h4 id="styletext"> HR Custom Report Entry - @ViewBag.Title</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <form class="needs-validation card p-4" novalidate>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    <label>Module Menu Name</label>
+                                                </span>
+                                            </div>
+                                            <select asp-for="ModuleMenuId" asp-items="ViewBag.ModuleMenu" class="form-control">
+                                                <option> --Select Module Menu-- </option>
+                                            </select>
+                                            @Html.ValidationMessageFor(model => model.ComId, "", new { @class = "text-danger" })
+
+                                        </div>
+
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    <label>Action Name</label>
+                                                </span>
+                                            </div>
+
+                                            @Html.EditorFor(model => model.ActionName, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.ActionName, "", new { @class = "text-danger" })
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-12">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    
+                                    <button class="btn btn-danger btn-block rounded-0" type="button" onclick="Data_delete()">Delete</button>
+                                }
+                            </div>
+                            <div class="col-md-4 col-12">
+                                @Html.ActionLink("Back", "ModuleMenuActionList", "ModuleMenuAction", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+}
+
+
+@section Scripts{
+    <script>
+
+    $("#Id").select2();
+
+    function Data_delete() {
+
+        var deptId = $("#Id").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteModuleMenuAction", "ModuleMenuAction")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: deptId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("ModuleMenuActionList", "ModuleMenuAction")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

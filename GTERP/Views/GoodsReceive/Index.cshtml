@@ -1,0 +1,617 @@
+﻿@model IEnumerable<GTERP.Models.GoodsReceiveMain>
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+@{
+    UserPermission permission = HttpContextAccessor.HttpContext.Session.GetObject<UserPermission>("userpermission");
+}
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+    .tblSalesList th:first-child, .tblSalesList tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tblSalesList th:last-child, .tblSalesList tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    div#tblSalesList_filter input.form-control.form-control-sm {
+        padding-top: 1px;
+    }
+</style>
+
+
+<form action="" method="post">
+
+    <div class="container-fluid">
+        <div class="row">
+            @{
+                if (permission != null)
+                {
+                    if (permission.IsProduction)
+                    {
+                        <div class="col-md-3 col-12">
+                            @Html.ActionLink("Store Requistion Create", "DirectGrr", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-3 col-12">
+                            @Html.ActionLink("Goods Receive", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+                        </div>
+                        <div class="col-md-3 col-12">
+                            @Html.ActionLink("Direct Goods Receive", "DirectGrr", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+                        </div>
+                    }
+
+                }
+
+            }
+
+
+        <div class="col-md-6 col-12">
+            @if (permission.IsProduction)
+            {
+                <h2 id="styletext" class="text-right">Store Requistion List</h2>
+            }
+            else
+            {
+                <h2 id="styletext" class="text-right">Goods Receive List</h2>
+            }
+
+        </div>
+        </div>
+
+
+
+
+        <div class="card p-2 my-2">
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-2">
+                        @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-2 col-12">
+                    <div class="input-group mb-2">
+                        @Html.DropDownList("PrdUnitId", ViewBag.PrdUnitId as List<SelectListItem>, "--All Unit--", new { id = "PrdUnitId", @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date</span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date</span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+
+                @*<div class="col-md-1 col-12">
+            <div class="form-group row">
+                <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block" />
+            </div>
+
+        </div>*@
+
+                @if (!permission.IsProduction)
+                {
+
+
+                    <div class="col-md-3 col-12">
+                        <button class="btn btn-success rounded-0 btn-block mb-2" type="button" onclick="ReportPrint('PrintGrrSummary')">GRR / MR Summary Report</button>
+                    </div>
+                    <div class="col-md-3 col-12">
+
+                        <button class="btn btn-success rounded-0 btn-block mb-2" type="button" onclick="ReportPrint('PrintGrrDetails')">GRR / MR Details Report</button>
+                    </div>
+                    <div class="col-md-3 col-12">
+
+                        <button class="btn btn-success rounded-0 btn-block mb-2" type="button" onclick="ReportPrint('PrintGrrVoucherLocal')">Grr Voucher Report [ Local ] </button>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <button class="btn btn-success rounded-0 btn-block mb-2" type="button" onclick="ReportPrint('PrintGrrVoucherForeign')">Grr Voucher Report [ Foreign ]</button>
+                    </div>
+
+
+
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">From No</span>
+                            </div>
+                            @Html.TextBox("FromNo", null, new { @class = "form-control text-center FromNo", @placeholder = "From No", @autocomplete = "off", name = "FromNo" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">To No</span>
+                            </div>
+                            @Html.TextBox("ToNo", null, new { @class = "form-control text-center ToNo", @placeholder = "To NO", @autocomplete = "off", name = "ToNo" })
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintMissingSequence')">Missing Number</button>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <fieldset class="text-right">
+
+                            <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                            <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                            <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+                        </fieldset>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+        <div id="finalpanel" class="card p-2">
+            <div class="table-responsive text-nowrap">
+                <table id="tblSalesList" class="table tblSalesList table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+
+@section Scripts
+{
+
+    <script type="text/javascript">
+
+         let isProduction = '@permission.IsProduction';
+            var ColumnsData = [];
+            /// this is for dynamica column name different module user , mainly prodcution === by himu
+            if (isProduction == 'True') {
+                ColumnsData = [
+                        { "title": "Goods Receive Id", "data": "GRRMainId", "visible": false },
+                        { "title": "SR No", "data": "GRRNo", "searchable": true },
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format', "data": "GRRDate", "title": "SR Date", "orderData": 3, "searchable": false  },
+                        { "title": "SR Ref", "data": "GRRRef" },
+                        { "title": "Department", "data": "Department" },
+                        //{ "title": "PR No", "data": "PRNo" },
+                        { "title": "Supplier Name", "data": "SupplierName" },
+                        //{ "title": "Type Name", "data": "TypeName" },
+                        { "title": "Currency Code", "data": "CurCode", "searchable": false  },
+                        { "title": "Convertion Rate", "data": "ConvertionRate", "searchable": false  },
+                        //{ "title": "Total GR", "data": "TotalGRRValue" },
+                        //{ "title": "Deduction", "data": "Deduction" },
+                        { "title": "Net SR", "data": "NetGRRValue", "searchable": false  },
+                        //{ "title": "Sub Section", "data": "SubSectName" },
+                        { "title": "PO No", "data": "PONo", "searchable": false  },
+                       
+                        { "title": "Remarks", "data": "Remarks", "searchable": false  },
+                        { "title": "Status", "data": "Status" },
+                        {
+                            "data": { GRRMainId: "GRRMainId"  },
+                            "render": function (data, type, row) {
+                                //console.log(data.GRRMainId);
+                                //console.log(data.Status);
+
+
+                                var myUrledit = '@Url.Action("Edit", "GoodsReceive")/' + data.GRRMainId;
+                                var myUrldelete = '@Url.Action("Delete", "GoodsReceive")/' + data.GRRMainId;
+                                var myUrlview = '@Url.Action("View", "GoodsReceive")/' + data.GRRMainId;
+
+                                var myUrlprint = '@Url.Action("Print", "GoodsReceive")/' + data.GRRMainId + '?type=pdf';
+                                //var Status = data.Status;
+                                //return '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                if (data.Status == "Not Posted") {
+                                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="GRR/MR Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                                }
+                                else {
+                                    return '<span data-toggle="tooltip" title="View"> <a href=\"' + myUrlview + '\" class=\"mdi mdi-eye   btn btn-primary btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="GRR/MR Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+
+                            }
+
+                        }
+
+                    ]
+            }
+            else
+            {
+                 ColumnsData =[
+                        { "title": "Goods Receive Id", "data": "GRRMainId", "visible": false },
+                        { "title": "GR No", "data": "GRRNo", "searchable": true },
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format', "data": "GRRDate", "title": "GR Date", "orderData": 3, "searchable": false  },
+                        { "title": "GR Ref", "data": "GRRRef" },
+                        { "title": "Department", "data": "Department" },
+                        //{ "title": "PR No", "data": "PRNo" },
+                        { "title": "Supplier Name", "data": "SupplierName" },
+                        //{ "title": "Type Name", "data": "TypeName" },
+                        { "title": "Currency Code", "data": "CurCode", "searchable": false  },
+                        { "title": "Convertion Rate", "data": "ConvertionRate", "searchable": false  },
+                        //{ "title": "Total GR", "data": "TotalGRRValue" },
+                        //{ "title": "Deduction", "data": "Deduction" },
+                        { "title": "Net GR", "data": "NetGRRValue", "searchable": false  },
+                        //{ "title": "Sub Section", "data": "SubSectName" },
+                        { "title": "PO No", "data": "PONo", "searchable": false  },
+
+
+                        { "title": "Remarks", "data": "Remarks", "searchable": false  },
+                        { "title": "Status", "data": "Status" },
+                        {
+                            "data": { GRRMainId: "GRRMainId"  },
+                            "render": function (data, type, row) {
+                                //console.log(data.GRRMainId);
+                                //console.log(data.Status);
+
+
+                                var myUrledit = '@Url.Action("Edit", "GoodsReceive")/' + data.GRRMainId;
+                                var myUrldelete = '@Url.Action("Delete", "GoodsReceive")/' + data.GRRMainId;
+                                var myUrlview = '@Url.Action("View", "GoodsReceive")/' + data.GRRMainId;
+
+                                var myUrlprint = '@Url.Action("Print", "GoodsReceive")/' + data.GRRMainId + '?type=pdf';
+                                //var Status = data.Status;
+                                //return '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                if (data.Status == "Not Posted") {
+                                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="GRR/MR Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                                }
+                                else {
+                                    return '<span data-toggle="tooltip" title="View"> <a href=\"' + myUrlview + '\" class=\"mdi mdi-eye   btn btn-primary btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="GRR/MR Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+
+                            }
+
+                        }
+
+                    ]
+        }
+
+        function ReportPrint(btnvalue) {
+
+
+            var FromNo = $('#FromNo').val();
+            var ToNo = $('#ToNo').val();
+            var Type = 'MR';
+
+            var PrdUnitId = $('#PrdUnitId').val();
+               var FromDate = $('#FromDate').val();
+               var ToDate = $('#ToDate').val();
+               var reporttype = $("input[name=RptType]:checked").val();
+               var url = '';
+               @*if (btnvalue == "PrintGrrSummary") {
+                   url = '@Url.Action("PrintGrrSummary", "GoodsReceive")';
+               }
+               else if (btnvalue == 'PrintGrrDetails') {
+                   url = '@Url.Action("PrintGrrDetails", "GoodsReceive")';
+               }*@
+
+              var jsUrl = '@Url.Action("replacevalue", "GoodsReceive")'; // ## is the token
+                ///alert(jsUrl);
+
+            $.ajax({
+                type: 'POST',
+                url: jsUrl.replace('replacevalue', btnvalue),
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, FromDate: FromDate, ToDate: ToDate, Type: Type, FromNo: FromNo, ToNo: ToNo, PrdUnitId: PrdUnitId},
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+         }
+
+
+
+
+
+
+
+
+
+
+
+        $(document).ready(function () {
+
+            $("#UserList").select2({
+               width: '100%'
+            });
+            $("#CustomerList").select2({
+                //width: '100%'
+            });
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+
+        }
+
+
+    });
+
+        $('input[name=RptType]').click(function () {
+        var reporttype = $("input[name=RptType]:checked").val();
+        //alert(reporttype);
+
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Action("SetSessionInd", "ExportInvoiceMasters")',
+        dataType: 'json',
+        async: true,
+            data: { reporttype: reporttype},
+            success: function (response) {
+              //  window.location.href = response.Url;
+
+                //window.open(response.Url, '_blank')
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+
+        });
+
+    });
+
+        var table;
+
+        $(document).ready(function () {
+
+            //var x = $("#ToDate").val();
+            //alert(x);
+
+            var userlist = $("#UserList").val();
+            var CustomerList = $("#CustomerList").val();
+            var fromdate = $("#FromDate").val();
+            var todate = $("#ToDate").val();
+
+            loaddata(userlist, fromdate, todate  , CustomerList ,1);
+
+
+
+            function getDateString(dateObj) {
+
+                if (dateObj == null) { return ''; };
+
+                var date = new Date(parseInt(dateObj.substr(6)));
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+                var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                //alert(val);
+
+
+                return formatdate;
+
+                //return dateObj.toDateString();
+            }
+
+            function loaddata(UserId = "", FromDate = "", ToDate = "", CustomerList = "", isAll = 1) {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tblSalesList').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+
+                                    }
+                                    else {
+                                        loaddata(userlist, fromdate, todate, CustomerList, 1);
+
+                                    }
+
+
+
+
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata(userlist, fromdate, todate, CustomerList, 1);
+                                    //table.ajax.reload();
+
+
+                                })
+                        $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+                    "columnDefs": [
+                        // Hide second, third and fourth columns
+                        { "visible": false, "targets": [] }
+                    ],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success mr-2',
+                                titleAttr: 'Export to excel'
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("Get", "GoodsReceive")",
+                        "data": { UserList: $("#UserList").val(), FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), CustomerList: $("#CustomerList").val(), isAll: isAll },
+
+                        //"url": "/Cities/GetListViewModel",
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": ColumnsData,
+                    //"order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    "order": false,
+
+                    "destroy": true
+                });
+
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+        });
+
+
+    </script>
+}

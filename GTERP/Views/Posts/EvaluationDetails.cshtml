@@ -1,0 +1,238 @@
+﻿@model IEnumerable<GTERP.ViewModels.ListVM>
+@{
+
+    Layout = "~/Views/Shared/_dashlayout.cshtml";
+}
+
+
+
+<div>
+    <br />
+</div>
+<h1 class="display-6 mb-0">Details of Applicant</h1>
+<br />
+<div class="container-fluid pt-4 px-4">
+    <div class="col-sm-12 col-xl-12">
+        <div class="bg-light rounded h-100 p-4">
+
+            @foreach (var item in Model)
+            {
+
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        Applicant ID :
+                    </dt>
+                    <dd class="col-sm-10 " id="Appid">
+                        @Html.DisplayFor(modelItem => item.App_Id)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Applicant Name :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.App_Name)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Exam Result :
+                    </dt>
+                    <dt class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.ExamResult)
+                    </dt>
+                    <dt class="col-sm-2">
+                        Viva Result :
+                    </dt>
+                    <dt class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.VivaResult)
+                    </dt>
+
+                    <dt class="col-sm-2">
+                        Email :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Number :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.Number)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Submitted Date :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.SubmittedDate)
+                    </dd>
+                    <dt class="col-sm-2">
+                        linkedin_Url :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.linkedin_Url)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Comment :
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(modelItem => item.Comment)
+                    </dd>
+                    @if (item.ModuleId > 0)
+                    {
+
+                        <dt class="col-sm-2">
+                            Module :
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(modelItem => item.ModuleId)
+                        </dd>
+                    }
+                    else
+                    {
+
+                        <dt class="col-sm-2">
+                            Module :
+                        </dt>
+                        <dd class="col-sm-10">
+                            Set Module
+                        </dd>
+                    }
+                    </dl>
+                    @if (item.Status == 1)
+                    {
+                        
+                       
+                            <div class="col-md-4"> Exam module:
+
+
+
+
+                            <div class="col-md-4">
+                                    <select id="Ddlmodule" class="input-group-text " aria-label="Default select example">
+
+                                        @foreach (var tt in item.modulelist)
+                                        {
+                                            <option value="@tt.ModuleId">@tt.module</option>
+
+                                        }
+                                    </select>
+                                </div>
+                            
+                            
+                                <a id="moduleadd" asp-action="EvaluationDetails" asp-route-id="@item.App_Id" class="btn btn-outline-danger m-2 btn-sm">Add Module</a>
+                            
+
+                        </div>
+                    }
+
+
+                    @if (item.Status == 1)
+                    {
+                       
+                        <div>
+                            Exam Link :
+                    </div>
+                   
+            <div>
+                            @Html.DisplayFor(modelItem => item.ModuleName)
+                       </div>
+                         
+                    }
+                   
+
+                    <div class="row ">
+                         <div >
+                        @if (item.Status == 1)
+                        {
+
+                            
+                                <a asp-action="Details" asp-route-id="@item.App_Id" class="btn btn-outline-success m-2 mx-2 btn-sm">Exam</a>
+                        
+
+                        }
+                        else if (item.Status == 2)
+                        {
+
+                      
+                                <a asp-action="Details" asp-route-id="@item.App_Id" class="btn btn-outline-success m-2 mx-2 btn-sm">Viva</a>
+                            
+
+                        }
+                        else if (item.Status == 3)
+                        {
+
+                          
+                                <a asp-action="Details" asp-route-id="@item.App_Id" class="btn btn-outline-success m-2 btn-sm">Appointment</a>
+                           
+
+                        }
+                        </div>
+                        <a asp-action="EvaluationDeleteConfirmed" asp-route-id="@item.App_Id" class="btn btn-outline-danger m-2 btn-sm">Delete</a>
+
+                    </div>
+                        
+                       
+
+                    
+
+                
+
+
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts{
+
+    <script>
+        $('#moduleadd').click(function () {
+            let modlisti = [];
+            let modlist = {
+                module: '',
+                s_id: 0,
+                Appid: 0,
+
+
+            }
+
+            var eh = document.getElementById("Ddlmodule");
+
+            var texth = eh.options[eh.selectedIndex].text;
+
+
+            modlist.s_id = $('#S_id').html();
+            modlist.Appid = $('#Appid').html();
+            modlist.module = texth;
+            modlisti.push(modlist);
+            //var str = JSON.stringify(modlisti);
+            //
+            //
+            //
+            //alert(str);
+            modlist = {
+                module: '',
+                s_id: 0,
+                Appid: 0,
+
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Moduleupdate", "Posts")',
+                data: { mod: modlisti },
+
+                dataType: "json",
+                success: function (data) {
+                    if (data.res == true) {
+
+                        alert("gg")
+                    }
+                }
+            })
+
+        })
+
+    </script>
+
+
+
+}

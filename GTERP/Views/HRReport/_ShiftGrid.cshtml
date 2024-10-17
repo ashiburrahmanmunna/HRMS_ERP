@@ -1,0 +1,120 @@
+﻿
+
+@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Shift> shifts = new List<Cat_Shift>();
+    shifts = ViewBag.Shifts;
+}
+
+<div class="mb-0">
+    <input type="text" class="shiftSearch form-control text-center" placeholder="Search . . ." />
+</div>
+<table id="commonTable" class="commonTable table table-hover mb-0" width="100%">
+    <thead>
+        <tr>
+            <th class="d-none">Shift Id</th>
+            <th>Shift Name</th>
+            <th>Shift Type</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 220px;position: relative;">
+    <table id="shiftTable" class="shiftTable table table-hover trow table-striped">
+
+        <thead class="d-none">
+            <tr>
+                <th class="d-done">Shift Id</th>
+                <th>Shift Name</th>
+                <th>Shift Type</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+                <td class="d-done">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+
+                <td class="d-none">
+                    &nbsp;
+                </td>
+            </tr>
+
+            @if (shifts.Count > 0)
+            {
+                foreach (Cat_Shift aShift in shifts)
+                {
+                    <tr id="myrow">
+
+                        <td class="d-none">
+                            @aShift.ShiftId
+                        </td>
+
+                        <td>
+                            @aShift.ShiftName
+                        </td>
+
+                        <td>
+                            @aShift.ShiftType
+                        </td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+@*<script src="~/Content/js/plugins/jquery/jquery-3.1.1.min.js"></script>*@
+@*<script src="~/Content/js/plugins/datatables/jquery.dataTables.min.js"></script>*@
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+
+            $(".shiftSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+
+                var i = 0;
+
+                $('#shiftTable tbody tr').each(function () {
+
+                    var shiftName = $.trim($(this).children("td:eq(1)").html());
+                    var shiftType = $.trim($(this).children("td:eq(2)").html());
+
+
+                    if (shiftName.toLowerCase().indexOf(searchText) === -1 &&
+                        shiftType.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+}

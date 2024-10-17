@@ -1,0 +1,152 @@
+﻿@model GTERP.Models.Currency
+
+
+
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateCurrencies", "ControllerFolder", FormMethod.Post, new { enctype = "multipart//form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @if (Model != null)
+        {
+            <input type="hidden" id="CurrencyId" name="CurrencyId" value="@Model.CurrencyId" />
+        }
+        else
+        {
+            <input type="hidden" id="comid" name="" value="0" />
+        }
+        <hr />
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="md-3 text-center" id="styletext">Currency Entry - @ViewBag.Title</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-mb-12 order-md-1">
+                            <h4 class="md-3 text-center">Currency @ViewBag.Title</h4>
+                            <div class="row">
+                                <br />
+                                <div class="col mb-2">
+                                    @Html.HiddenFor(model => model.CurrencyId, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.LabelFor(model => model.CurCode, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.CurCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.CurCode, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col mb-2">
+                                    @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col mb-2">
+                                    @Html.LabelFor(model => model.EffectDate, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.EffectDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.EffectDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <br />
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-block" />
+                                }@if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block" />
+                                }@if (ViewBag.Title == "Delete")
+                                {
+                                    <input type="button" value="Delete" class="btn btn-danger btn-block" onclick="Currency()" />
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                @Html.ActionLink("Back", "CurrenciesList", null, null, new { @class = "btn btn-info btn-block" })
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+}
+
+
+@section Scripts{
+    <script type="text/javascript">
+    function Currency() {
+        var CurrencyId = $("#CurrencyId").val();
+        $.ajax({
+            url: '@Url.Action("DeleteCurrencies", "ControllerFolder")',
+            data: JSON.stringify({ id: CurrencyId }),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("CurrenciesList", "ControllerFolder")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+        });
+    }
+
+
+    $("#EffectDate").val(CurrentDate());
+
+
+    function CurrentDate() {
+        var date = new Date();
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+        return val;
+
+    }
+
+    $("#EffectDate").datepicker({
+        onSelect: function (date) {
+            // Your CSS changes, just in case you still need them
+            $('a.ui-state-default').removeClass('ui-state-highlight');
+            $(this).addClass('ui-state-highlight');
+            var dateFormat = $("#EffectDate").datepicker("option", "dateFormat");
+            //setter
+            $("#EffectDate").datepicker("option", "dateFormat", 'dd-M-yy');
+        }
+    });
+    </script>
+
+}
+
+

@@ -1,0 +1,301 @@
+﻿@model GTERP.Models.Cat_Section
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateSection", "HRVariables", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 col-12">
+                @if (Model != null)
+                {
+                    <input type="hidden" id="Sectid" name="SectId" value="@Model.SectId" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="SectId" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">Section Entry - @ViewBag.Title</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                <input hidden asp-for="ComId" />
+                                <input hidden asp-for="UserId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.SectName)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.SectName, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.SectName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.SectNameB)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.SectNameB, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.SectNameB, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.DeptId, "Dept Name")
+                                                    </span>
+                                                </div>
+                                                @*@Html.DropDownList("DeptId", ViewBag.DeptId, "--Please Select--", htmlAttributes: new { @class = "form-control" })*@
+
+                                                @Html.DropDownListFor(x => x.DeptId, new SelectList((IEnumerable<SelectListItem>)ViewBag.DeptId, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "DeptId" })
+                                                @Html.ValidationMessageFor(model => model.DeptId, "", new { @class = "text-danger" })
+                                                <button class="btn btn-success" onclick="CreateDepartment()">Add</button>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.Slno)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.Slno, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Slno, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <span class="input-group-text py-0">
+                                                    Section HOD
+                                                </span>
+                                                <input asp-for="SectHODId" type="hidden" id="SectHODId" />
+                                                <input asp-for="SectHODName" type="text" id="Emp1" class="form-control" placeholder="Select HOD ID" />
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <span class="input-group-text py-0">
+                                                    C Level
+                                                </span>
+                                                <input asp-for="SectCLevelId" type="hidden" id="SectCLevelId" />
+                                                <input asp-for="SectCLevelName" type="text" id="Emp2" class="form-control" placeholder="Select C Level ID" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Section_delete()">Delete</button>
+                                    }
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "SectionList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="popupModalLable" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="popupModalBody">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+   // $("#Sectid").select2();
+
+    function Section_delete() {
+
+        var Sectid = $("#Sectid").val();
+         //   alert(Sectid);
+            $.ajax({
+
+                url: '@Url.Action("DeleteSection", "HRVariables")',
+                data: JSON.stringify({ id: Sectid }), //use id here
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("SectionList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+        }
+
+
+
+        function CreateDepartment() {
+            $.get("/HRVariables/CreateDepartmentPartial", function (res) {
+                $("#popupModalBody").html(res);
+                $("#popupModal").modal('show');
+            })
+        }
+
+        function CreateDept() {
+            var modal = $("#popupModal");
+            var form = $('form[name="CreateForm"]');
+
+            form.validate();
+            if (!form.valid()) {
+                return;
+            } else {
+                var data = form.serialize();
+                $.post("/HRVariables/CreateDe", data, function (Success) {
+                    if (Success == 1) {
+                        modal.modal('hide');
+                    }
+
+                })
+            }
+
+        }
+
+    </script>
+    <script>
+        $(function () {
+            $("#Emp1").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployeesForHOD", "HR")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp1").val(ui.item.label); // Set the display value in the input field
+                    $("#SectHODId").val(ui.item.value); // Set the selected employee's ID in the hidden input field
+                    return false;
+                }
+            });
+
+            $("#Emp1").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    $("#SectHODId").val(""); // Set the value to an empty string when the input field is blank
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+
+
+        $(function () {
+            $("#Emp2").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchEmployeesForCLevel", "HRVariables")",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    $("#Emp2").val(ui.item.label); // Set the display value in the input field
+                    $("#SectCLevelId").val(ui.item.value); // Set the selected employee's ID in the hidden input field
+                    return false;
+                }
+            });
+
+            $("#Emp2").on('keyup', function () {
+                var value = $(this).val();
+                if (value.trim() === "") {
+                    $("#SectCLevelId").val(""); // Set the value to an empty string when the input field is blank
+                    console.log("Input field is blank");
+                } else {
+                    // Input field is not blank
+                    // Perform your logic here
+                    console.log("Input field is not blank");
+                }
+            });
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

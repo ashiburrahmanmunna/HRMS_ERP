@@ -1,0 +1,147 @@
+﻿@model GTERP.Models.Technical
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var RequisitionResult = ViewBag.reqsub;
+}
+
+<form action="" method="post">
+    <div class="card p-2 mt-2">
+        <div class="row" style="padding: 12px;padding-bottom: 0px;">
+
+            <div class="col-xl-3 col-6">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Report Type</label>
+                    @Html.DropDownList("ReportType", ViewBag.ReportType as List<SelectListItem>, new { id = "ReportType", @class = "form-control form-control-sm" })
+
+                </div>
+            </div>           
+
+        </div>
+        
+            
+       
+
+        <br />
+        <div class="row" style="padding: 12px;padding-bottom: 0px;">
+            <div class="col-md-3 col-12">
+                <div class="form-group row">
+                    <label for="FDate" class="col-sm-4 col-form-label">From Date : </label>
+                    <div class="col-sm-7">
+
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="form-group row">
+                    <label for="ToDate" class="col-sm-4 col-form-label">To Date : </label>
+                    <div class="col-sm-7">
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12 text-left">
+
+                <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <button type="button" id="btnReport" class="btn btn-success">Show Report</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+
+@section Scripts
+    {
+    <script>
+
+        function CurrentDate(da) {
+            var date = new Date(da);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+        $("#FromDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#FromDate").datepicker("option", "dateFormat");
+                //setter
+                $("#FromDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+        $("#ToDate").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#ToDate").datepicker("option", "dateFormat");
+                //setter
+                $("#ToDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#FromDate").val(CurrentDate(new Date()));
+        $("#ToDate").val(CurrentDate(new Date()));
+
+       $(document).ready(function () {
+
+
+           $('#ReportType').select2();
+           
+
+           $('#btnReport').click(function () {
+
+               let reportType = $("#ReportType").val();
+               let fromDate = $("#FromDate").val();
+               let toDate = $("#ToDate").val();
+               let rptFormat = $("input[name='RptType']:checked").val();
+
+               //let url = `userId=${userId}&productId=${productId}&reportType=${reportType}&empId=${empId}&reportType=${reportType}&fromDate=${fromDate}&toDate=${toDate}&rptFormat=${rptFormat}`
+               //window.location.href = '@Html.ActionLink("Technical","GetReport")?'+ url; // userId + '&productId=' + productId + '&reportType=' + reportType + '&empId=' + empId;
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetReport", "Technical")',
+                    dataType: 'json',
+                    data: { reportType: reportType,reportType: reportType, fromDate: fromDate, toDate: toDate, rptFormat: rptFormat },
+                    success: function (response) {
+                        window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+            });
+
+           });
+
+        });
+
+    </script>
+}

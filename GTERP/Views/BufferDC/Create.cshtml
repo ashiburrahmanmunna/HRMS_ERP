@@ -1,0 +1,931 @@
+﻿@model GTERP.Models.Buffers.BufferDelChallan
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Antiforgery
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IAntiforgery AntiForgery
+
+@{
+   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+{
+    //style="max-width:900px"
+
+
+    <div class="container-fluid">
+        <div class="card p-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="Create">
+                        <h1  id="styletext" class="text-center">Delivery Challan Create</h1>
+                        <br />
+                        <div class="form-row">
+
+
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="BufferDelChallanId" />
+                            <input type="hidden" asp-for="ComId" />
+                            <input type="hidden" asp-for="UserId" />
+                            <input type="hidden" asp-for="DateAdded" />
+                            <input type="hidden" id="mode" value="@ViewBag.Title" />
+                            
+
+                            <input type="hidden" asp-for="BufferDelOrderId"/>
+
+                            <div class="col-md-12 p-0">
+                                <div class="row">
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.DONo" class="col-2 control-label">&nbsp;&nbsp; DO No &nbsp;&nbsp;&nbsp; </label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.DONo" id="DONo" class="form-control" />
+                                            <span asp-validation-for="BufferDelOrder.DONo" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+
+                                   
+
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12 p-0">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="ChallanNo" class="col-2 control-label">&nbsp;Last Challan No </label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="ChallanNo" id="ChallanNo" class="form-control" readonly />
+                                            <span asp-validation-for="ChallanNo" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="DeliveryDate" class="col-2 control-label">Delivery Date</label>
+
+                                                </span>
+                                            </div>
+                                            <input asp-for="DeliveryDate" id="DeliveryDate" class="form-control tg" type="date" min="2020-01-01" max="2030-12-31" />
+
+                                            <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="DeliveryQty" class="col-2 control-label">Challan Qty</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="DeliveryQty" min="0.01" max="200" id="DeliveryQty" class="form-control tg" style="min-width:100px" autocomplete="off" />
+                                            <span asp-validation-for="DeliveryQty" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.RepresentativeBooking.MonthName.MonthName" class="col-2 control-label">Month</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.RepresentativeBooking.MonthName.MonthName" id="MonthName" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.RepresentativeBooking.MonthName.MonthName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.RepresentativeBooking.BufferList.BufferName" class="col-2 control-label">&nbsp;&nbsp;Buffer &nbsp; &nbsp;</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.RepresentativeBooking.BufferList.BufferName" id="BufferName" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.RepresentativeBooking.BufferList.BufferName" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label class="control-label">&nbsp;&nbsp; Total DO Qty &nbsp;&nbsp;</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.Qty" id="TotalDOQty" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label class="control-label"> Qty  </label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.Qty" id="OrderQty" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.Qty" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label class="control-label">Remaining Qty</label>
+                                                </span>
+                                            </div>
+                                            <input id="RemainingQty" class="form-control" readonly />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="DODate" class="col-2 control-label">DO Date</label>
+                                                </span>
+                                            </div>
+                                            @* <input asp-for="DODate" id="DODate" class="form-control" readonly />*@
+                                            <input id="DODate" class="form-control" readonly />
+                                            <span asp-validation-for="DODate" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="PayInSlipDate" class="col-2 control-label">Pay Slip Date</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="PayInSlipDate" id="PayInSlipDate" class="form-control" readonly />
+                                            <span asp-validation-for="PayInSlipDate" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.UnitPrice" class="col-2 control-label">Unit Price</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.UnitPrice" id="UnitPrice" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.UnitPrice" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeCode" class="col-2 control-label">Representative Code</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeCode" id="RepresentativeCode" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeCode" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <label asp-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeName" class="col-2 control-label">Representative Name</label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeName" id="RepresentativeName" class="form-control" readonly />
+                                            <span asp-validation-for="BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeName" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <label asp-for="BufferDelOrder.PayInSlipNo" class="col-2 control-label">Pay Slip No</label>
+                                    </span>
+                                </div>
+                                <input asp-for="BufferDelOrder.PayInSlipNo" id="PayInSlipNo" class="form-control" readonly />
+                                <span asp-validation-for="BufferDelOrder.PayInSlipNo" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <br />
+
+
+
+                       
+
+
+
+                        <table>
+
+                            <tr>
+
+                                <td>
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        
+                                        <button id="create" class="btn btn-primary" onclick="ConfirmDialog('Do you want to save ?')" type="button">Save</button>
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                       
+                                        <button id="Edit" class="btn btn-warning" onclick="ConfirmDialog('Do you want to update ?')" type="button">Update</button>
+
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        
+                                        <button id="Delete" class="btn btn-danger" type="button" onclick="ConfirmDialogDelete('Are you sure');">Delete</button>
+
+
+
+                                    }
+
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Back", "Index", "DeliveryChallan", null, new { @class = "btn btn-info btn-block" })
+
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Reset", "Create", "DeliveryChallan", null, new { @class = "btn btn-warning btn-block" })
+
+                                </td>
+
+
+                            </tr>
+
+                        </table>
+
+
+
+
+
+                    </form>
+                </div>
+
+
+
+                <div class="col-md-4">
+                    <br />
+                    <br />
+                    <br />
+
+                    <div class="col-md-12 order-md-1 mb-2">
+                        <div class="card p-1">
+                            <div class="table-responsive text-nowrap">
+
+                                <table id="tblexportordermain" class="tblexportordermain display table-bordered table-sm table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Challan Id</th>
+                                            <th>Delivery Challan No</th>
+                                            <th>Challan Date</th>
+                                            <th>Delivery Challan Qty</th>
+
+                                        </tr>
+                                    </thead>
+                                    @*<tbody>
+
+                                            @foreach (var item in ViewBag.ExportDetails)
+                                            {
+                                            <tr class="txtMultExportInvoiceMaster">
+                                                <td>
+                                                    @item.DeliveryChallanId
+                                                </td>
+                                                <td>
+                                                    @item.ChallanNo
+                                                </td>
+                                                <td>
+                                                    @item.DeliveryDate
+                                                </td>
+                                                <td>
+                                                    @item.DeliveryQty
+                                                </td>
+
+
+
+                                            </tr>
+
+                                            }
+                                        </tbody>*@
+                                    <tfoot>
+                                        <tr>
+                                            <td class="text-right" colspan="3">
+                                                <h6>Total Challan Qty & Value</h6>
+                                            </td>
+                                            <td colspan="1" class="text-center">
+                                                <h6 class="TotalChallanQty">0.00</h6>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script>
+
+
+        var info;
+        var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+        function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            
+
+                            $(this).dialog("close");
+                            DeliveryChallan_delete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+
+       
+
+
+
+        function DeliveryChallan_Save() {
+
+            if (!$("#myform").valid()) {
+                toastr.error('Please Fill Up All Necessary Information Correctly.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                $("#create").prop("disabled", false);
+                return true;
+            }
+
+            var orderqty = parseFloat($('#OrderQty').val());
+            var deliveryqty = parseFloat($('#DeliveryQty').val());
+
+            if (parseFloat(deliveryqty) <= 0) {
+                toastr.error('Please Fill Qty to Save the Challan.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                $('#DeliveryQty').focus();
+                $("#create").prop("disabled", false);
+
+                return true;
+            }
+
+
+            orderqty = orderqty || 0;
+            deliveryqty = deliveryqty || 0;
+
+            var remainingqty = orderqty - deliveryqty;
+
+
+            if (deliveryqty > orderqty) {
+                toastr.error('Qty Cross the Remaining Value');
+                $("#create").prop("disabled", false);///added by fahad for stoping double submit from form...
+
+                return true;
+            }
+
+          
+
+            var DeliveryChallan = {
+                BufferDelChallanId: 0, ChallanNo: "", DeliveryDate: "", DeliveryQty: "", BufferDelOrderId:0,ComId: "", UserId: "", DateAdded: ""
+            }
+
+            //var d = new Date();
+
+
+            //var strDate = "2013-03-10T02:00:00Z";
+            //strDate.substring(0, 10);
+
+            if ($('#DeliveryChallanId').val() > 0) {
+                DeliveryChallan.BufferDelChallanId = $('#DeliveryChallanId').val();
+
+                DeliveryChallan.ComId = $('#ComId').val();
+                DeliveryChallan.UserId = $('#UserId').val();
+                DeliveryChallan.DateAdded = $('#DateAdded').val();
+            }
+            else {
+                DeliveryChallan.ChallanNo = 0;
+                DeliveryChallan.BufferDelChallanId = 0;
+
+                DeliveryChallan.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                DeliveryChallan.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                DeliveryChallan.DateAdded = CurrentDate()
+            };
+
+           
+            DeliveryChallan.ChallanNo = $('#ChallanNo').val();
+            DeliveryChallan.DeliveryDate = $('#DeliveryDate').val();// d.toISOString($('#DODate').val()).substring(0, 10);
+            DeliveryChallan.DeliveryQty = $('#DeliveryQty').val();
+            DeliveryChallan.BufferDelOrderId = $('#BufferDelOrderId').val();
+            alert(DeliveryChallan.BufferDelOrderId);
+
+
+            console.log(DeliveryChallan);
+
+            if (DeliveryChallan.BufferDelOrderId !== "" && DeliveryChallan.DeliveryQty !== "") {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create","BufferDC")',
+                    dataType: 'json',
+                    async: false,
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { deliveryChallan: DeliveryChallan },
+                    success: function (data) {
+                        console.log(data)
+                        //alert(data.Success);
+                        if (data.Success == "1") {
+                            //alert('Data Save Successfully');
+                            customFile(data.Success, data.ex);
+                            //alert(data.ex);
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Index", "BufferDC")';
+                            }, 500);
+                        }
+                        else if (data.Success == "2") {
+                            //alert('Data Update Successfully');
+                            customFile(data.Success, data.ex);
+                            //alert(data.ex);
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Index", "BufferDC")';
+                            }, 500);
+                        }
+                        else {
+                            //console.log(data.ex);
+                            //alert('Wait');
+                            toastr.error(data.ex);
+
+                            return true;
+                        }
+                    },
+                    error: function (ex) {
+                        alert('error');
+                    }
+                });
+            }
+            else {
+             
+
+
+            }
+
+        }
+
+
+
+
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Save / Update message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            $(this).dialog("close");
+                            $("#create").prop("disabled", true);
+                            DeliveryChallan_Save();
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+
+        $(document).ready(function () {
+
+
+
+            var tblexportordermain = $('#tblexportordermain').dataTable({
+
+                "aoColumns": [
+
+                    { "sClass": "ChallanId", "visible": false },
+                    { "sClass": "ChallanNo", "visible": true },
+                    { "sClass": "ChallanDate", "visible": true },
+                    { "sClass": "ChallanQty", "visible": true }
+
+                ],
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+                "iDisplayLength": 5,
+                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                rowCallback: function (row) {
+                    $(row).addClass('txtMultExportInvoiceMaster');
+                }
+            })
+
+
+
+
+
+
+
+
+            var mode=$("#mode").val();
+            if (mode=="Edit"||mode=="Delete") {
+                DeliveryOrderData();
+                $('#DeliveryQty').focus();
+            }
+            else {
+                $('#DONo').focus();
+                //$('#ChallanNo').val("");
+                $('#DeliveryQty').val("");
+
+
+            }
+
+
+            $('form').bind("keypress", function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+        });
+
+
+        function DeliveryChallan_delete() {
+
+            var DeliveryChallanId = $("#DeliveryChallanId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "BufferDC")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: DeliveryChallanId }), //use id here
+                //data: JSON.stringify(salesmain),
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Success == "1") {
+
+                        window.setTimeout(function () {
+                            window.location.href = '@Url.Action("Index", "BufferDC")';
+                        }, 500);
+
+                    }
+
+                    if (result.error == "1") {
+                        toastr.error(result.ex);
+                    }
+            }
+            });
+    }
+
+        $('input').keydown(function (e) {
+            var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            if (key == 13) {
+                //e.preventDefault();
+                var inputs = $(this).closest('form').find(':input:visible');
+                inputs.eq(inputs.index(this) + 1).focus();
+
+                var idabc = $(this).attr('id');
+                //alert(idabc);
+                //if (idabc == "#CustomerCode") {
+
+                //    if ($('#CustomerName').length() > 3) { $('#PayInSlipDate').focus(); }
+
+
+                //}
+
+
+                if (idabc == "abc") {
+
+                    if ($('#abc').val().length > 3) { $('#Qty').focus(); }
+                }
+                else if (idabc == "DONo")
+                {
+                    if ($('#DONo').val().length > 3) {
+                        $('#DeliveryQty').focus();
+                        //$('#DeliveryDate').focus();
+                    }
+                }
+                else if (idabc == "DeliveryDate") {
+                    //alert('found');
+                    if ($('#DeliveryDate').val().length > 3) { $('#DeliveryQty').focus(); }
+                }
+                else {
+                    var inputs = $(this).closest('form').find(':input:visible');
+                    inputs.eq(inputs.index(this) + 1).focus();
+                }
+
+                ///alert(idabc);
+                if (idabc == "DeliveryQty") {
+                    if ($('#DeliveryQty').val() > 0) {
+                        ConfirmDialog('Are you sure ?');
+                        return false;
+                        //DeliveryChallan_Save();
+                    }
+                    else {
+                        toastr.error('Please Fill Challan Qty to Save the Delivery Challan.');
+                        $('#DeliveryQty').focus();
+                    }
+
+                } else {
+                    return e.keyCode = 9;
+
+                }
+
+               
+
+            }
+        });
+
+
+
+
+
+       
+        $('#RepresentativeName').attr('disabled', true);
+        $('#MonthName').attr('disabled', true);
+        $('#ChallanNo').attr('disabled', true);
+
+        $('#BufferName').attr('disabled', true);
+        $('#OrderQty').attr('disabled', true);
+        $('#RemainingQty').attr('disabled', true);
+        $('#DODate').attr('disabled', true);
+        $('#PayInSlipDate').attr('disabled', true);
+        $('#UnitPrice').attr('disabled', true);
+       
+        $('#PayInSlipNo').attr('disabled', true);
+        
+
+
+        function CurrentDate() {
+            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var date = new Date();
+            var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+            return today;
+        };
+
+        
+
+
+
+        function multInputsexportinvoice() {
+
+            var totalorderqty = 0;
+
+
+            $("tr.txtMultExportInvoiceMaster").each(function () {
+
+                var $val1 = $('.ChallanQty', this).text().replace(/[\$,]/g, '');
+
+                totalorderqty += parseFloat($val1);
+
+
+            });
+
+            //alert(totalorderqty);
+
+            $(".TotalChallanQty").val(totalorderqty.toFixed(2));//---fahad
+            $(".TotalChallanQty").text(totalorderqty.toFixed(2));//---fahad
+
+        }
+
+
+
+        $('#DONo').focusout(function (e) {
+
+
+       
+            if ($('#DONo').val() > 0) {
+
+                DeliveryOrderData()
+                ExportOrderSummaryGrid();
+                multInputsexportinvoice();
+                //$('#ChallanNo').focus();
+                $('#DeliveryQty').focus();
+                //$('#DeliveryDate').focus();
+
+
+            } else {
+                toastr.error("Please Provide DONO.");
+                $('#DONo').focus();
+                }
+            //}
+        });
+
+        function DeliveryOrderData() {
+            var DONo = $('#DONo').val();
+            var BufferDelChallanId = $('#DeliveryChallanId').val();
+            //alert(DeliveryChallanId);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetDeliveryOrderData","BufferDC")',
+                dataType: 'json',
+                data: { DONo: DONo, ChallanId: BufferDelChallanId},
+                success: function (data) {
+                    
+                    $('#BufferDelOrderId').val(data[0].DOId);
+                    $('#ChallanNo').val(data[0].MaxChallanNo);
+
+                    //alert($('#DOId').val());
+                   
+                    $('#MonthName').val(data[0].MonthName);
+                    $('#BufferName').val(data[0].BufferName);
+                    $('#OrderQty').val(data[0].RemainingQty);
+                    $('#TotalDOQty').val(data[0].TotalDOQty); ///need to check
+
+                    //alert(data[0].DODate);
+
+                    $('#DODate').val(data[0].DODate);
+                    $('#PayInSlipDate').val(data[0].PayInSlipDate);
+                    //$('#RemainingQty').val(data[0].RemainingQty);
+                    //alert(data[0].PayInSlipDate);
+                    //alert(data[0].DODate);
+
+
+                    $('#UnitPrice').val(data[0].UnitPrice);
+                   
+                    $('#PayInSlipNo').val(data[0].PayInSlipNo);
+                    $('#RepresentativeName').val(data[0].RepresentativeName);
+                    $('#RepresentativeCode').val(data[0].RepresentativeCode);
+
+
+
+                   
+
+                    if (BufferDelChallanId == '')
+                    {
+                        //alert('hit');
+
+
+                        var now = new Date();
+
+                        var day = ("0" + now.getDate()).slice(-2);
+                        var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+                        var today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+                        $('#DeliveryDate').val(today);
+
+                       
+
+                    }
+
+
+
+                    remainingQtyCalculation();
+
+                }
+            });
+        }
+
+        function ExportOrderSummaryGrid() {
+            tblexportordermain = $('#tblexportordermain').DataTable();
+            tblexportordermain
+                .clear()
+                .draw();
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetDeliveryChallanList", "BufferDC")',
+                dataType: 'json',
+                async: false,
+                data: { id: $('#DONo').val() },
+                success: function (data) {
+                    //console.log(data);
+                    //alert('test');
+                    for (var i = 0; i < data.length; i++) {
+                        $('#tblexportordermain').dataTable().fnAddData([data[i].BufferDelChallanId, data[i].ChallanNo, data[i].DeliveryDate, data[i].DeliveryQty]);
+
+                        // alert(data[i].MasterLCId); 'class= "OrderValue"' +
+                    }
+
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+        }
+
+        function remainingQtyCalculation() {
+
+            var orderqty = parseFloat($('#OrderQty').val());
+            var deliveryqty = parseFloat($('#DeliveryQty').val());
+
+            orderqty = orderqty || 0;
+            deliveryqty = deliveryqty || 0;
+            var remainingqty = orderqty - deliveryqty;
+
+            $('#RemainingQty').val(remainingqty.toFixed(2));
+
+            if (deliveryqty > orderqty) {
+                $("#RemainingQty").removeClass(" yellow");
+                $("#RemainingQty").addClass("important red");
+                $("#RemainingQty").css({ 'color': 'yellow', 'font-size': '150%' });
+               
+
+            }
+
+            else {
+                $("#RemainingQty").removeClass("important red");
+                $("#RemainingQty").addClass(" yellow");
+                $("#RemainingQty").css({ 'color': 'green', 'font-size': '100%' });
+            }
+            
+
+
+        };
+
+
+        $('#DeliveryQty').keyup(function () {
+            remainingQtyCalculation();
+        });
+
+        $("#DeliveryQty").focusout(function () {
+            remainingQtyCalculation();
+        });
+
+
+    </script>
+}
+

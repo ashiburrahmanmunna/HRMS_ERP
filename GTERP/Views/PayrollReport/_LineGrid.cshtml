@@ -1,0 +1,98 @@
+﻿
+
+@using GTERP.Models.Common
+
+
+@{
+    List<Cat_Line> Lines = new List<Cat_Line>();
+    Lines = ViewBag.EmpLine;
+}
+
+    <div class="mb-0">
+        <input type="text" class="bandSearch form-control" placeholder="Search . . ." />
+    </div>
+
+    <table id="commonTable" class="commonTable table table-hover mb-0 text-center" width="100%">
+        <thead>
+            <tr>
+                <th class="d-none">Line Id</th>
+                <th>Line Name</th>
+            </tr>
+        </thead>
+    </table>
+
+<div class="mCustomScrollbar" data-mcs-theme="minimal-dark" style="height: 228px">
+
+    <table id="bandTable" class="bandTable table table-hover trow table-striped text-center" width="100%">
+
+        <thead class="d-none">
+            <tr>
+                <th>Line Id</th>
+                <th>Line Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr id="myrow">
+                <td class="d-none">
+                    0
+                </td>
+
+                <td>
+                    =ALL=
+                </td>
+            </tr>
+
+            @if (Lines.Count > 0)
+            {
+
+                foreach (Cat_Line aLine in Lines)
+                {
+                    <tr id="myrow">
+                        <td style="display: none;" width="45%">
+                            @aLine.LineId
+                        </td>
+
+                        <td style="padding-left: 8px;">
+                            @aLine.LineName
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@*<script src="~/Content/js/plugins/jquery/jquery-3.1.1.min.js"></script>
+    <script src="~/Content/js/plugins/datatables/jquery.dataTables.min.js"></script>*@
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $(".bandSearch").keyup(function () {
+
+                var searchText = $(this).val();
+
+                searchText = searchText.toLowerCase();
+
+                $('#bandTable tbody tr').each(function () {
+
+                    var bandId = $.trim($(this).children("td:eq(0)").html());
+                    var bandName = $.trim($(this).children("td:eq(1)").html());
+
+                    if (bandId.toLowerCase().indexOf(searchText) === -1 &&
+                        bandName.toLowerCase().indexOf(searchText) === -1) {
+                        $(this).css("display", "none");
+                    } else {
+                        $(this).css("display", "");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+    }

@@ -1,0 +1,1001 @@
+﻿@model GTERP.Models.ReportType
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+
+
+@{
+    //ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var section = ViewBag.AllEmployee;
+}
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<style>
+</style>
+
+@Html.AntiForgeryToken()
+
+<div class="card">
+    <h4 class="form-header ">
+        <span class="fas fa-wrench col-md-2">Approval </span> 
+        
+            <button type="button" id="RptType" class="tab col-md-2 btn btn-outline-info">
+                <span class="glyphicon glyphicon-retweet">Report Type </span> 
+            </button>
+            <button type="button" id="Role" class="tab col-md-2 btn btn-outline-info">
+                <span class="glyphicon glyphicon-retweet">Approval Role</span>
+            </button>
+            <button type="button" id="assaign" class="tab col-md-2 btn btn-outline-info">
+                <span class="glyphicon glyphicon-retweet">Assaignment </span>
+            </button>
+        
+    </h4>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 col-12 pl-0">
+                <div class="leftDiv">
+                    <div class="card" id="reportDiv">
+                        <div class="border-bottom p-2">
+                            <h3>Create New Report Type</h3>
+                            <hr />
+                            <div>
+                                <input class="form-control" id="rptTypeid" type="hidden" />
+                                <label for="#rptTypeName">Report Type</label>
+                                <input class="form-control" id="rptTypeName" />
+                                <label for="#rptTypeDes">Description</label>
+                                <input class="form-control" id="rptTypeDes" />
+                            </div>
+                            <div class="">
+                                <center>
+                                    <button type="button" id="saveRptType" class="btn btn-warning btn-sm">
+                                        <span class="glyphicon glyphicon-retweet"> </span> Save
+                                    </button>
+                                    <button type="button" id="editRptType" name="updateBtn" class="btn-sm btn btn-success">
+                                        <span class="glyphicon glyphicon-check"> </span> Update
+                                    </button>
+                                    <button type="reset" id="cancel" name="cancel" class="btn-sm btn btn-success">
+                                        <span class="glyphicon glyphicon-check"> </span> Cancel
+                                    </button>
+                                </center>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="card p-2 mt-2" id="roleDiv">
+
+                        <h3>Create New Approval Role</h3>
+                        <hr />
+                        <div>
+                            <input class="form-control" id="aprovRoleid" type="hidden" />
+                            <label for="#RoleTitle">RoleTitle</label>
+                            <input class="form-control" id="RoleTitle" />
+                            <label for="#RoleDescription">RoleDescription</label>
+                            <input class="form-control" id="RoleDescription" />
+                        </div>
+                        <div class="">
+                            <center>
+                                <button type="button" id="saveRole" class="btn btn-warning">
+                                    <span class="glyphicon glyphicon-retweet"> </span> Save
+                                </button>
+                                <button type="button" id="editRole" name="updateBtn" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-check"> </span> Update
+                                </button>
+                                <button type="reset" id="cancel" name="cancel" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-check"> </span> Cancel
+                                </button>
+                            </center>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div class="col-md-9 col-12 card" id="rptListDiv">
+                <h3>Report Types</h3>
+                <hr />
+                <div id="fixAttGridDiv">
+                    @*<partial name="_FixAttendancGrid" />*@
+                    <div class="pt-2" id="scrollDiv">
+                        <div class="table-responsive" id="scrollXDiv">
+                            <table id="rptType" class="text-nowrap table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+
+                                <thead class="text-center">
+                                    <tr>
+                                        <th style="display:none">Id</th>
+                                        <th>ReportType</th>
+                                        <th>Description</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="">
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-12 card" id="assignDiv">
+                <h3>Assign Approval</h3>
+                <hr />
+                <div id="assignmentGrid">
+                    <div class="pt-2" id="scrollDiv">
+                        <div class="container form-group row col-md-12">
+
+                            <select class="form-control col-md-2" id="createUser">
+                                <option>Select Create User</option>
+                            </select>
+                            <label for="#createUser" class="control-label col-md-1"><button id="load" class="btn btn-success ">Load</button></label>
+
+
+                            <select class="form-control col-md-2" id="newUser">
+                                <option>Select New User</option>
+                            </select>
+                            <label for="#newUser" class="control-label col-md-1"> <button id="transfer" class="btn btn-success">Transfer</button></label>
+
+                        </div>
+                        <div class="container form-group row col-md-12">
+                            <label style="text-align:right" for="#drpRptType" class="control-label col-md-1">Report </label>
+                            <select class="form-control col-md-2" id="drpRptType">
+                                <option>Select Report Type</option>
+                            </select>
+
+                            <label style="text-align:right" for="#drpRoleId" class="control-label col-md-1">Role</label>
+                            <select class="form-control col-md-2" id="drpRoleId">
+                                <option>Select Approval Role</option>
+                            </select>
+                            <label style="text-align:right" for="#drpApprovalUser" class="control-label col-md-1"> User</label>
+                            <select class="form-control col-md-2" id="drpApprovalUser">
+                                <option>Select Approval User</option>
+                            </select>
+
+                            <label class="control-label  col-md-1"> <button id="addAssignBtn" class="btn btn-success">Add</button></label>
+                        </div>
+                        <div class="table-responsive" id="scrollXDiv">
+                            <div id="divApprovalList">
+                                <table id="ApprovalList" class="text-nowrap table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                </table>
+
+                            </div>
+                            
+                        </div>
+                        <div class="table-responsive col-md-6"  id="scrollXDiv">
+                            <div id="divAddedAssignList">
+                                <h4>Assignment Grid</h4>
+                                <table id="AddedAssignList" class="text-nowrap table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th style="display:none">Id</th>
+                                            <th style="display:none">ApprovalUserId</th>
+                                            <th style="display:none">ReportTypeId</th>
+                                            <th>ReportType</th>
+                                            <th>Role</th>
+                                            <th>Approval User</th>
+                                        </tr>
+                                    </thead>
+
+                                    
+                                    <tbody class="" id="assignTbody">
+                                        
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <center>
+                                <button type="button" id="assignApproval" class="btn btn-warning">
+                                    <span class="glyphicon glyphicon-retweet"> </span> Assign
+                                </button>
+
+                            </center>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-md-9 col-12 card" id="roleListDiv">
+                <h3>Approval Role List</h3>
+                <hr />
+                <div id="assignmentGrid">
+                    <div class="pt-2" id="scrollDiv">
+                       
+                        
+                        <div class="table-responsive" id="scrollXDiv">
+                            <table id="assignmentGridhd" class="text-nowrap table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+
+                                <thead class="text-center">
+                                    <tr>
+                                        <th style="display:none">Id</th>
+                                        
+                                        <th>Role</th>
+                                        <th>Description</th>
+
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="">
+                                </tbody>
+                            </table>
+                            
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div> @*Options Container end*@
+    </div> @*Panel Body end*@
+</div> @*Panel end*@
+
+@*Modal*@
+<div class="myMessage">
+    <div id="msgDivWrapper" class="card">
+        <div id="msgDivHeader" class="card-header"><h4>Message</h4></div>
+        <div class="card-body ajaxMessage"></div>
+        <div id="msgDivFooter" class="card-footer">
+            <button id="okBtn" type="button" class="btn btn-default">
+                <span class="fas fa-times"> </span> Close
+            </button>
+        </div>
+    </div>
+</div>
+@*Appears during ajax call*@
+<div id="progress" class="modal">
+    <div class="center loading">
+        <img id="loadingImage" src="~/Content/img/loading.gif" />
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        var table2;
+        var table3;
+        var table4;
+        var editor;
+        var userList;
+        var userList1=[];
+        var userRoleList = [];
+
+        var AssignApprovalRoleUser = { Id: 0, RptTypeId: 0, RoleId: 0, CreatedUserId: "", ApprovalUserId: "" };
+
+        var AssignApproval = { Id: 0,  RoleUserList: userRoleList};
+
+
+        function initializeGrid(data) {
+            for (var i = 0; i < data.length; i++) {
+
+                $('#rptType').dataTable().fnAddData(
+                    [
+                        data[i].Id,
+                        data[i].TypeTitle,
+                        data[i].Description,
+                        data[i].Id
+                        //Employee code r pore employee name hobe tarpor shift hobe erpor date, time in, timeout, othour, remake.
+
+                    ]
+                );
+
+                optionValue = data[i].Id;
+                optionText = data[i].TypeTitle;
+                $('#drpRptType').append(new Option(optionText, optionValue));
+            }
+        };
+        function initializeGrid2(data1,data2) {
+            for (var i = 0; i < data1.length; i++) {
+
+                $('#assignmentGridhd').dataTable().fnAddData(
+                    [
+                        data1[i].Id,
+                        data1[i].RoleTitle,
+                        data1[i].RoleDescription,
+                        data1[i].Id
+
+                    ]
+                );
+                optionValue = data1[i].Id;
+                optionText = data1[i].RoleTitle;
+                $('#drpRoleId').append(new Option(optionText, optionValue));
+            }
+        };
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+       /******************************************************/
+        /*----------------------------------------------------*/
+
+
+        // the function creates a select box
+        function createSelect(selItem) {
+            var sel = "<select class='form-control' id='userDrp' ><option>Select User</option>";
+            for (var i = 0; i < selItem.length; ++i) {
+                sel += "<option  value = '" + selItem[i].UserId + "' >" + selItem[i].Email + "</option>";
+            }
+            sel += "</select>";
+            return sel;
+        }
+
+        function createUserSelect(selItem) {
+            for (var i = 0; i < selItem.length; ++i) {
+                optionText = selItem[i].Email;
+                optionValue = selItem[i].UserId;
+                 $('#createUser').append(new Option(optionText, optionValue));
+                $('#newUser').append(new Option(optionText, optionValue));
+                $('#drpApprovalUser').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+
+
+
+
+        function refreshReportType() {
+            //table.empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetReportTypes", "ControllerFolder")',
+                //dataType: 'json',
+                success: function (data) {
+                    if (data.data != null) {
+
+                        initializeGrid(data.data);
+
+
+                    }
+
+                    else {
+                        toastr.error('No record found in database');
+                    }
+                },
+
+                error: function (ex) {
+                    toastr.error("Sorry, an error occured . . . .");
+                }
+
+            });
+        };
+
+         function InitializeAssignmentTable() {
+            //table.empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetRoleAndUsers", "ControllerFolder")',
+                //dataType: 'json',
+                success: function (data) {
+                    if (data.roleList != null) {
+
+                        createUserSelect(data.userList);
+                        initializeGrid2(data.roleList,data.userList);
+
+                    }
+
+                    else {
+                        toastr.error('No record found in database');
+                    }
+                },
+
+                error: function (ex) {
+                    toastr.error("Sorry, an error occured . . . .");
+                }
+
+            });
+        };
+
+        $(document).ready(function () {
+            $('#editRole').hide();
+            $('#editRptType').hide();
+            $('#roleDiv').hide();
+            $('#assignDiv').hide();
+            $('#roleListDiv').hide();
+            var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+            table = $('#rptType').DataTable({
+                'aoColumns': [
+                    { 'sClass': 'Id', 'visible': false },
+                    { 'sClass': 'TypeTitle', 'visible': true },
+                    { 'sClass': 'Description', 'visible': true },
+                    { 'sClass': 'action', 'visible': true }],
+
+
+                columnDefs: [
+                    {
+                        targets: 3, render: function (data) {
+                            return '<button id="btnEditRptType" class="btn btn-primary btn-sm" value="' + data + '"> Edit</button><button id="btnDelRptType" class="btn btn-primary btn-sm" value="' + data + '"> Delete</button>';
+                        }
+                    }]
+                ,
+                'paging': true,
+                'info': true,
+                "scrollY": 455,
+                "scrollX": true,
+
+                //select: {
+                //    style: 'multi',
+                //    // style: 'os',
+                //    selector: 'td:first-child'
+                //},
+                dom: 'Bfrtip',
+                //buttons: [
+
+                //    'selectAll',
+                //    'selectNone'
+
+                //]
+            });
+
+            table2 = $('#assignmentGridhd').DataTable({
+
+                'aoColumns': [
+                    { 'sClass': 'Id', 'visible': false },
+                    { 'sClass': 'ApprovalRole', 'visible': true },
+
+                    { 'sClass': 'description', 'visible': true }, { 'sClass': 'action', 'visible': true }
+
+
+
+                ],
+                columnDefs: [
+                    {
+                        targets: 3, render: function (data) {
+                            return '<button id="btnEditRole" class="btn btn-primary btn-sm" value="' + data + '"> Edit</button><button id="btnDelRole" class="btn btn-primary btn-sm" value="' + data + '"> Delete</button>';
+                        }
+                    },
+                    //{
+                    //    targets: [3], render:
+                    //        function (data) { return createSelect(data); }
+                    //},
+                    //{
+                    //    targets: [1], render:
+                    //        function (d) {
+                    //            return '<input type="checkbox" class="form-control " name="checkBox" data-val="true" value=' + d + '>';
+                    //        }
+                    //}
+
+                ],
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                "bFilter": false
+            });
+
+            table4 = $('#AddedAssignList').DataTable({
+                'aoColumns': [
+                    { 'sClass': 'Id', 'visible': false },
+                    { 'sClass': 'ApprovalUserId', 'visible': false },
+
+                    { 'sClass': 'ReportTypeId', 'visible': false },
+                    { 'sClass': 'ReportType', 'visible': true },
+                    { 'sClass': 'Role', 'visible': true },
+                    { 'sClass': 'ApprovalUser', 'visible': true }                
+
+                ],
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                "bFilter": false
+            });
+
+            refreshReportType();
+            InitializeAssignmentTable();
+
+
+
+
+
+
+
+            $('#saveRole').click(function () {
+                var a = $('#RoleTitle').val();
+                var b = $('#RoleDescription').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateRole", "ControllerFolder")',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { RoleTitle: a, RoleDescription: b },
+                    success: function (data) {
+                        if (data.success == 1) {
+                            table2.clear();
+                            InitializeAssignmentTable();
+                            alert('data Saved Successfully');
+                        }
+                    },
+                    error: function (ex) {
+                        toastr.error(ex.error);
+                    }
+
+                });
+
+            });
+
+            $('#editRole').click(function () {
+
+                var p = $('#aprovRoleid').val();
+                var a = $('#RoleTitle').val();
+                var b = $('#RoleDescription').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EditRole", "ControllerFolder")',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { id: p, Id: p, RoleTitle: a, RoleDescription: b },
+
+                    success: function (data) {
+                        if (data.success == 1) {
+                            table2.clear();
+                            InitializeAssignmentTable();
+                            alert('data edited Successfully');
+                        }
+                    },
+                    error: function (ex) {
+                        toastr.error(ex.error);
+                    }
+
+                });
+
+            });
+
+            $('#saveRptType').click(function () {
+                var a = $('#rptTypeName').val();
+                var b = $('#rptTypeDes').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateReportTypes", "ControllerFolder")',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { TypeTitle: a, Description: b },
+                    success: function (data) {
+                        if (data.success == 1) {
+                            table.clear();
+                            refreshReportType();
+                            alert('data Saved Successfully');
+
+
+                        }
+
+
+                    },
+                    error: function (ex) {
+                        toastr.error(ex.error);
+                    }
+
+                });
+
+            });
+
+            $('#editRptType').click(function () {
+
+                 var p = $('#rptTypeid').val();
+                var a = $('#rptTypeName').val();
+                var b = $('#rptTypeDes').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EditReportTypes", "ControllerFolder")',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: {id:p, Id:p, TypeTitle: a, Description: b },
+                    success: function (data) {
+                        if (data.success == 1) {
+                            table.clear();
+                            refreshReportType();
+                            toastr.success('data Edited Successfully');
+
+
+                        }
+
+
+                    },
+                    error: function (ex) {
+                        toastr.error(ex.error);
+                    }
+
+                });
+
+            });
+
+            $('#rptType').on('click', '#btnEditRptType', function (e) {
+                $('#saveRptType').hide();
+                $('#editRptType').show();
+
+                var a = $(this).val();
+                    $.ajax({
+                        type: 'Get',
+                        url: '@Url.Action("EditReportTypes", "ControllerFolder")',
+                        dataType: 'json',
+                        data: { id: a },
+                        success: function (data) {
+
+                            $('#rptTypeid').val(data.data.Id);
+                            $('#rptTypeName').val(data.data.TypeTitle);
+                           // $('#rptTypeName').text(data.data.TypeTitle);
+                            $('#rptTypeDes').val(data.data.Description);
+                            //$('#rptTypeDes').text(data.data.Description);
+
+                        },
+                        error: function (ex) {
+                            toastr.error(ex.error);
+                        }
+
+                    });
+
+            });
+
+             $('#rptType').on('click', '#btnDelRptType', function (e) {
+                 var a = $(this).val();
+                 if (confirm('Are you sure to delete this')) {
+
+
+                    $.ajax({
+                        type: 'Post',
+                        url: '@Url.Action("DeleteReportTypes", "ControllerFolder")',
+                        dataType: 'json',
+                        headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                        data: { id: a },
+                        success: function (data) {
+                            if (data.success == 1) {
+                                table.clear();
+                                refreshReportType();
+                            toastr.success('data deleted successfully');
+                        }
+                        },
+                        error: function (ex) {
+                            toastr.error(ex.error);
+                        }
+
+                    });
+                 }
+
+            });
+
+            $('#assignmentGridhd').on('click', '#btnEditRole', function (e) {
+                $('#saveRole').hide();
+                $('#editRole').show();
+
+                var a = $(this).val();
+                    $.ajax({
+                        type: 'Get',
+                        url: '@Url.Action("EditRole", "ControllerFolder")',
+                        dataType: 'json',
+                        data: { id: a },
+                        success: function (data) {
+
+                            $('#aprovRoleid').val(data.result.Id);
+                            $('#RoleTitle').val(data.result.RoleTitle);
+                            $('#RoleDescription').val(data.result.RoleDescription);
+
+                        },
+                        error: function (ex) {
+                            toastr.error(ex.error);
+                        }
+
+                    });
+
+            });
+               $('#assignmentGridhd').on('click', '#btnDelRole', function (e) {
+
+
+                   var a = $(this).val();
+                   if (confirm('Are you sure to delete this')) {
+                       $.ajax({
+                           type: 'Post',
+                           url: '@Url.Action("DeleteRole", "ControllerFolder")',
+                           dataType: 'json',
+                           headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                           data: { id: a },
+                           success: function (data) {
+                               if (data.success == 1) {
+                                   table2.clear();
+                                   InitializeAssignmentTable();
+                                   toastr.success('data deleted successfully');
+                               }
+                           },
+                           error: function (ex) {
+                               toastr.error(ex.error);
+                           }
+
+                       });
+                   }
+
+                });
+
+            $('#createUser').on('change', function () {
+
+
+
+                var userId = $("#createUser option:selected").val();
+
+                 $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetCreateUsersApprovals", "ControllerFolder")',
+                    dataType: 'json',
+                     data: { userId: userId},
+                     success: function (data) {
+                         if ($.fn.DataTable.isDataTable(table3)) {
+                             table3.clear();
+
+                             table3.draw();
+                             $("#divApprovalList").hide();
+                             //table3.destroy();
+                         }
+                         if (data["approvalList"].length>0) {
+                             var columns = [];
+                             //data = JSON.parse(data);
+                             var obj = data["approvalList"][0];
+                             var columnNames = Object.keys(obj);
+                             for (var i in columnNames) {
+                                 columns.push({
+                                     data: columnNames[i],
+                                     title: capitalizeFirstLetter(columnNames[i])
+                                 });
+                             };
+                             //alert('changed');
+                             $("#divApprovalList").show();
+                             table3 = $('#ApprovalList').DataTable({
+                                 data: data["approvalList"],
+                                 columns: columns,
+                                 "columnDefs": [
+                                     {
+                                         "targets": [0],
+                                         "visible": false,
+                                         "searchable": false
+                                     }],
+                                 select: false,
+                                 destroy: true,
+                                 "paging": false,
+                                 "ordering": false,
+                                 "info": false,
+                                 "bFilter": false, "scrollX": true, "scrollY": 100
+                             });
+
+                         }
+
+                    },
+                    error: function (ex) {
+                      toastr.error(ex.error);
+                    }
+                 });
+            });
+
+
+            $("#load").click(function () {
+                //alert(this.value);
+                var userId = $("#createUser option:selected").val();
+
+                 $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetCreateUsersApprovals", "ControllerFolder")',
+                    dataType: 'json',
+                     data: { userId: userId},
+                     success: function (data) {
+                         if ($.fn.DataTable.isDataTable(table3)) {
+                             table3.clear();
+                             table3.destroy();
+                         }
+                         if (data["approvalList"].length>0) {
+                             var columns = [];
+                             //data = JSON.parse(data);
+                             var obj = data["approvalList"][0];
+                             var columnNames = Object.keys(obj);
+                             for (var i in columnNames) {
+                                 columns.push({
+                                     data: columnNames[i],
+                                     title: capitalizeFirstLetter(columnNames[i])
+                                 });
+                             };
+
+                             table3 = $('#ApprovalList').DataTable({
+                                 data: data["approvalList"],
+                                 columns: columns,
+                                 "columnDefs": [
+                                     {
+                                         "targets": [0],
+                                         "visible": false,
+                                         "searchable": false
+                                     }],
+                                 select: true,
+                                 destroy: true,
+                                 "paging": false,
+                                 "ordering": false,
+                                 "info": false,
+                                 "bFilter": false, "scrollX": true, "scrollY": 100
+                             });
+
+                         }
+
+                    },
+                    error: function (ex) {
+                      toastr.error(ex.error);
+                    }
+                 });
+            });
+
+
+
+            $("#transfer").click(function () {
+                //alert(this.value);
+                var fromUserId = $("#createUser option:selected").val();
+                var toUserId = $("#newUser option:selected").val();
+
+                 $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ApprovalTransfer", "ControllerFolder")',
+                     dataType: 'json',
+                     headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                     data: { fromUserId: fromUserId, toUserId: toUserId},
+                     success: function (data) {
+
+                         if (data.success==1) {
+                             alert('Approval transfer success');
+                         }
+                    },
+                    error: function (ex) {
+                      toastr.error(ex.error);
+                    }
+                 });
+            });
+
+            @*$('#ApprovalList').on('select.dt', function (e, dt, type, indexes) {
+                var data = dt.rows(indexes).data();
+                //console.log(data);
+                alert(data[0].TypeTitle);
+                var userId = $("#createUser option:selected").val();
+                      $.ajax({
+                    type: 'Get',
+                    url: '@Url.Action("GetApprovalList", "ReportTypes")',
+                    dataType: 'json',
+                     data: { userId: userId},
+                     success: function (data) {
+                         if (data["approvalUserList"].length>0) {
+                             var columns = [];
+                             //data = JSON.parse(data);
+                             var obj = data["approvalUserList"];
+
+                             var columnNames = Object.keys(obj);
+                             for (var i in columnNames) {
+                                 columns.push({
+                                     data: columnNames[i],
+                                     title: capitalizeFirstLetter(columnNames[i])
+                                 });
+                             };
+
+                             table3 = $('#ApprovalList').DataTable({
+                                 data: data["approvalList"],
+                                 columns: columns,
+                                 "columnDefs": [
+                                     {
+                                         "targets": [0],
+                                         "visible": false,
+                                         "searchable": false
+                                     }],
+                                 select: true,
+                                 destroy: true,
+                                 "paging": false,
+                                 "ordering": false,
+                                 "info": false,
+                                 "bFilter": false, "scrollX": true, "scrollY": 100
+                             });
+
+                         }
+
+                    },
+                    error: function (ex) {
+                      toastr.error(ex.error);
+                    }
+                 });
+            });*@
+              $("#assignApproval").click(function () {
+                  var oTableData = table4.rows().data();
+                var createUser = $('#createUser option:selected').val();              
+               
+
+                  for (var i = 0; i < oTableData.length; i++) {
+
+                      AssignApprovalRoleUser.RoleId = oTableData[i][0];
+                      AssignApprovalRoleUser.RptTypeId = oTableData[i][2];
+                      AssignApprovalRoleUser.CreatedUserId = createUser;
+                      AssignApprovalRoleUser.ApprovalUserId = oTableData[i][1];
+                      userRoleList.push(AssignApprovalRoleUser);
+                      AssignApprovalRoleUser = { Id: 0, RptTypeId: 0, RoleId: 0, CreatedUserId: "", ApprovalUserId: "" };
+
+                }
+              
+
+                  var data = JSON.stringify({ userRoleList });
+
+                 $.ajax({
+                  type: 'POST',
+                  url: '@Url.Action("SaveApproval", "ControllerFolder")',
+                  dataType: 'json',
+                  headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                     data: { assignApprovals: data },
+                     success: function (data) {
+                         if (data.success == 1) {
+                             alert('data Saved Successfully');
+
+
+                         }
+                     },
+                  error: function (ex) {
+                      toastr.error(ex.error);
+                     }
+
+                    });
+
+              });
+
+            $('#assaign').click(function () {
+                $('#reportDiv').hide();
+                $('#rptListDiv').hide();
+                $('#roleDiv').hide();
+                $('#assignDiv').show();
+                $('#roleListDiv').hide();
+            });
+            $('#RptType').click(function () {
+                $('#reportDiv').show();
+                $('#rptListDiv').show();
+                $('#roleDiv').hide();
+                $('#assignDiv').hide();
+                $('#roleListDiv').hide();
+            });
+            $('#Role').click(function () {
+                $('#reportDiv').hide();
+                $('#rptListDiv').hide();
+                $('#roleDiv').show();
+                $('#assignDiv').hide();
+                $('#roleListDiv').show();
+            });
+
+            $("#addAssignBtn").click(function () {
+                var Id = $("#drpRoleId option:selected").val();
+                var ApprovalUserId = $("#drpApprovalUser option:selected").val();
+                var ReportTypeId = $("#drpRptType option:selected").val();
+                var ReportType = $("#drpRptType option:selected").text();
+                var Role = $("#drpRoleId option:selected").text();
+                var ApprovalUser = $("#drpApprovalUser option:selected").text();
+
+                $('#AddedAssignList').dataTable().fnAddData(
+                    [
+                        Id,
+                        ApprovalUserId,
+                        ReportTypeId,
+                        ReportType,
+                        Role,
+                        ApprovalUser
+                    ]
+                );
+
+
+                var Id = 0;
+                var ApprovalUserId = 0;
+                var ReportTypeId = 0;
+                var ReportType = '';
+                var Role = '';
+                var ApprovalUser = '';
+            });
+
+
+        });
+
+
+    </script>
+}

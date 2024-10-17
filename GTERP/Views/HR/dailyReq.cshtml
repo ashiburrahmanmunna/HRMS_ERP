@@ -1,0 +1,353 @@
+﻿
+
+<div class="container-fluid">
+
+
+
+
+    <form id="myform" method="post" enctype="multipart/form-data" asp-action="UploadFromExcel" asp-controller="HR">
+
+        <div class="col-md-4 d-flex">
+            <label for="from">Date:</label>
+            <input type="date" id="searchDate" name="fromDate" class="form-control ml-1" />
+            <button type="button" id="Search" class="btn btn-outline-success" onclick="startSpinnerSearch()">
+                <span class="spinner-border spinner-border-sm my-1 mx-1"
+                      role="status" aria-hidden="true" style="display:none;" id="spinnerSearch"></span> Search
+            </button>
+
+        </div>
+
+        <div class="card">
+            <div style="margin-bottom: 20px">
+                <div class="form-header btn-light d-flex">
+                    <i class="fa fa-file-excel-o" style="font-size:30px;"></i>&nbsp;&nbsp;
+                    <h4>Employee Data Import</h4>
+                </div>
+            </div>
+
+            <h4 id="styletext" style="text-align:center"> Import From Excel File</h4>
+
+            <div class="card-body">
+                <div class="input-group input-group w-50" style="margin:10px auto;">
+                    <span class="input-group-btn input-group-prepend">
+                        <span class="btn btn-success rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                        <input onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" name="file">
+                    </span>
+                    <span class="form-control border border-success" style="background: #f2f2f2e6;"></span>
+                    <input class="rounded-0 btn btn-success btn-sm mr-1" type="submit" id="btnUpload" value="Upload & Import Files" />
+                    @*  <a href="~/InsertEmpInfoByExcel/Download?file=SampleFormatForInsertData.xlsx" title="Download Sample Format"
+                    class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i> Sample Format</a>*@
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+    <br />
+    <div class="card">
+        <h4 class="header-color text-center">Data</h4>
+        <div class="col-md-4">
+            <button type="button" id="SaveData" class="btn btn-outline-success justify-content-start " onclick="startSpinner()">
+                <span class="spinner-border spinner-border-sm my-1 mx-1"
+                      role="status" aria-hidden="true" style="display:none;" id="spinnerSend"></span> Save or Update
+            </button>
+        </div>
+        <section class="p-1 my-1" @*style=" background-color: skyblue"*@>
+
+
+            <span class="d-flex justify-content-end"><button class="btn btn-warning" id="dwnExcel">Download Excel</button></span>
+            <span class="d-flex justify-content-end"><button class="btn btn-warning" id="dwnExcel1">Download Excel</button></span>
+
+
+            <span id="select"> Selected: <span id="select-stats" style="color:indigo"></span></span>
+            <div class="tabulator-table tabulator-row-handle-box" id="tbody1"></div>
+        </section>
+    </div>
+
+
+</div>
+
+@section Styles{
+    <style>
+        .header-color {
+            color: rgb(197 194 194);
+        }
+    </style>
+}
+
+@section Scripts{
+    <script>
+        var Selecteddata = "";
+        var SelectedDevice = "";
+
+
+
+        function startSpinner() {
+            document.getElementById('spinnerSend').style.display = 'block';
+        }
+        function stopSpinner() {
+            document.getElementById('spinnerSend').style.display = 'none';
+        }
+        function startSpinnerSearch() {
+            document.getElementById('spinnerSearch').style.display = 'block';
+        }
+        function stopSpinnerSearch() {
+            document.getElementById('spinnerSearch').style.display = 'none';
+        }
+
+        // for delete button
+
+
+        ///////////////////////////////////////////////////////////////////
+
+        $(document).ready(function () {
+
+            var d = new Date();
+            let year = d.getFullYear();
+            let month = d.getMonth().toString().length === 1 ? '0' + (d.getMonth() + 1).toString() : d.getMonth() + 1;
+            let Pdate = d.getDate().toString().length === 1 ? '0' + (d.getDate()).toString() : d.getDate() - 1;
+            let date = d.getDate().toString().length === 1 ? '0' + (d.getDate()).toString() : d.getDate();
+            let hours = d.getHours().toString().length === 1 ? '0' + d.getHours().toString() : d.getHours();
+            let minutes = d.getMinutes().toString().length === 1 ? '0' + d.getMinutes().toString() : d.getMinutes();
+            let seconds = d.getSeconds().toString().length === 1 ? '0' + d.getSeconds().toString() : d.getSeconds();
+
+            var formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + seconds;
+
+
+
+            var startDate = year + '-' + month + '-' + Pdate + 'T06:00:01';
+            var SearchDate = year + '-' + month + '-' + Pdate;
+
+            document.getElementById("searchDate").defaultValue = SearchDate;
+
+            document.getElementById("SaveData").style.display = "none";
+            document.getElementById("select").style.display = "none";
+            document.getElementById("dwnExcel").style.display = "none";
+            document.getElementById("dwnExcel1").style.display = "none";
+            $.ajax({
+                //url: "/dataTransfer/deviceInfo/",
+                url: '@Url.Action("dailyReqData", "HR")',
+                method: "get",
+                dataType: 'Json',
+                data: { searchDate: SearchDate },
+                success: function (data) {
+                    var tabledata = data;
+                    var table = new Tabulator("#tbody1", {
+
+                        //height: "700px",
+                        //width :"500px",
+                        layout: "fitDataStretch",
+                        pagination: "local",
+                        paginationSize: 50,
+                        downloadRowRange: "all",
+
+                        paginationSizeSelector: [20, 50, 100],
+                        selectable: true,
+
+                        data: tabledata, //assign data to table
+                        /* autoColumns: true,*/ //create columns from data field names
+
+                        columns: [
+                            {
+                                formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function (e, cell) {
+                                    cell.getRow().toggleSelect();
+                                }
+                            },
+
+                            { title: "ID", field: "ID", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false },
+                            { title: "deptid", field: "deptid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "DeptName", field: "DeptName", hozAlign: "left", sorter: "string", headerFilter: "input", width: '5px' },
+                            { title: "unitid", field: "unitid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Job_Loc", field: "Job_Loc", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+                            { title: "desigid", field: "desigid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Job_Nat", field: "Job_Nat", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+                            { title: "SectId", field: "SectId", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Cost_head", field: "Cost_head", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+
+                            { title: "Sup_A", field: "Sup_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_A", field: "Exc_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_A", field: "Wor_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_G", field: "Sup_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_G", field: "Exc_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_G", field: "Wor_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_B", field: "Sup_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_B", field: "Exc_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_B", field: "Wor_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_C", field: "Sup_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_C", field: "Exc_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_C", field: "Wor_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true }
+                        ]
+                    })
+                    table.on("rowSelectionChanged", function (data, rows) {
+                        document.getElementById("select-stats").innerHTML = data.length;
+                        Selecteddata = data;
+                        if (data.length > 0) {
+                            document.getElementById("SaveData").style.display = "block";
+                            document.getElementById("select").style.display = "block";
+
+                        }
+                        else {
+                            document.getElementById("SaveData").style.display = "none";
+                            document.getElementById("select").style.display = "none";
+
+                        }
+                    });
+                    document.getElementById("dwnExcel").style.display = "block";
+
+                    $("#dwnExcel").click(function () {
+                        table.download("xlsx", "Daily_Reqisition.xlsx", { columnVisibility: true });
+                    });
+
+                    stopSpinner();
+
+                }
+
+
+            })
+
+
+
+        });
+
+
+
+        $("#SaveData").click(function () {
+            var SearchDate = $("#searchDate").val();
+            document.getElementById("SaveData").disabled = true;
+            if (confirm(`Are you sure to save for the date:- ${SearchDate}`)) {
+                $.ajax({
+
+                    url: '@Url.Action("SavedailyReqData", "HR")',
+                    type: "Post",
+                    data: { requisition: Selecteddata, searchDate: SearchDate },
+                    dataType: 'json',
+
+                    error: function (er) {
+                        alert(JSON.stringify(er))
+                    },
+                    success: function (data) {
+                        confirm(data)
+                        alert;
+                        stopSpinner();
+
+                    },
+                })
+                document.getElementById("SaveData").disabled = false;
+            } else {
+                alert("data is not saved")
+                stopSpinner();
+                document.getElementById("SaveData").disabled = false;
+            }
+
+
+        });
+        var table1;
+
+        $("#dwnExcel1").click(function () {
+            if (table1 != null) {
+                table1.download("xlsx", "Daily_Reqisition.xlsx", { sheetName: "MyData" }, { columnVisibility: true });
+            }
+        });
+
+        $("#Search").click(function () {
+            document.getElementById("dwnExcel").style.display = "none";
+            document.getElementById("Search").disabled = true;
+            var searchDate = $("#searchDate").val();
+
+            
+            $.ajax({
+                //url: "/dataTransfer/deviceInfo/",
+                url: '@Url.Action("dailyReqData", "HR")',
+                method: "get",
+                dataType: 'Json',
+                data: { searchDate: searchDate },
+                success: function (result) {
+
+
+                    table1 = new Tabulator("#tbody1", {
+
+                        downloadRowRange: "active",
+                        layout: "fitDataStretch",
+                        pagination: "local",
+                        paginationSize: 50,
+
+
+                        paginationSizeSelector: [20, 50, 100],
+                        selectable: true,
+
+                        data: result, //assign data to table
+                        /* autoColumns: true,*/ //create columns from data field names
+
+                        columns: [
+                            {
+                                formatter: "rowSelection", titleFormatter: "rowSelection", hozAlign: "center", headerSort: false, cellClick: function (e, cell) {
+                                    cell.getRow().toggleSelect();
+                                }
+                            },
+
+                            { title: "ID", field: "ID", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false },
+                            { title: "deptid", field: "deptid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "DeptName", field: "DeptName", hozAlign: "left", sorter: "string", headerFilter: "input", width: '5px', download: true },
+                            { title: "unitid", field: "unitid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Job_Loc", field: "Job_Loc", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+                            { title: "desigid", field: "desigid", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Job_Nat", field: "Job_Nat", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+                            { title: "SectId", field: "SectId", hozAlign: "left", sorter: "number", headerFilter: "input", visible: false, download: true },
+                            { title: "Cost_head", field: "Cost_head", hozAlign: "left", sorter: "string", headerFilter: "input", width: '12px' },
+
+                            { title: "Sup_A", field: "Sup_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_A", field: "Exc_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_A", field: "Wor_A", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_G", field: "Sup_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_G", field: "Exc_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_G", field: "Wor_G", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_B", field: "Sup_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_B", field: "Exc_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_B", field: "Wor_B", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+
+                            { title: "Sup_C", field: "Sup_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Exc_C", field: "Exc_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true },
+                            { title: "Wor_C", field: "Wor_C", hozAlign: "left", sorter: "number", headerFilter: "input", editor: true }
+                        ]
+                    })
+                    table1.on("rowSelectionChanged", function (data, rows) {
+                        document.getElementById("select-stats").innerHTML = data.length;
+                        Selecteddata = data;
+                        if (data.length > 0) {
+                            document.getElementById("SaveData").style.display = "block";
+                            document.getElementById("select").style.display = "block";
+
+                        }
+                        else {
+                            document.getElementById("SaveData").style.display = "none";
+                            document.getElementById("select").style.display = "none";
+                        }
+                    });
+                    document.getElementById("dwnExcel1").style.display = "block";
+
+                   
+                    stopSpinnerSearch();
+                    document.getElementById("Search").disabled = false;
+
+                }
+
+
+            })
+
+        })
+
+
+
+
+
+
+    </script>
+    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+}
+

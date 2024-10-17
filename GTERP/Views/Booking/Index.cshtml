@@ -1,0 +1,215 @@
+﻿@model IEnumerable<GTERP.Models.Booking>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row">
+
+            <div class="col">
+                @Html.ActionLink("Booking", "Create", null, null, new { @class = "btn btn-outline-info btn-block", @id = "btnBack" })
+
+            </div>
+
+            <div class="col">
+                <h2 id="styletext">Booking / Year-Month Wise Allotment</h2>
+            </div>
+            <div class="col-lg-4">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div id="finalpanel" class="card p-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.YearName.YearEng)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MonthName.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cat_District.DistName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cat_PoliceStation.PStationName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Customer.CustomerCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Customer.CustomerName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AllotmentQty)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.YearName.YearEng)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MonthName.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cat_District.DistName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cat_PoliceStation.PStationName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Customer.CustomerCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Customer.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AllotmentQty)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+@section Scripts{
+    <script>
+        //$('.table').DataTable();
+
+                var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "Booking")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "BookingId", "data": "BookingId", "searchable": true, "visible": false },
+                    { "title": "AllotmentType", "data": "AllotmentType" },
+                    { "title": "Year", "data": "Year" },
+                    { "title": "Month", "data": "Month" },
+                    { "title": "District", "data": "District" },
+                    { "title": "Police Station", "data": "PoliceStation", "searchable": true },
+                    { "title": "Customer Code", "data": "CustomerCode", "searchable": true },
+                    { "title": "Cst. SLNo", "data": "SLNo", "searchable": true },
+                    { "title": "Customer Name", "data": "CustomerName", "searchable": true },
+                    { "title": "Allotment Qty", "data": "AllotmentQty", "searchable": true },
+                    { "title": "Remaining Qty", "data": "RemainingQty", "searchable": false },
+                    {
+                        "title": "Action",
+                        "data": "BookingId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "Booking")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "Booking")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        {
+                            extend: 'copy',
+                            text: '<i class="mdi mdi-content-copy"></i>',
+                            className: 'btn-primary',
+                            titleAttr: 'Copy to Clipboard'
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<i class="mdi mdi-note-outline"></i>',
+                            className: 'btn-secondary',
+                            titleAttr: 'Export to csv'
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                "searching": true
+                });
+
+
+
+
+
+
+
+    </script>
+}

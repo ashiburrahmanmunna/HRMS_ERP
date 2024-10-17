@@ -1,0 +1,103 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+@{
+
+    <nav class="navbar d-block d-sm-none pt-1">
+        <div class="collapse navbar-collapse justify-content-end" id="mobMenu">
+            <div class="bs-example">
+                <div class="accordion" id="accordionExample">
+                    @{
+                        //Commercial.Models.GTRDBContext db = new GTERP.Models.GTRDBContext();
+                        string menup = "ms";
+                        string pMenu = "pms";
+                        string menuHead = "mh";
+                        string menutestp = "ams";
+                        //var moduleMenus = db.ModuleMenus.Where(m => m.isInactive == 0).ToList();
+                        //GTERP.Models.Himu.TempMenu.tempMenus;// a = new GTERP.Models.Himu.TempMenu();
+                        var activemenuidp = HttpContextAccessor.HttpContext.Session.GetInt32("activemenuid");
+                        if (activemenuidp != null)
+                        {
+                            var AllMenuMobile = HttpContextAccessor.HttpContext.Session.GetObject<List<UserMenuPermission>>("UserMenu");
+                            if (AllMenuMobile != null)
+                            {
+                                var parentMenu = AllMenuMobile.Where(x => x.isParent == 1 && x.Visible == true).OrderBy(x => x.SLNo).ToList();
+                                var SubMenu = new List<UserMenuPermission>();
+
+
+
+                                @if (parentMenu != null)
+                                {
+                                    foreach (var item in parentMenu.OrderBy(x => x.SLNo))
+                                    {
+
+                                        <div class="card" data-target="#@pMenu@item.ModuleMenuId">
+                                            <div class="card-header mobCard" id="@menuHead@item.ModuleMenuId">
+                                                <div>
+                                                    <span data-toggle="collapse" data-target="#@pMenu@item.ModuleMenuId">
+                                                        @item.ModuleMenuCaption
+                                                    </span>
+                                                    <span class="float-right"><i class="fa fa-plus"></i></span>
+                                                </div>
+                                            </div>
+                                            <div id="@pMenu@item.ModuleMenuId" class="collapse" aria-labelledby="@menuHead@item.ModuleMenuId" data-parent="#accordionExample">
+                                                <div class="card-body">
+                                                    <ul class="navbar-nav mr-auto">
+                                                        @{
+                                                            var childMobileMenus = AllMenuMobile.Where(x => x.ParentId == item.ModuleMenuId && x.Visible == true).ToList();
+
+                                                            foreach (var childItem in childMobileMenus)
+                                                            {
+
+
+                                                                @if (childItem.Active)
+                                                                {
+                                                                    <li class="nav-item active border px-3">
+                                                                        <a class="nav-link" href="~/@childItem.ModuleMenuLink">@childItem.ModuleMenuCaption</a>
+
+                                                                    </li>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <li class="nav-item active border px-3">
+                                                                        <a class="nav-link" href="~/@childItem.ModuleMenuLink">@childItem.ModuleMenuCaption</a>
+                                                                    </li>
+                                                                }
+
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,596 @@
+﻿@model GTERP.Models.Unit
+
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateUnit", "HRVariables", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6  offset-md-3 col-12">
+                @if (Model != null)
+                {
+                <input type="hidden" id="UnitId" name="UnitId" value="@Model.UnitId" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="UnitId" value="0" />
+                }
+                <div id="modalbodyfahad" class="row">
+                    <div>
+                        <div>
+                            <div class="card-header">
+                                <h4 id="styletext">Unit Entry - @ViewBag.Title</h4>
+                            </div>
+                            <div class="card-body">
+                                <form class="needs-validation" novalidate>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.UnitName)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.UnitName, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.UnitName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.UnitShortName)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.UnitShortName, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.UnitShortName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.UnitNameBangla)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.UnitNameBangla, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.UnitNameBangla, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        @Html.LabelFor(model => model.Slno)
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.Slno, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Slno, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </form>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row text-center m-2">
+                                    <br />
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-4 col-12">
+
+                                        @if (ViewBag.Title == "Create")
+                                        {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                        }
+                                        else if (ViewBag.Title == "Edit")
+                                        {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                        }
+                                        else if (ViewBag.Title == "Delete")
+                                        {
+                                        <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Unit_delete()">Delete</button>
+                                        }
+
+
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        @Html.ActionLink("Back", "UnitList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                    </div>
+                                    <div class="col-md-2"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+    /**/
+
+@*<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 col-12">
+            <h3 class="text-center mb-2 font-weight-bold"><u>“ইজি রেজিস্ট্রেশন এ্যাপ”- এর মাধ্যমে প্রোডাক্ট রেজিস্ট্রেশনের পদ্ধতি</u></h3>
+            <p>
+                প্রথবার অনলাইনের মাধ্যমে রেজিস্ট্রেশন করার জন্য অ্যাকাউন্ট তৈরি করা লাগবে। একবার অ্যাকাউন্ট তৈরি করা হয়ে গেলে শুধু লগ-ইন করলেই চলবে। (পৃষ্ঠা-৭)
+                এ্যাপ ব্যবহার করতে হলে এর সকল পারমিশন চাওয়া মাত্র “Allow” দিতে হবে।
+            </p>
+            
+            <div>
+            </div>
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <h5 class="mb-2 font-weight-bold">
+                <u>নতুন অ্যাকাউন্ট তৈরির পদ্ধতি</u>
+            </h5>
+            <p>1. আপনার মোবাইলে “Easy Registration” এ্যাপ টি ইন্সটল করুন।</p>
+            <p>
+                2. প্রথমবার ইন্সটল করার সময় এই স্ক্রিন টি আসবে এবং এখানে আপনার মোবাইলে প্রবেশ করানো আছে এমন ফোন নম্বরটি দিন। নম্বরটি অবশ্যই ওয়ালটন/ মার্সেল কোম্পানি কর্তৃক নিবন্ধিত হতে হবে।
+            </p>
+        </div>
+        <div class="col-md-4 col-12 mb-2">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_a8c6b7d7.jpg" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-6 col-12 my-3">
+
+            <p class="my-3">
+                1. আপনি যদি ওয়ালটনের ডিস্ট্রিবিউটর ও ডিলার হয়ে থাকেন তাহলে ওয়ালটন লোগো-তে টাচ/ক্লিক করুন। একইভাবে আপনি যদি মার্সেলের ডিস্ট্রিবিউটর ও ডিলার হয়ে থাকেন তাহলে মার্সেল লোগো-তে টাচ/ক্লিক করুন।
+            </p>
+            <div>
+                <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_aabc14f0.gif" class="img-thumbnail img-fluid mx-auto d-block" style="height:500px;" />
+            </div>
+
+
+        </div>
+        <div class="col-md-6 col-12 my-3">
+            <p class="my-3">
+                2.	<strong>“সাইন আপ”</strong> বাটনে প্রেস করুন।
+            </p>
+            <div>
+                <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_81234972.gif" class="img-thumbnail img-fluid mx-auto d-block" style="height:550px;" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-12">
+            <p>3.</p>
+            <div class="pl-2">
+                <p>
+                    a. “মোবাইল নম্বরঃ” ঘরে আপনার ওয়ালটন/
+                    মার্সেল নামে সার্ভারে যে মোবাইল নম্বরটি
+                    ইতোমধ্যেই রেজিস্টার করা আছে সেই
+                    মোবাইল নম্বরটি প্রবেশ করুন।
+                </p>
+                <p>
+                    b. “পাসওয়ার্ড” ঘরে নূন্যতম ৬ অক্ষরের
+                    পাসওয়ার্ড প্রবেশ করুন।
+                </p>
+                <p>
+                    c. “কনফার্ম পাসওয়ার্ড” ঘরে আপনার
+                    পাসওয়ার্ডটি পুনরায় সঠিকভাবে প্রবেশ
+                    করুন।
+                </p>
+                <p>
+                    d.“প্রতিষ্ঠানের নাম” ঘরে আপনার ব্যবসা
+                    প্রতিষ্ঠানের নাম প্রবেশ করুন।
+                </p>
+                <p>
+                    e. “ডিলারশিপের ধরণ” ঘরে আপনার
+                    ডিলারশিপের ধরণ নির্বাচন করুন।
+                </p>
+                <div class="pl-4">
+                    <p>
+                        i. আপনি ওয়ালটন ডিস্ট্রিবিউটর হলে
+                        “ওয়ালটন ডিস্ট্রিবিউটর” নির্বাচন করুন।
+                    </p>
+                    <p>
+                        ii. আপনি কোন ওয়ালটন ডিস্ট্রিবিউটরের
+                        সাব-ডিলার হলে “ওয়ালটন সাব-ডিলার”
+                        নির্বাচন করুন।
+                    </p>
+                    <p>
+                        iii. আপনি প্লাজার ডিলার হলে
+                        “প্লাজা ডিলার” নির্বাচন করুন।
+                    </p>
+                </div>
+
+                <p>
+                    f. “ডিলার কোড” ঘরেঃ
+                </p>
+                <div class="pl-4">
+                    <p>
+                        i. আপনি ওয়ালটন ডিস্ট্রিবিউটর
+                        হলে নিজের ডিলার কোড প্রবেশ করুন।
+                    </p>
+                    <p>
+                        ii. আপনি ওয়ালটন সাব-ডিলার হলে
+                        ডিলার কোড প্রবেশ করার প্রয়োজন নেই।
+                    </p>
+                    <p>
+                        iii. আপনি প্লাজার ডিলার হলে নিজের
+                        প্লাজার মাধ্যমে দেয়া ডিলার কোড প্রবেশ করুন।
+                    </p>
+                </div>
+                <p>
+                    g. এর পর “রেজিস্টার” বাটনে প্রেস করুন।
+                </p>
+            </div>
+            
+           
+        </div>
+        <div class="col-md-4 col-12">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_d11feed5.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:585px;"/>
+        </div>
+
+        <div class="col-md-7 col-12 mt-5">
+            <p class="mb-5 p-5">
+                4.	আপনার মোবাইলে পাঠানো কোডটি
+                সঠিকভাবে খালি ঘরে প্রবেশ করে
+                <strong>“যাচাই করুন”</strong> বাটনে প্রেস করুন ।
+
+            </p>
+            <p class="mb-5 p-5">
+                5.	<strong>“যাচাই করুন”</strong> প্রেস করার পর নতুন
+                এ্যাকাউন্ট তৈরি হয়ে যাবে এবং পণ্যের
+                সিরিয়াল রেজিস্ট্রেশানের পেইজে নিয়ে
+                যাওয়া হবে ।
+
+            </p>
+
+
+        </div>
+        <div class="col-md-5 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_5aef4bbb.gif" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <h4 class="mb-2 font-weight-bold">
+                <u>একাউন্টে লগ-ইন করার পদ্ধতি:</u>
+            </h4>
+            <p>
+                1.	আপনি যদি ওয়ালটনের ডিস্ট্রিবিউটর
+                ও ডিলার হয়ে থাকেন তাহলে ওয়ালটন
+                লোগো-তে টাচ/ক্লিক করুন। একইভাবে
+                আপনি যদি মার্সেলের ডিস্ট্রিবিউটর
+                ও ডিলার হয়ে থাকেন তাহলে মার্সেল
+                লোগো-তে টাচ/ক্লিক করুন।
+
+
+            </p>
+            <p>
+                2.	"মোবাইল নম্বর" ঘরে ওয়ালটন/মার্সেল
+                রেজিস্ট্রেশন করা মোবাইল নম্বরটি
+                প্রবেশ করুন।
+
+
+            </p>
+            <p>
+                3. "পাসওয়ার্ড" ঘরে আপনার পাসওয়ার্ড
+                প্রবেশ করুন।
+
+            </p>
+            <p>
+                4. "লগ ইন" বাটনে প্রেস করুন।
+            </p>
+
+        </div>
+        <div class="col-md-4 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_b8dc3644.png" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <h4 class="mb-2 font-weight-bold">
+                <u>পণ্য রেজিস্ট্রেশন পদ্ধতি:</u>
+            </h4>
+            <p>
+                1. "সিরিয়াল নম্বর" ঘরে প্রোডাক্টের বারকোড
+                প্রবেশ করতে লাল রং চিহ্নিত বাটন
+                প্রেস/টাচ করে সকল অ্যাপ পারমিশন
+                এলাও করে বারকোড স্ক্যান করুন।
+            </p>
+            <p>
+                2.	"গ্রাহকের নাম'' ঘরে গ্রাহকের
+                নাম প্রবেশ করুন।
+            </p>
+            <p>
+                3.	"গ্রাহকের মোবাইল নম্বর" ঘরে গ্রাহকের
+                মোবাইল নম্বর প্রবেশ করুন।
+
+
+            </p>
+            <p>
+                গ্রাহকের ঠিকানা" ঘরে নূন্যতম ১০
+                অক্ষরের গ্রাহকের ঠিকানা প্রবেশ করুন।
+
+            </p>
+            <p>
+                5.	এর পর "রেজিস্ট্রেশন" বাটনে প্রেস করুন।
+            </p>
+
+        </div>
+        <div class="col-md-4 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_62816e41.png" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <h4 class="mb-2 font-weight-bold">
+                <u>আজকের দিনের রেজিস্ট্রেশন তালিকা দেখতে:</u>
+            </h4>
+            <p>
+                1.	"আজকের দিনের রেজিস্ট্রেশন তালিকা"
+                বাটনে প্রেস/টাচ করুন। এখানে আপনার
+                আজকের দিনের সকল রেজিস্ট্রেশন
+                তালিকা দেখাবে।
+
+            </p>
+            <p>
+                2.	নতুন করে আরেকটা বারকোড রেজিস্ট্রেশন
+                করার জন্য নীল রঙের "নতুন সিরিয়াল
+                রেজিস্ট্রেশন" বাটনে প্রেস করুন।
+
+            </p>
+        </div>
+        <div class="col-md-4 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_d833596e.jpg" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-12 col-12 mt-5">
+            <strong>পণ্য স্থানান্তর এন্ট্রিঃ</strong> আপনি এই অপশনটি দিয়ে আপনার শোরুমের পণ্যটি কোন সাব-ডিলারকে বিক্রয়ের জন্য দিয়েছেন আর সাব-ডিলারকে বিক্রয়ের জন্য দেননি তার রেগুলার হিসাব রাখতে পারবেন।
+        </div>
+        <div class="col-md-8 col-12 mt-3">
+            <p> 1.</p>
+            <div class="pl-3">
+                <p>
+                    a.	স্ক্রিনের উপরের ডান পাশের কোনায়
+                    তিন দাগ দিয়ে চিহ্নিত মেনু বাটনে
+                    প্রেস করুন।
+                </p>
+                <p>
+                    b.	<strong>“পণ্য স্থানান্তর এন্ট্রি”</strong> বাটনে
+                    প্রেস করুন।
+
+
+                </p>
+            </div>
+            
+        </div>
+        <div class="col-md-4 col-12 mt-3">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_a4e8f8b1.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:450px;"/>
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <p> 2.</p>
+            <div class="pl-2">
+                <p>
+                    a. যে গ্রহীতা/সাব-ডিলারের কাছে পণ্য স্থানান্তর করবেন
+                    সেই গ্রহীতার ওয়ালটন/মার্সেলে নিবন্ধিত মোবাইল
+                    নম্বর প্রবেশ করুন এবং ভেরিফিকেশানের জন্য
+                    পাশের টিক চিহ্নতে প্রেস করুন।
+
+                </p>
+                <p>
+                    b. ভেরিফিকেশান হয়ে গেলে সেই গ্রহীতা/সাব-ডিলারের
+                    নাম ও ডিলার কোড স্বয়ংক্রিয়ভাবে প্রবেশ হয়ে যাবে।
+                </p>
+                <p>
+                    c. যেই পণ্য স্থানান্তর করবেন সেই পণ্যের সিরিয়াল নাম্বার
+                    ডান পাশের ক্যামেরা বাটনে প্রেস করে স্ক্যান করুন ।
+
+                </p>
+                <p>
+                    d. এর পর “Add” বাটনে প্রেস করুন।
+                </p>
+                <div class="pl-4">
+                    <p>
+                        i. যদি কোন বারকোড এন্ট্রি ভুল হয়ে থাকে
+                        তাহলে তা  মুছার জন্য দ্বিতীয় ছবির মধ্যে
+                        দেখানো নীল বাটনে প্রেস করুন।
+
+                    </p>
+                </div>
+                <div>
+                    <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_10b71f89.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:350px;" />
+                </div>
+                <p>
+                    e. এভাবে সকল পণ্য এন্ট্রি করার পর “তথ্য সংরক্ষণ করুন”
+                    বাটনে প্রেস করুন।এভাবে সকল পণ্য এন্ট্রি করার পর
+                    “তথ্য সংরক্ষণ করুন” বাটনে প্রেস করুন
+
+                </p>
+            </div>
+            
+
+        </div>
+        <div class="col-md-4 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_39b43ff4.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:720px;" />
+        </div>
+        <div class="col-md-8 col-12 mt-5">
+            <p>
+                3.	আজকের পণ্য স্থানান্তরের তালিকা
+                দেখার জন্য
+                <strong>“আজকের পণ্য স্থানান্তরের তালিকা”</strong>
+                বাটনে প্রেস করুন।
+
+            </p>
+            <p>
+                4.	গোল (<span class="text-danger">4</span>) চিহ্নিত যায়গায় আজকের দিনের
+                স্থানান্তরিত পণ্যের তালিকা দেখা যাবে।
+
+
+            </p>
+            <p>
+                5.	গোল (<span class="text-danger">5</span>) চিহ্নিত যায়গায় প্রেস করলে নতুন
+                পণ্য স্থানান্তর করার পেইজে যাওয়া যাবে।
+
+            </p>
+
+            <div>
+                <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_c83acbd4.jpg" class="img-thumbnail img-fluid mx-auto d-block" />
+            </div>
+            <p>
+                e. এভাবে সকল পণ্য এন্ট্রি করার পর “তথ্য সংরক্ষণ করুন”
+                বাটনে প্রেস করুন।এভাবে সকল পণ্য এন্ট্রি করার পর
+                “তথ্য সংরক্ষণ করুন” বাটনে প্রেস করুন
+
+            </p>
+
+        </div>
+        <div class="col-md-4 col-12 mt-3">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_9e8930a3.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:725px;" />
+        </div>
+        <div class="col-md-12 col-12 mt-3">
+            <p>
+                <strong>পণ্য মজুদ এন্ট্রিঃ</strong> এই অপশনটি দিয়ে আপনি আপনার শোরুমের বিদ্যমান পণ্যের স্টক এর হিসাব রাখতে পারবেন।
+            </p>
+        </div>
+
+        <div class="col-md-8 col-12 mt-2">
+            <p>1.</p>
+            <div class="pl-2">
+                <p>
+                    a.	স্ক্রিনের ডান উপরের পাশের কোনায়
+                    তিন দাগ দিয়ে চিহ্নিত মেনু বাটনে
+                    প্রেস করুন।
+
+                </p>
+                <p>
+                    b.<strong>	“পণ্য মজুদ এন্ট্রি”</strong> বাটনে প্রেস
+                    করুন।
+
+                </p>
+            </div>
+            
+            <p>2. </p>
+            <div class="pl-2">
+                <p>
+                    a.	যেই পণ্য মজুদ করবেন সেই পণ্যের
+                    সিরিয়াল নাম্বার ডান পাশের ক্যামেরা
+                    বাটনে প্রেস করে স্ক্যান করুন ।
+
+
+                </p>
+                <p>
+                    b.	সঠিকভাবে স্ক্যান করার পর “Add”
+                    বাটনে প্রেস করুন।
+
+
+                </p>
+                <div class="pl-4">
+                    <p>
+                        i.	যদি কোন এন্ট্রি ভুল হয়ে থাকে
+                        তাহলে মুছার জন্য দ্বিতীয় ছবির
+                        মধ্যে দেখানো নীল বাটনে প্রেস
+                        করুন।
+
+                    </p>
+                </div>
+            </div>
+     
+            <div>
+                <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_10b71f89.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height: 485px;" />
+            </div>
+            <p>
+                c.	এভাবে সকল পণ্য এন্ট্রি করার পর
+                <strong>“তথ্য সংরক্ষণ করুন” </strong>বাটনে প্রেস
+                করুন।
+
+            </p>
+        </div>
+        <div class="col-md-4 col-12 mt-5">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_4c0d5fa5.jpg" class="img-thumbnail img-fluid mx-auto d-block" />
+        </div>
+        <div class="col-md-12 col-12 mt-3">
+            <p>
+                3.	আজকের পণ্য মজুদের তালিকা দেখার জন্য<strong> “আজকের পণ্যের মজুদের তালিকা” </strong>বাটনে প্রেস করুন।
+            </p>
+        </div>
+        <div class="col-md-8 col-12 mt-1">
+            <p>
+                4.	গোল (<span class="text-danger">4</span>) চিহ্নিত যায়গায় আজকের দিনের
+                মজুদকৃত পণ্যের তালিকা দেখা যাবে।
+
+            </p>
+            <p>
+                5.	গোল  (<span class="text-danger">5</span>) চিহ্নিত যায়গায় প্রেস করলে নতুন
+                পণ্য মজুদ করার পেইজে যাওয়া যাবে।
+
+
+            </p>
+
+            <div>
+                <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_c83acbd4.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:550px;"/>
+            </div>
+        </div>
+        <div class="col-md-4 col-12 mt-1">
+            <img src="~/Content/ProjectLibFile/css/customCssFile/images/htmlimage/d018c95495c936fe9d8ec31e5d71cf3f_html_feb7aff1.jpg" class="img-thumbnail img-fluid mx-auto d-block" style="height:650px;"/>
+        </div>
+
+    </div>
+ 
+</div>*@
+
+
+}
+
+@section Scripts{
+    <script>
+
+    $("#UnitId").select2();
+
+    function Unit_delete() {
+
+        var unitId = $("#UnitId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteUnit", "HRVariables")',
+                data: JSON.stringify({ id: unitId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("UnitList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+

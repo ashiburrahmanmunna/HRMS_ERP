@@ -1,0 +1,590 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiForgery
+@model GTERP.Controllers.Sales.SalesReport.SalesReportController.SalesReportGrid
+
+@{
+    List<Acc_FiscalYear> YearList = ViewBag.YearName;
+    List<Acc_FiscalMonth> MonthList = ViewBag.MonthName;
+    List<Cat_District> DistList = ViewBag.DistName;
+    List<Cat_PoliceStation> ThanaList = ViewBag.Thana;
+    List<Acc_ChartOfAccount> BankList = ViewBag.BankName;
+    List<HR_ReportType> ReportList = ViewBag.ReportName;
+}
+<style>
+    .input-group > .form-control {
+        border: 1px solid #ccc;
+    }
+    .dataTables_filter input[type=search] {
+        /*width: 315px !important;*/
+        padding: 7px 18px;
+        background-color: transparent;
+        transition: transform 250ms ease-in-out;
+        font-size: 14px;
+        line-height: 18px;
+        color: #575756;
+        background-color: transparent;
+        background-image: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' w…5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E); background-repeat: no-repeat; background-size: 18px 18px; background-position: 95% center; border-radius: 50px; border: 1px soLId #575756; transition: all 250ms ease-in-out; backface-visibility: hidden; transform-style: preserve-3d; margin-bottom: 3px;
+    }
+
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+@using (Html.BeginForm("Report", "BufferReport", FormMethod.Post))
+{
+<div class="card">
+
+
+    <div class="card-header bg-success text-white">
+        <div class="row">
+            <div class="col-md-6 col-12">Sales Report</div>
+            <div class="col-md-6 col-12 text-right clsRptFormat">
+                @Html.RadioButton("rptFormat", "PDF", true) PDF
+                @Html.RadioButton("rptFormat", "EXCEL", false) Excel
+                @Html.RadioButton("rptFormat", "WORD", false) Word
+            </div>
+        </div>
+    </div>
+
+    @*<div class="form-header bg-info text-center">
+            <div class="row">
+                <div class="col-md-12 col-12">
+                    <div id="loading" style="display: inLine;">
+                        SALES REPORT
+
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <!--Loading-->
+    @*<div id="loading">
+            <div class="divforfull">&nbsp;</div>
+            <div id="loadingGif" style="height: 50px; width: 50px;">
+                <img src="~/Files/loading.gif" />
+            </div>
+        </div>*@
+
+    <div class="card-body">
+        <!--Selection fields-->
+        <div class="row">
+            <div class="col-md-12 col-12 mb-2">
+                <fieldset class="boxStyle px-2 pt-2">
+                    <div class="row">
+                        <div class="col-md-2 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        From Date
+                                    </span>
+                                </div>
+                                <input id="fromdate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        To Date
+                                    </span>
+                                </div>
+                                <input id="todate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text py-0">
+                                        From Do No
+                                    </span>
+                                </div>
+                                <input asp-for="FromDONo" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text py-0">
+                                        To Do No
+                                    </span>
+                                </div>
+                                <input asp-for="ToDONo"  class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text py-0">
+                                        Representative Name
+                                    </span>
+                                </div>
+                                <select asp-for="RepresentativeId" asp-items="ViewBag.RepresentativeList" class="form-control" data-size="5">
+                                    <option value="=ALL=">=ALL=</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-1 col-12">
+                            <button type="submit" id="previewBtn" class="btn btn-sm btn-primary btn-block rounded-0" formtarget="_blank">
+                                <span class="fas fa-eye"> </span> Preview
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-2 col-12 col-12 pr-md-1">
+                <!--Year-->
+                <fieldset class="boxStyle  mCustomScrollbar py-3" data-mcs-theme="minimal-dark" style="height:540px;">
+                    <table id="yeartable" class="dataTable YearTable table table-sm table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead class="text-center">
+                            <tr>
+                                <th class="hidden">yearid</th>
+                                <th>Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hidden">0</td>
+                                <td>=ALL=</td>
+                            </tr>
+                            @foreach (Acc_FiscalYear year in YearList)
+                            {
+                                <tr class="yearid">
+                                    <td class="hidden">@year.FYId</td>
+                                    <td>@year.FYName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+            <!--Month-->
+            <div class="col-md-2 col-12 col-12 px-md-1">
+                <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:540px">
+                    <table id="monthtable" class="dataTable MonthTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead class="text-center">
+                            <tr>
+                                <th class="hidden">MonthId</th>
+                                <th>Month</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hidden">0</td>
+                                <td>=ALL=</td>
+                            </tr>
+                            @foreach (Acc_FiscalMonth month in MonthList)
+                            {
+                                <tr>
+                                    <td class="hidden">@month.MonthId</td>
+                                    <td>@month.MonthName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+
+            <!--District-->
+            <div class="col-md-2 col-12 col-12 px-md-1">
+                <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="sdSearch" style="height:540px">
+                    <table id="disttable" class="dataTable distTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead class="text-center">
+                            <tr>
+                                <th class="hidden">DistrictId</th>
+                                <th>District</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hidden">0</td>
+                                <td>=ALL=</td>
+                            </tr>
+                            @foreach (Cat_District dist in DistList)
+                            {
+                                <tr class="Distid">
+                                    <td class="hidden">@dist.DistId</td>
+                                    <td>@dist.DistName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+            <!--Thana-->
+            <div class="col-md-2 col-12 col-12 px-md-1">
+                <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="edSearch" style="height:540px">
+                    <table id="thanatable" class=" table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead class="text-center">
+                            <tr>
+                                <th class="hidden">ThanaId</th>
+                                <th>Thana</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hidden">0</td>
+                                <td>=ALL=</td>
+                            </tr>
+                            @foreach (Cat_PoliceStation thana in ThanaList)
+                            {
+                                <tr>
+                                    <td class="hidden">@thana.PStationId</td>
+                                    <td>@thana.PStationName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+
+            <!--Bank-->
+            <div class="col-md-2 col-12 col-12 text-center px-md-1">
+                <fieldset class="boxStyle mCustomScrollbar py-3" data-mcs-theme="minimal-dark" id="locationsearch" style="height:540px;">
+                    <table id="banktable" class="dataTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="hidden"></th>
+                                <th>Bank Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hidden">0</td>
+                                <td>=ALL=</td>
+                            </tr>
+                            @foreach (Acc_ChartOfAccount bank in BankList)
+                            {
+                                <tr>
+                                    <td class="hidden">@bank.AccId</td>
+                                    <td>@bank.AccName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+            <!--Report Type-->
+            <div class="col-md-2 col-12 col-12 text-center pl-md-1">
+                <fieldset class="boxStyle  py-3 mCustomScrollbar" data-mcs-theme="minimal-dark" style="height:540px;">
+                    <table id="reporttable" class="text-center dataTable table table-hover table-bordered table-striped trow" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="hidden">ReportId</th>
+                                <th>Report</th>
+                                <th class="text-nowrap">SL No</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (HR_ReportType Reports in ReportList.OrderBy(x => x.SLNo))
+                            {
+                                <tr>
+                                    <td class="d-none">@Reports.ReportId</td>
+                                    <td>@Reports.ReportName</td>
+                                    <td>@Reports.SLNo</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+            <input type="hidden" asp-for="FromDate" id="fromDate" />
+            <input type="hidden" asp-for="ToDate" id="toDate" />
+            <input type="hidden" asp-for="Year" id="year" />
+            <input type="hidden" asp-for="Month" id="month" />
+            <input type="hidden" asp-for="District" id="district" />
+            <input type="hidden" asp-for="Thana" id="thana" />
+            <input type="hidden" asp-for="Bank" id="bank" />
+            <input type="hidden" asp-for="FromDONo" id="FromDONo" />
+            <input type="hidden" asp-for="ToDONo" id="ToDONo" />
+            @*<input type="hidden" asp-for="RepresentativeId" id="RepresentativeId" />*@
+            <input type="hidden" asp-for="Report" id="report" />
+            <input type="hidden" asp-for="ReportFormat" id="reportformate" />
+        </div><!--panel body end-->
+    </div><!--Panel end-->
+</div><!--Panel end-->
+}
+
+@section Scripts{
+    <script>
+
+        $('#fromdate,#todate').datepicker({
+            onSelect: function (date) {
+                var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+                $('#DoDate').datepicker('option', 'dateFormat', 'dd-M-yy')
+            },
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true
+        });
+
+        CurrentDate();
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString();
+
+
+            if ($("#fromdate").val() == '') {
+                $("#fromdate").val(val);
+            }
+            if ($("#todate").val() == '') {
+                $("#todate").val(val);
+            }
+        }
+
+        $(document).ready(function () {
+            $.fn.removeText = function () {
+                this.each(function () {
+                    var $cont = $(this).contents();
+                    $cont.each(function () {
+                        var $this = $(this);
+                        if (this.nodeType === 3) {
+                            $this.remove();
+                        } else if (this.nodeType === 1) {
+                            $this.removeText();
+                        }
+                    });
+                });
+            }
+        });
+
+        var salesData = {
+            Id: 0,
+            FromDate: "",
+            ToDate: "",
+            Year: "",
+            Month: "",
+            District: "",
+            Thana: "",
+            Bank: "",
+            RepresentativeId: "",
+            FromDONo: "",
+            ToDONo: "",
+            Report: "",
+        };
+
+        $('#yeartable').DataTable(
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                //searching: true,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                    
+                },
+                //"sDom": "<'row'<'col-sm-12'<f>>>",
+                paging: false,
+                lengthChange: false
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+
+        $('#monthtable').DataTable(
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                language: { search: '', searchPlaceholder: "Search..." },
+                paging: false,
+                lengthChange: false,
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>",
+                'aoColumns': [
+                    { 'sClass': 'MonthId', 'visible': false },
+                    { 'sClass': 'MonthName', 'visible': true }
+                ],
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+
+        $('#disttable').DataTable(
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                language: { search: '', searchPlaceholder: "Search..." },
+                paging: false,
+                lengthChange: false,
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>",
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+
+        $('#thanatable').DataTable(
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                language: { search: '', searchPlaceholder: "Search..." },
+                paging: false,
+                lengthChange: false,
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>",
+                'aoColumns': [
+                    { 'sClass': 'PStationId', 'visible': false },
+                    { 'sClass': 'PStationName', 'visible': true }
+                ],
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+
+        $('#banktable').DataTable(
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                language: { search: '', searchPlaceholder: "Search..." },
+                paging: false,
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>",
+                lengthChange: false
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+
+        $('#reporttable').DataTable(
+            
+            {
+                select: true,
+                info: false,
+                ordering: false,
+                language: {
+                    search: '',
+                    searchPlaceholder: "Search..."
+                },
+                paging: false,
+                lengthChange: false
+            }
+        ).row(':eq(0)', { page: 'current' }).select();
+        $('.dataTables_wrapper .col-md-6').addClass('col-md-12'); // <-- add this line
+        //$('.dataTables input').addClass('col-md-12 col-12');
+
+        $(document).on("click", "tr.yearid td", function () {
+
+            var yearid = $('#yeartable tbody tr.selected td:first-child').text();
+            // alert(yearid);
+            $('#monthtable').DataTable().rows().remove().draw();
+            $.ajax({
+                url: '@Url.Action("GetMonth","SalesReport")',
+                type: 'GET',
+                dataType: 'json',
+                data: { yearId: yearid },
+                success: function (data) {
+                    //console.log(data);
+                    var arrays = [];
+                    arrays.push([0, '=ALL=']);
+                    for (var i = 0; i < data.length; i++) {
+                        arrays.push([data[i].MonthId, data[i].MonthName]);
+                    }
+                    $('#monthtable').DataTable().rows.add(arrays).draw(false).row(':eq(0)', { page: 'current' }).select();
+
+                }
+
+            });
+        });
+
+        $(document).on("click", "tr.Distid td", function () {
+
+            var districtid = $('#disttable tbody tr.selected td:first-child').text();
+            //alert(districtid);
+            $('#thanatable').DataTable().rows().remove().draw();
+            $.ajax({
+                url: '@Url.Action("GetThana", "SalesReport")',
+                type: 'GET',
+                dataType: 'json',
+                data: { DistId: districtid },
+                success: function (data) {
+                    //console.log(data);
+                    var arrays = [];
+                    arrays.push([0, '=ALL=']);
+                    for (var i = 0; i < data.length; i++) {
+                        arrays.push([data[i].PStationId, data[i].PStationName]);
+                    }
+                    $('#thanatable').DataTable().rows.add(arrays).draw(false).row(':eq(0)', { page: 'current' }).select();
+
+                }
+
+            });
+        });
+
+        $("#RepresentativeId").select2({
+            theme: "bootstrap4",
+        });
+
+        $('#previewBtn').click(function (event) {
+
+            var monthtable = $('#monthtable').DataTable();
+            var monthid = monthtable.rows('.selected').data()[0][0];
+
+            var dtfrom = $('#fromdate').val();
+            var dtto = $('#todate').val();
+            var yearid = $('#yeartable tbody tr.selected td:first-child').text();
+            //var monthid = $('#monthtable tbody tr.selected td:first-child').text();
+            var districtid = $('#disttable tbody tr.selected td:first-child').text();
+            var thanaid = $('#thanatable tbody tr.selected td:first-child').text();
+            var bankid = $('#banktable tbody tr.selected td:first-child').text();
+            var RepresentativeId = $("#RepresentativeId").val();
+            var report = $('#reporttable tbody tr.selected td:nth-child(2)').text();
+            var ReportFormat = $("input[name=rptFormat]:checked").val();
+            var FromDONo = $("#FromDONo").val();
+            var ToDONo = $("#ToDONo").val();
+
+           
+            //alert(rows);
+            //var rowData = rows[0][0];
+            //alert(rowData);
+            //&& FromDONo !== '' && ToDONo !== ''
+            if (yearid !== '' && monthid !== '' && districtid !== '' && thanaid !== '' && bankid !== '' && RepresentativeId !== ''  &&report !== '') {
+                $('#fromDate').val(dtfrom);
+                $('#toDate').val(dtto);
+                $('#year').val(yearid);
+                $('#month').val(monthid);
+                $('#district').val(districtid);
+                $('#thana').val(thanaid);
+                $('#bank').val(bankid);
+                $('#FromDONo').val(FromDONo);
+                $('#ToDONo').val(ToDONo);
+                $('#report').val(report);
+                $('#reportformate').val(ReportFormat);
+
+
+
+
+            } else {
+                event.preventDefault();
+                alert('Please Select Data First');
+            }
+
+
+
+                @*$.ajax({
+                type: 'POST',
+                url: '@Url.Action("Report", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                    data: { rptFormat: reporttype, action: btnvalue, DistrictId: DistrictId, FromDate: FromDate, ToDate: ToDate, MonthId: MonthId, YearId: YearId, FromDOId: FromDOId, ToDOId: ToDOId, Bank: Bank, GatePassId: GatePassId, DONo: dono, RepresentativeId: RepresentativeId, BookingMonthId: BookingMonthid },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });*@
+
+
+        });
+
+
+    </script>
+}

@@ -1,0 +1,133 @@
+﻿@model GTERP.Models.Destination
+    <style>
+
+        #styletext {
+            color: transparent;
+            background: #666666;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+            font-weight: 100;
+            font-size: 40px;
+        }
+    </style>
+
+
+@using (Html.BeginForm("CreateDestinations", "Commercial", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+    <div class="container" style="max-width:700px;">
+        <div class="py-7 text-center">
+            <h2 id="styletext">Destination</h2>
+            <p class="lead"></p>
+        </div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @if (Model != null)
+        {
+            <input type="hidden" id="DestinationID" name="DestinationID" value="@Model.DestinationID" />
+        }
+        else
+        {
+            <input type="hidden" id="ComId" name="CompanyId" value="" />
+        }
+        <hr />
+        <div id="modalbodyfahad" class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Destination @ViewBag.Title</h4>
+                <div class="row">
+                    <br>
+                    <div class="col-md-4 mb-2">
+
+                        @Html.LabelFor(model => model.DestinationNameSearch)
+                        @Html.EditorFor(model => model.DestinationNameSearch, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DestinationNameSearch, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        @Html.HiddenFor(model => model.DestinationID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.LabelFor(model => model.DestinationName)
+                        @Html.EditorFor(model => model.DestinationName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DestinationName, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="col-md-4 mb-2">
+
+                        @Html.LabelFor(model => model.DestinationCode)
+                        @Html.EditorFor(model => model.DestinationCode, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DestinationCode, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        @Html.LabelFor(model => model.CountryId, "Country")
+
+                        @Html.DropDownListFor(x => x.CountryId, new SelectList((IEnumerable<SelectListItem>
+                              )ViewBag.CountryId, "Value", "Text"), "", htmlAttributes: new { @class = "form-control", id = "CountryId" })
+                        @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <br />
+
+                <div class="row text-center m-2">
+                    <br />
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 col-xs-12 d-block mx-auto">
+                        @if (ViewBag.Title == "Create")
+                        {
+                            <input type="submit" value="Save" class="btn btn-primary btn-block" />
+
+                            @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                        }
+                        else if (ViewBag.Title == "Edit")
+                        {
+                            <input type="submit" value="Update" class="btn btn-warning btn-block" />
+
+                            @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                        }
+                        else if (ViewBag.Title == "Delete")
+                        {
+                            <button class="btn btn-danger btn-block" type="button" onclick="Destination_delete()">Delete</button>
+                        }
+                    </div>
+                    <div class="col-md-4 col-xs-12 d-block mx-auto">
+                        @Html.ActionLink("Back", "DestinationsList", "Commercial", null, new { @class = "btn btn-info btn-block" })
+
+                    </div>
+                    <div class="col-md-2"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $("#CountryId").select2();
+
+    function Destination_delete() {
+        var DestinationID = $("#DestinationID").val();
+        $.ajax({
+            url: '@Url.Action("DeleteDestinations", "Commercial")',
+            data: JSON.stringify({ id: DestinationID }),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+             success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("DestinationsList", "Commercial")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+        });
+    }
+
+    </script>
+}

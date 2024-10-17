@@ -1,0 +1,952 @@
+﻿@model GTERP.Models.Asset
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+     input:disabled,select:disabled,textarea:disabled {
+        cursor: not-allowed;
+        opacity: .6;
+    }
+
+    input,select {
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        background-color: #f0eaea;
+    }
+    header {
+        background-color: #bde9ba;
+    }
+    article {
+        padding: 5px;
+        border-right: 1px solid skyblue;
+        margin-top: 5px;
+        width: 70%;
+        min-height:500px;
+    }
+
+    header {
+        padding: 0px;
+        text-align: center;
+        border-bottom: 1px solid skyblue;
+    }
+
+    aside {
+        margin-top: 5px;
+        background-color: #f0eaea;
+        padding: 5px;
+        text-align: left;
+        /*font-style: italic;*/
+        border-right: 1px solid skyblue;
+        width: 25%;
+    }
+
+    section {
+        padding: 5px;
+        border: 1px solid skyblue;
+        margin-top: 5px;
+        border-radius: 10px;
+    }
+
+    footer {
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    nav {
+        text-align: center;
+    }
+
+    ul li {
+        display: inline;
+        padding-left: 5px;
+        padding-right: 5px;
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .bb {
+        border-top: 1px solid skyblue;
+    }
+    .hh{
+        min-height:500px;
+    }
+</style>
+
+<div class="container">
+    <form asp-action="CreateAssets" asp-controller="ControllerFolder">
+        <div class="row ">
+            <div class="container">
+
+                <section class="row">
+                    <header class="col-md-12">
+
+                        <div class="row">
+                            <div class="col-md-6"><h3 class="text-left" id="title">Fixed Asset @ViewBag.Title</h3></div>
+                            <div class="col-md-6 text-right">
+                                <input type="button" id="btnsubmit" value="Save" name="addasset"  class="btn btn-sm btn-primary text-right" />
+                            </div>
+                        </div>
+
+                    </header>
+                    <aside>
+                        <div class="form-group">
+                            <label class="col-8">Add Asset</label>
+                            <button type="button" class="col-1" id="btnaddasset">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-8">Assign Asset</label>
+                            <button type="button" class="col-1" id="btnassignasset">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-8">Sell Asset</label>
+                            <button type="button" class="col-1" id="btnsellasset">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-8">Depreciation Entry</label>
+                            <button type="button" class="col-1" id="btndepentry">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-8">Value Adjustment</label>
+                            <button type="button" class="col-1" id="btnajdust">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-8">Depreciation Method</label>
+                            <button type="button" class="col-1" id="btndepmethod" data-toggle="modal" data-target="#depmethodModal">
+                                <span><img src="~/icons8-plus-30.png" /></span>
+                            </button>
+                        </div>
+
+                        @*<div class="form-group">
+            <label class="col-6">Depriciation</label>
+            <button type="button" class="col-2" id="btndepriciation">
+                <span><img src="~/icons8-plus-30.png" /></span>
+            </button>
+        </div>*@
+
+
+                    </aside>
+                    <article>
+                        <div class="card p-2">
+                            <div class="row" id="divasset">
+                                <input asp-for="AssetId" type="hidden" class="form-control-sm col-6" />
+                                <div class="">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                    <table>
+                                        <tr class="row col-md-12">
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="ProductCategoryId" class="control-label "></label>
+                                                    <select asp-for="ProductCategoryId" class="form-control-sm col-12" asp-items="ViewBag.CategoryId"></select>
+                                                    <span asp-validation-for="ProductCategoryId" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="ProductId" class="control-label "></label>
+                                                    <select asp-for="ProductId" class="form-control-sm col-12"><option>Select Item</option></select>
+                                                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                                                </div>
+                                            </td>
+
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="AssetName" class="control-label "></label>
+                                                    <input asp-for="AssetName" class="form-control-sm col-12" />
+                                                    <span asp-validation-for="AssetName" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="Vendor" class="control-label "></label>
+                                                    <select asp-for="Vendor" class="form-control-sm col-12" asp-items="ViewBag.Supplier"></select>
+                                                    <span asp-validation-for="Vendor" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="row col-md-12">
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="SerialNumber" class="control-label "></label>
+                                                    <input asp-for="SerialNumber" class="form-control-sm col-12" />
+                                                    <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="Price" class="control-label "></label>
+                                                    <input asp-for="Price" class="form-control-sm col-12" />
+                                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="LocationId" class="control-label"></label>
+                                                    <select asp-for="LocationId" class="form-control-sm col-12" asp-items="ViewBag.LocationId"></select>
+                                                    <span asp-validation-for="LocationId" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="PurchaseTypeId" class="control-label "></label>
+                                                    <select asp-for="PurchaseTypeId" class="form-control-sm col-12" asp-items="ViewBag.PurchaseType"></select>
+                                                    <span asp-validation-for="PurchaseTypeId" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="row col-md-12">
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="PurchaseDate" class="control-label "></label>
+                                                    <input asp-for="PurchaseDate" class="form-control-sm col-12" type="date" />
+                                                    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="UsefulLife" class="control-label "></label>
+                                                    <input asp-for="UsefulLife" class="form-control-sm col-12" />
+                                                    <span asp-validation-for="UsefulLife" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label asp-for="ExpiryDate" class="control-label "></label>
+                                                    <input asp-for="ExpiryDate" class="form-control-sm col-12" type="date" />
+                                                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td class="col-md-3">
+                                                <div class="form-group m-1">
+                                                    <label for="chkmultiple">Create Multiple</label>
+                                                    <input id="chkmultiple" type="checkbox" />
+                                                    <label for="AssetQty" id="lblAssetQty" class="col-5" style="display:none">Qty</label>
+                                                    <input id="AssetQty" class="form-control-sm col-6" style="display:none" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                    <div class="m-3">
+
+                                        <h4>Depreciation Information</h4>
+                                        <hr />
+                                        <input asp-for="Depreciation.DepreciationId" type="hidden" class="form-control-sm col-6" />
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.DMId" class="control-label col-5"></label>
+                                            <select asp-for="Depreciation.DMId" class="form-control-sm col-6" asp-items="ViewBag.DepreciationMethod"></select>
+                                            <span asp-validation-for="Depreciation.DMId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.DSDate" class="control-label col-5"></label>
+                                            <input asp-for="Depreciation.DSDate" class="form-control-sm col-6" type="date"/>
+                                            <span asp-validation-for="Depreciation.DSDate" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.FoDId" class="control-label col-5"></label>
+                                            <select asp-for="Depreciation.FoDId" class="form-control-sm col-6" asp-items="ViewBag.FoDId"></select>
+                                            <span asp-validation-for="Depreciation.FoDId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.TNoD" class="control-label col-5"></label>
+                                            <input asp-for="Depreciation.TNoD" class="form-control-sm col-6" />
+                                            <span asp-validation-for="Depreciation.TNoD" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.DRate" class="control-label col-5"></label>
+                                            <input asp-for="Depreciation.DRate" class="form-control-sm col-6" disabled />
+                                            <span asp-validation-for="Depreciation.DRate" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Depreciation.EVAULife" class="control-label col-5"></label>
+                                            <input asp-for="Depreciation.EVAULife" class="form-control-sm col-6" />
+                                            <span asp-validation-for="Depreciation.EVAULife" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- #region commented -->
+                                    @*<div class="form-group">
+                    <label asp-for="AssetName" class="control-label col-3"></label>
+                    <input asp-for="AssetName" class="form-control-sm col-6" />
+                    <span asp-validation-for="AssetName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Items.ItemCode" class="control-label col-3"></label>
+                    <input asp-for="Items.ItemCode" class="form-control-sm col-6" />
+                    <span asp-validation-for="Items.ItemCode" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Items.ItemName" class="control-label col-3"></label>
+                    <input asp-for="Items.ItemName" class="form-control-sm col-6" />
+                    <span asp-validation-for="Items.ItemName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AssetCategoryId" class="control-label col-3"></label>
+                    <select asp-for="AssetCategoryId" class="form-control-sm col-6" asp-items="ViewBag.AssetCategoryId"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ComId" class="control-label col-3"></label>
+                    <select asp-for="ComId" class="form-control-sm col-6" asp-items="ViewBag.ComId"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LocationId" class="control-label col-3"></label>
+                    <select asp-for="LocationId" class="form-control-sm col-6" asp-items="ViewBag.LocationId"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PurchaseDate" class="control-label col-3"></label>
+                    <input asp-for="PurchaseDate" type="date" class="form-control-sm col-6" />
+                    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                </div>*@
+
+                                    <!-- #endregion -->
+
+
+                                </div>
+                                <div class="col-md-3">
+                                    <!-- #region commented1 -->
+                                    @*<div class="form-group">
+                    <input asp-for="Items.Disabled" type="checkbox" />
+                    <label asp-for="Items.Disabled"></label>
+                    <span asp-validation-for="Items.Disabled" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Items.AllowAlternativeItem" type="checkbox" />
+                    <label asp-for="Items.AllowAlternativeItem"></label>
+                    <span asp-validation-for="Items.AllowAlternativeItem" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Items.MaintainStock" type="checkbox" />
+                    <label asp-for="Items.MaintainStock"></label>
+                    <span asp-validation-for="Items.MaintainStock" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Items.IsFixedAsset" type="checkbox" />
+                    <label asp-for="Items.IsFixedAsset"></label>
+                    <span asp-validation-for="Items.IsFixedAsset" class="text-danger"></span>
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="form-group">
+                    <input id="btnAdOptions" type="checkbox" />
+                    <label for="#btnAdOptions">Additional Options</label>
+                </div>*@
+                                    <!-- #endregion -->
+                                </div>
+                            </div>
+                            <!-- #region commented1 -->
+                            @*<div id="divassetaddopt" class="row">
+            <div class="col-md-9">
+
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.Custodian" class="control-label col-3"></label>
+                    <select asp-for="AdditionalOptions.Custodian" class="form-control-sm col-6" asp-items="ViewBag.Custodian"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.Department" class="control-label col-3"></label>
+                    <select asp-for="AdditionalOptions.Department" class="form-control-sm col-6" asp-items="ViewBag.Department"></select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.OADepreciation" class="control-label col-3"></label>
+                    <input asp-for="AdditionalOptions.OADepreciation" class="form-control-sm col-6" />
+                    <span asp-validation-for="AdditionalOptions.OADepreciation" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.NoDBooked" class="control-label col-3"></label>
+                    <input asp-for="AdditionalOptions.NoDBooked" class="form-control-sm col-6" />
+                    <span asp-validation-for="AdditionalOptions.NoDBooked" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.CVADepreciation" class="control-label col-3"></label>
+                    <input asp-for="AdditionalOptions.CVADepreciation" class="form-control-sm col-6" />
+                    <span asp-validation-for="AdditionalOptions.CVADepreciation" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdditionalOptions.NDDate" class="control-label col-3"></label>
+                    <input asp-for="AdditionalOptions.NDDate" class="form-control-sm col-6" />
+                    <span asp-validation-for="AdditionalOptions.NDDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input asp-for="AdditionalOptions.IsExistingAsset" type="checkbox" />
+                    <label asp-for="AdditionalOptions.IsExistingAsset"></label>
+                    <span asp-validation-for="AdditionalOptions.IsExistingAsset" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="AdditionalOptions.AllowMonthlyDepreciation" type="checkbox" />
+                    <label asp-for="AdditionalOptions.AllowMonthlyDepreciation"></label>
+                    <span asp-validation-for="AdditionalOptions.AllowMonthlyDepreciation" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="AdditionalOptions.CalculateDepreciation" type="checkbox" />
+                    <label asp-for="AdditionalOptions.CalculateDepreciation"></label>
+                    <span asp-validation-for="AdditionalOptions.CalculateDepreciation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>*@
+
+
+                            @*<div id="divcategory">
+            <input asp-for="AssetCategoryId" type="hidden" class="form-control-sm col-6" />
+            <div class="form-group">
+                <label asp-for="AssetCategory.CatName" class="control-label col-3"></label>
+                <input asp-for="AssetCategory.CatName" class="form-control-sm col-6" />
+                <span asp-validation-for="AssetCategory.CatName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="#AdditionalOptions">Additional Options</label>
+            </div>
+
+            <div id="addopt">
+
+                <div class="bb">
+                    <h4>Account Details</h4>
+                    <div style="height:150px; overflow:scroll;">
+                        <table id="tblAccountInfo" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>AccountDetailsId</th>
+                                    <th>ComId</th>
+                                    <th>FixedAssetAccountId</th>
+                                    <th>AccumulatedDepreciationAccountId</th>
+                                    <th>DepreciationExpenseAccountId</th>
+                                    <th>CapitalWorkInProgressAccount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <button id="addAccount" class="btn btn-sm btn-primary">Add Row</button>
+                                    </td>
+                                </tr>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bb">
+                    <h4>Finance Book</h4>
+                    <div style="height:150px;overflow:scroll">
+                        <table id="tblFinancebook" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>FinanceBookId</th>
+                                    <th>DepreciationMethod</th>
+                                    <th>FoDepreciation</th>
+                                    <th>DTotal</th>
+                                    <th>DRate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <button id="addFinance" class="btn btn-sm btn-primary">Add Row</button>
+                                    </td>
+                                </tr>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                            <!-- #endregion -->
+                            <!-- Modal -->
+                            <div class="modal fade" id="depmethodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">New Depriciation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input id="txtmethodid" type="hidden" class="form-control-sm col-6" />
+
+                                            <div class="form-group">
+                                                <label for="#txtdepMethod" class="control-label col-3">Method Name</label>
+                                                <input id="txtdepMethod" class="form-control-sm col-7" />
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divdepriciationmethod">
+
+
+                            </div>
+                            <div id="divassignasset" class="hh">
+                                <table>
+                                    <tr class="row col-md-12">
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="ProductCategoryId" class="control-label "></label>
+                                                <select asp-for="ProductCategoryId" class="form-control-sm col-12" asp-items="ViewBag.CategoryId"></select>
+                                                <span asp-validation-for="ProductCategoryId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="ProductId" class="control-label "></label>
+                                                <select asp-for="ProductId" class="form-control-sm col-12" asp-items="ViewBag.Items"></select>
+                                                <span asp-validation-for="ProductId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="AssetName" class="control-label "></label>
+                                                <select asp-for="AssetName" class="form-control-sm col-12" asp-items="ViewBag.AssetName"></select>
+                                                <span asp-validation-for="AssetName" class="text-danger"></span>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                    <tr class="row col-md-12">
+
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="Vendor" class="control-label "></label>
+                                                <select asp-for="Vendor" class="form-control-sm col-12" asp-items="ViewBag.Supplier"></select>
+                                                <span asp-validation-for="Vendor" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="LocationId" class="control-label"></label>
+                                                <select asp-for="LocationId" class="form-control-sm col-12" asp-items="ViewBag.LocationId"></select>
+                                                <span asp-validation-for="LocationId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="DeptId" class="control-label "></label>
+                                                <select asp-for="DeptId" class="form-control-sm col-12" asp-items="ViewBag.Department"></select>
+                                                <span asp-validation-for="DeptId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+
+
+
+                                    </tr>
+                                    <tr class="row col-md-12">
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="AssignedTo" class="control-label "></label>
+                                                <select asp-for="AssignedTo" class="form-control-sm col-12" asp-items="ViewBag.Employees"></select>
+                                                <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="Description" class="control-label "></label>
+                                                <input asp-for="Description" class="form-control-sm col-12" />
+                                                <span asp-validation-for="Description" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                        <td class="col-md-4">
+                                            <div class="form-group m-1">
+                                                <label asp-for="AssignComponent" class="control-label "></label>
+                                                <input asp-for="AssignComponent" class="form-control-sm col-12" />
+                                                <span asp-validation-for="AssignComponent" class="text-danger"></span>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+
+                                </table>
+
+                            </div>
+                            <div id="divsellasset" class="hh">
+                                sell asset
+                            </div>
+                            <div id="divassetvalueaddjustment" class="hh">
+                                <p>
+                                    In case of fixed asset management, sometimes the value of an asset needs some adjustment. For example, if a laptop gets damaged for some reason, and its value will be dropped instantly. And in that case, we have to readjust the value of the asset.
+                                </p>
+                            </div>
+                            <div id="divdepentry" class="hh">
+                                depriciation entry/ account entry
+                            </div>
+                        </div>
+                    </article>
+
+                </section>
+
+
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<div>
+    <a asp-action="AssetsList">Back to List</a>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var newOption = new Option('--Please Select--', '-1',true);
+            //$('select').prepend(newOption).trigger('change');
+            //$('select').select2({
+            //    theme: "classic",
+            //    //placeholder: '--Please Select--',
+
+            //});
+
+            var Asset = {
+                AssetId: 0,
+                ProductCategoryId: 0,
+                ProductId: 0,
+                AssetName: '',
+                SerialNumber: '',
+                Price: '',
+                LocationId: 0,
+                PurchaseTypeId: 0,
+                PurchaseDate: '',
+                UsefulLife: 0,
+                ExpiryDate: '',
+                DepreciationId: 0,
+                DMId: 0,
+                DSDate: '',
+                FoD: 0,
+                TNoD: 0,
+                DRate: 0,
+                EVAULife: 0,
+                DeptId:0,
+                AssignedTo:0,
+                Description:'',
+                AssignComponent:'',
+                CurrentStateId:''
+            };
+
+            $('#btnsubmit').click(function() {
+                var name = $(this).attr('name');
+                //alert(name);
+                if (name == 'addasset') {
+
+                    var AssetList = [];
+                    Asset.AssetId = $("#AssetId").val();
+                    Asset.ProductCategoryId = $("#ProductCategoryId option:selected").val();
+                    Asset.ProductId = $("#ProductId option:selected").val();
+                    Asset.AssetName = $("#AssetName").val();
+                    Asset.SerialNumber = $("#SerialNumber").val();
+                    Asset.Price = $("#Price").val();
+                    Asset.LocationId = $("#LocationId option:selected").val();
+                    Asset.PurchaseTypeId = $("#PurchaseTypeId option:selected").val();
+                    Asset.PurchaseDate = $("#PurchaseDate").val();
+                    Asset.UsefulLife = $("#UsefulLife").val();
+                    Asset.ExpiryDate = $("#ExpiryDate").val();
+                    Asset.DepreciationId = $("#DepreciationId").val();
+                    Asset.DMId = $("#DMId option:selected").val();
+                    Asset.DSDate = $("#DSDate").val();
+                    Asset.FoD = $("#FoD").val();
+                    Asset.TNoD = $("#TNoD").val();
+                    Asset.DRate = $("#DRate").val();
+                    Asset.EVAULife = $("#EVAULife").val();
+
+                    if ($("#chkmultiple").is(":checked")) {
+                        var qty = parseFloat($("#AssetQty").val());
+                        for (var i = 0; i < qty; i++) {
+                            Asset.SerialNumber = `${$("#SerialNumber").val()}-${i}`;
+                            AssetList.push(Asset);
+                        }
+                    }
+                    else {
+                        AssetList.push(Asset);
+                    }
+                    Asset = {
+                        AssetId: 0,
+                        ProductCategoryId: 0,
+                        ProductId: 0,
+                        AssetName: '',
+                        SerialNumber: '',
+                        Price: '',
+                        LocationId: 0,
+                        PurchaseTypeId: 0,
+                        PurchaseDate: '',
+                        UsefulLife: 0,
+                        ExpiryDate: '',
+                        DepreciationId: 0,
+                        DMId: 0,
+                        DSDate: '',
+                        FoD: 0,
+                        TNoD: 0,
+                        DRate: 0,
+                        EVAULife: 0,
+                        DeptId: 0,
+                        AssignedTo: 0,
+                        Description: '',
+                        AssignComponent: '',
+                        CurrentStateId: ''
+                    };
+
+                    if (AssetList.length>0) {
+                        $.ajax({
+                            url: '@Url.Action("CreateAssets", "ControllerFolder")',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { assetlist: AssetList },
+                            success: function (data, status, xhr) {
+                                if (status == 'success') {
+                                    alert('Asset Saved Success');
+                                };
+                            },
+                        });
+                    }
+
+                }
+                if (name == 'sellasset') {
+
+                }
+                if (name == 'assignasset') {
+
+                }
+                if (name == 'adjustvalue') {
+
+                }
+                if (name == 'depentry') {
+
+                }
+            });
+
+            $('#ProductId').attr('disabled', true);
+
+            //$("#addopt").hide();
+            $("#divcategory").hide();
+            $("#divassetaddopt").hide();
+            $("#divdepriciation").hide();
+            $("#divassignasset").hide();
+            $("#divsellasset").hide();
+            $("#divassetvalueaddjustment").hide();
+            $("#divdepentry").hide();
+
+            $("#btnassignasset").click(function () {
+                $('#btnsubmit').attr('name', 'assignasset');
+                $("#title").empty();
+                $("#title").append('Assign Asset');
+                $("#divasset").hide();
+                $("#divdepriciation").hide();
+                $("#divassetaddopt").hide();
+                $("#divsellasset").hide();
+                $("#divdepentry").hide();
+
+                $("#divassetvalueaddjustment").hide();
+                $("#divassignasset").show();
+
+
+            });
+            $("#btndepriciation").click(function () {
+
+                $("#divasset").hide();
+                $("#divcategory").hide();
+                $("#divassetaddopt").hide();
+                $("#divsellasset").hide();
+                $("#divdepentry").hide();
+
+                $("#divassetvalueaddjustment").hide();
+                $("#divdepriciation").show();
+
+            });
+            $("#btnaddasset").click(function () {
+                $("#title").empty();
+                $("#title").append('Add Asset');
+                $("#divcategory").hide();
+                $("#divdepriciation").hide();
+                $("#divassetaddopt").hide();
+                $("#divassignasset").hide();
+                $("#divsellasset").hide();
+                $("#divdepentry").hide();
+
+                $("#divassetvalueaddjustment").hide();
+                $("#divasset").show();
+                $('#btnsubmit').attr('name', 'addasset');
+
+            });
+            $("#btnsellasset").click(function () {
+                $("#title").empty();
+                $("#title").append('Sell Asset');
+                $("#divcategory").hide();
+                $("#divdepriciation").hide();
+                $("#divassetaddopt").hide();
+                $("#divasset").hide();
+                $("#divdepentry").hide();
+
+                $("#divassignasset").hide();
+                $("#divsellasset").hide();
+                $("#divassetvalueaddjustment").hide();
+                $("#divsellasset").show();
+                $('#btnsubmit').attr('name', 'sellasset');
+
+            });
+            $("#btnajdust").click(function () {
+                $("#title").empty();
+                $("#title").append('Addjust Asset Value');
+                $("#divcategory").hide();
+                $("#divdepriciation").hide();
+                $("#divassetaddopt").hide();
+                $("#divasset").hide();
+                $("#divdepentry").hide();
+
+                $("#divsellasset").hide();
+                $("#divassignasset").hide();
+                $("#divassetvalueaddjustment").show();
+                $("#divsellasset").hide();
+                $('#btnsubmit').attr('name', 'adjustvalue');
+
+
+            });
+            $("#btndepentry").click(function () {
+                $("#title").empty();
+                $("#title").append('Depreciation Entry');
+                $("#divcategory").hide();
+                $("#divdepriciation").hide();
+                $("#divassetaddopt").hide();
+                $("#divasset").hide();
+                $("#divdepentry").show();
+
+                $("#divsellasset").hide();
+                $("#divassignasset").hide();
+                $("#divassetvalueaddjustment").hide();
+                $("#divsellasset").hide();
+                $('#btnsubmit').attr('name', 'depentry');
+
+
+            });
+
+            $("#btnajdust").attr('title', 'In case of fixed asset management, sometimes the value of an asset needs some adjustment. For example, if a laptop gets damaged for some reason, and its value will be dropped instantly. And in that case, we have to readjust the value of the asset.');
+
+
+
+            $('#ProductCategoryId').change(function () {
+
+                var CategoryId = $('#ProductCategoryId option:selected').val();
+                    $.ajax({
+                    url: '@Url.Action("GerProducts", "PurchaseRequisition")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: CategoryId },
+                        success: function (data, status, xhr) {
+                            $("#ProductId option").remove();
+
+                            createSelectList(data.item)
+                            $('#ProductId').attr('disabled', false);
+                            //if (selectedItem!=null) {
+                            //    $("#ProductId").val(selectedItem).change();
+                            //}
+                            //selectedItem = null;
+                        }
+
+                    });
+            });
+
+
+
+        function createSelectList(selItem) {
+
+            $('#ProductId').append(new Option("Select Product", "-1"));
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].Value;
+                optionText = selItem[i].Text;
+                $('#ProductId').append(new Option(optionText, optionValue));
+
+            }
+
+        }
+        function SelectEmployee(selItem) {
+            for (var i = 0; i < selItem.length; ++i) {
+                optionValue = selItem[i].EmpId;
+                optionText = selItem[i].EmpCode+' '+ selItem[i].EmpName;
+                $('#ProductId').append(new Option(optionText, optionValue));
+
+            }
+
+            }
+             $("#chkmultiple").click(function () {
+                if ($(this).is(":checked")) {
+                    $("#AssetQty").show();
+                    $("#lblAssetQty").show();
+                }
+                else if ($(this).is(":not(:checked)")) {
+                    $("#lblAssetQty").hide();
+                    $("#AssetQty").hide();
+                }
+            });
+            //$("#btnAdOptions").click(function () {
+            //    if ($(this).is(":checked")) {
+            //        //$("#createCategory").removeClass("modal");
+            //        //$("#createCategory").addClass("modal-lg");
+            //        //$("#TotalQty").css({ 'color': 'green', 'font-size': '100%' });
+
+            //        $("#divassetaddopt").show();
+            //        $("#divasset").hide();
+            //        $("#divdepriciation").hide();
+            //        $("#divcategory").hide();
+            //    }
+            //    else if ($(this).is(":not(:checked)")) {
+            //        $("#divassetaddopt").hide();
+            //        $("#divasset").show();
+            //        $("#divdepriciation").hide();
+            //        $("#divcategory").hide();
+            //    }
+            //});
+            $("#addAccount").click(function () {
+
+
+                //$('#tblAccountInfo').dataTable().fnAddData([
+                //    0, 0, 0, 0, 0, 0, 0
+                //]);
+            });
+            $("#addFinance").click(function () {
+                //$('#tblFinancebook').dataTable().fnAddData([
+                //    0, 0, 0, 0, 0, 0, 0
+                //]);
+            });
+        });
+    </script>
+}

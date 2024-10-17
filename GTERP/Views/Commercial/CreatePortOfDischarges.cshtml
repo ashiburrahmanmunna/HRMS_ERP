@@ -1,0 +1,143 @@
+﻿@model GTERP.Models.PortOfDischarge
+
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+
+@using (Html.BeginForm("CreatePortOfDischarges", "Commercial", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @if (Model != null)
+        {
+            <input type="hidden" id="PortOfDischargeId" name="PortOfDischargeId" value="@Model.PortOfDischargeId" />
+        }
+        else
+        {
+            <input type="hidden" id="ComId" name="CompanyId" value="" />
+        }
+        <hr />
+        <div id="modalbodyfahad" class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-3" id="styletext">Port Of Discharge Entry - @ViewBag.Title</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12 order-md-1">
+
+                            <div class="row">
+                                <br>
+                                <div class="col-md-4 mb-2">
+                                    @Html.HiddenFor(model => model.PortOfDischargeId, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.LabelFor(model => model.PortOfDischargeName)
+                                    @Html.EditorFor(model => model.PortOfDischargeName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.PortOfDischargeName, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-md-4 mb-2">
+
+                                    @Html.LabelFor(model => model.PortCode)
+                                    @Html.EditorFor(model => model.PortCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.PortCode, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    @Html.LabelFor(model => model.CountryId, "Country")
+                                    @Html.DropDownList("CountryId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <br />
+
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-block" />
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-block" type="button" onclick="PortOfDischarge_delete()">Delete</button>
+                                }
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "PortOfDischargesList", "Commercial", null, new { @class = "btn btn-info btn-block" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $("#CountryId").select2();
+    
+
+    function PortOfDischarge_delete() {
+        var PortOfDischargeId = $("#PortOfDischargeId").val();
+        $.ajax({
+            url: '@Url.Action("DeletePortOfDischarges", "Commercial")',
+            data: JSON.stringify({ id: PortOfDischargeId }),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("PortOfDischargesList", "Commercial")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,508 @@
+﻿@model GTERP.Models.Acc_ChartOfAccount
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        #styletext {
+            color: transparent;
+            background: #666666;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+            font-weight: 100;
+            font-size: 40px;
+        }
+
+        input[type=checkbox] {
+            top:7px;
+            height: 25px;
+            width: 25px;
+            background-color: transparent;
+            /*border: 5px solid #000;*/
+            border-radius: 5px;
+            position: relative;
+            display: inline-block;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            -moz-transition: border-color ease 0.2s;
+            -o-transition: border-color ease 0.2s;
+            -webkit-transition: border-color ease 0.2s;
+            transition: border-color ease 0.2s;
+            cursor: pointer;
+        }
+            input[type=checkbox]~.control-label {
+                font-size: 18px;
+                font-weight: 500;
+                font-family: sans-serif;
+            }
+    </style>
+</head>
+
+<body>
+    @*@using (Html.BeginForm())*@
+    @using (Html.BeginForm("CreateChartOfAccount", "Accounts", new { title = ViewBag.Title }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container">
+
+            <div class="py-7 text-center">
+                <h1 id="styletext">Chart Of Account</h1>
+                <p class="lead"></p>
+            </div>
+            <div id="modal">
+                <div class="col-md-10 offset-md-1 col-12 order-md-1">
+                    <div class="needs-validation card p-4" novalidate>
+                        <div class="row">
+
+                            @if (Model != null)
+                            {
+
+                                <div class="p-3" style="font-size: 30px;">
+                                    <span class="pr-2">
+                                        @Html.RadioButtonFor(model => model.AccType, "G") @Html.Label("  Group  ")
+                                    </span>
+                                    <span class="pr-2">
+                                        @Html.RadioButtonFor(model => model.AccType, "L") @Html.Label("  Ledger  ")
+                                    </span>
+                                </div>
+
+                                @Html.HiddenFor(model => model.AccId)
+                                @Html.HiddenFor(model => model.AccSubId)
+                                @Html.HiddenFor(model => model.UserId)
+                                @Html.HiddenFor(model => model.ComId)
+                                @Html.HiddenFor(model => model.UpdateByUserId)
+                                @Html.HiddenFor(model => model.DateAdded)
+                                @Html.HiddenFor(model => model.DateUpdated)
+                                @Html.HiddenFor(model => model.PrevParentID)
+                                @Html.HiddenFor(model => model.OpDate)
+                                @Html.HiddenFor(model => model.PrevAccType)
+                                @Html.HiddenFor(model => model.ParentCode)
+                                @Html.HiddenFor(model => model.IsSysDefined)
+                                @Html.HiddenFor(model => model.AccCode_Old)
+                                @Html.HiddenFor(model => model.Level)
+
+
+
+
+
+
+                            }
+                            else
+                            {
+                                <div class="p-3" style="font-size: 30px;">
+                                    <span class="pr-2">
+                                        @Html.RadioButtonFor(model => model.AccType, "G") @Html.Label("  Group  ")
+
+                                    </span>
+                                    <span class="pr-2">
+                                        @Html.RadioButtonFor(model => model.AccType, "L", new { Checked = "checked" }) @Html.Label("Ledger")
+
+                                    </span>
+                                </div>
+                            }
+
+
+
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccCode, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.AccCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.AccCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccName, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.AccName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.AccName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.ParentID, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(model => model.ParentID, null, new { @class = "form-control select", @id = "ParentId" })
+                                    @Html.ValidationMessageFor(model => model.ParentID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div id="accumulateddepreciationdiv" class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.AccumulatedDepId, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    
+                                    <select asp-for="AccumulatedDepId" asp-items="ViewBag.AccumulatedDepId"  id = "AccumulatedDepId" class = "form-control"> 
+                                      
+                                    
+                                    </select>
+                                    @*@Html.DropDownListFor(model=> model.AccumulatedDepId, ViewBag.AccumulatedDepId, new { id = "AccumulatedDepId", @ })*@
+                                   @*@ @Html.DropDownListFor(model => model.AccumulatedDepId, null, "--Select From List--", new { @class = "form-control select", @id = "AccumulatedDepId" })*@
+                                    @Html.ValidationMessageFor(model => model.AccumulatedDepId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div id="depreciationexpensediv" class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.DepExpenseId, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+
+                                    <select asp-for="DepExpenseId" asp-items="ViewBag.DepExpenseId" id="DepExpenseId" class="form-control select ">
+                                       
+
+                                    </select>
+                                    @*@Html.DropDownListFor(model => model.DepExpenseId, null, "--Select From List--", new { @class = "form-control select", @id = "DepExpenseId" })*@
+                                    @Html.ValidationMessageFor(model => model.DepExpenseId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div id="depreciationratediv" class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.DepreciationRate, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.DepreciationRate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.DepreciationRate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.OpDebit, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.OpDebit, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.OpDebit, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.OpCredit, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.OpCredit, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.OpCredit, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.CountryID, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(model => model.CountryID, null, new { @class = "form-control select", @id = "CountryID" })
+                                    @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.opFYId, htmlAttributes: new { @class = "control-label" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownListFor(model => model.opFYId, null, new { @class = "form-control select", @id = "opFYId" })
+                                    @Html.ValidationMessageFor(model => model.opFYId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.IsBankItem, new { @class = "select" })
+                                @Html.LabelFor(model => model.IsBankItem, htmlAttributes: new { @class = "control-label" })
+
+                                @Html.ValidationMessageFor(model => model.IsBankItem, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.IsChkRef, new { @class = "select" })
+                                @Html.LabelFor(model => model.IsChkRef, htmlAttributes: new { @class = "control-label" })
+
+                                @Html.ValidationMessageFor(model => model.IsChkRef, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.IsCashItem, new { @class = "select" })
+                                @Html.LabelFor(model => model.IsCashItem, htmlAttributes: new { @class = "control-label" })
+
+                                @Html.ValidationMessageFor(model => model.IsCashItem, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.isItemConsumed, new { @class = "select" })
+
+                                @Html.LabelFor(model => model.isItemConsumed, htmlAttributes: new { @class = "control-label" })
+                                @Html.ValidationMessageFor(model => model.isItemConsumed, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.isItemInventory, new { @class = "select" })
+
+                                @Html.LabelFor(model => model.isItemInventory, htmlAttributes: new { @class = "control-label" })
+                                @Html.ValidationMessageFor(model => model.isItemInventory, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.IsItemDepExp, new { @class = "select" })
+
+                                @Html.LabelFor(model => model.IsItemDepExp, htmlAttributes: new { @class = "control-label" })
+                                @Html.ValidationMessageFor(model => model.IsItemDepExp, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-5 col-12">
+                                @Html.CheckBoxFor(model => model.IsItemAccmulateddDep, new { @class = " " })
+
+                                @Html.LabelFor(model => model.IsItemAccmulateddDep, htmlAttributes: new { @class = "control-label" })
+                                @Html.ValidationMessageFor(model => model.IsItemAccmulateddDep, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-md-4 col-12">
+                                @Html.CheckBoxFor(model => model.isInactive, new { @class = "select" })
+
+                                @Html.LabelFor(model => model.isInactive, htmlAttributes: new { @class = "control-label" })
+                                @Html.ValidationMessageFor(model => model.isInactive, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                        
+                        <table>
+                            <tr>
+                                <td>
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        <input type="submit" value="Create" class="btn btn-primary btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-lg btn-block rounded-0" type="button" onclick="COA_delete()">Delete</button>
+                                    }
+
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Back", "ChartOfAccountList", null, null, new { @class = "btn btn-info btn-block rounded-0" })
+
+
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    }
+
+
+
+
+</body>
+
+@section Scripts{
+    <script language="javascript" type="text/javascript">
+        $('#ParentId').select2();
+
+        $(document).ready(function () {
+
+
+            //alert('ready');
+            $("#accumulateddepreciationdiv").hide();
+            $("#depreciationexpensediv").hide();
+            $("#depreciationratediv").hide();
+
+
+            
+            $("#depreciationdiv").hide();
+
+
+
+            var abc = $("#ParentId option:selected").text();
+            //var acchead = $('#Account option:selected').val() || 0;
+
+            //var abc = $("#AccCode").text();
+            //alert(abc);
+            if (abc.includes("1-2-1")) {
+                $("#accumulateddepreciationdiv").show();
+                $("#depreciationexpensediv").show();
+                $("#depreciationratediv").show();
+
+                $("#depreciationdiv").show();
+
+            }
+            else {
+                $("#accumulateddepreciationdiv").hide();
+                $("#depreciationexpensediv").hide();
+               $("#depreciationratediv").hide();
+
+                $("#depreciationdiv").hide();
+
+
+            }
+
+
+            $('#ParentId').select2({})
+                .on("select2:select", function (e) {
+                    
+                    ////alert('hit');
+                    //var acchead = $('#ParentID option:selected').text();
+                    //alert(acchead);
+
+                    //var acchead1 = $('#ParentID option:selected').val();
+                    //alert(acchead1);
+                    var data = $("#ParentId option:selected").text();
+
+                    //var e = document.getElementById("ParentID");
+                    //var strUser = e.value;
+
+                    //alert(data);
+                    //var data = $('#ParentID').select2('data');
+                    //alert(data[0].text);
+
+
+                    if (data.includes("1-2-1")) {
+                        $("#accumulateddepreciationdiv").show();
+                        $("#depreciationexpensediv").show();
+                        $("#depreciationratediv").show();
+                        $("#depreciationdiv").show();
+
+                    }
+                    else {
+                        $("#accumulateddepreciationdiv").hide();
+                        $("#depreciationexpensediv").hide();
+                        $("#depreciationratediv").hide();
+                        $("#depreciationdiv").hide();
+
+
+                    };
+
+                });
+
+
+
+
+        })
+
+
+
+        function COA_delete() {
+
+               var AccId = $("#AccId").val();
+                    //alert(SalesId);
+                    $.ajax({
+
+                        url: '@Url.Action("DeleteChartOfAccount", "Accounts")',
+                        //url: '@Url.Action("Delete")',
+                        data: JSON.stringify({ id: AccId }), //use id here
+                        //data: JSON.stringify(salesmain),
+                        type: 'POST',
+                        contentType: 'application/json;',
+                        dataType: 'json',
+                        success: function (result) {
+
+                            if (result.Success == "1") {
+                                window.location.href = '@Url.Action("ChartOfAccountList", "Accounts")';
+                            }
+                            else {
+                                alert(result.ex);
+                            }
+                        }
+                    });
+             }
+
+
+        function radiobutton() {
+            $("input[type='radio']").click(function () {
+
+                var radioValue = $("input[name='acctype']:checked").val();
+
+                //alert(radioValue);
+
+                if (radioValue == "group") {
+
+                    //alert('percentage');
+                    //$("#IndDisPer").prop("readonly", false);
+                    //$("#IndDisAmt").prop("readonly", true);
+                    //$("#IndDisPer").val(0);
+                    //$("#IndChkPer").val(true);
+
+                }
+                else if (radioValue == "ledger") {
+
+                    //$("#IndDisPer").prop("readonly", true);
+                    //$("#IndDisAmt").prop("readonly", false);
+                    //$("#IndDisPer").val(0);
+                    //$("#IndChkPer").val(false);
+                }
+
+            });
+
+        }
+
+
+
+
+    </script>
+}

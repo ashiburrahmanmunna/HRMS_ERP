@@ -1,0 +1,1405 @@
+﻿@model GTERP.Models.DeliveryOrder
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Antiforgery
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IAntiforgery AntiForgery
+
+
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+@{
+    //ViewData["Title"] = ViewBag.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*@using (Html.BeginForm("Create", "DeliveryOrders", FormMethod.Post, new { enctype = "multipart/form-data", id = "myform" }))*@
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "myform" }))
+{
+    <div class="needs-validation" novalidate>
+        <div class="container-fluid p-3" style="max-width:1100px">
+            <div class="card p-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h2 id="styletext" class="text-center">Delivery Order Entry</h2>
+                            </div>
+                            <div class="col-md-2">
+                                <img class="img-thumbnail border-0" width="50%" src="~/Content/img/delivery2.png" style="opacity: 0.2; float: right;" />
+                            </div>
+                        </div>
+                        @* <form asp-action="" id="myform">*@
+                        @if (ViewBag.Title == "Edit" || ViewBag.Title == "Delete")
+                        {
+                            <input type="hidden" id="comid" value="@Model.ComId" />
+                            <input type="hidden" id="DateAdded" value="@Model.DateAdded" />
+                            <input type="hidden" id="UserId" value="@Model.UserId" />
+                            <input type="hidden" id="OldDONo" value="@Model.OldDONo" />
+                            <input type="hidden" id="customerid" value="@Model.Booking.Customer.CustomerId" />
+                            <input type="hidden" id="customercodehidden" value="@Model.Booking.Customer.CustomerCode" />
+                            <input type="hidden" id="customernamehidden" value="@Model.Booking.Customer.CustomerName" />
+                        }
+                        <div class="p-4">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="DOId" />
+                            <input type="hidden" id="AllotmentQty1" asp-for="Booking.AllotmentQty" />
+                            <input type="hidden" id="mode" value="@ViewBag.Title" />
+
+                            <div class="row ">
+                                <div class="col-md-6 col-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="DONo" class="col-sm-4 control-label">&nbsp;Last DO No </label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="DONo" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="DONo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="DODate" class="col-sm-4 control-label">DO Date</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="DODate" class="form-control tg" type="date" autocomplete="off" />
+                                        <span asp-validation-for="DODate" asp-f class="text-danger"></span>
+                                    </div>
+                                </div>
+
+
+                                @*<div class=" col-md-6">
+                                        <div class="form-group row">
+
+                                            <div class="col-sm-10">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row col-md-6">
+                                        <div class="col-8">
+                                            </div>
+                                    </div>*@
+
+
+
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label class="col-sm-4 form-label">Dealer Code</label>
+                                            </span>
+                                        </div>
+                                        <input id="CustomerCode" class="form-control" autocomplete="off" />
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-8 mb-2">
+                                    <div class="input-group">
+                                        <input id="CustomerName" class="form-control" readonly />
+                                    </div>
+                                </div>
+
+                                @*<div class="form-group row col-md-12">
+                                    <label class="col-2 control-label">Dealer: </label>
+                                    <div class="col-10">
+                                        <select id="CustomerId" class="form-control" asp-items="ViewBag.CustomerId">
+                                            <option>--Select Dealer--</option>
+                                        </select>
+                                    </div>
+                                    </div>*@
+                                <div class="col-md-12 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="BookingId" class="col-sm-1 control-label"> &nbsp; Booking &nbsp; &nbsp; </label>
+                                            </span>
+                                        </div>
+                                        <select asp-for="BookingId" class="form-control" asp-items="@ViewBag.BookingId">
+                                            <option>--Select Dealer--</option>
+                                        </select>
+                                        <span asp-validation-for="BookingId" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="AccId" class="col-sm-2 control-label">&nbsp; &nbsp; Bank &nbsp; &nbsp;  &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <select asp-for="AccId" id="AccId" class="form-control" asp-items="ViewBag.AccId">
+                                            <option>--Select Bank--</option>
+                                        </select>
+                                        <span asp-validation-for="AccId" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label class="col-sm-3 control-label">&nbsp;  District &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Booking.Cat_District.DistName" id="District" class="form-control" readonly />
+                                        <span asp-validation-for="Booking.Cat_District.DistName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="PayInSlipDate" class="col-sm-3 control-label">&nbsp; Pay Date &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        @*<input asp-for="PayInSlipDate" asp-format="{0:dd-MMM-yy}" class="form-control" />*@
+                                        <input asp-for="PayInSlipDate" class="form-control tg" type="date" autocomplete="off" />
+
+                                        <span asp-validation-for="PayInSlipDate" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label class="col-sm-3 control-label">Police Station</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Booking.Cat_PoliceStation.PStationName" id="PoliceStation" class="form-control" readonly />
+                                        <span asp-validation-for="Booking.Cat_PoliceStation.PStationName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="PayInSlipNo" class="col-sm-3 control-label">Pay Slip No</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="PayInSlipNo" id="PayInSlipNo" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="PayInSlipNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="CurrentRemainingQty" class="col-sm-3 control-label">Current Remaining:</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="CurrentRemainingQty" id="CurrentRemainingQty" class="form-control" readonly />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="RepresentativeId" class="col-sm-1 control-label">Representative</label>
+                                            </span>
+                                        </div>
+                                        <select asp-for="RepresentativeId" class="form-control" asp-items="@ViewBag.RepresentativeId">
+                                            <option>--Select Representative--</option>
+                                        </select>
+                                        <span asp-validation-for="RepresentativeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="Qty" class="col-sm-3 control-label">&nbsp; &nbsp; &nbsp; Qty &nbsp; &nbsp; &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Qty" id="Qty" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="Qty" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="RemainingQty" class="col-sm-3 control-label"> &nbsp;Remaining Qty &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="RemainingQty" id="RemainingQty" class="form-control" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="TotalPrice" class="col-sm-4 control-label">&nbsp;Total Price</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="TotalPrice" id="TotalPrice" class="form-control" readonly />
+                                        <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="UnitPrice" class="col-sm-3 control-label">Unit Price</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="UnitPrice" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label class="col-sm-3 control-label">&nbsp; &nbsp; &nbsp;Year &nbsp; &nbsp; &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Booking.YearName.FYName" id="Year" class="form-control" readonly />
+                                        <span asp-validation-for="Booking.YearName.FYName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label class="col-sm-3 control-label">&nbsp; Month &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Booking.MonthName.MonthName" id="Month" class="form-control" readonly />
+                                        <span asp-validation-for="Booking.MonthName.MonthName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="Remarks" class="col-sm-1 control-label"> &nbsp; Remarks &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Remarks" id="Remarks" class="form-control" />
+                                        <span asp-validation-for="Remarks" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <label asp-for="Booking.AllotmentQty" class="col-sm-3 control-label"> &nbsp;Allotment Qty &nbsp;</label>
+                                            </span>
+                                        </div>
+                                        <input id="AllotmentQty" asp-for="Booking.AllotmentQty" class="form-control" readonly />
+                                        @*<input id="AllotmentQty" readonly class="form-control" />*@
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-md-4 col-xs-12 mx-auto">
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <div class="form-group text-center">
+                                        <span>
+                                            @*<input type="submit" id="create" value="Create" class="btn btn-primary" />*@
+                                            @*<button class="form-control form-control-sm btn btn-warning mb-2 btn-block" type="button" onclick="MasterLC_save()">Update</button>*@
+                                            <button id="create" class="btn btn-primary" type="button">Save</button>
+                                            @*onclick="ConfirmDialog('Are you sure')"*@
+
+                                        </span>
+                                        <span>
+                                            <a asp-action="Index" class="btn btn-info">Back</a>
+                                        </span>
+                                    </div>
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <div class="form-group text-center">
+                                        <span>
+                                            <button id="Edit" class="btn btn-warning" type="button">Update</button>
+
+                                            @* <button class="form-control form-control-sm btn btn-warning mb-2 btn-block" type="button" onclick="MasterLC_save()">Update</button>*@
+
+                                            @* <input type="submit" id="Edit" value="Edit" class="btn btn-warning" />*@
+
+                                        </span>
+                                        <span>
+                                            <a asp-action="Index" class="btn btn-info">Back</a>
+                                        </span>
+                                    </div>
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <div class="form-group text-center">
+                                        <span>
+                                            @*<button class="btn btn-danger" type="button" onclick="DeliveryOrders_delete()">Delete</button>*@
+                                            <button id="Delete" class="btn btn-danger" type="button" onclick="ConfirmDialogDelete('Are you sure');">Delete</button>
+                                        </span>
+                                        <span>
+                                            <a asp-action="Index" class="btn btn-info">Back</a>
+                                        </span>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+
+                        @* </form>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script>
+        var info;
+        var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+
+        function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            DeliveryOrders_delete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Save / Update message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            $(this).dialog("close");
+                            DeliveryOrder_Save()
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        $(document).ready(function () {
+            var mode = $("#mode").val();
+            if (mode == "Edit" || mode == "Delete") {
+               var cid= $("#customerid").val();
+                var cc = $("#customercodehidden").val();
+                var cn = $("#customernamehidden").val();
+                $("#CustomerCode").val(cc);
+                $("#CustomerName").val(cn);
+                //$("#BookingId").attr('disabled', true);
+
+            }
+            else {
+
+                var remainingqty = $("#RemainingQty").val();
+
+                if (remainingqty < 0.001) {
+
+                    $('#Qty').attr('disabled', true);
+                }
+
+                $("#CustomerCode").focus();
+            }
+            if ($("#CustomerCode").val().length > 0) {
+                $("#Qty").focus();
+                $('#CustomerCode').attr('disabled', true);
+            }
+            else {
+                $("#CustomerCode").focus();
+
+            }
+        });
+
+
+
+
+
+
+    function DeliveryOrders_delete() {
+
+        var DeliveryOrderId = $("#DOId").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "DeliveryOrders")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: DeliveryOrderId }), //use id here
+                //data: JSON.stringify(salesmain),
+                headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "DeliveryOrders")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+
+
+        $('body').on('keydown', 'input, select2', function (e) {
+            if (e.key === "Enter") {
+                //alert('hit');
+
+
+                var idabc = $(this).attr('id');
+                //alert(idabc);
+
+                if (idabc == "CustomerName") {
+                    //alert('hit');
+                    //alert($('#CustomerName').val().length);
+                    if ($('#CustomerName').val().length > 3) { $('#PayInSlipDate').focus(); } else {
+                        $('#CustomerCode').focus();
+                    }
+                    return true;
+
+                }
+                else if (idabc == "CustomerCode") {
+                    //alert('hit');
+                    //alert($('#CustomerName').val().length);
+                    //alert('enter');
+                    databasepilist();
+
+                    if ($('#CustomerName').val().length > 3) { $('#PayInSlipDate').focus(); }
+
+                    return true;
+                }
+                //else if (idabc == "PayInSlipNo") {
+
+
+                //    if ($('#Qty').val().length > 3) { $('#PayInSlipDate').focus(); }
+
+                //    return true;
+                //}
+                //alert('still running');
+
+
+
+                var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+                focusable = form.find('input,textarea,select').filter(':visible');
+                next = focusable.eq(focusable.index(this) + 1);
+                if (next.length) {
+                    next.focus();
+                } else {
+                    form.submit();
+                }
+                return false;
+
+
+
+
+
+            }
+
+
+
+        });
+
+
+
+            $("#CustomerCode").focusout(function () {
+                var name = $('#CustomerCode').val();
+                if (name.length == 0) {
+                    //$('#CustomerCode').after('<div class="red">Name is Required</div>');
+                    toastr.error("Dealer Code is Required")
+                    $("#CustomerCode").focus();
+                    return false;
+                }
+                else {
+                    //databasepilist();
+
+                    $('#CustomerCode').next(".red").remove(); // *** this line have been added ***
+                    return true;
+                }
+
+            });
+
+
+
+        //$("#CustomerCode").keyup(function () {
+        //    var name = $('#CustomerCode').val();
+        //    if (name.length == 0) {
+        //        //$('#CustomerCode').after('<div class="red">Name is Required</div>');
+        //        toastr.error("Dealer Code is Required")
+        //        $("#CustomerCode").focus();
+        //        return false;
+        //    }
+        //    else {
+        //        databasepilist();
+        //        $('#CustomerCode').next(".red").remove(); // *** this line have been added ***
+        //        return true;
+        //    }
+        //});
+
+
+
+        //function CustomerCheckAdd() {
+
+
+        //    var name = $('#CustomerCode').val();
+        //    if (name.length == 0) {
+        //        //$('#PINo').after('<div class="red">Name is Required</div>');
+        //        toastr.error("Dealer Code is Required")
+        //        return false;
+        //    }
+        //    else if (name.length >= 5) {
+        //        //$('#PINo').next(".red").remove(); // *** this line have been added ***
+        //        //return true;
+        //    }
+        //    else {
+        //        alert('Dealer Code Must Be 6 Digit');
+        //        $('#CustomerCode').focus();
+        //    }
+
+        //    databasepilist();
+        //}
+
+
+        function databasepilist() {
+
+            var MyAppUrlSettings = {
+                MyUsefulUrl: '@Url.Action("Customer_Check", "DeliveryOrders")'
+            }
+
+        $.ajax({
+            type: 'POST',
+            url: MyAppUrlSettings.MyUsefulUrl,
+            dataType: 'json',
+            async: false,
+            data: { id: $("#CustomerCode").val() },
+
+            success: function (result) {
+                    //var s = '<option value="-1">--Select BBLC--</option>';
+                //$("#CustomerName").val(data.CustomerName).show();
+                if (result.success == "1") {
+                    //alert('found');
+                    //console.log(result.values);
+
+                    if (result.values != null) {
+                        $("#CustomerName").val(result.values.CustomerName);
+                        CascadeSubCategory(result.values.CustomerId);
+                        $('#Qty').attr('disabled', false);
+
+                    }
+                    else {
+                        $("#CustomerName").val("");
+                        alert('No Dealer Found');
+                        $("#BookingId").empty();
+                        $("#CustomerCode").focus();
+
+
+
+                    }
+
+                }
+                else {
+                    alert('No Dealer Found');
+                    $("#CustomerCode").focus();
+                }
+
+                    //console.log(data);
+
+
+                },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+        });
+
+    };
+
+
+
+        $('input').keydown(function (e) {
+            var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            if (key == 13) {
+                e.preventDefault();
+
+
+
+                var idabc = $(this).attr('id');
+                //alert(idabc);
+
+                if (idabc == "CustomerName") {
+                    //alert('hit');
+                    //alert($('#CustomerName').val().length);
+                    if ($('#CustomerName').val().length > 3) { $('#PayInSlipDate').focus(); } else {
+                        $('#CustomerCode').focus();
+                    }
+                }
+                else if (idabc == "CustomerCode") {
+                    //alert('hit');
+                    //alert($('#CustomerName').val().length);
+                    if ($('#CustomerName').val().length > 3) { $('#PayInSlipDate').focus(); }
+                }
+                else if (idabc == "PayInSlipDate") {
+
+                    if ($('#PayInSlipDate').val().length > 3) { $('#PayInSlipNo').focus(); }
+                }
+                else if (idabc == "PayInSlipNo") {
+
+                    if ($('#PayInSlipNo').val().length > 3) {
+
+                        //$('#RepresentativeId').focus();
+                        $('#Qty').focus();
+
+
+                        //if ($('#RepresentativeId').val().length > 0) {
+                        //    $('#Qty').focus();
+                        //}
+                        //else {
+                        //    $('#RepresentativeId').focus();
+                        //}
+
+                    }
+                }
+                else if (idabc == "RepresentativeId") {
+                    //alert(idabc);
+                    //if ($('#RepresentativeId').val().length > 0)
+                    //{ $('#Qty').focus(); }
+                }
+                else if (idabc == "UnitPrice") {
+
+                    if ($('#UnitPrice').val().length > 1) { $('#Qty').focus(); }
+                }
+                else {
+                    var inputs = $(this).closest('form').find(':input:visible');
+                    inputs.eq(inputs.index(this) + 1).focus();
+                }
+
+                ///alert(idabc);
+                if (idabc == "Qty") { } else {
+                    return e.keyCode = 9;
+
+                }
+            }
+        });
+
+        //$('#DODate,#PayInSlipDate').datepicker({
+        //    onSelect: function (date) {
+
+        //        //var dateFormat = $("#DoDate").datepicker("option", "dateFormat");
+        //        //$('#DoDate').datepicker('option', 'dateFormat', 'ddmmy')
+        //        //$(this).off("focus");
+        //    },
+        //    dateFormat: 'ymmdd',
+        //    changeMonth: true,
+        //    changeYear: true
+        //});
+
+        //$('.tg').bind('keypress', function (event) {
+        //    if (event.which === 13) {
+        //        //$(this).next().focus();
+        //        return e.keyCode = 9;
+        //    }
+        //});
+
+
+        //$('#DODate,#PayInSlipDate').focusout(function () {
+
+        //    //alert('working');
+        //    $(".ui-datepicker-week-end").hide();
+
+        //});
+
+
+
+
+        //$('#CustomerId').select2({})
+        //    .on("select2:select", function (e) {
+        //        if ($('#CustomerId').val() > 0) {
+
+        //            CascadeSubCategory();
+        //            //toastr.error('Please Press the Load button to Load Related Data.')
+        //            $('#BookingId').focus();
+        //            //alert('Found');
+
+        //        }
+        //        else {
+        //            //toastr.error('Please Select Master LC Information First.')
+        //        }
+
+        //        //$(this).trigger('change');
+        //        //console.log("select2:select")
+        //    });
+
+                function CascadeSubCategory(customerid) {
+
+                    //alert('prdsearch');
+                    $("#BookingId").empty();
+                    //$("#ProductDescription").val("=N/A=");
+                    //$("#Qty").val(1);
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("getBookingList", "DeliveryOrders")',
+                        dataType: 'json',
+                        async: false,
+                        data: { id: customerid },
+                        success: function (data) {
+                            var s ='';
+
+                            //var s ='<option value="-1">Please Select Booking Year And Month </option>';
+                            //$.each(data, function (i, data) {
+                            //    $("#Product").append('<option value="'+ data.Value + '">'
+                            //        + data.Text + '</option>');
+                            //});
+                            var abc=0;
+                            for (var i = 0; i < data.length; i++) {
+                               //'<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                                s += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                                abc++
+                            }
+                            $("#BookingId").html(s);
+
+                            if (abc <= 1) {
+                                $('#AccId').focus();
+                            }
+
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+
+                    });
+
+
+                    if ($("#BookingId").val() > 0) {
+                        BookingInfo();
+
+                    }
+
+                    return false;
+        };
+
+        $('#BookingId').select2({})
+            .on("select2:select", function (e) {
+                //alert('bookinidtest');
+
+                if ($('#BookingId').val() > 0) {
+                    //alert('bookinid');
+                    BookingInfo();
+                    //toastr.error('Please Press the Load button to Load Related Data.')
+
+                    //$('#AccId').focus();
+                    $('#PaySlipDate').focus();
+
+                    //alert('Found');
+
+                }
+                else {
+                    //toastr.error('Please Select Master LC Information First.')
+                    //alert('bookinidtest');
+                }
+
+                //$(this).trigger('change');
+                //console.log("select2:select")
+            }
+
+        );
+        $('#RepresentativeId').select2({})
+            .on("select2:select", function (e) {
+                //alert('bookinidtest');
+
+                if ($('#RepresentativeId').val() > 0) {
+                    //alert('bookinid');
+
+                    $('#Qty').focus();
+
+                    //alert('Found');
+
+                }
+                else {
+                    //toastr.error('Please Select Master LC Information First.')
+                    //alert('bookinidtest');
+                }
+
+                //$(this).trigger('change');
+                //console.log("select2:select")
+            }
+
+        );
+
+
+
+        $('#RepresentativeId').select2({})
+            .on("select2:close", function (e) {
+                if ($('#RepresentativeId').val() > 0) {
+
+                    $('#Qty').focus();///fahad need to be ok
+                }
+                else {
+                    //  toastr.error('Please Select Master LC Information First.')
+                }
+            });
+
+
+            //$('#AccId').select2({})
+            //.on("select2:select", function (e) {
+            //    if ($('#AccId').val() > 0) {
+
+            //        // alert('found');
+            //        // toastr.error('Please Press the Load button to Load Related Data.')
+            //        $('#PayInSlipDate').focus();
+
+
+
+            //    }
+            //    else {
+            //        //  toastr.error('Please Select Master LC Information First.')
+            //    }});
+
+
+                $('#AccId').select2({})
+                .on("select2:close", function (e) {
+                    if ($('#AccId').val() > 0) {
+
+                        $('#PayInSlipDate').focus();
+                    }
+                    else {
+                        //  toastr.error('Please Select Master LC Information First.')
+                    }
+                });
+
+                $('#BookingId').select2({})
+                .on("select2:close", function (e) {
+                if ($('#BookingId').val() > 0) {
+
+                    $('#AccId').focus();
+                }
+                else {
+                //  toastr.error('Please Select Master LC Information First.')
+                }
+                });
+
+
+        if ($("#DOId").val() > 0) { }
+        else {
+
+
+        $('#PayInSlipNo').val("");
+        $('#Qty').val("");
+        $('#RemainingQty').val("");
+        $('#TotalPrice').val("");
+        $('#Remarks').val("");
+        }
+
+        //$('#DODate').val(CurrentDate());
+        //$('#PayInSlipDate').val(CurrentDate());
+        $('#AccId').select2();
+        $('#BookingId').select2();
+        $('#RepresentativeId').select2();
+
+
+        //$('#DONo').attr('disabled', true);
+        $('#Year').attr('disabled', true);
+        $('#Month').attr('disabled', true);
+        $('#District').attr('disabled', true);
+        $('#PoliceStation').attr('disabled', true);
+        $('#AllotmentQty').attr('disabled', true);
+        $('#RemainingQty').attr('disabled', true);
+        $('#CurrentRemainingQty').attr('disabled', true);
+
+        $('#TotalPrice').attr('disabled', true);
+
+        function CurrentDate(){
+            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var date = new Date();
+            var today = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+            return today;
+        };
+
+        //$('#DODate,#PayInSlipDate').datepicker({
+        //    //onSelect: function (date) {
+        //    //   // var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+        //    //   // $('#DoDate').datepicker('option', 'dateFormat', 'dd-MM-yy')
+        //    //},
+        //    dateFormat: 'dd-MM-yy',
+        //    changeMonth: true,
+        //    changeYear:true
+        //});
+
+        function BookingInfo() {
+            var bookingid = $('#BookingId option:selected').val();
+           //alert(bookingid);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("BookingDataById","DeliveryOrders")',
+                dataType: 'json',
+                data: { id: bookingid },
+                success: function (data) {
+                    console.log(data);
+                    $('#Year').val(data.Year);
+                    $('#Month').val(data.Month);
+                    //$('#BookingNo').val(data.BookingNo);
+                    $('#District').val(data.DistName);
+                    $('#PoliceStation').val(data.PStationName);
+                   // $('#Customer').val(data.Dealar);
+                    $('#RemainingQty').val(data.RemainingQty.toFixed(2));
+                    $('#CurrentRemainingQty').val(data.CurrentRemainingQty.toFixed(2));
+
+
+
+                    $('#AllotmentQty').val(data.AllotmentQty);
+
+                    if (data.RemainingQty == 0) {
+                        $("#Qty").attr('disabled', true);
+                    }
+                    else {
+                        $("#Qty").attr('disabled', false);
+                    }
+
+                    //alert('understand');
+                    //alert(data.RemainingQty);
+                    //$('#Qty').val(data[0].Qty);
+                    $('#Qty').val(0);
+
+                    //$('#CurrentRemainingQty').val(data.RemainingQty.toFixed(2));//data.RemainingQty.toFixed(2)///fahad
+                    //$('#RemainingQty').val(data.RemainingQty.toFixed(2));
+
+
+                    //$('#UnitPrice').val(data.UnitPrice);
+                    $('#TotalPrice').val(data.TotalPrice);
+
+
+                    //$('#PayInSlipNo').val("");
+                    //$('#Qty').val("");
+                    //$('#RemainingQty').val("");
+                    //$('#TotalPrice').val("");
+                    //$('#Remarks').val("");
+                },
+                error: function (ex) {
+                    alert('Faild' + ex);
+                }
+            });
+        };
+
+        //$('#UnitPrice').keyup(function () {
+        //   // alert('ok');
+        //    var qty = $('#Qty').val();
+
+        //});
+
+            $('#Qty').keyup(function () {
+                var qty = $('#Qty').val() || 0;
+                var allotmentqty = $('#AllotmentQty').val() || 0;
+                var RemainingQtyabc = $('#RemainingQty').val() || 0;
+
+                //alert(qty);
+                //alert(allotmentqty);
+                //alert(RemainingQtyabc);
+
+
+                //alert(allotmentqty);
+
+                var x = '@ViewBag.Title';
+                //alert(x);
+
+
+                if (x == 'Create') {
+                    //alert(allotmentqty);
+                    //alert(qty);
+
+                    ///var remainintqty = (parseFloat(allotmentqty) - (parseFloat(qty))).toFixed(2);
+                    //var remainintqty = (parseFloat(allotmentqty) - (parseFloat(qty) + parseFloat(RemainingQtyabc))).toFixed(2);
+                    var remainintqty = (parseFloat(RemainingQtyabc) - parseFloat(qty)).toFixed(2);
+
+                }
+                else {
+
+                    var remainintqty = (parseFloat(RemainingQtyabc) - parseFloat(qty)).toFixed(2);
+
+                    //var remainintqty = (parseFloat(allotmentqty) - (parseFloat(qty) + parseFloat(RemainingQtyabc))).toFixed(2);
+                }
+                //alert(remainintqty);
+                //if (remainintqty < 0) {
+                //    toastr.error('Qty Cross the Remaining Value');
+                //}
+
+
+
+                if (parseFloat(remainintqty) < 0) {
+                    toastr.error('Qty Cross the Remaining Value');
+
+
+                    $("#CurrentRemainingQty").removeClass(" yellow");
+                    $("#CurrentRemainingQty").addClass("important red");
+                    $("#CurrentRemainingQty").css({ 'color': 'yellow', 'font-size': '200%' });
+
+                }
+                else {
+
+                    $("#CurrentRemainingQty").removeClass("important red");
+                    $("#CurrentRemainingQty").addClass(" yellow");
+                    $("#CurrentRemainingQty").css({ 'color': 'green', 'font-size': '170%' });
+
+                }
+
+
+                $('#CurrentRemainingQty').val(remainintqty);
+                var unitprice = $('#UnitPrice').val();
+                var total = (parseFloat(qty) * parseFloat(unitprice)).toFixed(2);
+                $('#TotalPrice').val(total);
+                //if (qty > allotmentqty) {
+                //    toastr.error('Please give the qty below the RemainingQty');
+                //}
+            });
+
+
+
+
+            $('#UnitPrice').keyup(function () {
+                var qty = $('#Qty').val();
+                var allotmentqty = $('#AllotmentQty').val();
+                var RemainingQtyabc = $('#RemainingQty').val();
+                //alert(allotmentqty);
+                //var remainintqty = (allotmentqty - qty).toFixed(2);
+
+
+
+                var x = '@ViewBag.Title';
+                //alert(x);
+
+
+                if (x == 'Create') {
+                    //alert(allotmentqty);
+                    //alert(qty);
+
+                    var remainintqty = (parseFloat(allotmentqty) - (parseFloat(qty))).toFixed(2);
+
+                }
+                else {
+
+                    var remainintqty = (parseFloat(allotmentqty) - (parseFloat(qty) + parseFloat(RemainingQtyabc))).toFixed(2);
+                }
+
+
+                //alert(remainintqty)
+                if (parseFloat(remainintqty) < 0) {
+                    toastr.error('Qty Cross the Remaining Value');
+
+
+                    $("#CurrentRemainingQty").removeClass(" yellow");
+                    $("#CurrentRemainingQty").addClass("important red");
+                    $("#CurrentRemainingQty").css({ 'color': 'yellow', 'font-size': '200%' });
+
+                }
+                else {
+
+                    $("#CurrentRemainingQty").removeClass("important red");
+                    $("#CurrentRemainingQty").addClass(" yellow");
+                    $("#CurrentRemainingQty").css({ 'color': 'green', 'font-size': '170%' });
+
+                }
+
+
+
+
+
+                $('#CurrentRemainingQty').val(remainintqty);
+                var unitprice = $('#UnitPrice').val();
+                var total = (parseFloat(qty) * parseFloat(unitprice)).toFixed(2);
+                $('#TotalPrice').val(total);
+                //if (qty > allotmentqty) {
+                //    toastr.error('Please give the qty below the RemainingQty');
+                //}
+            });
+
+
+
+
+
+            $('#Edit').click(function () {
+                ConfirmDialog('Are you sure ?');
+                //DeliveryOrder_Save()
+            });
+
+            $('#create').click(function () {
+                ConfirmDialog('Are you sure ?');
+                //DeliveryOrder_Save()
+            });
+
+
+            $('#Qty').keydown(function (e) {
+                var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+                //alert(key);
+                if (key == 13) {
+                    //e.preventDefault();
+                    //alert('hit');
+                    ConfirmDialog('Are you sure ?');
+                    //DeliveryOrder_Save();
+
+
+                }
+            });
+
+        //$('#UnitPrice').keydown(function (e) {
+        //    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+        //    //alert(key);
+        //    if (key == 13) {
+        //        //e.preventDefault();
+        //        //alert('hit');
+        //        ConfirmDialog('Are you sure ?');
+        //        //DeliveryOrder_Save();
+
+
+        //    }
+        //});
+
+            //$('#BookingId').keydown(function (e) {
+            //    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            //    if (key == 13) {
+            //        //e.preventDefault();
+            //        alert('finally ok found');
+
+
+            //    }
+            //});
+
+            //$('#AccId').keydown(function (e) {
+            //    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            //    if (key == 13) {
+            //        //e.preventDefault();
+            //        alert('finally ok found');
+
+
+            //    }
+            //});
+
+            //$("#Qty").enterKey(function () {
+            //    DeliveryOrder_Save();
+            //    //alert('Enter!');
+            //});
+
+
+
+        //$('#Remarks').change(function () {
+        //    DeliveryOrder_Save()
+        //})
+
+        function DeliveryOrder_Save() {
+
+            if (!$("#myform").valid()) {
+                toastr.error('Please Fill Up All Necessary Information Correctly.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                return true;
+            }
+
+            var abcqty = $('#Qty').val();
+            var abcunitprice = $('#UnitPrice').val();
+            var RepresentativeId = $('#RepresentativeId').val();
+
+
+            if (parseFloat(abcqty) <= 0)
+            {
+                toastr.error('Please Fill Qty to Save the DO.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                $('#Qty').focus();
+                return true;
+            }
+            if (parseFloat(abcunitprice) <= 0) {
+                toastr.error('Please Fill Unit Price to Save the DO.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                $('#UnitPrice').focus();
+                return true;
+            }
+            if (parseFloat(RepresentativeId) <= 0) {
+                toastr.error('Please Select Representative.');
+                $("html, body").animate({ scrollTop: 0 }, 500);
+                $('#RepresentativeId').focus();
+                return true;
+            }
+            var DO = {
+                DOId: 0, OldDONo: "", DONo: "", DODate: "", AccId: 0, BookingId: 0, RepresentativeId: null, PayInSlipNo: "", PayInSlipDate: "", Qty: 0, UnitPrice: 0, TotalPrice: 0, Remarks: "", ComId: "", PcName: "", UserId: "", DateAdded: "", UpdateByUserId: "", DateUpdated:""
+            }
+
+            //var d = new Date();
+
+
+            //var strDate = "2013-03-10T02:00:00Z";
+            //strDate.substring(0, 10);
+
+            if ($('#DOId').val() > 0) {
+                DO.DOId = $('#DOId').val();
+                DO.OldDONo = $('#OldDONo').val();
+
+                DO.ComId = $('#ComId').val();
+                DO.UserId = $('#UserId').val();
+                DO.DateAdded = $('#DateAdded').val();
+            }
+            else {
+                DO.DONo = 0;
+                DO.OldDONo = 0;
+
+                DO.ComId = '@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                DO.UserId = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                DO.DateAdded = CurrentDate()
+            };
+
+
+            DO.DONo = $('#DONo').val();
+            DO.DODate = $('#DODate').val();// d.toISOString($('#DODate').val()).substring(0, 10);
+            //alert(DO.DODate);
+            DO.BookingId = $('#BookingId option:selected').val();
+            DO.RepresentativeId = $('#RepresentativeId option:selected').val();
+
+            DO.AccId = $('#AccId option:selected').val();
+            DO.PayInSlipNo = $('#PayInSlipNo').val();
+            DO.PayInSlipDate = $('#PayInSlipDate').val();//d.toISOString($('#PayInSlipDate').val()).substring(0,10);
+            DO.Qty = $('#Qty').val();
+            //alert($('#RemainingQty').val());
+            DO.RemainingQty = $('#RemainingQty').val();
+            DO.UnitPrice = $('#UnitPrice').val();
+            DO.TotalPrice = $('#TotalPrice').val();
+            DO.Remarks = $('#Remarks').val();
+
+            //console.log(DO);
+
+            if (DO.PayInSlipNo !== "" && DO.Qty !== "") {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create","DeliveryOrders")',
+                    dataType: 'json',
+                    async: false,
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { deliveryOrder: DO },
+                    success: function (data) {
+                        //console.log(data)
+                        //alert(data.Success);
+                        if (data.Success == "1") {
+                            //alert('Data Save Successfully');
+                            customFile(data.Success, data.ex);
+                            //alert(data.ex);
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Create", "DeliveryOrders")';
+                            }, 500);
+                        }
+                        else if (data.Success == "2") {
+                            //alert('Data Update Successfully');
+                            customFile(data.Success, data.ex);
+                            //alert(data.ex);
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Index", "DeliveryOrders")';
+                            }, 500);
+                        }
+                        else {
+                            //console.log(data.ex);
+                            //alert('Wait');
+                            toastr.error(data.ex);
+                        }
+                    },
+                    error: function (ex) {
+                        alert('error');
+                    }
+                });
+            }
+            else {
+                if (DO.PayInSlipNo === "" || DO.PayInSlipNo === 0) {
+                    $('#PayInSlipNo').css("border-color", "red");
+                   // toastr.error('Please Select Pay In Slip No');
+                }
+                if (DO.Qty === "" || DO.Qty === 0) {
+                    $('#Qty').css("border-color", "red");
+                    //toastr.error('Please Select Pay In Slip No');
+                }
+
+
+            }
+
+        }
+
+
+    </script>
+}

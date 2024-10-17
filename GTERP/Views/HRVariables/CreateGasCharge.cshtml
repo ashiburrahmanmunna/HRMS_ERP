@@ -1,0 +1,183 @@
+﻿@model GTERP.Models.Cat_GasChargeSetting
+
+
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateGasCharge", "HRVariables", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7  offset-md-2 col-12">
+                @if (Model != null)
+                {
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                }
+                else
+                {
+                <input type="hidden" asp-for="Id" value="0" />
+                }
+                <div id="modalbodyfahad" class="card">
+                    <div>
+                        <div class="card-header">
+                            <h4 id="styletext">Gas Charge Setting Entry - @ViewBag.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="needs-validation" novalidate>
+
+                                <input type="hidden" asp-for="ComId" />
+                                <input type="hidden" asp-for="UserId" />
+
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="LId"></label>
+                                                    </span>
+                                                </div>
+                                                <select asp-for="LId" class="form-control" asp-items="ViewBag.LId">
+                                                    <option selected value="">--Please Select--</option>
+                                                </select>
+                                                <span asp-validation-for="LId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="BId"></label>
+                                                    </span>
+                                                </div>
+                                                <select asp-for="BId" class="form-control" asp-items="ViewBag.BId">
+                                                    <option selected value="">--Please Select--</option>
+                                                </select>
+                                                <span asp-validation-for="BId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        <label asp-for="GasCharge"></label>
+                                                    </span>
+                                                </div>
+                                                <input asp-for="GasCharge" class="form-control" />
+                                                <span asp-validation-for="GasCharge" class="text-danger"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 col-12">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0"> @Html.LabelFor(model => model.IsPersentage)</span>
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        @Html.CheckBoxFor(model => model.IsPersentage, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.IsPersentage, "", new { @class = "text-danger" })
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row text-center m-2">
+                                <br />
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="GasChargeSetting_delete()">Delete</button>
+                                    }
+                                </div>
+                                <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                    @Html.ActionLink("Back", "GasChargeList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                </div>
+                                <div class="col-md-2"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+    $("#EmpTypeId").select2();
+    $("#LId").select2();
+    $("#BId").select2();
+
+    function GasChargeSetting_delete() {
+
+        var id = $("#Id").val();
+         //   alert(Sectid);
+            $.ajax({
+
+                url: '@Url.Action("DeleteGasCharge", "HRVariables")',
+                data: JSON.stringify({ id: id }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("GasChargeList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

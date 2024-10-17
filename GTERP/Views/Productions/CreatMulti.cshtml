@@ -1,0 +1,380 @@
+﻿@model GTERP.Models.Production
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "Productions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 100%;">
+        <div class="py-7 text-center">
+
+            <h1 id="styletext">Production Data Entry</h1>
+            <p class="lead"></p>
+        </div>
+
+        <div id="modalbodyfahad" class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Production Data @ViewBag.Title</h4>
+
+                <div class="container">
+                    <div class="row">
+                        <input type="hidden" asp-for="ProductionId" />
+                        <div class="col mb-3">
+                            <label asp-for="PrdUnitId" class="control-label"></label>
+                            <select asp-for="PrdUnitId" class="form-control" asp-items="ViewBag.PrdUnitId"></select>
+                        </div>
+                        @*<div class="col mb-3">
+                            <label asp-for="ProductId" class="control-label"></label>
+                            <select asp-for="ProductId" class="form-control" disabled asp-items="ViewBag.ProductId"></select>
+                        </div>*@
+                        <div class="col mb-3">
+                            <label asp-for="ProductionDate" class="control-label"></label>
+                            <input asp-for="ProductionDate" type="date" class="form-control" />
+                            <span asp-validation-for="ProductionDate" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-3">
+                            <label asp-for="ProductionToDate" class="control-label"></label>
+                            <input asp-for="ProductionToDate" type="date" class="form-control" />
+                            <span asp-validation-for="ProductionToDate" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-3">
+                            <label asp-for="DailySeedQty" class="control-label"></label>
+                            <input asp-for="DailySeedQty" value="0" class="form-control" />
+                            <span asp-validation-for="DailySeedQty" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-3">
+                            <label asp-for="DailyBagQty" class="control-label"></label>
+                            <input asp-for="DailyBagQty"  value="0" class="form-control" />
+                            <span asp-validation-for="DailyBagQty" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="col mb-2">
+                            <label asp-for="PhosphoricPerTon" class="control-label">Phosphoric Acid</label>
+                            <input asp-for="PhosphoricPerTon" class="form-control" />
+                            <span asp-validation-for="PhosphoricPerTon" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-2">
+                            <label asp-for="AmmoniaPerTon" class="control-label">Ammonia</label>
+                            <input asp-for="AmmoniaPerTon"  class="form-control" />
+                            <span asp-validation-for="AmmoniaPerTon" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-2">
+                            <label asp-for="SulfuricPerTon" class="control-label">Sulfuric Acid</label>
+                            <input asp-for="SulfuricPerTon"   class="form-control" />
+                            <span asp-validation-for="SulfuricPerTon" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-2">
+                            <label asp-for="SandPerTon" class="control-label">Sand</label>
+                            <input asp-for="SandPerTon"   class="form-control" />
+                            <span asp-validation-for="SandPerTon" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-2">
+
+                            <button type="button" onclick="ProductionLoad()" id="Load" class="btn btn-lg btn-primary">Load Data</button>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="card p-4">
+                    <div class="table-responsive text-nowrap">
+                        @*<p> Total Quantity: @Total </p>*@
+                        @*<partial name="_BookingList" />*@
+                        <table id="tblBookindata" class="tblProform table table-striped table-bordered table-sm responsive nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Production Id</th>
+                                    <th>Plant Id</th>
+                                    <th>Product Id</th>
+                                    <th>Plant</th>
+                                    <th>Product</th>
+                                    <th>Prod Date</th>
+                                    <th>Seed Qty</th>
+                                    <th>Bag Qty</th>
+                                    <th>Phosphoric</th>
+                                    <th>Ammonia</th>
+                                    <th>Sulfuric </th>
+                                    <th>Sand</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+
+                        </table>
+                        <div>
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <div class="text-center">
+
+                                    <span>
+                                        <input type="button" class="btn btn-warning" id="selectall" name="selectall" value="Select All" />
+                                    </span>
+                                    <span>
+                                        <button type="button" id="save" class="btn btn-primary">Save</button>
+                                    </span>
+
+                                    <span>
+                                        <a asp-action="Index" class="btn btn-info">Back</a>
+                                    </span>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+        $("#UnitId").select2();
+        $("#ItemDescId").select2();
+
+
+        var tblBookindata;
+
+        $(document).ready(function () {
+
+            tblBookindata = $('#tblBookindata').DataTable({
+                //select: true,
+                //select:'multi',
+                "aoColumns": [
+                    { "sClass": "ProductionId", "visible": false },
+                    { "sClass": "PrdUnitId", "visible": false },
+                    { "sClass": "ProductId", "visible": false },
+                    { "sClass": "Plant", "visible": true },
+                    { "sClass": "Product", "visible": false },
+                    { "sClass": "ProductionDate", "visible": true },
+                    { "sClass": "SeedQty", "visible": true },
+                    { "sClass": "BagQty", "visible": true },
+                    { "sClass": "PhosphoricPerTon", "visible": true },
+                    { "sClass": "AmmoniaPerTon", "visible": true },
+                    { "sClass": "SulfuricPerTon", "visible": true },
+                    { "sClass": "SandPerTon", "visible": true }
+                ],
+                columnDefs: [
+                    {
+                        'targets': 5,
+                        'render': function (data, type, row) {
+                            return CurrentDate(data);
+                        }
+                    },
+                    {
+                        'targets': [6,7],
+                        'render': function (data, type, row) {
+                            return '<input class="form-control form-control-sm"  type="text" data-val="true" value=' + data + '>'
+                        }
+                    },
+
+                ],
+                select: {
+                    style: 'multi'
+                    //selector: 'tr>td:nth-child(1),tr>td:nth-child(2),tr>td:nth-child(3),tr>td:nth-child(4),tr>td:nth-child(5),tr>td:nth-child(6),tr>td:nth-child(7),tr>td:nth-child(9)'
+                    //'tr>td:nth-child(2)
+                },
+                'bLengthChange': false,
+                'bFilter': false,
+                'bSort': false,
+                'bInfo': false,
+                'paging': false,
+                'searching': false
+            });
+
+            $('#selectall').click(function () {
+
+                var btn = $('#selectall').val();
+                if (btn == "Select All") {
+                    $('#tblBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        }
+                        $(this).addClass('selected');
+                    });
+                    $('#selectall').val('DeSelect All');
+                } else {
+                    $('#tblBookindata tbody tr').each(function () {
+                        if ($(this).hasClass('selected')) {
+                            $(this).removeClass('selected');
+                        };
+                    });
+                    $('#selectall').val('Select All');
+                }
+            });
+
+            $("#save").click(function () {
+
+                let datas = tblBookindata.rows(".selected").data();
+                let nodes = tblBookindata.rows(".selected").nodes();
+
+                if (datas.length < 1) {
+                    toastr.warning("Select Production Row");
+                    return false;
+                }
+
+                let productions = [];
+
+                for (var i = 0; i < datas.length; i++) {
+                    let production = {
+                        ProductionId: datas[i][0],
+                        PrdUnitId: datas[i][1],
+                        ProductId: datas[i][2],
+                        ProductionDate: CurrentDate(datas[i][5]),
+                        SeedQty: nodes[i].cells[2].children[0].value,
+                        BagQty: nodes[i].cells[3].children[0].value,
+                        PhosphoricPerTon: datas[i][8],
+                        AmmoniaPerTon: datas[i][9],
+                        SulfuricPerTon: datas[i][10],
+                        SandPerTon: datas[i][11],
+                        comid:'@HttpContextAccessor.HttpContext.Session.GetString("comid")'
+                    }
+
+                    productions.push(production);
+                }
+                //console.log(productios);
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Productions")',
+                    data: { productions: productions }, //use id here
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.success = 1) {
+                            toastr.success(result.ex);
+                            location.reload();
+                        } else {
+                            toastr.error(result.ex);
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+
+            });
+        })
+
+        function ProductionLoad() {
+            if ($("#ProductionDate").val() == "" || $("#ProductionToDate").val() == "") {
+                toastr.warning("Please select Date");
+                return false;
+            }
+
+            let production = {
+                ProductionId: $("#ProductionId").val(),
+                PrdUnitId: $("#PrdUnitId").val(),
+                ProductId: $("#ProductId").val(),
+                ProductionDate: $("#ProductionDate").val(),
+                ProductionToDate: $("#ProductionToDate").val(),
+                DailySeedQty: $("#DailySeedQty").val(),
+                DailyBagQty: $("#DailyBagQty").val(),
+                PhosphoricPerTon: $("#PhosphoricPerTon").val(),
+                AmmoniaPerTon: $("#AmmoniaPerTon").val(),
+                SulfuricPerTon: $("#SulfuricPerTon").val(),
+                SandPerTon: $("#SandPerTon").val()
+            }
+
+            $.ajax({
+                url: '@Url.Action("LoadProduction", "Productions")',
+                data: { production: production }, //use id here
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                    add(result);
+                },
+                error: function () {
+
+                }
+            });
+        }
+
+        function add(result) {
+            let rows = [];
+            tblBookindata.rows().remove().draw();
+            
+            for (var i = 0; i < result.length; i++) {
+                rows.push([
+                    result[i].ProductionId,
+                    result[i].PrdUnitId,
+                    result[i].ProductId,
+                    $("#PrdUnitId option:selected").text(),
+                    $("#ProductId option:selected").text(),
+                    result[i].ProductionDate,
+                    result[i].DailySeedQty,
+                    result[i].DailyBagQty,
+                    result[i].PhosphoricPerTon,
+                    result[i].AmmoniaPerTon,
+                    result[i].SulfuricPerTon,
+                    result[i].SandPerTon
+                ]);
+            }
+
+            tblBookindata.rows.add(rows).draw(false);
+        }
+
+        function CurrentDate(da) {
+            var date = new Date(da);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+
+        }
+
+        function Product_delete() {
+
+            var productionid = $("#productionid").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "Productions")',
+                data: JSON.stringify({ id: productionid }), //use id here
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "Productions")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

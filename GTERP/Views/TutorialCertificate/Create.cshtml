@@ -1,0 +1,169 @@
+﻿@model GTERP.Models.ModuleCoursesViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var moduleMenu = new List<ModuleMenu>();
+    var moduleMenuArray = Array.Empty<ModuleMenu>();
+
+    moduleMenu = ViewBag.ListofModulesParentMenu;
+    var editid = ViewBag.EditId;
+
+}
+
+<h4 style="color:crimson">Create required vedio & file link for tutorial </h4>
+<hr />
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="container">
+                <form method="post" asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="All" class="text-danger" style="font-size:30px"></div>
+                    @*<input type="hidden" asp-for="ModuleCourseId"/>*@
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
+                                @*<div asp-validation-summary="All" class="text-danger"></div>*@
+
+                                <label class="control-label">Product Name</label>
+                                <select asp-for="ModuleId" id="ModuleMenu" class="form-control" asp-items="@(new SelectList(@ViewBag.ListOfModule, "ModuleId", "ModuleCaption"))"></select>
+                            </div>
+                               <div class="form-group col-md-12">
+                                <label class="control-label">Parent Menu</label>
+                                <select id="ModuleParentMenuId" asp-for="ModuleMenuId" asp-items="@(new SelectList(String.Empty,"ModuleMenuId","ModuleMenuCaption"))" class="form-control"></select>
+                            </div>
+                               <div class="form-group col-md-12">
+                                <label class="control-label">Child Menu</label>
+                                <select id="ModuleChildMenuId" asp-for="ModuleMenuChildId" asp-items="@(new SelectList(String.Empty,"ModuleMenuId","ModuleMenuCaption"))" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+                             <div class="form-group col-md-12">
+                                <label asp-for="Description" class="control-label"></label>
+                                <textarea asp-for="Description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+
+
+                               <div class="form-group col-md-12">
+                                <label asp-for="VideoLink" class="control-label"></label>
+                                <input asp-for="VideoLink" class="form-control" />
+                                <span asp-validation-for="VideoLink" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-group col-md-12">
+                                <label asp-for="File" class="control-label"></label>
+                                <div class="custom-file">
+                                    <label class="control-label custom-file-label" id="file-label">Choose file...</label>
+                                    <input asp-for="File" class="form-control custom-file-input" multiple onchange="updateFileName(this)" />
+                                </div>
+                            </div>
+                            <h3>@ViewData["Massege"]</h3>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<div>
+    <a asp-action="ModuleRecordView">Back to List</a>
+</div>
+
+@section Scripts{
+
+
+    <script>
+
+        //--------------------start------------------
+        $(document).ready(function() {
+
+            //------------code for show selected upload file-----------------
+            //$('.custom-file-input').on("change", function () {
+            //    var fileLabel = $(this).next('.custom-file-label');
+            //    var files = $(this)[0].files;
+            //    if (files.length > 1) {
+            //        fileLabel.html(files.length + ' files selected');
+            //    }
+            //    else if (files.length == 1) {
+            //        fileLabel.html(files[0].name);
+            //    }
+            //});
+            var items = "<option value=0>--Select one--</option>";
+            $('#ModuleParentMenuId').html(items);
+            $('#ModuleChildMenuId').html(items);
+        });
+
+        $("#ModuleMenu").change(function() {
+            var url = '@Url.Content("~")' + "/TutorialCertificate/GetParentMenu";
+            $.ajax({
+                type: "Post",
+                url: url,
+                data: {
+                    "moduleId": $("#ModuleMenu").val()
+                },
+                success: function(response) {
+                    console.log(response);
+                    var items = '<option value=0>--Select one--</option>';
+                    $(response).each(function() {
+
+                        items += "<option value=" + this.Value + ">" + this.Text + "</option>"
+                    })
+                    $("#ModuleParentMenuId").html(items);
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            })
+        });
+
+        $("#ModuleParentMenuId").change(function() {
+            var url = '@Url.Content("~")' + "/TutorialCertificate/GetChildMenu";
+            $.ajax({
+                type: "Post",
+                url: url,
+                data: {
+                    "moduleId": $("#ModuleParentMenuId").val()
+                },
+                success: function(response) {
+                    console.log(response);
+                    var items = '<option value=0>--Select one--</option>';
+                    $(response).each(function() {
+                        items += "<option value=" + this.Value + ">" + this.Text + "</option>"
+                    })
+                    $("#ModuleChildMenuId").html(items);
+                },
+                failure: function(response) {
+                    alert(response.responseText);
+                },
+                error: function(response) {
+                    alert(response.responseText);
+                }
+            })
+        });
+    </script>
+    <script>
+        function updateFileName(input) {
+            var label = document.getElementById('file-label');
+            var files = input.files;
+
+            if (files.length > 0) {
+                label.innerHTML = files[0].name;
+            } else {
+                label.innerHTML = 'Choose file...';
+            }
+        }
+    </script>
+}

@@ -1,0 +1,146 @@
+﻿@model GTERP.Models.ModuleCourses
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //var moduleMenu = new List<ModuleMenu>();
+    var moduleMenuArray = Array.Empty<ModuleMenu>();
+
+    //moduleMenu = ViewBag.ListofModulesParentMenu;
+
+    ModuleCourses x = ViewBag.moduleCoursesById;
+
+}
+
+<h4 style="color:greenyellow"><u>Edit tutorial </u></h4>
+<hr />
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="container">
+                <form method="post" asp-action="Edit2" enctype="multipart/form-data">
+                    <div asp-validation-summary="All" class="text-danger" style="font-size:30px"></div>
+                    <input type="hidden" asp-for="ModuleCourseId" />
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
+                                @*<div asp-validation-summary="All" class="text-danger"></div>*@
+
+                                <label class="control-label">Product Name</label>
+                                <select asp-for="ModuleId" id="ModuleMenu" class="form-control" asp-items="@(new SelectList(@ViewBag.ListOfModule, "ModuleId", "ModuleCaption"))"></select>
+                            </div>
+                               <div class="form-group col-md-12">
+                                <label class="control-label">Parent Menu</label>
+                                <select id="ModuleParentMenuId" asp-for="ModuleMenuId" asp-items="@(new SelectList(String.Empty,"ModuleMenuId","ModuleMenuCaption"))" class="form-control"></select>
+                            </div>
+                               <div class="form-group col-md-12">
+                                <label class="control-label">Child Menu</label>
+                                <select id="ModuleChildMenuId" asp-for="ModuleMenuChildId" asp-items="@(new SelectList(String.Empty,"ModuleMenuId","ModuleMenuCaption"))" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+
+                            <div class="form-group col-md-12">
+                                <label asp-for="Description" class="control-label"></label>
+                                <textarea asp-for="Description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+
+
+                            <div class="form-group col-md-12">
+                                <label asp-for="VideoLink" class="control-label"></label>
+                                <input asp-for="VideoLink" class="form-control" />
+                                <span asp-validation-for="VideoLink" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-group col-md-12">
+                                <label asp-for="File" class="control-label"></label>
+                                <div class="custom-file">
+                                    <label class="control-label custom-file-label">Choose file...</label>
+                                    <input asp-for="File" class="form-control custom-file-input" multiple />
+                                </div>
+                            </div>
+                            <h3>@ViewData["Massege"]</h3>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Update" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<div>
+    <a asp-action="ModuleRecordView">Back to List</a>
+</div>
+
+@section Scripts{
+
+
+    <script>
+
+        //--------------------start------------------
+          $(document).ready(function () {
+
+              var items = `<option value=0>--Select one--</option>`;
+              $("#ModuleMenu").val(@x.ModuleId).change();
+              $('#ModuleParentMenuId').html(items);
+              $('#ModuleChildMenuId').html(items);
+
+          });
+
+          $("#ModuleMenu").change(function () {
+              var url = '@Url.Content("~")' + "/TutorialCertificate/GetParentMenu";
+              $.ajax({
+                  type: "Post",
+                  url: url,
+                  data: {
+                      "moduleId": $("#ModuleMenu").val()
+                  },
+                  success: function (response) {
+                      console.log(response);
+                      var items = '';
+                      $(response).each(function () {
+                          items += "<option value=" + this.Value + ">" + this.Text + "</option>"
+                      })
+                      $("#ModuleParentMenuId").html(items).val(@x.ModuleMenuId).change();
+                  },
+                  failure: function (response) {
+                      alert(response.responseText);
+                  },
+                  error: function (response) {
+                      alert(response.responseText);
+                  }
+              })
+          });
+
+          $("#ModuleParentMenuId").change(function () {
+          var url = '@Url.Content("~")' + "/TutorialCertificate/GetChildMenu";
+              $.ajax({
+                  type: "Post",
+                  url: url,
+                  data: {
+                      "moduleId": $("#ModuleParentMenuId").val()
+                  },
+                  success: function (response) {
+                      console.log(response);
+                      var items = '';
+                      $(response).each(function () {
+                          items += "<option value=" + this.Value + ">" + this.Text + "</option>"
+                      })
+                      $("#ModuleChildMenuId").html(items).val(@x.ModuleMenuChildId).change();
+                  },
+                  failure: function (response) {
+                      alert(response.responseText);
+                  },
+                  error: function (response) {
+                      alert(response.responseText);
+                  }
+              })
+          });
+    </script>
+}

@@ -1,0 +1,832 @@
+﻿
+@model IEnumerable<GTERP.Models.IssueMain>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    UserPermission permission = HttpContextAccessor.HttpContext.Session.GetObject<UserPermission>("userpermission");
+    string caption = "Issue";
+    string dirCaption = "Direct Issue";
+    if (permission != null)
+    {
+        if (permission.IsMedical)
+        {
+            caption = "Medicine Issue";
+            dirCaption = "Create Prescription";
+        }
+        if (permission.IsProduction)
+        {
+            caption = "Trasferred Item Issue";
+            dirCaption = "Daily Production";
+        }
+    }
+
+
+
+}
+
+<style>
+
+    .tblSalesList th:first-child, .tblSalesList tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tblSalesList th:last-child, .tblSalesList tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+
+    div#tblSalesList_filter input.form-control.form-control-sm {
+        padding-top: 1px;
+    }
+</style>
+
+
+<form action="" method="post">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 col-12">
+                @Html.ActionLink(caption, "Create", new { isSubStore = false, isRateCheck = false }, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-3 col-12 ">
+                @Html.ActionLink(dirCaption, "DirectIssue", new { isSubStore = false }, new { @class = "btn btn-outline-primary btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-6 col-12">
+                <h2 id="styletext">Issue List</h2>
+            </div>
+        </div>
+
+        <div class="card p-2 my-2">
+            <div class="row">
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+
+                    </div>
+                </div>
+
+                @*<div class="col-md-4 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <label>Production Unit</label>
+                                </span>
+                            </div>
+                            @Html.DropDownList("PrdUnitId", null, "--Select--", htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>*@
+
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text py-0">Prd. Unit</span>
+                        </div>
+                        @Html.DropDownList("PrdUnitId", null, "--Select--", htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date </span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date</span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+
+                @if (!permission.IsProduction && !permission.IsMedical)
+                {
+
+               
+
+                <div class="col-md-2">
+                    <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintIssueSummary')">Issue Summary Report</button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintIssueDetails')">Issue / SR Details Report</button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintIssueVoucher')">Issue Voucher Report</button>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From No</span>
+                        </div>
+                        @Html.TextBox("FromNo", null, new { @class = "form-control text-center FromNo", @placeholder = "From No", @autocomplete = "off", name = "FromNo" })
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To No</span>
+                        </div>
+                        @Html.TextBox("ToNo", null, new { @class = "form-control text-center ToNo", @placeholder = "To NO", @autocomplete = "off", name = "ToNo" })
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintMissingSequence')">Missing Number</button>
+                </div>
+
+
+
+
+                @*<div class="col-md-1 col-12">
+                        <div class="form-group row">
+                            <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block" />
+                        </div>
+
+                    </div>*@
+
+
+                <div class="col-md-3 col-12 text-left">
+                    <fieldset>
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+                    </fieldset>
+                </div>
+                }
+            </div>
+
+            <hr />
+
+
+
+
+            <div id="finalpanel" class="my-2 p-2">
+
+                <div class="table-responsive text-nowrap">
+                    <table id="tblSalesList" class="table tblSalesList table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+
+@section Scripts
+{
+
+    <script type="text/javascript">
+
+        let isProduction = '@permission.IsProduction';
+            var ColumnsData = [];
+            /// this is for dynamica column name different module user , mainly prodcution === by himu
+            if (isProduction == 'True') {
+                ColumnsData = [
+                        { "title": "Issue Main Id", "data": "IssueMainId", "visible": false },
+                        { "title": "Issue No", "data": "IssueNo", "searchable": true },
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format', "data": "IssueDate", "title": "Issue Date", "searchable":false },
+
+                        { "title": "Store", "data": "Store", "searchable": false },
+                        { "title": "Department", "data": "Department", "searchable": false },
+                        { "title": "Section", "data": "SectName", "searchable": false },
+                        { "title": "Prduct Unit", "data": "PrdUnitName", "searchable": false },
+                        { "title": "Transfer No", "data": "SRNo", "searchable": true },
+                    { "title": "Transfer Date", "data": "SRDate", "searchable": false },
+
+                        {
+                            "title": "Item Details", "data": "ItemResultList", "searchable": false
+
+                            , "render": function (data, type, row) {
+                                //console.log(data);
+                                if (data != null) {
+
+                                    var output = "";
+                                    var totalstock = 0;
+                                    var count = 0;
+                                    for (var i = 0; i < data.length; i++) {
+                                        output += data[i].ItemName + ' [ ' + data[i].ItemCode + ' ] ' + "/n Issue Qty :" + data[i].IssueQty + ', Rate : ' + data[i].IssueRate + ', Amount : ' + data[i].IssueValue;
+
+                                    };
+                                    return output;
+                                }
+                                else {
+                                    return null;
+                                }
+                            }
+                        },
+
+                        { "title": "Type", "data": "TypeName", "searchable": false},
+                        { "title": "Remarks", "data": "Remarks", "searchable": false},
+                        { "title": "Status", "data": "Status", "searchable": false },
+                        {
+                            "data": { IssueMainId: "IssueMainId" },
+                            "render": function (data, type, row) {
+
+                                var myUrledit = '@Url.Action("Edit", "Issues")/' + data.IssueMainId;
+                                var myUrlView = '@Url.Action("View", "Issues")/' + data.IssueMainId;
+                                var myUrldelete = '@Url.Action("Delete", "Issues")/' + data.IssueMainId;
+                                var myUrlprint = '@Url.Action("Print", "Issues")/' + data.IssueMainId + '?type=pdf';
+
+                                if (data.Status == "Not Posted") {
+                                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Store Issue Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                                }
+                                else {
+                                    return '<span data-toggle="tooltip" title="View"> <a href=\"' + myUrlView + '\" class=\"mdi mdi-eye  btn btn-info btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Store Issue Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+                            }
+
+                        }
+
+
+                    ]
+            }
+            else
+            {
+                 ColumnsData = [
+                        { "title": "Issue Main Id", "data": "IssueMainId", "visible": false },
+                        { "title": "Issue No", "data": "IssueNo", "searchable": true },
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format', "data": "IssueDate", "title": "Issue Date", "searchable":false },
+
+                        { "title": "Store", "data": "Store", "searchable": false },
+                        { "title": "Department", "data": "Department", "searchable": false },
+                        { "title": "Section", "data": "SectName", "searchable": false },
+                        { "title": "Prduct Unit", "data": "PrdUnitName", "searchable": false },
+                        { "title": "SR No", "data": "SRNo", "searchable": true },
+                        { "title": "SR Date", "data": "SRDate", "searchable": false },
+
+                        {
+                            "title": "Item Details", "data": "ItemResultList", "searchable": false
+
+                            , "render": function (data, type, row) {
+                                //console.log(data);
+                                if (data != null) {
+
+                                    var output = "";
+                                    var totalstock = 0;
+                                    var count = 0;
+                                    for (var i = 0; i < data.length; i++) {
+                                        output += data[i].ItemName + ' [ ' + data[i].ItemCode + ' ] ' + "/n Issue Qty :" + data[i].IssueQty + ', Rate : ' + data[i].IssueRate + ', Amount : ' + data[i].IssueValue;
+
+                                    };
+                                    return output;
+                                }
+                                else {
+                                    return null;
+                                }
+                            }
+                        },
+
+                        { "title": "Type", "data": "TypeName", "searchable": false},
+                        { "title": "Remarks", "data": "Remarks", "searchable": false},
+                        { "title": "Status", "data": "Status", "searchable": false },
+                        {
+                            "data": { IssueMainId: "IssueMainId" },
+                            "render": function (data, type, row) {
+
+                                var myUrledit = '@Url.Action("Edit", "Issues")/' + data.IssueMainId;
+                                var myUrlView = '@Url.Action("View", "Issues")/' + data.IssueMainId;
+                                var myUrldelete = '@Url.Action("Delete", "Issues")/' + data.IssueMainId;
+                                var myUrlprint = '@Url.Action("Print", "Issues")/' + data.IssueMainId + '?type=pdf';
+
+                                if (data.Status == "Not Posted") {
+                                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Store Issue Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                                }
+                                else {
+                                    return '<span data-toggle="tooltip" title="View"> <a href=\"' + myUrlView + '\" class=\"mdi mdi-eye  btn btn-info btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Store Issue Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+                            }
+
+                        }
+
+
+                    ]
+        }
+             function ReportPrint(btnvalue) {
+               var FromDate = $('#FromDate').val();
+                 var ToDate = $('#ToDate').val();
+
+                 var FromNo = $('#FromNo').val();
+                 var ToNo = $('#ToNo').val();
+
+                 var PrdUnitId = $("#PrdUnitId").val();
+
+
+                 var Type = 'ISSUE';
+
+               var reporttype = $("input[name=RptType]:checked").val();
+               var url = '';
+               @*if (btnvalue == "PrintGrrSummary") {
+                   url = '@Url.Action("PrintGrrSummary", "GoodsReceive")';
+               }
+               else if (btnvalue == 'PrintGrrDetails') {
+                   url = '@Url.Action("PrintGrrDetails", "GoodsReceive")';
+               }*@
+
+              var jsUrl = '@Url.Action("replacevalue", "Issues")'; // ## is the token
+                ///alert(jsUrl);
+
+            $.ajax({
+                type: 'POST',
+                url: jsUrl.replace('replacevalue', btnvalue),
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, FromDate: FromDate, ToDate: ToDate, Type: Type, FromNo: FromNo, ToNo: ToNo, PrdUnitId: PrdUnitId},
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+        }
+
+
+
+
+         @*function ReportPrint(btnvalue) {
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var reporttype = $("input[name=RptType]:checked").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("IssueSummaryReport", "Issues")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, FromDate: FromDate, ToDate: ToDate},
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+         }*@
+
+
+        $(document).ready(function () {
+
+        $("#UserList").select2();
+            //$("#CustomerList").select2();
+            $("#PrdUnitId").select2();
+            //$("select").select2({
+            //    width: 'resolve'
+            //},
+            //    $('.select2-w-100').parent().find('span')
+            //        .removeClass('select2-container')
+            //        .css("width", "100%")
+            //        .css("flex-grow", "1")
+            //        .css("box-sizing", "border-box")
+            //        .css("display", "inline-block")
+            //        .css("margin", "0")
+            //        .css("position", "relative")
+            //        .css("vertical-align", "middle")
+            //);
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+
+        }
+
+
+    });
+
+        $('input[name=RptType]').click(function () {
+        var reporttype = $("input[name=RptType]:checked").val();
+        //alert(reporttype);
+
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Action("SetSessionInd", "ExportInvoiceMasters")',
+        dataType: 'json',
+        async: true,
+            data: { reporttype: reporttype},
+            success: function (response) {
+              //  window.location.href = response.Url;
+
+                //window.open(response.Url, '_blank')
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+
+        });
+
+    });
+
+        var table;
+
+        $(document).ready(function () {
+
+            //var x = $("#ToDate").val();
+            //alert(x);
+
+            var userlist = $("#UserList").val();
+            var PrdUnitId = $("#PrdUnitId").val();
+            var CustomerList = $("#CustomerList").val();
+            var fromdate = $("#FromDate").val();
+            var todate = $("#ToDate").val();
+
+            loaddata(userlist, fromdate, todate, CustomerList, 1, PrdUnitId);
+
+
+
+            function getDateString(dateObj) {
+
+                if (dateObj == null) { return ''; };
+
+                var date = new Date(parseInt(dateObj.substr(6)));
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+                var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                //alert(val);
+
+
+                return formatdate;
+
+                //return dateObj.toDateString();
+            }
+
+            function loaddata(UserId = "", FromDate = "", ToDate = "", CustomerList = "", isAll = 1) {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tblSalesList').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+
+                                    }
+                                    else {
+                                        loaddata(userlist, fromdate, todate, CustomerList, 1, PrdUnitId);
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata(userlist, fromdate, todate, CustomerList, 1, PrdUnitId);
+                                    //table.ajax.reload();
+
+
+                                })
+                        $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    //"orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+                    //"columnDefs": [
+                    //    // Hide second, third and fourth columns
+                    //    { "visible": false, "targets": [] }
+                    //],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success mr-2',
+                                titleAttr: 'Export to excel'
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("Get", "Issues")",
+                        "data": { UserList: $("#UserList").val(), FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), CustomerList: $("#CustomerList").val(), isAll: isAll, PrdUnitId: PrdUnitId },
+
+                        //"url": "/Cities/GetListViewModel",
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": ColumnsData,
+                    //"order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+
+
+                    "destroy": true
+                });
+
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+
+
+
+
+
+        });
+
+
+    </script>
+}
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.IssueNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IssueDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IssueRef)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Department)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PrdUnit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StoreRequisitionMain)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Supplier)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaymentType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Currency)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ConvertionRate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalIssueValue)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Deduction)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NetIssueValue)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cat_SubSection)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GateInHouseDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ExpectedReciveDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TermsAndCondition)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Remarks)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ComId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PcName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateAdded)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UpdateByUserId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateUpdated)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GateInHouseDatestring)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ExpectedReciveDatestring)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IssueNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IssueDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IssueRef)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Department)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PrdUnit.PrdUnitName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StoreRequisitionMain.SRNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Supplier.SupplierName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentType.TypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Currency.CurCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ConvertionRate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalIssueValue)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Deduction)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NetIssueValue)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cat_SubSection.SubSectName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GateInHouseDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ExpectedReciveDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TermsAndCondition)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GateInHouseDatestring)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ExpectedReciveDatestring)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.IssueMainId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.IssueMainId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.IssueMainId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@

@@ -1,0 +1,342 @@
+﻿<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+@*<link href="~/css/customFormStyle.css" rel="stylesheet" />*@
+@model IEnumerable<GTERP.Models.Buffers.BufferGatePass>
+<div class="container-fluid">
+    <div class="card p-2 text-center mb-2">
+        <div class="row mb-2">
+            <div class="col-md-3 col-12">
+                @Html.ActionLink("Gate Pass Entry", "Create", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+            </div>
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">Gate Pass List</h2>
+            </div>
+        </div>
+
+        <div class="row px-2">
+            <div class="col-md-2 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            From Date
+                        </span>
+                    </div>
+                    <input id="fromdate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-2 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            To Date
+                        </span>
+                    </div>
+                    <input id="todate" class="form-control" />
+                </div>
+            </div>
+
+
+            <div class="col-md-2 col-12">
+                <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintrptDeliveryChallanReport')">Delivery Challan Report</button>
+            </div>
+            <div class="col-md-1 col-12">
+                <button class="btn btn-success rounded-0 btn-block" type="button" onclick="ReportPrint('PrintrptTaliSheet')">Tali Sheet</button>
+            </div>
+            <div class="col-md-2 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            Gate Pass No
+                        </span>
+                        <select class="custom-select" asp-items="ViewBag.GatePassId" id="GatePassId">
+                            <option value="0">Gate Pass No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1 col-12 px-1">
+                <button class="btn btn-success btn-block rounded-0 btn-sm" type="button" onclick="ReportPrint('PrintrptTruckGatePassReport')">
+                    Gate Pass Report
+                </button>
+            </div>
+            <div class="col-md-2 col-12">
+                <fieldset class="text-right">
+                    <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                    <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                </fieldset>
+            </div>
+        </div>
+</div>
+
+<div id="finalpanel" class="card p-2">
+
+    <div class="table-responsive text-nowrap">
+        <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        $('#GatePassId').select2({ theme: "bootstrap4",});
+        $('#ReceiverPerson').select2({ theme: "bootstrap4", });
+        $('#RepresentativeId').select2({ theme: "bootstrap4", });
+
+        //$("select").select2({
+        //    theme: "bootstrap4",
+        //});
+
+
+        $('#fromdate,#todate').datepicker({
+            //onSelect: function (date) {
+            //    var dateFormat = $("#ReqDate").datepicker("option", "dateFormat");
+            //    $('#GatePassDate').datepicker('option', 'dateFormat', 'd-M-y')
+            //},
+            dateFormat: 'd-M-y',
+            changeMonth: true,
+            changeYear: true
+        });
+
+
+        CurrentDate();
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear().toString().substr(-2);
+
+
+            if ($("#fromdate").val() == '') {
+                $("#fromdate").val(val);
+            }
+            if ($("#todate").val() == '') {
+                $("#todate").val(val);
+            }
+        }
+
+
+         @*function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+             var DistId = $('#DistId').val();
+             var YearNameId = $('#YearNameId').val();
+             var FromGatePassFrom = $('#fromGatePassFrom option:selected').text();
+             var ToGatePassFrom = $('#toGatePassFrom option:selected').text();
+            var reporttype = $("input[name=RptType]:checked").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, District: DistId, FromDate: FromDate, ToDate: ToDate, Year: YearNameId,FromGatePassFrom:FromGatePassFrom, ToGatePassFrom:ToGatePassFrom },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+         }*@
+
+        function ReportPrint(btnvalue) {
+            var FromDate = $('#fromdate').val();
+            var ToDate = $('#todate').val();
+
+            var GatePassId = $('#GatePassId option:selected').val();
+            var ReceiverPerson = $('#ReceiverPerson option:selected').text();
+
+            var RepresentativeId = $('#RepresentativeId option:selected').text();
+
+
+
+            var reporttype = $("input[name=RptType]:checked").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SalesReport", "SalesReport")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, FromDate: FromDate, ToDate: ToDate, GatePassId: GatePassId, ReceiverPerson: ReceiverPerson, RepresentativeId: RepresentativeId },
+                success: function (response) {
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+         }
+
+        //$('.table').DataTable();
+
+                var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "BufferGatePass")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "GatePassId", "data": "GatePassId", "visible": false },
+                    { "title": "Gate Pass No", "data": "GatePassNo", "searchable": true },
+                    { "title": "Receiver Name", "data": "ReceiverName", "searchable": true },
+                    { "title": "Receiver Address", "data": "ReceiverAddress", "searchable": true },
+
+                    { "title": "Gate Pass Date", "data": "GatePassDate", "searchable": false, "orderable" : false },
+                    { "title": "TotalQty", "data": "TotalQty", "searchable": false },
+                    { "title": "Status", "data": "Status", "searchable": false },
+                    {
+                        "title": "Challan No", "data": "DeliveryChallanList", "searchable": true
+
+                        , "render": function (data, type, row) {
+                            //console.log(data);
+                            if (data != null) {
+
+                                var output = "";
+                                var totalstock = 0;
+                                var count = 0;
+                                for (var i = 0; i < data.length; i++) {
+                                    output += data[i].ChallanNo;
+                                    //totalstock = totalstock + data[i].CurrentStock
+                                    if (i < data.length - 1) {
+                                        output += ", ";
+                                    }
+                                    count++;
+                                };
+
+                                //if (totalstock > 0) {
+                                //    if (count > 1) {
+                                //        output += ' TOTAL : ' + totalstock;
+                                //    }
+                                //};
+
+                                //console.log(output);
+                                //console.log(totalstock);
+
+                                return output;
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+
+                    },
+                    {
+                        "title": "Action",
+                        "data": { GatePassId: "GatePassId" },
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "BufferGatePass")/' + data.GatePassId;
+                            var myUrldelete = '@Url.Action("Delete", "BufferGatePass")/' + data.GatePassId;
+                            var myUrlreport = '@Url.Action("Print", "BufferGatePass")/' + data.GatePassId + '?type=pdf';
+                            //console.log(data.GatePassId);
+
+                            //console.log(data.Status);
+
+
+                            //return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                            //    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                            //    '<span data-toggle="tooltip" title="Report"> <a href=\"' + myUrlreport + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            if (data.Status == "Not Posted") {
+
+                                return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Report"> <a href=\"' + myUrlreport + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+                            }
+                            else {
+                                return '<span data-toggle="tooltip" title="Report"> <a href=\"' + myUrlreport + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+                        }
+
+                    }
+                    
+
+                ],
+                "order": [[0, "desc"]],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf mr-1"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                    "language": {
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                });
+
+    </script>
+}

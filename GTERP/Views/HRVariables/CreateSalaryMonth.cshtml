@@ -1,0 +1,153 @@
+﻿@model GTERP.Models.Cat_SalaryMonth
+
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateSalaryMonth", "HRVariables", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6  offset-md-3 col-12">
+                @if (Model != null)
+                {
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Id" value="0" />
+                }
+                <div id="modalbodyfahad" class="row">
+                    <div>
+                        <div>
+                            <div class="card-header">
+                                <h4 id="styletext">Salary Month Entry - @ViewBag.Title</h4>
+                            </div>
+                            <div class="card-body">
+                                <form class="needs-validation" novalidate>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        From Date
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.DtFrom, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.DtFrom, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text py-0">
+                                                        To Date 
+                                                    </span>
+                                                </div>
+                                                @Html.EditorFor(model => model.DtTo, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.DtTo, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </form>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row text-center m-2">
+                                    <br />
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-4 col-12">
+
+                                        @if (ViewBag.Title == "Create")
+                                        {
+                                        <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                        }
+                                        else if (ViewBag.Title == "Edit")
+                                        {
+                                        <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+
+                                        @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                        }
+                                        else if (ViewBag.Title == "Delete")
+                                        {
+                                        <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="DeleteSalaryMonth_delete()">Delete</button>
+                                        }
+
+
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        @Html.ActionLink("Back", "SalaryMonthList", "HRVariables", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                                    </div>
+                                    <div class="col-md-2"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+}
+
+@section Scripts{
+    <script>
+
+    $("#Id").select2();
+
+        function DeleteSalaryMonth_delete() {
+
+        var Id = $("#Id").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteSalaryMonth", "HRVariables")',
+                data: JSON.stringify({ id: Id }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("SalaryMonthList", "HRVariables")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+

@@ -1,0 +1,125 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Data = ViewBag.data;
+    int sl = 0;
+    var Email = ViewBag.UserId;
+
+}
+
+@model IEnumerable<quizAnsVm>
+
+<h4 style="color:crimson">Please Answer the following question </h4>
+<hr />
+
+<div class="container">
+
+    <p class="text-sec bg bg-yellow" style="color:red"><b>@ViewBag.msg</b></p>
+    <div>
+        @if (Model.Count() != 0)
+        {
+            <div class="pull-right">Pass Mark: <span class="text-danger">@Model.FirstOrDefault().passMark</span> </div>
+        }
+        
+
+        @*<input type="hidden" asp-for="ModuleCourseId"/>*@
+        @foreach (var q in Model)
+        {
+            var an = 0;
+            var count = (@sl += 1);
+            <div class="queSet">
+                <div>Question_@count: &nbsp @q.question </div>
+                <input id="quizId_@count" type="text" hidden value="@q.quizId" />
+                <input id="ModuleId" type="text" hidden value="@q.ModuleId" />
+                <div id="ansSet_@count">
+
+                    @foreach (var ans in q.answer)
+                    {
+                        var ansCount = (@an += 1);
+
+                        <input id="result_@count@ansCount" name="result_@count" type="@q.optionType" value="@ans" />
+                        <label for="@ans">@ans</label>
+
+                        <br />
+                    }
+                </div>
+            </div>
+
+
+        }
+        <button class="btn btn-success" id="submit">Submit</button>
+    </div>
+</div>
+
+<div>
+    @if (Email.Contains("gtrbd"))
+    {
+        <a asp-action="ModuleRecordView">Back to List</a>
+    }
+    else
+    {
+        <a asp-action="GetAllModuleName">Back to List</a>
+    }
+</div>
+
+
+
+@section Scripts{
+
+    <script>
+
+        $('#submit').click(function() {
+            let QuizCheck = []
+            let QuizAns = {
+                ModuleId: 0,
+                quizId: 0,
+                question: '',
+                answer: [],
+                optionType: '',
+            }
+
+
+
+            $('.queSet').each(function(index, tr) {
+                let countQue = index + 1;
+                QuizAns.ModuleId = $('#ModuleId').val();
+                QuizAns.quizId = $(`#quizId_${countQue}`).val();
+
+                $(`#ansSet_${countQue}> input`).each(function(index, div) {
+                    let countAns = index + 1;
+                    if ($(`#result_${countQue}${countAns}`).is(':checked')) {
+                        var ans = $(`#result_${countQue}${countAns}`).val()
+                        QuizAns.answer.push(ans);
+                    };
+
+                })
+                QuizCheck.push(QuizAns);
+                QuizAns = {
+                    ModuleId: 0,
+                    quizId: 0,
+                    question: '',
+                    answer: [],
+                    optionType: '',
+                }
+            })
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckQuiz", "TutorialCertificate")',
+                data: { QuizAns: QuizCheck },
+                dataType: "json",
+                success: function(res) {
+                    if (res.result == 'pass') 
+                    {
+                        window.location = ('@Url.Action("CertificateDemo", "TutorialCertificate")?moduleName=' + res.moduleName + "&userEmail=" + res.userEmail + "&moduleID=" + res.moduleID)
+                    }
+                    else 
+                    {
+                        window.location = ('@Url.Action("QuizExamPage", "TutorialCertificate")?moduleId=' + res.moduleID + "&msg=" + res.msg)
+                    }
+
+                }
+            })
+        })
+
+    </script>
+}
+

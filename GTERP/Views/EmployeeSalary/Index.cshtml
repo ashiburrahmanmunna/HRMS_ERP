@@ -1,0 +1,275 @@
+﻿@model IEnumerable<GTERP.Models.HR_Emp_Salary>
+@{
+    ViewBag.Title = "Employee Salary Info";
+
+}
+<style>
+    .tbllist th:first-child, .tbllist tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+
+    .tbllist th:last-child, .tbllist tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tbllist tfoot td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+</style>
+
+<div class="container-fluid">
+
+    <div class="text-center">
+        <div class="row mb-2">
+            <div class="col-md-3 col-12">
+                <a asp-action="Create" asp-controller="EmployeeSalary" class="btn btn-outline-info btn-block rounded-0">Salary Creation</a>
+            </div>
+
+            <div class="col-md-9 col-12">
+                <h2 id="styletext">Salary List</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <form class="card p-2">
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table table-hover table-bordered tbllist  table-hover" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th style="width:100px;">Emp Code</th>
+                        <th style="width:180px;">Employee Name</th>
+                        <th style="width:150px;">Department</th>
+                        <th style="width:150px;">Designation</th>
+                        <th style="width:80px;">Employee Type</th>
+                        <th style="width:100px;">Floor</th>
+                        <th style="width:100px;">Line</th>
+                         <th style="width:100px;">Paymode</th>
+                        <th style="width:100px;">Account No.</th>
+                        <th>Gross Salary</th>
+                        <th>Basic Salary</th>
+                        <th>House Rent</th>
+                        <th>MA</th>
+                        <th>Trn</th>
+                        <th>FA</th>
+                        <th>Other Allow</th>
+                        <th>Grade Bonus</th>
+                        <th>Mobile Allow</th>
+                        <th>Skill Bonus</th>
+                        <th>Managment Bonus</th>
+                        <th>Special Allow.</th>
+                        <th>IncomeTax</th>
+                        <th>Lunch Deduction</th>
+                        <th>Cash PF</th>
+                        <th>Cash Salary</th>
+                        <th>Total Salary</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        if (s.IsApprove == false)
+                        {
+                            <tr style="background-color:rgb(249 207 181)">
+                                <td style="width:100px;">[-@s.HR_Emp_Info.EmpCode]</td>
+                                <td style="width:180px;">@s.HR_Emp_Info.EmpName</td>
+                                <td style="width:150px;">@s.HR_Emp_Info.Cat_Department.DeptName</td>
+                                <td style="width:150px;">@s.HR_Emp_Info.Cat_Designation.DesigName</td>
+                                <td style="width:80px;">@s.HR_Emp_Info.Cat_Emp_Type.EmpTypeName</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.Cat_Floor?.FloorName ?? "=N/A=")</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.Cat_Line?.LineName ?? "=N/A=")</td>
+                                 <td style="width:100px;">@(s.HR_Emp_Info?.HR_Emp_BankInfo?.Cat_PayMode?.PayModeName ?? "Cash")</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.HR_Emp_BankInfo?.AccountNumber ?? "0")</td>
+                                <td>@s.PersonalPay</td>
+                                <td>@s.BasicSalary</td>
+                                <td>@s.HouseRent</td>
+                                <td>@s.MadicalAllow</td>
+                                <td>@s.ConveyanceAllow</td>
+                                <td>@s.CanteenAllow</td>
+                                <td>@s.MiscAdd</td>
+                                <td>@s.ArrearBasic</td>
+                                <td>@s.MobileAllow</td>
+                                <td>@s.ArrearBonus</td>
+                                <td>@s.ChargeAllow</td>
+                                <td>@s.AttAllow</td>
+                                <td>@s.IncomeTax</td>
+                                <td>@s.ConvAllowDed</td>
+                                <td>@s.PfAdd</td>
+                                <td>@s.DearnessAllow</td>
+                                <td>@s.FestivalBonus</td>
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "Edit", new { id = s.SalaryId }, new { @class = "fas fa-edit btn btn-warning btn-sm", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Delete!">
+                                        @Html.ActionLink(" ", "Delete", new { id = s.SalaryId }, new { @class = "far fa-trash-alt btn btn-danger btn-sm" })
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td style="width:100px;">[-@s.HR_Emp_Info.EmpCode]</td>
+                                <td style="width:180px;">@s.HR_Emp_Info.EmpName</td>
+                                <td style="width:150px;">@s.HR_Emp_Info.Cat_Department.DeptName</td>
+                                <td style="width:150px;">@s.HR_Emp_Info.Cat_Designation.DesigName</td>
+                                <td style="width:80px;">@s.HR_Emp_Info.Cat_Emp_Type.EmpTypeName</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.Cat_Floor?.FloorName ?? "=N/A=")</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.Cat_Line?.LineName ?? "=N/A=")</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.HR_Emp_BankInfo?.Cat_PayMode?.PayModeName ?? "Cash")</td>
+                                <td style="width:100px;">@(s.HR_Emp_Info?.HR_Emp_BankInfo?.AccountNumber ?? "0")</td>
+                                <td>@s.PersonalPay</td>
+                                <td>@s.BasicSalary</td>
+                                <td>@s.HouseRent</td>
+                                <td>@s.MadicalAllow</td>
+                                <td>@s.ConveyanceAllow</td>
+                                <td>@s.CanteenAllow</td>
+                                <td>@s.MiscAdd</td>
+                                <td>@s.ArrearBasic</td>
+                                <td>@s.MobileAllow</td>
+                                <td>@s.ArrearBonus</td>
+                                <td>@s.ChargeAllow</td>
+                                <td>@s.AttAllow</td>                                
+                                <td>@s.IncomeTax</td>
+                                <td>@s.ConvAllowDed</td>
+                                <td>@s.PfAdd</td>
+                                <td>@s.DearnessAllow</td>
+                                <td>@s.FestivalBonus</td>
+                                <td class="text-nowrap">
+                                    <span data-toggle="tooltip" title="Edit!">
+                                        @Html.ActionLink(" ", "Edit", new { id = s.SalaryId }, new { @class = "fas fa-edit btn btn-warning btn-sm", @target = "_blank" })
+                                    </span>
+                                    <span data-toggle="tooltip" title="Delete!">
+                                        @Html.ActionLink(" ", "Delete", new { id = s.SalaryId }, new { @class = "far fa-trash-alt btn btn-danger btn-sm" })
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+        <br />
+    </form>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                //"sDom": "<'row'<'col-sm-12'<'form-group'<f>>>>tr<'row'<'col-sm-12'<'pull-left'i><'pull-right'p><'clearfix'>>>",
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard'
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv'
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="mdi mdi-printer"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Print Table'
+                        }
+
+                    ]
+                },
+                "searching": true,
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "iDisplayLength": 25,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                //responsive: true,
+                // fixedColumns: {
+                //    leftColumns: 2,
+                //    rightColumns: 1
+                //},
+                language: {
+                    sLengthMenu: "_MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                }
+                //orderCellsTop: true,
+                //fixedHeader: true
+            });
+        });
+
+    </script>
+}
+
+

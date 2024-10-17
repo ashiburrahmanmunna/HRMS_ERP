@@ -1,0 +1,633 @@
+﻿@model IEnumerable<IncrementViewModel>
+@{
+    ViewBag.Title = "Increment All";
+}
+@using GTERP.Controllers.HR
+@using GTERP.Models;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.ViewModels
+
+@{
+    Cat_HRSetting worker = ViewBag.worker;
+    Cat_HRSetting staff = ViewBag.staff;
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <h4 class="form-header btn-info d-flex">
+            <i class="far fa-file-alt mr-1"></i> Increment All
+            <button type="button" id="save" class="rounded-0 btn btn-light btn-block mb-2" style="width:10%;margin:0 auto;">
+                <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+            </button>
+
+        </h4>
+
+        <div class="card-body p-2">
+            <div id="modalbodyfahad" class="row p-4">
+                <div class="col-md-12 col-12">
+                    <div class="needs-validation" novalidate>
+
+
+                        @* for staff salary setting calculation *@
+
+                        <input type="hidden" value="@staff.BS" id="staffBasic" />
+                        <input type="hidden" value="@staff.HR" id="staffHouserent" />
+                        <input type="hidden" value="@staff.MA" id="staffMedical" />
+                        <input type="hidden" value="@staff.CA" id="staffConveyance" />
+                        <input type="hidden" value="@staff.FA" id="staffFood" />
+
+                        @* for worker salary calculation *@
+
+                        <input type="hidden" value="@worker.BS" id="workerBasic" />
+                        <input type="hidden" value="@worker.HR" id="workerHouserent" />
+                        <input type="hidden" value="@worker.MA" id="workerMedical" />
+                        <input type="hidden" value="@worker.CA" id="workerConveyance" />
+                        <input type="hidden" value="@worker.FA" id="workerFood" />
+
+                        <div class="row">
+                            <div class="col-6">
+
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    From
+                                                </span>
+                                            </div>
+                                            <input type="text" id="from" name="from" class="form-control" />
+
+                                        </div>
+
+
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    To
+                                                </span>
+                                            </div>
+                                            <input type="text" value="@ViewBag.DateTo.ToString("yyyy-MM-dd")" id="to" name="to" class="form-control" />
+
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <button id="pre" class="btn btn-success w-80" type="button" value="pre"><< Prev</button>
+                                            <button id="next" class="btn btn-success w-80" type="button" value="next">Next >></button>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-3">
+
+                                        <button type="button" id="loadButton" name="loadButton" value="view" class="rounded-0 btn btn-warning btn-block mb-2" style="height:65%;">
+                                            <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Load
+                                        </button>
+                                        @*<button type="button" id="save" class="rounded-0 btn btn-primary btn-block mb-2">
+                                        <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Save
+                                        </button>*@
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="form-group row">
+
+                                    <div class="col-6">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    Effect on
+                                                </span>
+                                            </div>
+                                            <select class="form-control" id="salaryType">
+                                                <option value="Basic">Basic</option>
+                                                <option value="Gross">Gross</option>
+
+                                            </select>
+                                        </div>
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    Percentage
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control" id="incrementAmt" value="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text border-0" id="inputGroupPrepend2">%</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-md-3 col-12">
+                                        <button type="button" id="calc" class="btn btn-success rounded-0" style="height:90%;width:155px;">Calculate</button>
+                                    </div>
+
+
+                                    <div class="col-2">
+                                        <div class="form-check ">
+                                            <input class="form-check-input" type="checkbox" value="" id="selectAll">
+                                            <label class="form-check-label" for="defaultCheck1">
+                                                Check All
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div id="download-buttons" style="text-align: right;">
+                             <button type="button" id="download-csv" class="btn btn-success w-80 my-3">Download CSV</button>
+                             <button type="button" id="download-pdf" class="btn btn-success w-80 my-3">Download PDF</button>
+                             <button type="button" id="download-xlsx" class="btn btn-success w-80 my-3">Download EXEL</button> 
+                        <div id="Increment-Table"></div>
+                        </div>
+               
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.js"></script>
+
+
+    <script>
+        var dt1;
+        $(document).ready(function () {
+            //Set the #from field to Today Date
+            setInitialDate();
+
+            var message = "Increment";
+            $("#from").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#to").datepicker({
+                dateFormat: 'dd-M-yy'
+            });
+            $("#pre").click(() => {
+                var dt = new Date($("#from").val());
+                var dt1 = new Date(dt.getFullYear(), dt.getMonth() - 1, 1);
+
+                var dt2 = new Date(dt1.getFullYear(), dt1.getMonth() + 1, 0);
+
+
+                var ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dt1);
+                var mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(dt1);
+                var da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(dt1);
+                var formattedDate = $.datepicker.formatDate("yy-mm-dd", dt1);
+                $("#from").val(formattedDate);
+                //console.log(`${ye}-${mo}-${da}`);
+                ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dt2);
+                mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(dt2);
+                da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(dt2);
+                //console.log(`${ye}-${mo}-${da}`);
+                $("#to").val(`${ye}-${mo}-${da}`);
+              
+            });
+            $("#next").click(() => {
+                var dt = new Date($("#from").val());
+                var dt1 = new Date(dt.getFullYear(), dt.getMonth() + 1, 1);
+
+                var dt2 = new Date(dt1.getFullYear(), dt1.getMonth() + 1, 0);
+
+
+                var ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dt1);
+                var mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(dt1);
+                var da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(dt1);
+                $("#from").val(`${ye}-${mo}-${da}`);
+                //console.log(`${ye}-${mo}-${da}`);
+                ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dt2);
+                mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(dt2);
+                da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(dt2);
+                //console.log(`${ye}-${mo}-${da}`);
+                $("#to").val(`${ye}-${mo}-${da}`);
+
+            });
+
+            
+
+            //Start
+            var table;
+            //Initialize Table Data after Filter
+            var filteredData = [];
+
+            //Fire When click Load Button
+            $("#loadButton").click(function () {
+
+                var selectedDate = $("#from").val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetIncrementAllJson", "HR")',
+                    //dataType: 'json',
+                    data: { from: selectedDate },
+                    success: function (response) {
+                        //console.log(response);
+                        CreateTable(response);
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                    }
+                });            
+
+            });
+            //trigger download of data.csv file
+            document.getElementById("download-csv").addEventListener("click", function () {
+                table.download("csv", "data.csv");
+            });
+
+            //trigger download of data.xlsx file
+            document.getElementById("download-xlsx").addEventListener("click", function () {
+                table.download("xlsx", "data.xlsx", { sheetName: "Increment All Data" });
+            });
+
+            //trigger download of data.pdf file
+            document.getElementById("download-pdf").addEventListener("click", function () {
+                table.download("pdf", "data.pdf", {
+                    orientation: "landscape", //set page orientation to portrait
+                    title: "Increment All Report", //add title to report
+                });
+            });
+            //Create Tabulator with Json Data .#Param:data
+            function CreateTable(data) {
+                var column = [
+
+                    {
+                        title: "EmpCode", field: "EmpCode", headerFilter: "input", editor: "input", hozAlign: "center", width: 100,
+                        bottomCalc: "count", bottomCalcFormatter: customTextFormatter, frozen: true },
+                    { title: "EmpName", field: "EmpName", headerFilter: "input", editor: "input", width: 200, hozAlign: "center", frozen: true },
+                    { title: "EmpId", field: "EmpId", headerFilter: "input", editor: "input", visible: false, },
+                    { title: "DtJoin", field: "DtJoin", headerFilter: "input", editor: "input", width: 120 },
+                    { title: "DesigName", field: "DesigName", headerFilter: "input", editor: "input", width: 120 },
+                    { title: "DeptName", field: "DeptName", headerFilter: "input", editor: "input", width: 120,  },
+                    { title: "SectName", field: "SectName", headerFilter: "input", editor: "input", width: 120, },
+                    { title: "EmpType", field: "EmpType", headerFilter: "input", editor: "input", width: 95,  },
+                    { title: "Floor", field: "Floor", headerFilter: "input", editor: "input", width: 85, },
+                    { title: "Line", field: "Line", headerFilter: "input", editor: "input", width: 85, },
+                    { title: "Gross", field: "Gross", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum" },
+                    { title: "Basic", field: "Basic", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum" },
+                    { title: "HR", field: "HR", headerFilter: "input", editor: "input", width: 80, bottomCalc: "sum" },
+                    { title: "MA", field: "MA", headerFilter: "input", editor: "input", width: 80, bottomCalc: "sum" },
+                    { title: "TA", field: "TA", headerFilter: "input", editor: "input", width: 80, bottomCalc: "sum" },
+                    { title: "FA", field: "FA", headerFilter: "input", editor: "input", width: 80, bottomCalc: "sum" },
+                    { title: "Amount", field: "Amount", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum" },
+                    { title: "NewGS", field: "NewGS", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum" },
+                    { title: "NewBS", field: "NewBS", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum" },
+                    { title: "NewHR", field: "NewHR", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum", bottomCalcParams: { precision: 2 } },
+                    { title: "NewMA", field: "NewMA", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum", bottomCalcParams: { precision: 2 } },
+                    { title: "NewTA", field: "NewTA", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum", bottomCalcParams: { precision: 2 } },
+                    { title: "NewFA", field: "NewFA", headerFilter: "input", editor: "input", width: 90, bottomCalc: "sum", bottomCalcParams: { precision: 2 } },
+                ];
+
+                table = new Tabulator("#Increment-Table", {
+                    data: data,
+                    rowHeight: 37,
+                    columns: column,
+                    selectable: true,
+                    layout: "fitColumns", // Adjust the layout as needed.
+                    pagination: true, //enable.
+                    paginationSize: 15,
+                    reactiveData: true,
+                });       
+
+                return true;
+            }
+            //Fire When click selectAll
+            $("#selectAll").on("click", function (e) {
+                if ($(this).is(":checked")) {
+                    table.selectRow("active");
+                } else {
+                    table.deselectRow();
+                }
+                //var selectedRows = table.getSelectedData();
+                    // //Add an event listener for dataFiltered event
+                    // table.on("dataFiltered", (filters, rows) => {                       
+                    //     if (selectedRows.length > 0) {
+                    //     table.deselectRow();
+                    //     var selectFilteredRow = rows.map((row) => row.select("active"));
+                    //         //console.log(selectFilteredRow)
+                    //     }
+                    // });
+            });
+           
+            
+            //Fire When Press Calculate Button
+            $("#calc").click(function () {
+                var selectedRows = table.getSelectedData();
+                var newData = [];
+                //console.log(selectedRows);
+                if (selectedRows.length > 0) {
+                    selectedRows.forEach(function (rowData, i) {
+
+                        var g = rowData.Gross;
+                        var b = rowData.Basic;
+                        var hr = rowData.HR;
+                        var salType = $('#salaryType').val();
+                        var emptype = rowData.EmpType;
+                        // salary setting value initialize
+                        // for worker
+                        var WBS = Number($('#workerBasic').val());
+                        var WHR = Number($('#workerHouserent').val());
+                        var WMA = Number($('#workerMedical').val());
+                        var WCA = Number($('#workerConveyance').val());
+                        var WFA = Number($('#workerFood').val());
+                        //alert((WMA + WCA + WFA));
+
+                        // for staff
+                        var SBS = Number($('#staffBasic').val());
+                        var SHR = Number($('#staffHouserent').val());
+                        var SMA = Number($('#staffMedical').val());
+                        var SCA = Number($('#staffConveyance').val());
+                        var SFA = Number($('#staffFood').val());
+
+                        var p = Number($("#incrementAmt").val()) / 100;
+
+                        // Check if the salary type is "Basic" and the employee type is "Worker"
+                        if (salType === "Basic" && emptype === "Worker") {
+                            // Calculate the incremental amount to be added to the salary
+                            const incrementalAmount = Math.round((Number(g) - (WMA + WCA + WFA)) * p);
+
+                            // Calculate the new gross salary by adding the incremental amount to the existing gross salary
+                            const newGrossSalary = Math.round(Number(g) + incrementalAmount);
+
+                            // Calculate the new basic salary
+                            const newBasicSalary = Math.round((Number(newGrossSalary) - (WMA + WCA + WFA)) / 1.5);
+
+                            // Calculate the new HouseRent Salary
+                            const newHouseRentSalary = Math.round(((Number(newGrossSalary) - (WMA + WCA + WFA)) / 1.5) * 0.5);
+                            //Update New Data
+                            newData.push({
+                                EmpId: rowData.EmpId, EmpCode: rowData.EmpCode, EmpName: rowData.EmpName, DtJoin: rowData.DtJoin,
+                                DesigName: rowData.DesigName, DeptName: rowData.DeptName, SectName: rowData.SectName,
+                                EmpType: rowData.EmpType, Floor: rowData.Floor, Line: rowData.Line, Gross: rowData.Gross,
+                                Basic: rowData.Basic, HR: rowData.HR, MA: rowData.MA, TA: rowData.TA, FA: rowData.FA,
+                                Amount: incrementalAmount,
+                                NewGS: newGrossSalary,
+                                NewBS: newBasicSalary,
+                                NewHR: newHouseRentSalary,
+                                NewMA: WMA,
+                                NewTA: WCA,
+                                NewFA: WFA
+                            });
+                        }
+                        else if (salType == 'Gross' && emptype == 'Worker') {
+
+                            newData.push({
+                                EmpId: rowData.EmpId, EmpCode: rowData.EmpCode, EmpName: rowData.EmpName, DtJoin: rowData.DtJoin,
+                                DesigName: rowData.DesigName, DeptName: rowData.DeptName, SectName: rowData.SectName,
+                                EmpType: rowData.EmpType, Floor: rowData.Floor, Line: rowData.Line, Gross: rowData.Gross,
+                                Basic: rowData.Basic, HR: rowData.HR, MA: rowData.MA, TA: rowData.TA, FA: rowData.FA,
+                                Amount: (g * p).toFixed("0"),
+                                NewGS: (Number(g) + p * g).toFixed("0"),
+                                NewBS: (((Number(g) + p * g) - (WMA + WCA + WFA)) / 1.5).toFixed("0"),
+                                NewHR: ((((Number(g) + p * g) - (WMA + WCA + WFA)) / 1.5) * WHR).toFixed("0"),
+                                NewMA: WMA,
+                                NewTA: WCA,
+                                NewFA: WFA
+                            });
+                        }
+                        else if (salType == 'Gross' && emptype != 'Worker') {
+                            newData.push({
+                                EmpId: rowData.EmpId, EmpCode: rowData.EmpCode, EmpName: rowData.EmpName, DtJoin: rowData.DtJoin,
+                                DesigName: rowData.DesigName, DeptName: rowData.DeptName, SectName: rowData.SectName,
+                                EmpType: rowData.EmpType, Floor: rowData.Floor, Line: rowData.Line, Gross: rowData.Gross,
+                                Basic: rowData.Basic, HR: rowData.HR, MA: rowData.MA, TA: rowData.TA, FA: rowData.FA,
+                                Amount: (g * p).toFixed("0"),
+                                NewGS: (Number(g) + p * g).toFixed("0"),
+                                NewBS: ((Number(g) + p * g) * SBS).toFixed("0"),
+                                NewHR: ((Number(g) + p * g) * SHR).toFixed("0"),
+                                NewMA: ((Number(g) + p * g) * SMA).toFixed("0"),
+                                NewTA: ((Number(g) + p * g) * SCA).toFixed("0"),
+                                NewFA: ((Number(g) + p * g) * SFA).toFixed("0")
+                            });
+                        }
+                        // Check if the salary type is "Basic" and the employee type is "Staff" or Others
+                        else if (salType == 'Basic' && emptype != 'Worker') {
+                            // Calculate the incremental amount to be added to the salary
+                            const incrementalAmount = Math.round((Number(g) - (SMA + SCA + SFA)) * p);
+
+                            // Calculate the new gross salary by adding the incremental amount to the existing gross salary
+                            const newGrossSalary = Math.round(Number(g) + incrementalAmount);
+
+                            // Calculate the new basic salary
+                            const newBasicSalary = Math.round((Number(newGrossSalary) - (SMA + SCA + SFA)) / 1.5);
+
+                            // Calculate the new HouseRent Salary
+                            const newHouseRentSalary = Math.round((Number(newBasicSalary) * 0.5));
+
+                            //Update New Data
+                            newData.push({
+                                EmpId: rowData.EmpId, EmpCode: rowData.EmpCode, EmpName: rowData.EmpName, DtJoin: rowData.DtJoin,
+                                DesigName: rowData.DesigName, DeptName: rowData.DeptName, SectName: rowData.SectName,
+                                EmpType: rowData.EmpType, Floor: rowData.Floor, Line: rowData.Line, Gross: rowData.Gross,
+                                Basic: rowData.Basic, HR: rowData.HR, MA: rowData.MA, TA: rowData.TA, FA: rowData.FA,
+                                Amount: incrementalAmount,
+                                NewGS: newGrossSalary,
+                                NewBS: newBasicSalary,
+                                NewHR: newHouseRentSalary,
+                                NewMA: SMA,
+                                NewTA: SCA,
+                                NewFA: SFA,
+                            });
+
+                        }
+                    });
+                    //console.log(newData);
+                    //Set the Calculated Data
+                    table.setData(newData);
+                    table.selectRow("active");
+
+                   // Add an event listener for dataFiltered event
+                    table.on("dataFiltered", (filters, rows) => {
+                        //console.log(selectedRows);
+                       // console.log(rows);
+                        if (selectedRows.length != rows.length) {
+                            if ($("#selectAll").is(":checked")) {
+                                table.deselectRow();
+                                selectFilteredRow = rows.map((row) => row.select());
+                            }                           
+                        }
+                    });
+
+                } 
+
+            });
+            //Save Button
+            $("#save").click(function () {
+
+                console.log('click save btn')
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+
+                var Increments = [];
+
+                //var IncrementList = dt1.rows('.selected').nodes();
+
+                //Total Selected Data after Filter
+                var data = table.getSelectedData();
+
+                for (let i = 0; i < data.length; i++) {
+                    let HR_Emp_Increment = {
+                        IncId: 0, EmpId: '', Percentage: "", Amount: "", NewBS: "", NewSalary: "", DtIncrement: CurrentDate(),
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(), UpdateByUserId: CurrentDate(), DateUpdated: CurrentDate(),
+                        DateAdded: CurrentDate(), DateUpdated: CurrentDate(),
+                        NewMA: "", NewFA: "", NewTA: "", NewHR: ""
+                    };
+
+                    HR_Emp_Increment.EmpId = data[i].EmpId;
+                    HR_Emp_Increment.Percentage = $('#incrementAmt').val(); //100 * data[i] [8] /data[i] [7];
+                    HR_Emp_Increment.Amount = data[i].Amount;
+                    HR_Emp_Increment.NewSalary = data[i].NewGS;
+                    HR_Emp_Increment.NewBS = data[i].NewBS;
+                    HR_Emp_Increment.NewHR = data[i].NewHR;
+                    HR_Emp_Increment.NewMA = data[i].NewMA;
+                    HR_Emp_Increment.NewTA = data[i].NewTA;
+                    HR_Emp_Increment.NewFA = data[i].NewFA;
+
+                    Increments.push(HR_Emp_Increment);
+
+
+                };
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateIncrementAll", "HR")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                    data: { Increments: Increments },
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            //dt1.clear().draw();
+                        }
+                        else
+                            toastr.error(data.ex);
+
+                        StopSpinner("#save");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#save");
+                    }
+                });
+
+                var Salaries = [];
+
+                var antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+                //var data = dt1.rows('.selected').data();
+
+                console.log(`save data${data}`)
+
+
+                for (let i = 0; i < data.length; i++) {
+                    let HR_Emp_Salary = {
+                        SalaryId: 0, EmpId: '', PersonalPay: "", BasicSalary: "",
+                        ComId: '@HttpContextAccessor.HttpContext.Session.GetString("comid")', PcName: "",
+                        UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                        DateAdded: CurrentDate(), UpdateByUserId: CurrentDate(), DateUpdated: CurrentDate(),
+                        DateAdded: CurrentDate(), DateUpdated: CurrentDate()
+                    };
+
+                    HR_Emp_Salary.EmpId = data[i].EmpId;
+
+
+                    HR_Emp_Salary.PersonalPay = data[i].NewGS;
+                    HR_Emp_Salary.BasicSalary = data[i].NewBS;
+
+
+
+                    Salaries.push(HR_Emp_Salary);
+
+
+
+                };
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("UpdateSalary", "HR")',
+                    //url: '/FixedAtt/UpdateSelectedData',
+                    dataType: 'json',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    //async: true,
+                    data: { Salaries: Salaries },
+                    success: function (data) {
+                        if (data.Success == "1") {
+                            customFile('1', data.ex);
+                            //dt1.clear().draw();
+                        }
+                        else
+                            toastr.error(data.ex);
+
+                        StopSpinner("#save");
+                    },
+                    error: function (ex) {
+                        toastr.error("Sorry, an error occured . . . .");
+                        StopSpinner("#save");
+                    }
+                });
+
+
+            });
+
+         });
+          
+        //*********************************************Void Functions********************************************
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+  
+        //Formate the Date 
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add 1 to the month to make it 1-based
+            var day = date.getDate().toString().padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+        //Set Today Date
+        function setInitialDate() {
+            var today = new Date();
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            // Format the date as needed (e.g., "yyyy-MM-dd")
+            var formattedDate = formatDate(firstDayOfMonth);
+            // Set the value of the input field
+            $("#from").val(formattedDate);
+        }
+
+        // Define a custom function for the bottomCalcFormatter
+        function customTextFormatter(value, data, calcParams) {
+            var value = "Grand Total";
+            return value;
+        }
+
+        
+    </script>
+}

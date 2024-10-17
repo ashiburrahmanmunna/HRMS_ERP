@@ -1,0 +1,618 @@
+﻿@model GTERP.Models.Acc_AccProcessViewModel
+@{
+    ViewBag.Title = "Summary Report";
+}
+<style type="">
+    .table tbody tr td {
+        padding: 2px;
+        vertical-align: middle;
+    }
+
+    .table thead tr th {
+        border: 1px solid #fff;
+    }
+
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    .table th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <br />
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <input type="hidden" id="hidSubmit" name="command" value="" />
+        <div class="card">
+            <div class="card-header">
+                Accounts Process
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 col-12">
+                        <fieldset class="well" style="margin-bottom: 0px">
+
+                            <label><input type="radio" name="criteria" checked="checked" value="trialB" style="margin-left: 10px" /> [1] Trial Balance</label>
+                            <label><input type="radio" name="criteria" value="cogs" style="margin-left: 20px" /> [2] Cost of Goods Sold / Service</label>
+
+                            <label><input type="radio" name="criteria" value="income" style="margin-left: 20px" /> [3] Income</label>
+                            <label><input type="radio" name="criteria" value="bs" style="margin-left: 20px" /> [4] Balance Sheet</label>
+                            <label><input type="radio" name="criteria" value="cb" style="margin-left: 20px" /> [5] Cost Breakup</label>
+                            <label><input type="radio" name="criteria" value="all" style="margin-left: 20px" /> [6] ALL</label>
+
+                            <label><input type="radio" name="criteria" value="notes" style="margin-left: 20px" /> [7] Notes</label>
+                            <label><input type="radio" name="criteria" value="AllLedger" style="margin-left: 20px" /> [8] All Ledger</label>
+
+
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    Currency
+                                </span>
+                            </div>
+                            @*@Html.DropDownList("CountryId", null, htmlAttributes: new { @class = "form-control" })*@
+                            @Html.DropDownList("CountryId", ViewBag.CountryId as List<SelectListItem>, new { id = "CountryId", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CountryId)
+
+                        </div>
+                    </div>
+                    <div id="minacccodediv" class="col-md-4 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    From AccCode :
+                                </span>
+                            </div>
+                            @Html.TextBox("MinAccCode", null, new { Value = "1-0-00-000-00000", id = "MinAccCode", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div id="maxacccodediv" class="col-md-4 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    To AccCode
+                                </span>
+                            </div>
+                            @Html.TextBox("MaxAccCode", null, new { Value = "5-0-00-000-00000",  id = "MaxAccCode", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive mb-2">
+                        <table class="table table-bordered table-hover" id="tblFY" style="margin-bottom: 0px" width="100%">
+                            <thead style="background: gainsboro">
+                                <tr>
+                                    <th>
+                                        Fiscal Year Id
+                                    </th>
+                                    <th>
+                                        Fiscal Year
+                                    </th>
+                                    <th>
+                                        Opening Date
+                                    </th>
+                                    <th>
+                                        Close Date
+                                    </th>
+                                    <th>
+                                        Is Running
+                                    </th>
+                                    <th>
+                                        Is Working
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ProcessFYs != null)
+                                {
+                                    if (Model.ProcessFYs.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.ProcessFYs.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+
+                                                    @Html.DisplayFor(model => model.ProcessFYs[i].FYId)
+                                                </td>
+                                                <td>
+
+                                                    @Html.DisplayFor(model => model.ProcessFYs[i].FYName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.ProcessFYs[i].OpDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.ProcessFYs[i].ClDate)
+                                                </td>
+                                                <td>
+                                                    @if (Model.ProcessFYs[i].isRunning == true)
+                                                    {
+                                                        <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="check-box" disabled="disabled" type="checkbox">
+
+                                                    }
+
+
+                                                </td>
+                                                <td>
+                                                    @if (Model.ProcessFYs[i].isWorking == true)
+                                                    {
+                                                        <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="check-box" disabled="disabled" type="checkbox">
+
+                                                    }
+
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="table-responsive mb-3">
+                        <div>
+
+                            <span id="stopwatch" style="display:none; color:red">00:00:00</span>
+
+                        </div>
+
+                        <table class="table table-bordered table-hover" id="tblMonth" width="100%">
+                            <thead style="background: gainsboro">
+                                <tr>
+
+                                    <th>
+                                        MonthId
+                                    </th>
+                                    <th>
+                                        Month
+                                    </th>
+                                    <th>
+                                        From Date
+                                    </th>
+                                    <th>
+                                        To Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ProcessMonths != null)
+                                {
+                                    for (int i = 0; i < Model.ProcessMonths.Count; i++)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @Html.DisplayFor(model => model.ProcessMonths[i].MonthId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => model.ProcessMonths[i].MonthName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => model.ProcessMonths[i].dtFrom)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(model => model.ProcessMonths[i].dtTo)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @*<div class="panel-footer clearfix">
+                    <div class="form-group">
+                        <div class="col-md-2 col-xs-10 row pull-right">
+                            <input type="submit" value="Process" id="btnSave" class="btn btn-success btn-block pull-right" />
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+
+
+}
+
+
+@section Scripts{
+    <script language="javascript" type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#minacccodediv").hide();
+        $("#maxacccodediv").hide();
+
+
+        $('input[name=criteria]').click(function () {
+            var a = $("input[name=criteria]:checked").val();
+
+            if (a == "AllLedger") {
+
+               // document.getElementById("myText").value = "Johnny Bravo";
+               $("#MinAccCode").val('1-0-00-000-00000');
+               $("#MaxAccCode").val('5-0-00-000-00000');
+
+                $("#minacccodediv").show();
+                $("#maxacccodediv").show();
+
+            }
+            else {
+                $("#minacccodediv").hide();
+                $("#maxacccodediv").hide();
+            }
+        });
+
+
+
+
+
+
+
+
+
+        String.prototype.toHHMMSS = function () {
+            var sec_num = parseInt(this, 10); // don't forget the second param
+            var hours = Math.floor(sec_num / 3600);
+            var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+            var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+            if (hours < 10) { hours = "0" + hours; }
+            if (minutes < 10) { minutes = "0" + minutes; }
+            if (seconds < 10) { seconds = "0" + seconds; }
+            return hours + ':' + minutes + ':' + seconds;
+        }
+
+
+        $('#CountryId').select2();
+
+
+        var tblMonth = $('#tblMonth').DataTable({
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPost'
+
+                }
+            ],
+            'paging': false,
+            'ordering': false,
+            'searching': false,
+            dom: 'Bfrtip',
+            buttons: [
+                //'selected',
+                //'selectedSingle',
+                'selectAll',
+                'selectNone',
+                {
+                    text: 'Process',
+                    className: "btn-success btnProcess",
+                    action: function (e, dt, node, config) {
+                        //alert('Button activated');
+                        fncSubmit();
+                    }
+                }
+                //'selectRows',
+                //'selectColumns',
+                //'selectCells'
+            ],
+            'info': false
+
+        }
+        );
+
+        $(".btnProcess").append('<span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+
+
+        var tblFY = $('#tblFY').DataTable({
+            select: true,
+            select: 'single',
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPostFY'
+
+                }
+            ],
+            'paging': false,
+            'info': false,
+            'ordering': false,
+            'searching': false
+
+        }
+        );
+
+
+        var table = $('#tblMonth').DataTable();
+        var oTable = $('#tblMonth').dataTable();
+
+
+        $('#tblMonth tbody').on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+
+
+        $('#tblFY tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+
+
+        var tablefy = $('#tblFY').DataTable();
+        var oTableFY = $('#tblFY').dataTable();
+        var FYId;
+        tablefy.$('tr').click(function () {
+            var selectedRow = oTableFY.fnGetData(this);
+            $(this).toggleClass('row_selected');
+            console.log(selectedRow[0]);
+            //alert('tblfy');
+            fncFilterdata(selectedRow[0]);
+            FYId = selectedRow[0];
+        });
+
+
+
+        table.$('tr').click(function () {
+            var selectedRow = oTable.fnGetData(this);
+            $(this).toggleClass('row_selected');
+            console.log(selectedRow[0]);
+            //alert('tblmonth');
+        });
+
+
+    $('#btnSave').click(function () {
+        var count = 0;
+        var count1 = 0;
+        var ValidData = true;
+        var rowCount = $('#tblFY tbody tr').length;
+        var rowCount1 = $('#tblMonth tbody tr').length;
+
+        var rows = $("#tblMonth").dataTable().fnGetNodes();
+
+
+        for (var i = 0; i < rows.length; i++) {
+
+            //var $val1 = ($(rows[i]).find(".UnitPrice").text().replace(/[\$,]/g, ''));
+            var $valcarton = rows[i].cells[2].children[0].value.replace(/[\$,]/g, '');
+
+            alert($valcarton);
+        }
+        //alert('test');
+
+
+        if (rowCount1 > 0)
+        {
+            for (var i = 0; i < rowCount1; i++) {
+                if ($('#chkPost' + i).is(':checked')) {
+                    alert('circle');
+                    alert($('#chkPost' + i).val());
+                    count1++;
+
+
+
+                }
+            }
+            if (count1 == 0) {
+                alert("Select at least one row");
+                ValidData = false;
+                return false;
+            }
+        }
+        $('#hidSubmit').val('Save');
+        $("form").submit();
+    });
+
+
+
+       function fncSubmit() {
+
+           if ($('.btnProcess').children('span').eq(1).hasClass('d-none')) {
+               $('.btnProcess').children('span').eq(1).removeClass('d-none');
+               $('.btn').addClass('disabled');
+               //$('.table').addClass('disabled');
+               $(".table *").prop('disabled', true);
+               Example1.resetStopwatch();
+               Example1.Timer.toggle();
+               $("#stopwatch").show();
+           }
+
+        //alert(table.rows('.selected').data().length + ' row(s) selected');
+
+        var rows = table.rows('.selected').data();
+
+        console.log(rows);
+
+
+
+
+
+        var monthid = [];
+        var criteria = $("input[name='criteria']:checked").val();
+
+            for (var i = 0; i < rows.length; i++) {
+
+                var rowData = rows[i];
+                //alert(rowData[0]);
+                console.log(rowData);
+                monthid.push(rowData[0]);
+            }
+        //console.log(monthid);
+        //alert(monthid);
+
+
+
+
+           var Currency = $('#CountryId').val();
+
+           var MinAccCode = $('#MinAccCode').val();
+           var MaxAccCode = $('#MaxAccCode').val();
+
+
+            $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SetProcess", "Acc_AccountProcess")',
+            dataType: 'json',
+                async: true,
+                data: { monthid: monthid, criteria: criteria, Currency: Currency, MinAccCode: MinAccCode, MaxAccCode: MaxAccCode, FYId: FYId },
+                success: function (response) {
+                  //  window.location.href = response.Url;
+
+                    //window.open(response.Url, '_blank')
+
+
+
+
+                    if (!$('.btnProcess').children('span').eq(1).hasClass('d-none')) {
+
+                        $('.btnProcess').children('span').eq(1).addClass('d-none');
+                        $('.btn').removeClass('disabled');
+                        $(".table *").prop('disabled', false);
+                        Example1.Timer.toggle();
+
+                        window.setTimeout(function () {
+                            $("#stopwatch").hide();
+                        }, 3000);
+
+
+                        toastr.success("Process Complete");
+                    }
+                    Example1.resetStopwatch();
+
+                },
+                error: function (ex) {
+
+
+
+
+                    if (!$('.btnProcess').children('span').eq(1).hasClass('d-none')) {
+
+                        $('.btnProcess').children('span').eq(1).addClass('d-none');
+                        $('.btn').removeClass('disabled');
+                        $(".table *").prop('disabled', false);
+                        Example1.Timer.toggle();
+
+                        window.setTimeout(function () {
+                            $("#stopwatch").hide();
+                        }, 3000);
+                    }
+                    alert('Failed.' + ex);
+
+                }
+
+            });
+
+
+
+x
+
+
+
+        };
+
+        var Example1  = new (function () {
+            var $stopwatch,// Stopwatch element on the page
+            incrementTime = 70,// Timer speed in milliseconds
+            currentTime = 0,// Current time in hundredths of a second
+            updateTimer = function () {
+                //$stopwatch.html(formatTime(currentTime));
+               var t= currentTime.toString();
+                $stopwatch.html(`Query Execution Time: ${t.toHHMMSS()}`);
+                currentTime += incrementTime / 10;
+            },
+            init = function () {
+                $stopwatch = $('#stopwatch');
+                Example1 .Timer = $.timer(updateTimer, incrementTime, true);
+            };
+            this.resetStopwatch = function () {
+                currentTime = 0;
+                this.Timer.stop().once();
+            };
+            $(init);
+        });
+
+
+    function fncFilterdata(FYId) {
+        //var FYId = 0;
+        var rowCount = $('#tblFY tbody tr').length;
+        if (rowCount > 0) {
+            tblMonth
+            .clear()
+            .draw();
+             $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetMonthList", "Acc_AccountProcess")',
+            dataType: 'json',
+            async: true,
+            data: { id: FYId },
+            success: function (data) {
+                //console.log(data);
+
+                //alert('test');
+                for (var i = 0; i < data.length; i++) {
+                    $('#tblMonth').dataTable().fnAddData([data[i].MonthId, data[i].MonthName, data[i].dtFrom, data[i].dtTo ]);
+                   // alert(data[i].MasterLCId); 'class= "OrderValue"' +
+                }
+
+            },
+            error: function (ex) {
+
+                alert('Failed.' + ex);
+            }
+        });
+        }
+
+    }
+
+    });
+
+
+
+
+
+    </script>
+
+}

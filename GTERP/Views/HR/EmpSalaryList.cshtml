@@ -1,0 +1,175 @@
+﻿@model IEnumerable<GTERP.Models.HR_Emp_Salary>
+
+
+    <div class="container-fluid">
+
+        <div class="text-center">
+            <div class="row mb-2">
+                <div class="col-md-3 col-12">
+                    @Html.ActionLink("Salary Creation", "CreateEmpSalary", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+                </div>
+
+                <div class="col-md-9 col-12">
+                    <h2 id="styletext">Salary List</h2>
+                </div>
+            </div>
+
+        </div>
+
+        <form class="card p-2">
+            <div class="table-responsive text-nowrap">
+                <table id="tbllist" class="table table-striped table-bordered table-sm  table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr></tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+
+                </table>
+            </div>
+            <br />
+        </form>
+    </div>
+
+
+
+
+    @section Scripts{
+    <script>
+
+        $(document).ready(function () {
+
+            table = $('#tbllist').DataTable({
+                dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                "serverSide": true,
+                "processing": true,
+                "orderCellsTop": true,
+                "scrollX": true,
+                "scrollY": "60vh",
+                "scrollCollapse": true,
+                "info": true,
+
+                //buttons: [
+                //    'copy', 'csv', 'excel', 'pdf'
+                //],
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns'
+
+
+                        },
+                        //{
+                        //    extend: 'copy',
+                        //    text: '<i class="mdi mdi-content-copy"></i>',
+                        //    className: 'btn-primary',
+                        //    titleAttr: 'Copy to Clipboard',
+                        //    exportOptions: {
+                        //        modifer: {
+                        //            page: 'all',
+                        //            search: 'none'
+                        //        }
+                        //    }
+                        //},
+                        //{
+                        //    extend: 'csv',
+                        //    text: '<i class="mdi mdi-note-outline"></i>',
+                        //    className: 'btn-secondary',
+                        //    titleAttr: 'Export to csv',
+                        //    exportOptions: {
+                        //        modifer: {
+                        //            page: 'all',
+                        //            search: 'none'
+                        //        }
+                        //    }
+
+                        //},
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel',
+                            exportOptions: {
+                                modifer: {
+                                    page: 'all',
+                                    search: 'none'
+                                }
+                            }
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger mr-1',
+                            titleAttr: 'Export to PDF',
+                            exportOptions: {
+                                modifer: {
+                                    page: 'all',
+                                    search: 'none'
+                                }
+                            }
+                        }
+                    ]
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetEmpSalary", "HR")",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "title": "Empployee Code", "data": "EmpCode", "visible": true },
+                    { "title": "Employee Name", "data": "EmpName", "visible": true },
+                    { "title": "Designation", "data": "DesigName", "visible": true },
+                    { "title": "Employee Type", "data": "EmpTypeName", "visible": true },
+                    { "title": "Gross Salary", "data": "GrossSalary", "visible": true },
+                    { "title": "Basic Salary", "data": "BasicSalary", "visible": true },
+                    { "title": "House Rent", "data": "HouseRent", "visible": true },
+                    { "title": "MA", "data": "MA", "visible": true },
+                    { "title": "Trn", "data": "Trn", "visible": true },
+                    { "title": "FA", "data": "FA", "visible": true },
+                    { "title": "Other Allow.", "data": "OtherAllow", "visible": true },
+                    { "title": "Grade Bonus", "data": "GradeBonus", "visible": true },
+                    { "title": "Mobile Allow", "data": "MobileAllow", "visible": true },
+                    { "title": "Income Tax", "data": "IncomeTax", "visible": true },
+                    { "title": "Casual Salary", "data": "CasualSalary", "visible": true },                    
+                    {
+                        "data": { SalaryId: "SalaryId" },
+                        "render": function (data, type, row) {
+
+                            var myUrledit = '@Url.Action("EditEmpSalary", "HR")/' + data.SalaryId;
+                            var myUrldelete = '@Url.Action("DeleteEmpSalary", "HR")/' + data.SalaryId;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                        }
+                    }
+                ],
+                "order": [0, "desc"],
+                "processing": true,
+                "language": {
+                    "processing": "processing... please wait",
+                    sLengthMenu: " _MENU_",
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                "destroy": true
+            });
+        });
+
+
+
+    </script>
+    }
+
+

@@ -1,0 +1,307 @@
+﻿<style>
+    /*Here We will add some css for style our treeviewz*/
+    /*.collapsez {
+        width: 35px;
+        height: 35px;
+        /*background-image: url('../Images/gplus.png');
+        background-image: url('../../image/plus.png');
+        background-repeat: no-repeat;
+        background-position: -36px -17px;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .expandz {
+        width: 35px;
+        height: 35px;
+        background-image: url('../Images/gplus.png');
+        background-image: url('../../image/minus.png');
+        background-repeat: no-repeat;
+        background-position: -50px -17px;
+        display: inline-block;
+        cursor: pointer;
+    }*/
+
+    /*.treeviewz ul {
+        font: 14px;
+        margin: 0px;
+        padding-left: 20px;
+        list-style: none;
+    }
+
+    .treeviewz > li > a {
+        font-weight: bold;
+    }
+
+    .treeviewz li {
+    }
+
+        .treeviewz li a {
+            padding: 4px;
+            font-size: 12px;
+            display: inline-block;
+            text-decoration: none;
+            width: auto;
+        }*/
+    .tree, .tree ul {
+        margin: 0;
+        padding: 0;
+        list-style: none
+    }
+
+        .tree ul {
+            margin-left: 1em;
+            position: relative
+        }
+
+            .tree ul ul {
+                margin-left: .5em
+            }
+
+            .tree ul:before {
+                content: "";
+                display: block;
+                width: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                border-left: 1px solid
+            }
+
+        .tree li {
+            margin: 0px;
+            padding: 0px 2.5em;
+            line-height: 2.0em;
+            /*color: #369;*/
+            /*color: #17a2b8;*/
+            font-weight: 600;
+            position: relative;
+        }
+
+            .tree li ul li {
+                /*color: #369;*/
+            }
+
+        .tree ul li:before {
+            content: "";
+            display: block;
+            width: 22px;
+            height: 0;
+            border-top: 1px solid;
+            margin-top: -1px;
+            position: absolute;
+            top: 1em;
+            left: 0
+        }
+
+        .tree ul li:last-child:before {
+            background: #f7f7f7;
+            height: auto;
+            top: 1em;
+            bottom: 0
+        }
+
+    .indicator {
+        margin-right: 5px;
+    }
+
+    .tree li a {
+        text-decoration: none;
+        color: #369;
+    }
+
+    .tree li button, .tree li button:active, .tree li button:focus {
+        text-decoration: none;
+        color: #369;
+        border: none;
+        background: transparent;
+        margin: 0px 0px 0px 0px;
+        padding: 0px 0px 0px 0px;
+        outline: 0;
+    }
+
+    i.indicator.glyphicon.mdi {
+        font-size: 20px;
+    }
+</style>
+
+
+@model List<GTERP.Models.PF_ChartOfAccount>
+@{
+    ViewBag.Title = "Simple";
+
+
+}
+@functions{
+
+
+    private void GetTreeView(List<GTERP.Models.PF_ChartOfAccount> siteMenu, int? parentID)
+    {
+        <ul class="" id="tree1">
+           @foreach (var i in siteMenu.Where(a => a.ParentID.Equals(parentID)))
+            {
+            <li>
+                @{var submenu = siteMenu.Where(a => a.ParentID.Equals(i.AccId)).Count();}
+                @if (submenu > 0)
+                {
+                    if (i.AccType == "L")
+                    {
+                        <span class="collapsez collapsible" style="background-color:green;">&nbsp;</span>
+                        <span class="text-primary">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="collapsez collapsible" style="width:14px; background-color:green;">&nbsp;</span>
+                        <span class="text-primary">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                }
+                else
+                {
+                    if (i.AccType == "L")
+                    {
+                        <span class="text-success">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                    else
+                    {
+                        <span style="width:14px; background-color:red;">&nbsp;</span>
+                        <span class="text-success">
+                            @*<a href="@i.AccCode">@i.AccName</a>*@
+                            @i.AccCode - @i.AccName - @i.AccType
+
+                        </span>
+                    }
+                }
+                @*<span class="text-danger">
+                        @i.AccCode - @i.AccName
+
+                    </span>*@
+                @if (submenu > 0)
+                {
+                    <ul class="text-success">
+                        @*@Treeview.GetTreeView(siteMenu, i.AccId)*@
+                        @* Recursive  Call for Populate Sub items here*@
+                    </ul>
+                }
+            </li>
+            }
+        </ul>
+    }
+}
+
+@*<div class="btn btn-sm btn-primary" onclick="expandCollapse()" id="expand-collapse" align="right">Expand All</div>*@
+
+<h2>Chart of Accounts Tree View</h2>
+<div class="card p-4">
+    <button type="button" class="btn btn-primary col-md-2">Expand All</button>
+    <div class="treeviewz card-header">
+
+        @if (Model != null && Model.Count() > 0)
+        {
+            GetTreeView(Model, Model.FirstOrDefault().ParentID);
+
+            @*<ul class="" id="tree1">
+                @GetTreeView(Model, Model.FirstOrDefault().ParentID)
+            </ul>*@
+        }
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+
+        //function expandCollapse() {
+        //    if ($(".submenu").css('display') == 'none') {
+        //        $("#expand-collapse").html("Collapse All");
+        //        $(".submenu").show("slow");
+        //    } else {
+        //        $("#expand-collapse").html("Expand All");
+        //        $(".submenu").hide("slow");
+        //    }
+        //}
+
+        //$(document).ready(function () {
+        //    $(".treeviewz li>ul").css('display', 'none'); // Hide all 2-level ul
+        //    $(".collapsible").click(function (e) {
+        //        e.preventDefault();
+        //        $(this).toggleClass("collapsez expandz");
+        //        $(this).closest('li').children('ul').slideToggle();
+        //    });
+        //});
+        $.fn.extend({
+            treed: function (o) {
+
+                var openedClass = 'mdi mdi-chevron-down';
+                var closedClass = 'mdi mdi-chevron-right';
+
+                if (typeof o != 'undefined') {
+                    if (typeof o.openedClass != 'undefined') {
+                        openedClass = o.openedClass;
+                    }
+                    if (typeof o.closedClass != 'undefined') {
+                        closedClass = o.closedClass;
+                    }
+                };
+
+                //initialize each of the top levels
+                var tree = $(this);
+                tree.addClass("tree");
+                tree.find('li').has("ul").each(function () {
+                    var branch = $(this); //li with children ul
+                    branch.prepend("<i class='indicator glyphicon " + closedClass + "'></i>");
+                    branch.addClass('branch');
+                    branch.on('click', function (e) {
+                        if (this == e.target) {
+                            var icon = $(this).children('i:first');
+                            icon.toggleClass(openedClass + " " + closedClass);
+                            $(this).children().children().toggle();
+                        }
+                    })
+                    branch.children().children().toggle();
+                });
+                //fire event from the dynamically added icon
+                tree.find('.branch .indicator').each(function () {
+                    $(this).on('click', function () {
+                        $(this).closest('li').click();
+                    });
+                });
+                //fire event to open branch if the li contains an anchor instead of text
+                tree.find('.branch>a').each(function () {
+                    $(this).on('click', function (e) {
+                        $(this).closest('li').click();
+                        e.preventDefault();
+                    });
+                });
+                //fire event to open branch if the li contains a button instead of text
+                tree.find('.branch>button').each(function () {
+                    $(this).on('click', function (e) {
+                        $(this).closest('li').click();
+                        e.preventDefault();
+                    });
+                });
+            }
+        });
+
+        $('#tree1').treed();
+
+        $("#expand").treeview({
+            control: "#tree1"
+        });
+
+
+
+    </script>
+}

@@ -1,0 +1,703 @@
+﻿
+@model IEnumerable<GTERP.Models.StoreRequisitionMain>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@{
+    UserPermission permission = HttpContextAccessor.HttpContext.Session.GetObject<UserPermission>("userpermission");
+}
+
+<style>
+
+    .tblSalesList th:first-child, .tblSalesList tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
+    }
+
+
+    .tblSalesList th:last-child, .tblSalesList tbody td:last-child {
+        position: sticky !important;
+        right: 0px;
+        background-color: #f2f2f2e6;
+        z-index: 1;
+    }
+
+    .tblSalesList tfoot td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+</style>
+
+
+<form action="" method="post">
+
+    <div class="container-fluid">
+        <div class="row my-2">
+            @if (permission.IsProduction)
+            {
+                <div class="col-md-3 col-12 ">
+                    @Html.ActionLink("New Raw Material Transfer", "CreateStoreRequisition", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+                </div>
+            }
+            else
+            {
+                <div class="col-md-3 col-12 ">
+                    @Html.ActionLink("New Store Requisition", "CreateStoreRequisition", null, null, new { @class = "btn btn-outline-info btn-block rounded-0", @id = "btnBack" })
+
+                </div>
+            }
+           
+
+            @*<div class="col-md-3  offset-md-1 col-12 d-block mx-auto">
+            @Html.ActionLink("New Sub Store Requisition", "SubStoreCreate", null, null, new { @class = "btn btn-outline-primary btn-block", @id = "btnBack" })
+
+        </div>*@
+
+            <div class="col-md-9 col-12">
+                <h2 id="styletext" class="text-right">Transfer List</h2>
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="card p-2 my-2">
+            <div class="row">
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-1">
+                        @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+                    </div>
+                </div>
+
+
+                <div class="col-md-3 col-12">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date</span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date</span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+
+                @*<div class="col-md-1 col-12">
+                        <div class="form-group row">
+                            <input id="btnload" type="submit" value="Load" class="btn btn-success btn-block" />
+                        </div>
+
+                    </div>*@
+
+
+                <div class="col-md-2 col-12">
+                    @*<div class="panel-body">*@
+
+                    @*<fieldset>*@
+                    <fieldset class="float-right pt-1">
+
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                    </fieldset>
+                    @*</div>*@
+
+                    @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#">
+                            View Data
+                        </button>*@
+
+                </div>
+
+            </div>
+
+            <hr />
+
+
+
+
+
+            <div id="finalpanel" class="p-2">
+
+                <div class="text-nowrap">
+                    <table id="tblSalesList" class="table tblSalesList table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+
+@section Scripts
+{
+
+    <script type="text/javascript">
+        let isProduction = '@permission.IsProduction';
+            var ColumnsData = [];
+            /// this is for dynamica column name different module user , mainly prodcution === by himu
+            if (isProduction == 'True') {
+                ColumnsData = [
+                    { "title": "StoreReq Id", "data": "StoreReqId", "visible": false },
+                    { "title": "Transfer No", "data": "SRNo", "searchable": true },
+                    { "title": "Reference", "data": "Reference" }, //controller e tik krte hobe
+
+                    {
+                        "type": 'datetime',
+                        "def": function () { return new Date(); },
+                        "format": 'M/D/YYYY',
+                        "fieldInfo": 'US style m/d/y format', "data": "RequisitionDate", "title": "Transfer Date", "orderData": 3
+                    },
+
+                    { "title": "Purpose", "data": "Purpose" },
+                    { "title": "Department", "data": "Department" },
+                    { "title": "Remarks", "data": "Remarks" },
+                    { "title": "Status", "data": "Status", "searchable": false },
+
+                    { "title": "Recommened By", "data": "RecommenedBy", "searchable": true },
+                    { "title": "Approved By", "data": "ApprovedBy", "searchable": true },
+                    {
+                        "data": {
+                            StoreReqId: "StoreReqId"
+                            //,
+                            //as:"Issue"
+                        },
+                        "render": function (data, type, row) {
+
+                            var myUrledit = '@Url.Action("StoreRequisitionEdit", "Inventory")/' + data.StoreReqId;
+                            var myUrldelete = '@Url.Action("StoreRequisitionDelete", "Inventory")/' + data.StoreReqId;
+                            var myUrlprint = '@Url.Action("PrintStoreRequisition", "Inventory")/' + data.StoreReqId + '?type=pdf';
+
+                            console.log(data.Issue);
+                            if (data.Status == "Not Posted" && data.Issue == null) {
+                                return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+                            else {
+                                return '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+
+
+
+                        }
+
+                    }
+
+
+                ]
+            } else {
+                ColumnsData = [
+                    { "title": "StoreReq Id", "data": "StoreReqId", "visible": false },
+                    { "title": "SR No", "data": "SRNo", "searchable": true },
+                    { "title": "Reference", "data": "Reference" }, //controller e tik krte hobe
+
+                    {
+                        "type": 'datetime',
+                        "def": function () { return new Date(); },
+                        "format": 'M/D/YYYY',
+                        "fieldInfo": 'US style m/d/y format', "data": "RequisitionDate", "title": "Requisition Date", "orderData": 3
+                    },
+
+                    { "title": "Purpose", "data": "Purpose" },
+                    { "title": "Department", "data": "Department" },
+                    { "title": "Remarks", "data": "Remarks" },
+                    { "title": "Status", "data": "Status", "searchable": false },
+
+                    { "title": "Recommened By", "data": "RecommenedBy", "searchable": true },
+                    { "title": "Approved By", "data": "ApprovedBy", "searchable": true },
+                    {
+                        "data": {
+                            StoreReqId: "StoreReqId"
+                            //,
+                            //as:"Issue"
+                        },
+                        "render": function (data, type, row) {
+
+                            var myUrledit = '@Url.Action("StoreRequisitionEdit", "Inventory")/' + data.StoreReqId;
+                            var myUrldelete = '@Url.Action("StoreRequisitionDelete", "Inventory")/' + data.StoreReqId;
+                            var myUrlprint = '@Url.Action("PrintStoreRequisition", "Inventory")/' + data.StoreReqId + '?type=pdf';
+
+                            console.log(data.Issue);
+                            if (data.Status == "Not Posted" && data.Issue == null) {
+                                return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                    '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+                            else {
+                                return '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                            }
+
+
+
+                        }
+
+                    }
+
+
+                ]
+        }
+
+        $(document).ready(function () {
+        //$("#UserList").select2();
+        //$("#CustomerList").select2();
+        //    $("select").select2({
+        //        theme: "bootstrap4",
+        //    });
+
+        CurrentDate();
+
+        $(".FromDate").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $(".ToDate").datepicker({
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+            if ($(".FromDate").val() == '') {
+                $(".FromDate").val(val);
+            }
+            if ($(".ToDate").val() == '') {
+                $(".ToDate").val(val);
+            }
+
+        }
+    });
+
+        $('input[name=RptType]').click(function () {
+        var reporttype = $("input[name=RptType]:checked").val();
+        //alert(reporttype);
+
+        $.ajax({
+        type: 'POST',
+        url: '@Url.Action("SetSessionInd", "ExportInvoiceMasters")',
+        dataType: 'json',
+        async: true,
+            data: { reporttype: reporttype},
+            success: function (response) {
+              //  window.location.href = response.Url;
+
+                //window.open(response.Url, '_blank')
+            },
+            error: function (ex) {
+                alert('Failed.' + ex);
+            }
+
+        });
+
+    });
+
+        var table;
+
+        $(document).ready(function () {
+
+            //var x = $("#ToDate").val();
+            //alert(x);
+
+            var userlist = $("#UserList").val();
+            var CustomerList = $("#CustomerList").val();
+            var fromdate = $("#FromDate").val();
+            var todate = $("#ToDate").val();
+
+            loaddata(userlist, fromdate, todate  , CustomerList ,1);
+
+            function getDateString(dateObj) {
+
+                if (dateObj == null) { return ''; };
+
+                var date = new Date(parseInt(dateObj.substr(6)));
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+                var formatdate = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+                //alert(val);
+
+
+                return formatdate;
+                //return dateObj.toDateString();
+            }
+
+            function loaddata(UserId = "", FromDate = "", ToDate = "", CustomerList = "", isAll = 1) {
+
+
+
+                //alert(UserId, FromDate, ToDate);
+
+                table = $('#tblSalesList').DataTable({
+                    initComplete: function () {
+
+                        var input = $('.dataTables_filter input').unbind(),
+                            self = this.api(),
+
+                            $searchButton = $('<button class="btn rounded-0 btn-success btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Search')
+                                .click(function () {
+                                    if (input.val().length > 0) {
+                                        self.search(input.val()).draw();
+
+                                    }
+                                    else {
+                                        loaddata(userlist, fromdate, todate, CustomerList, 1);
+
+                                    }
+                                }),
+                            $clearButton = $('<button class="btn rounded-0 btn-warning btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to PDF"><span><i class="mdi mdi-file-pdf"></i></span></button>')
+                                .text('Clear')
+                                .click(function () {
+                                    input.val('');
+                                    $searchButton.click();
+                                }),
+                            $allButton = $('<button class="ml-1 btn rounded-0 btn-primary btn-sm" tabindex="0" aria-controls="tblSalesList" type="button" title="Export to excel"><span><i class="mdi mdi-file-excel"></i></span></button>')
+                                .text('Load')
+                                .click(function () {
+                                    input.val('');
+                                    //alert(FromDate);
+                                    loaddata(userlist, fromdate, todate, CustomerList, 1);
+                                    //table.ajax.reload();
+
+
+                                })
+                        $('.dataTables_filter').append($allButton, $searchButton, $clearButton);
+                    },
+
+                    "serverSide": true,
+                    "orderCellsTop": true,
+                    "scrollX": true,
+                    "scrollY": "60vh",
+                    "scrollCollapse": true,
+                    "info": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+
+                    "columnDefs": [
+                        // Hide second, third and fourth columns
+                        { "visible": false, "targets": [] }
+                    ],
+                    dom: '<"dom_wrapper fh-fixedHeader"lBf>tip',
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf'
+                    //],
+                    buttons: {
+                        dom: {
+                            button: {
+                                className: 'btn rounded-0'
+                            }
+                        },
+                        buttons: [
+                            //'copy', 'csv', 'excel', 'pdf'
+                            //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                            {
+                                extend: 'colvis',
+                                "columns": ':not(:last-child)',
+                                text: '<i class="mdi mdi-view-column"></i>',
+                                className: 'btn-info',
+                                titleAttr: 'Show / hide columns',
+                                //collectionLayout: 'fixed two-column'
+
+                            },
+                            //{
+                            //    extend: 'copy',
+                            //    text: '<i class="mdi mdi-content-copy"></i>',
+                            //    className: 'btn-primary',
+                            //    titleAttr: 'Copy to Clipboard'
+                            //},
+                            //{
+                            //    extend: 'csv',
+                            //    text: '<i class="mdi mdi-note-outline"></i>',
+                            //    className: 'btn-secondary',
+                            //    titleAttr: 'Export to csv'
+                            //},
+                            {
+                                extend: 'excel',
+                                text: '<i class="mdi mdi-file-excel"></i>',
+                                className: 'btn-success',
+                                titleAttr: 'Export to excel'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                orientation: 'landscape',
+                                pageSize: 'LEGAL',
+                                text: '<i class="mdi mdi-file-pdf"></i>',
+                                className: 'btn-danger mr-2',
+                                titleAttr: 'Export to PDF'
+                                //,exportOptions: {
+                                //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                                //}
+
+                            }
+
+                        ]
+                    },
+                    //"datatest": function (d) {
+                    //    d.FromDate = $('#FromDate').val();
+                    //    d.ToDate = $('#ToDate').val();
+                    //    alert(d);
+                    //},
+                    //"fixedHeader": true,
+                    //"responsive": true,
+                    "ajax": {
+                        "url": "@Url.Action("GetStoreRequisition", "Inventory")",
+                        "data": { UserList: $("#UserList").val(), FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val(), CustomerList: $("#CustomerList").val(), isAll: isAll },
+
+                        //"url": "/Cities/GetListViewModel",
+                        "type": "POST",
+                        "datatype": "json"
+                    },
+                    "columns": ColumnsData,
+                    @*"columns": [
+                        { "title": "StoreReq Id", "data": "StoreReqId", "visible": false },
+                        { "title": "SR No", "data": "SRNo", "searchable": true },
+                        { "title": "Reference", "data": "Reference" }, //controller e tik krte hobe
+
+                        {
+                            "type": 'datetime',
+                            "def": function () { return new Date(); },
+                            "format": 'M/D/YYYY',
+                            "fieldInfo": 'US style m/d/y format' ,"data": "RequisitionDate", "title": "Requisition Date", "orderData": 3 },
+
+                        { "title": "Purpose", "data": "Purpose" },
+                        { "title": "Department", "data": "Department" },
+                        { "title": "Remarks", "data": "Remarks" },
+                        { "title": "Status", "data": "Status", "searchable": false },
+
+                        { "title": "Recommened By", "data": "RecommenedBy", "searchable": true },
+                        { "title": "Approved By", "data": "ApprovedBy", "searchable": true },
+                        {
+                            "data": {
+                                StoreReqId: "StoreReqId"
+                                //,
+                                //as:"Issue"
+                            },
+                            "render": function (data, type, row) {
+
+                                var myUrledit = '@Url.Action("Edit", "StoreRequisition")/' + data.StoreReqId;
+                                var myUrldelete = '@Url.Action("Delete", "StoreRequisition")/' + data.StoreReqId;
+                                var myUrlprint = '@Url.Action("Print", "StoreRequisition")/' + data.StoreReqId + '?type=pdf';
+
+                                console.log(data.Issue);
+                                if (data.Status == "Not Posted" && data.Issue == null) {
+                                    return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>' +
+                                        '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+                                else {
+                                   return '<span data-toggle="tooltip" title="Store Requisition Report"> <a href=\"' + myUrlprint + '\" class=\"fas fa-file-pdf btn btn-success btn-xs\" target=\"_blank\"></a></span>';
+
+                                }
+
+
+
+                            }
+
+                        }
+
+
+                    ],*@
+                    "order": [0, "desc"],
+                    "processing": true,
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    "destroy": true
+                });
+
+                //$('#tblSalesList_filter input').unbind();
+//                alert('Load Successfully');
+                $('.dataTables_filter input').bind('keyup', function (e) {
+
+                    if (e.keyCode == 13) {
+                        //alert('enter');
+                        table.search(this.value).draw();
+                    }
+
+                });
+            }
+        });
+    </script>
+}
+
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.SRNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PrdUnit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReqRef)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReqDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BoardMeetingDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Purpose)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Department)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ApprovedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RecommenedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReqStatus)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Remarks)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RequiredDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ComId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PcName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateAdded)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UpdateByUserId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateUpdated)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SRNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PrdUnit.PrdUnitId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReqRef)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReqDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BoardMeetingDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Purpose.PurposeId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Department.DeptName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ApprovedBy.EmpName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RecommenedBy.EmpName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReqStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RequiredDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ComId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PcName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateAdded)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateByUserId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateUpdated)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.StoreReqId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.StoreReqId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.StoreReqId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@

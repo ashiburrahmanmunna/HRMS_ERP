@@ -1,0 +1,1425 @@
+﻿@inject IJsonHelper Json;
+@using System.Globalization;
+    @*
+       
+        For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+    *@
+    @{
+        CultureInfo bdformat = new CultureInfo("bn-BD");
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <link href="~/Content/ProjectLibFile/css/dashboard/material-dashboard.css" rel="stylesheet" />
+
+        <style>
+                .nav-search.input-group > .form-control {
+                    background-image: inherit;
+                }
+                /*        .input-group > .form-control {
+                border: 1px solid #ccc;
+            }*/
+
+                .form-control:focus {
+                    border-color: inherit;
+                    border-bottom: inherit;
+                    border-left: inherit;
+                }
+
+                .mCustomScrollbar {
+                    height: 245px;
+                }
+
+                #company.form-control {
+                    background-image: inherit;
+                    padding: inherit;
+                }
+
+                /*    .table > thead > tr > th{
+                padding: inherit;
+            }*/
+        </style>
+
+
+    </head>
+    <body>
+        @{
+            var data = ViewBag.DashboardData;
+            int rowcount = 1;
+
+            <div class="wrapper ">
+                <div class="main-panel">
+                    <div class="content">
+                                <div class="container-fluid">
+                                    <div class="row score" data-index="0">
+                                        @*data-index="7"*@
+                                        <div class="card ">
+                                            <div class="row">
+                                                <div class="col-md-4 col-12">
+                                                    <h4 class="text-center pt-2">Month Wise Statemant</h4>
+                                                </div>
+                                                <div class=" col-md-3 col-12" style="z-index:99">
+                                                    <div class="form-group row">
+                                                        <label for="formdate" class="col-sm-4 col-form-label pr-0 pl-0">Form date</label>
+                                                        <div class="col-sm-8 pr-0 pl-0">
+                                                            <input id="dtfromdateall" name="dtfromdate" style="background-color:white" type="text" class="form-control text-center" value="@ViewBag.FromDate">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class=" col-md-3 col-12" style="z-index:99">
+                                                    <div class="form-group row">
+                                                        <label for="todate" class="col-sm-4  pr-0 pl-0 col-form-label">To date </label>
+                                                        <div class="col-sm-8  pr-0 pl-0">
+                                                            <input id="dttodateall" name="dttodate" style="background-color:white;" type="text" class="form-control text-center" value="@ViewBag.ToDate">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 col-12">
+                                                    <input id="btnloadall" type="button" class="btn btn-success btn-block rounded-0" value="Load">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row score" data-index="1">
+
+                                        <div class="col">
+                                            @{
+                                                var crl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.CashReceipt;
+                                                var crltotalCount = crl.FirstOrDefault();
+                                                var crltotalAmount = crl.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-warning card-header-icon">
+                                                                                                    <div class="card-icon">
+                                                            @*                                            <i class="fa fa-money"></i>*@
+                                                                                                        <i class="far fa-money-bill-alt"></i>
+                                                                                                    </div>
+                                                        <p class="card-category">@crltotalCount.Caption</p>
+                                                        <h3 class="card-title">@crltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@crl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @crltotalAmount.Caption</a>
+                                                        </div>
+                                                        <h6 class="card-title  text-right">
+                                                            @String.Format(bdformat, "{0:c}", decimal.Parse(crltotalAmount.Count))
+                                                        </h6>
+
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+                                                var cpl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.CashPayment;
+                                                var cpltotalCount = cpl.FirstOrDefault();
+                                                var cpltotalAmount = cpl.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-danger card-header-icon">
+                                                                                                    <div class="card-icon">
+                                                                                                        @*<i class="fa fa-money"></i>*@
+                                                                                                        <i class="far fa-money-bill-alt"></i>
+                                                                                                    </div>
+                                                        <p class="card-category">@cpltotalCount.Caption</p>
+                                                        <h3 class="card-title">@cpltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@cpl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @cpltotalAmount.Caption</a>
+                                                        </div>
+                                                        <h6 class="card-title  text-right">
+                                                            @String.Format(bdformat, "{0:c}", decimal.Parse(cpltotalAmount.Count))
+                                                        </h6>
+
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                var brl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.BankReceipt;
+
+                                                var brltotalCount = brl.FirstOrDefault();
+                                                var brltotalAmount = brl.LastOrDefault();
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-success card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-university"></i>
+                                                        </div>
+                                                        <p class="card-category">@brltotalCount.Caption</p>
+                                                        <h3 class="card-title">@brltotalCount.Count @*<small>GB</small>*@</h3>
+
+
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@brl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @brltotalAmount.Caption</a>
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+                                                            @*<p class="card-category d-inline">@brltotalAmount.Caption</p>*@
+                                                            <!--<h6 class="card-title  d-inline pl-2">@decimal.Parse(brltotalAmount.Count)-->@*<small>GB</small>*@<!--</h6>-->
+
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(@brltotalAmount.Count))
+                                                            </h6>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+                                                var bpl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.BankPayment;
+                                                var bpltotalCount = bpl.FirstOrDefault();
+                                                var bpltotalAmount = bpl.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-danger card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="material-icons">local_offer</i>
+                                                        </div>
+                                                        <p class="card-category">@bpltotalCount.Caption</p>
+                                                        <h3 class="card-title">@bpltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@bpl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @bpltotalAmount.Caption</a>
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(bpltotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                var ctr = (List<GTERP.ViewModels.Dashboard1>)ViewBag.Contra;
+                                                var ctrtotalCount = ctr.FirstOrDefault();
+                                                var ctrtotalAmount = ctr.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-primary card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-calculator"></i>
+                                                        </div>
+
+                                                        <p class="card-category">@ctrtotalCount.Caption</p>
+                                                        <h3 class="card-title">@ctrtotalCount.Count @*<small>GB</small>*@</h3>
+
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@ctr.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @ctrtotalAmount.Caption</a>
+
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(ctrtotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                var jrl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.Journal;
+                                                var jrltotalCount = jrl.FirstOrDefault();
+                                                var jrltotalAmount = jrl.LastOrDefault();
+
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-info card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-calculator"></i>
+                                                        </div>
+                                                        <p class="card-category">@jrltotalCount.Caption</p>
+                                                        <h3 class="card-title">@jrltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@jrl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @jrltotalAmount.Caption</a>
+
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+
+                                                            @*<p class="card-category d-inline">@jrltotalAmount.Caption</p>*@
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(jrltotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row score" data-index="2">
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-success">
+                                                    @*  *@
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineCashReceipt"></canvas>
+                                                    </div>
+                                                    @*<div class="ct-chart" id="dailySalesChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Cash Receipt</h4>
+                                                    @*<p class="card-category">
+                            <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.
+                        </p>*@
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-danger">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineCashPayment"></canvas>
+                                                    </div>
+                                                    @*<div class="ct-chart" id="websiteViewsChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Cash Payment</h4>
+                                                    @*<p class="card-category">Last Campaign Performance</p>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-info">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineBankReceipt"></canvas>
+                                                        @*<canvas id="ChartLineCashReceipt"></canvas>*@
+                                                    </div>
+                                                    @*<div class="ct-chart" id="completedTasksChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Bank Receipt</h4>
+                                                    @*<p class="card-category">Last Campaign Performance</p>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-info">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineBankPayment"></canvas>
+                                                        @*<canvas id="ChartLineCashReceipt"></canvas>*@
+                                                    </div>
+                                                    @*<div class="ct-chart" id="completedTasksChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Bank Payment</h4>
+                                                    @*<p class="card-category">Last Campaign Performance</p>*@
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="stats">
+                                                        <i class="material-icons">access_time</i> campaign sent 2 days ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-info">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineContra"></canvas>
+                                                        @*<canvas id="ChartLineCashReceipt"></canvas>*@
+                                                    </div>
+                                                    @*<div class="ct-chart" id="completedTasksChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Contra</h4>
+                                                    @*<p class="card-category">Last Campaign Performance</p>*@
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="stats">
+                                                        <i class="material-icons">access_time</i> campaign sent 2 days ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-info">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineJournal"></canvas>
+                                                        @*<canvas id="ChartLineCashReceipt"></canvas>*@
+                                                    </div>
+                                                    @*<div class="ct-chart" id="completedTasksChart"></div>*@
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Journal</h4>
+                                                    @*<p class="card-category">Last Campaign Performance</p>*@
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="stats">
+                                                        <i class="material-icons">access_time</i> campaign sent 2 days ago
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="row score" data-index="2">
+                                        <div class="col-md-12 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-secondary">
+                                                    <div class="row">
+                                                        <div class="col-sm-6 text-left">
+                                                            @*<h5 class="card-category">Total Shipments</h5>
+                                <h2 class="card-title">Performance</h2>*@
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                                                                <label class="btn btn-sm btn-primary btn-simple active" id="0fahad">
+                                                                    <input type="radio" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">All Voucher</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-single-02"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="1fahad">
+                                                                    <input type="radio" class="d-none d-sm-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Cash Payment</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-gift-2"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="2fahad">
+                                                                    <input type="radio" class="d-none d-sm-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Cash Receipt</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-gift-2"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="3fahad">
+                                                                    <input type="radio" class="d-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Bank Payment</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-tap-02"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="4fahad">
+                                                                    <input type="radio" class="d-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Bank Receipt</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-tap-02"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="5fahad">
+                                                                    <input type="radio" class="d-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Contra</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-tap-02"></i>
+                                                                    </span>
+                                                                </label>
+                                                                <label class="btn btn-sm btn-primary btn-simple" id="6fahad">
+                                                                    <input type="radio" class="d-none" name="options">
+                                                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Journal</span>
+                                                                    <span class="d-block d-sm-none">
+                                                                        <i class="tim-icons icon-tap-02"></i>
+                                                                    </span>
+                                                                </label>
+
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chart-area">
+                                                        <canvas id="chartBig1"></canvas>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    @*<h5 class="card-category">Total Shipments</h5>*@
+                                                    <h4 class="card-title">Performance</h4>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row score" data-index="1">
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="card">
+                                                <div class="card-header card-header-tabs card-header-primary">
+                                                    <div class="nav-tabs-navigation">
+                                                        <div class="nav-tabs-wrapper">
+                                                            <div class="pl-2 d-none">Last Transaction</div>
+                                                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#CP" data-toggle="tab">
+                                                                        @*<i class="material-icons">bug_report</i>*@ CP
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#CR" data-toggle="tab">
+                                                                        @*<i class="material-icons">bug_report</i>*@ CR
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#BP" data-toggle="tab">
+                                                                        @*<i class="material-icons">code</i>*@ BP
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#BR" data-toggle="tab">
+                                                                        BR
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link active" href="#Contra" data-toggle="tab">
+                                                                        Contra
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#Journal" data-toggle="tab">
+                                                                        Journal
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#LU" data-toggle="tab">
+                                                                        Login User
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+
+
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#TUT" data-toggle="tab">
+                                                                        User Log
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#VUC" data-toggle="tab">
+                                                                        Voucher Entry Count
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+
+
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="CP">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ var DWBCount = 1;}
+                                                                    @foreach (var item in ViewBag.TopTransactionCashPayment)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@DWBCount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        DWBCount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="CR">
+                                                            <table id="tbl" class="table table-hover">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ var BKCount = 1;}
+                                                                    @foreach (var item in ViewBag.TopTransactionCashReceipt)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@BKCount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        BKCount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="BP">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ var DOCount = 1;}
+                                                                    @foreach (var item in ViewBag.TopTransactionBankPayment)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@DOCount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        DOCount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="BR">
+                                                            <table id="tbl" class="table table-hover">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ var DCCount = 1;}
+                                                                    @foreach (var item in ViewBag.TopTransactionBankReceipt)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@DCCount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        DCCount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" id="Contra" data-mcs-theme="minimal-dark">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var GPcount = 1;
+                                                                    }
+                                                                    @foreach (var item in ViewBag.TopTransactionContra)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@GPcount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        GPcount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane active table-responsive mCustomScrollbar" id="Journal" data-mcs-theme="minimal-dark">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var journalcount = 1;
+                                                                    }
+                                                                    @foreach (var item in ViewBag.TopTransactionJournal)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@journalcount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        journalcount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane  table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="LU">
+                                                            <table id="tbl" class="table table-hover">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Device</th>
+                                                                        <th> Login Time</th>
+                                                                        <th> Login IP</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var logcount = 1;
+                                                                    }
+                                                                    @foreach (var item in ViewBag.TopLogin)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@logcount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.DeviceType</td>
+                                                                            <td>@item.LoginTime</td>
+                                                                            <td>@item.IPAddress</td>
+                                                                        </tr>
+                                                                        logcount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="TUT">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Caption</th>
+                                                                        <th> Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var TUTcount = 1;
+                                                                    }
+                                                                    @foreach (var item in ViewBag.AllUserTransaction)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@TUTcount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.Caption</td>
+                                                                            <td>@item.WorkDate</td>
+                                                                        </tr>
+                                                                        TUTcount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="VUC">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> User Name</th>
+                                                                        <th> Year Input</th>
+                                                                        <th> Total Count</th>
+                                                                        <th> Last Work Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var VUcount = 1;
+                                                                    }
+                                                                    @foreach (var item in ViewBag.VoucherUserCount)
+                                                                    {
+
+                                                                        <tr>
+                                                                            <td>@VUcount</td>
+                                                                            <td>@item.UserName</td>
+                                                                            <td>@item.YearInput</td>
+                                                                            <td>@item.TotalCount</td>
+                                                                            <td>@item.LastTransactionDate</td>
+                                                                        </tr>
+                                                                        VUcount++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="card">
+                                                <div class="card-header card-header-warning">
+                                                    <h5 class="card-title">Last Entry Date Transaction Count</h5>
+                                                </div>
+                                                <div class="card-body table-responsive">
+                                                    <table id="tblTransaction" class="table table-hover">
+                                                        <thead class="text-warning">
+                                                            <tr>
+                                                                <th> SL No</th>
+                                                                <th> Caption</th>
+                                                                <th> Total Document</th>
+                                                                <th> Value</th>
+                                                                <th> Entry Date</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            @foreach (var item in ViewBag.LastTransactions)
+                                                            {
+
+                                                                <tr>
+                                                                    <td>@rowcount</td>
+                                                                    <td>@item.Caption</td>
+                                                                    <td>@item.Total</td>
+                                                                    <td>@item.Value</td>
+                                                                    <td>@item.EntryDate</td>
+                                                                </tr>
+                                                                rowcount++;
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row score" data-index="6">
+                                        <div class="col-md-6 col-12">
+                                            <div class="card card-chart">
+                                                <div class="card-header card-header-secondary">
+                                                    <div class="chart-area">
+                                                        <canvas id="chartLineVoucherDateWise" height="285px"></canvas>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Date Wise Count Voucher Entry</h4>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="stats">
+                                                        <i class="material-icons">access_time</i> Last 20 Days Voucher Entry History
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="card">
+                                                <div class="card-header card-header-tabs card-header-primary">
+                                                    <div class="nav-tabs-navigation">
+                                                        <div class="nav-tabs-wrapper">
+                                                            <div class="pl-2 d-none">Current Balance</div>
+                                                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#CASHBL" data-toggle="tab">
+                                                                        Cash
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link active" href="#BANKBL" data-toggle="tab">
+                                                                        Bank
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#APB" data-toggle="tab">
+                                                                        Accounts Payable
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#ARB" data-toggle="tab">
+                                                                        Accounts Receivable
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#FDB" data-toggle="tab">
+                                                                        Fixed Deposit
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#FAB" data-toggle="tab">
+                                                                        Fixed Asset
+                                                                        <div class="ripple-container"></div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="CASHBL">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ int slno = 1;}
+                                                                    @foreach (var item in ViewBag.CashBalanceList)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@slno</td>
+                                                                            <td>@item.AccCode</td>
+                                                                            <td>@item.AccName</td>
+                                                                            <td>@item.Balance</td>
+                                                                        </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane active table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="BANKBL">
+                                                            <table id="tbl" class="table table-hover">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ slno = 1;}
+                                                                    @foreach (var item in ViewBag.BankBalanceList)
+                                                                    {
+                                                                    <tr>
+                                                                        <td>@slno</td>
+                                                                        <td>@item.AccCode</td>
+                                                                        <td>@item.AccName</td>
+                                                                        <td>@item.Balance</td>
+                                                                    </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="APB">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ slno = 1;}
+                                                                    @foreach (var item in ViewBag.AccountsPayableBalanceList)
+                                                                    {
+
+                                                                    <tr>
+                                                                        <td>@slno</td>
+                                                                        <td>@item.AccCode</td>
+                                                                        <td>@item.AccName</td>
+                                                                        <td>@item.Balance</td>
+                                                                    </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" data-mcs-theme="minimal-dark" id="ARB">
+                                                            <table id="tbl" class="table table-hover">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ slno = 1;}
+                                                                    @foreach (var item in ViewBag.AccountsReceivableBalanceList)
+                                                                    {
+
+                                                                    <tr>
+                                                                        <td>@slno</td>
+                                                                        <td>@item.AccCode</td>
+                                                                        <td>@item.AccName</td>
+                                                                        <td>@item.Balance</td>
+                                                                    </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" id="FDB" data-mcs-theme="minimal-dark">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ slno = 1; }
+                                                                    @foreach (var item in ViewBag.FixedDepostiBalanceList)
+                                                                    {
+                                                                    <tr>
+                                                                        <td>@slno</td>
+                                                                        <td>@item.AccCode</td>
+                                                                        <td>@item.AccName</td>
+                                                                        <td>@item.Balance</td>
+                                                                    </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane table-responsive mCustomScrollbar" id="FAB" data-mcs-theme="minimal-dark">
+                                                            <table id="tbl" class="table table-hover ">
+                                                                <thead class="text-warning">
+                                                                    <tr>
+                                                                        <th> SL NO</th>
+                                                                        <th> Code </th>
+                                                                        <th> Name </th>
+                                                                        <th> Balance </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{ slno = 1; }
+                                                                    @foreach (var item in ViewBag.FixedAssetBalanceList)
+                                                                    {
+
+                                                                    <tr>
+                                                                        <td>@slno</td>
+                                                                        <td>@item.AccCode</td>
+                                                                        <td>@item.AccName</td>
+                                                                        <td>@item.Balance</td>
+                                                                    </tr>
+                                                                        slno++;
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                    <div class="row score" data-index="9">
+
+                                        <div class="col">
+                                            @{
+                                                var pv = (List<GTERP.ViewModels.Dashboard1>)ViewBag.PostVoucher;
+                                                var pvtotalCount = pv.FirstOrDefault();
+                                                var pvtotalAmount = pv.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-warning card-header-icon">
+                                                                                                    <div class="card-icon">
+                                                                                                        <i class="far fa-money-bill-alt"></i>
+                                                                                                    </div>
+                                                        <p class="card-category">@pvtotalCount.Caption</p>
+                                                        <h3 class="card-title">@pvtotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@pv.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @pvtotalAmount.Caption</a>
+                                                        </div>
+                                                        <h6 class="card-title  text-right">
+                                                            @String.Format(bdformat, "{0:c}", decimal.Parse(crltotalAmount.Count))
+                                                        </h6>
+
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+                                                var upv = (List<GTERP.ViewModels.Dashboard1>)ViewBag.UnPostVoucher;
+                                                var upvtotalCount = upv.FirstOrDefault();
+                                                var upvtotalAmount = upv.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-danger card-header-icon">
+                                                                                                    <div class="card-icon">
+                                                                                                        <i class="far fa-money-bill-alt"></i>
+                                                                                                    </div>
+                                                        <p class="card-category">@upvtotalCount.Caption</p>
+                                                        <h3 class="card-title">@upvtotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@upv.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @upvtotalAmount.Caption</a>
+                                                        </div>
+                                                        <h6 class="card-title  text-right">
+                                                            @String.Format(bdformat, "{0:c}", decimal.Parse(upvtotalAmount.Count))
+                                                        </h6>
+
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                var td = (List<GTERP.ViewModels.Dashboard1>)ViewBag.TotalDebit;
+
+                                                var tdtotalCount = brl.FirstOrDefault();
+                                                var tdtotalAmount = brl.LastOrDefault();
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-success card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-university"></i>
+                                                        </div>
+                                                        <p class="card-category">@tdtotalCount.Caption</p>
+                                                        <h3 class="card-title">@tdtotalCount.Count @*<small>GB</small>*@</h3>
+
+
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@td.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @tdtotalAmount.Caption</a>
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+                                                            @*<p class="card-category d-inline">@brltotalAmount.Caption</p>*@
+                                                            <!--<h6 class="card-title  d-inline pl-2">@decimal.Parse(tdtotalAmount.Count)-->@*<small>GB</small>*@<!--</h6>-->
+
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(@tdtotalAmount.Count))
+                                                            </h6>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+                                                bpl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.TotalCredit;
+                                                bpltotalCount = bpl.FirstOrDefault();
+                                                bpltotalAmount = bpl.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-danger card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="material-icons">local_offer</i>
+                                                        </div>
+                                                        <p class="card-category">@bpltotalCount.Caption</p>
+                                                        <h3 class="card-title">@bpltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@bpl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @bpltotalAmount.Caption</a>
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(bpltotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                ctr = (List<GTERP.ViewModels.Dashboard1>)ViewBag.TotalCashBalance;
+                                                ctrtotalCount = ctr.FirstOrDefault();
+                                                ctrtotalAmount = ctr.LastOrDefault();
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-primary card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-calculator"></i>
+                                                        </div>
+
+                                                        <p class="card-category">Cash Balance</p>
+                                                        <h3 class="card-title">@ctrtotalCount.Count @*<small>GB</small>*@</h3>
+
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@ctr.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @ctrtotalAmount.Caption</a>
+
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(ctrtotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col">
+                                            @{
+
+                                                jrl = (List<GTERP.ViewModels.Dashboard1>)ViewBag.TotalBankBalance;
+                                                jrltotalCount = jrl.FirstOrDefault();
+                                                jrltotalAmount = jrl.LastOrDefault();
+
+
+                                                <div class="card card-stats">
+                                                    <div class="card-header card-header-info card-header-icon">
+                                                        <div class="card-icon">
+                                                            <i class="fa fa-calculator"></i>
+                                                        </div>
+                                                        <p class="card-category">Bank Balance</p>
+                                                        <h3 class="card-title">@jrltotalCount.Count @*<small>GB</small>*@</h3>
+                                                    </div>
+                                                    <div class="card-footer row">
+                                                        <div class="stats col-md-12 col-12">
+
+                                                            <i class="material-icons">local_offer</i>
+                                                            <a id="btnmlc" href="@jrl.FirstOrDefault().ReportLinkCaption" target="_blank"> Go to @jrltotalAmount.Caption</a>
+
+                                                        </div>
+                                                        <div class="col-md-12 col-12">
+
+
+                                                            @*<p class="card-category d-inline">@jrltotalAmount.Caption</p>*@
+                                                            <h6 class="card-title  text-right">
+                                                                @String.Format(bdformat, "{0:c}", decimal.Parse(jrltotalAmount.Count))
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                    </div>
+                </div>
+            </div>
+
+
+        }
+    </body>
+</html>
+
+<!--   Core JS Files   -->
+@* dashboard Chartist*@
+
+
+@section Scripts{
+    <script src="~/Content/ProjectLibFile/js/dashboard/chartjs.min.js"></script>
+    <script src="~/Content/ProjectLibFile/js/dashboard/account.js"></script>
+    <script type="text/javascript">
+                $('.sortable').each(function () {
+            var $this = $(this);
+            $this.append($this.find('.score').get().sort(function (a, b) {
+                return $(a).data('index') - $(b).data('index');
+            }));
+        });
+
+
+            ///////// Use form demo.js file //////////
+            var dashboardData =@Html.Raw(@Json.Serialize(ViewBag.DashboardData));
+
+
+            //alert("waiting");
+
+            $(document).ready(function () {
+                // Javascript method's body can be found in assets/js/demos.js
+                m.initDashboardPageCharts();
+
+                 $("#btnloadall").click(function () {
+                     var dtfromdateall = $('#dtfromdateall').val();
+                     var dttodateall = $('#dttodateall').val();
+                     window.location.href = `?FromDate=${dtfromdateall}&ToDate=${dttodateall}`
+                 });
+
+
+                //$('#btnmlc').click(function () {
+                //    window.location.href = `../COM_MasterLC`
+                //});
+
+                //$('#btnei').click(function () {
+                //    window.location.href = `../DeliveryOrder`
+                //});
+
+                //$('#btnpi').click(function () {
+                //    window.location.href = `../DeliveryChallan`
+                //});
+
+                //$('#btnGatePass').click(function () {
+                //    window.location.href = `../COM_GatePass_Master`
+                //});
+
+                //$('#btnci').click(function () {
+                //    window.location.href = `../COM_CommercialDeliveryOrder`
+                //});
+
+
+            function CurrentDate() {
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+
+                if ($("#dtfromdate").val() == '') {
+                    $("#dtfromdate").val(val);
+                }
+                if ($("#dttodate").val() == '') {
+                    $("#dttodate").val(val);
+                }
+
+
+            }
+            CurrentDate();
+
+
+           $("#dtfromdate,#dttodate,#dtfromdateall,#dttodateall").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+
+                //var dateFormat = $("#LCOpenDate").datepicker("option", "dateFormat");
+                ////setter
+                //$("#LCOpenDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+            ,
+            dateFormat: "dd-M-yy",
+            changeMonth: true,
+            changeYear: true
+            });
+
+                $("#btnload").click(function () {
+                    var dtfromdate = $('#dtfromdate').val();
+                    var dttodate = $('#dttodate').val();
+                    $.ajax({
+                        type: 'GET',
+                        url:'/Dashboard/LastTransactions',
+                       // dataType: 'json',
+                        data: { FromDate: dtfromdate, ToDate: dttodate },
+                        success: function (data) {
+                            $("#tblTransaction > tbody").html('');
+                            var count = 1;
+                            console.log(data);
+                            for (item of data) {
+                                $("#tblTransaction tbody").append(
+                                    `<tr>
+                                            <td>${count}</td>
+                                            <td>${item.Caption}</td>
+                                            <td>${item.Total}</td>
+                                            <td>${item.Value}</td>
+                                    </tr>`);
+                                count++;
+                            }
+                        },
+                        error: function (ex) {
+                            alert('Failed.' + ex);
+                        }
+                    });
+                });
+            });
+
+        setTimeout(function(){
+           window.location.reload(1);
+        }, 500000);
+
+
+        var dt = new Date();
+        var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+        document.write(time);
+
+    </script>
+
+
+
+
+
+
+}
+
+
+@* dashboard Chartist end*@

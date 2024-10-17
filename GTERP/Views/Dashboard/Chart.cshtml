@@ -1,0 +1,387 @@
+﻿<div class="card mb-4 mt-3">
+    <div class="box-header card card-header-style  pal-kyoo-gradient mb-3 mx-3" style="display:flex;flex-direction:row;">
+        <div class="row">
+            <div class="px-3">
+                <h3 class="box-title">Monthly OT, Daily OT &amp; Monthly Join, Released Dashboard</h3>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row" style="width:100%" >
+            <div class="col-md-6">
+                <div class="my-1" style="margin-left:35px;">
+                    <canvas height="100" class="card bg-blue-active" id="mot" style="border-radius:5px;"></canvas>
+                </div>
+                <div class="text-center font-weight-bold text-secondary">
+                    Monthly Overtime 
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="my-1" style="margin-left:35px">
+                    <canvas height="100" class="card bg-green" id="monthlyJoin" style="border-radius: 5px;"></canvas>
+                </div>
+                <div class="text-center font-weight-bold text-secondary">
+                    Monthly Join &amp; Released
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row mb-5 mt-2" style="width:100%">
+           
+            <div class="col-12">
+                <div style="margin-left:35px;">
+                    <canvas height="100" class="card px-4" id="dot" style="background-color: skyblue; border-radius: 5px;"></canvas>
+                </div>
+                <div class="text-center font-weight-bold text-secondary h-50">
+                  
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    @* Dashboard by reyad *@
+    @*<script>
+
+            $("#filterYear").datepicker({
+                dateFormat: 'yy-MM-dd'
+            });
+            $(function () {
+                DataRequest();
+                //for montly ot
+                var otlabel = [];
+                var otcount = [];
+                //for daily ot
+                var otDlabel = [];
+                var otDcount = [];
+                //for monthly join
+                var mlabel = [];
+                var mcount = [];
+                //for monthly released
+
+                var rcount = [];
+                function renderChart() {
+
+                    var ctxmot = document.getElementById('mot');
+                    if (window.ctxmot != undefined) {
+                        window.ctxmot.destroy();
+                    }
+                    window.ctxmot = new Chart(ctxmot, {
+                        type: 'bar',
+                        data: {
+                            labels: otlabel,
+                            datasets: [{
+                                label: 'Monthly OT',
+                                data: otcount,
+                                barThickness: 15,
+                                backgroundColor: [
+                                    //'rgba(255, 99, 71, 0.5)',
+                                    //'rgba(54, 162, 235, 0.5)',
+                                    //'rgba(255, 206, 86, 0.5)',
+                                    //'rgba(75, 192, 192, 0.5)',
+                                    //'rgba(153, 102, 255, 0.5)',
+                                    //'rgba(255, 159, 64, 0.5)',
+                                    '#2ECCFA'
+                                ],
+                                borderColor: [
+                                    //'rgba(255, 99, 132, 1)',
+                                    //'rgba(54, 162, 235, 1)',
+                                    //'rgba(255, 206, 86, 1)',
+                                    //'rgba(75, 192, 192, 1)',
+                                    //'rgba(153, 102, 255, 1)',
+                                    //'rgba(255, 159, 64, 1)'
+                                    '#2ECCFA'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: 'black'
+                                    }
+                                },
+                                x: {
+                                    ticks: { color: 'black' }
+                                },
+
+                                plugins: {
+                                    datalabels: { // This code is used to display data values
+                                        anchor: 'end',
+                                        align: 'top',
+                                        formatter: Math.round,
+                                        font: {
+                                            weight: 'bold',
+                                            size: 16
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+
+                    });
+
+
+
+
+                }
+
+                //for daily ot
+                function renderChart2() {
+
+
+
+                    var ctxdot = document.getElementById('dot');
+                    if (window.ctxdot != undefined) {
+                        window.ctxdot.destroy();
+                    }
+
+                    window.ctxdot = new Chart(ctxdot, {
+                        type: 'line',
+                        data: {
+                            labels: otDlabel,
+                            datasets: [{
+                                label: 'Daily OT',
+                                data: otDcount,
+
+                                backgroundColor: [
+                                    '#FE9A2E'
+                                ],
+                                borderColor: [
+                                    '#FE9A2E'
+                                    //'rgba(255, 99, 132, 1)',
+                                    //'rgba(54, 162, 235, 1)',
+                                    //'rgba(255, 206, 86, 1)',
+                                    //'rgba(75, 192, 192, 1)',
+                                    //'rgba(153, 102, 255, 1)',
+                                    //'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            //animations: {
+                            //    tension: {
+                            //        duration: 1000,
+                            //        easing: 'linear',
+                            //        from: 1,
+                            //        to: 0,
+                            //        loop: true
+                            //    }
+                            //},
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+
+                                }
+                            }
+                        }
+
+
+
+                    });
+
+                }
+                // for monthly join
+                function renderChart3() {
+                    var ctxmj = document.getElementById('monthlyJoin');
+                    if (window.ctxmj != undefined) {
+                        window.ctxmj.destroy();
+                    }
+                    window.ctxmj = new Chart(ctxmj, {
+                        type: 'bar',
+                        data: {
+                            labels: mlabel,
+                            datasets: [{
+                                label: 'Monthly Join Employee',
+                                data: mcount,
+                                barThickness: 20,
+                                backgroundColor: [
+                                    //'rgba(255, 99, 132, 0.2)',
+                                    //'rgba(54, 162, 235, 0.2)',
+                                    //'rgba(255, 206, 86, 0.2)',
+                                    //'rgba(75, 192, 192, 0.2)',
+                                    //'rgba(153, 102, 255, 0.2)',
+                                    //'rgba(255, 159, 64, 0.2)'
+                                    '#2ECCFA'
+                                ],
+                                borderColor: [
+                                    //'rgba(255, 99, 132, 1)',
+                                    //'rgba(54, 162, 235, 1)',
+                                    //'rgba(255, 206, 86, 1)',
+                                    //'rgba(75, 192, 192, 1)',
+                                    //'rgba(153, 102, 255, 1)',
+                                    //'rgba(255, 159, 64, 1)'
+                                    '#2ECCFA'
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Monthly Release Employee',
+                                data: rcount,
+                                barThickness: 10,
+                                backgroundColor: [
+                                    //'rgba(255, 99, 132, 0.2)',
+                                    //'rgba(54, 162, 235, 0.2)',
+                                    //'rgba(255, 206, 86, 0.2)',
+                                    //'rgba(75, 192, 192, 0.2)',
+                                    //'rgba(153, 102, 255, 0.2)',
+                                    //'rgba(255, 159, 64, 0.2)'
+                                    '#FAAC58'
+                                ],
+                                borderColor: [
+                                    //'rgba(255, 99, 132, 1)',
+                                    //'rgba(54, 162, 235, 1)',
+                                    //'rgba(255, 206, 86, 1)',
+                                    //'rgba(75, 192, 192, 1)',
+                                    //'rgba(153, 102, 255, 1)',
+                                    //'rgba(255, 159, 64, 1)'
+                                    '#FAAC58'
+                                ],
+                                borderWidth: 1
+                            }
+                            ]
+                        },
+                        options: {
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    gridLines: {
+                                        display: true
+                                    }
+                                }
+                            }
+                        }
+
+
+
+                    });
+
+                }
+
+                function DataRequest() {
+
+
+
+                    $('#load').click(function () {
+                        var year = $('#filterYear').val();
+                        console.log(year);
+
+                        // monthly OT
+                        $.ajax({
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'Get',
+                            url: "/Dashboard/MonthlyOTChart/" + year,
+                            //data: { yearNow: year },
+                            success: function (result) {
+                                console.log(result);
+                                for (var i = 0; i < result.length; i++) {
+                                    otlabel.push(result[i].monthName);
+                                    otcount.push(result[i].otAmount);
+                                }
+
+
+                                renderChart();
+
+                                console.log(otlabel);
+                                console.log(otcount);
+                            },
+                            error: function () {
+                                alert("Error!")
+                            }
+                        });
+
+                        // Daily OT
+
+                        $.ajax({
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'Get',
+                            url: "/Dashboard/DailyOTChart/?yearNow=" + year,
+                            /*data: { yearNow: year },*/
+                            success: function (result) {
+                                console.log(result);
+                                for (var i = 0; i < result.length; i++) {
+                                    otDlabel.push(result[i].date);
+                                    otDcount.push(result[i].otAmount);
+                                }
+                                renderChart2();
+
+                                console.log(otDlabel);
+                                console.log(otDcount);
+                            },
+                            error: function () {
+                                alert("Error!")
+                            }
+                        });
+
+                        // Monthly join
+
+                        $.ajax({
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'GET',
+                            url: "/Dashboard/MonthlyJoinEmp/?yearNow=" + year,
+
+                            success: function (result) {
+                                console.log(result);
+                                for (var i = 0; i < result.length; i++) {
+                                    mlabel.push(result[i].DtJoin);
+                                    mcount.push(result[i].EmpId);
+
+                                }
+
+                                renderChart3();
+
+
+                            },
+                            error: function () {
+                                alert("Error!")
+                            }
+                        });
+
+                        // Monthly released
+
+                        $.ajax({
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'GET',
+                            url: "/Dashboard/MonthlyJReleasedEmp/?yearNow=" + year,
+
+                            success: function (result) {
+                                console.log(result);
+                                for (var i = 0; i < result.length; i++) {
+                                    mlabel.push(result[i].DtReleased);
+                                    rcount.push(result[i].EmpId);
+
+                                }
+
+                                renderChart3();
+
+
+                            },
+                            error: function () {
+                                alert("Error!")
+                            }
+                        });
+                        $('#filterYear').val("");
+                    })
+                }
+
+
+            })
+        </script>*@
+
+}

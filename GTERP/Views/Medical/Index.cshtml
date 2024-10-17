@@ -1,0 +1,629 @@
+﻿@model GTERP.Models.Medical_Master
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var RequisitionResult = ViewBag.reqsub;
+}
+
+<div class="container-fluid">
+    <div class="card p-4">
+        <div class="text-center">
+            <h2>Medical Treatment Entry</h2>
+        </div>
+        
+        <div class="card-body">
+            <input type="hidden" id="MedicalMasterId" name="MedicalMasterId" value="0" />
+           
+            <div class="row">
+                <div class="col-md-12">
+                    <form>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="card p-4">
+                            <div class="row">                                
+                                <div class="col">
+                                    <label asp-for="EmpId" class="control-label"></label>
+                                    <select asp-for="EmpId" class="form-control" asp-items="ViewBag.EmpId">
+                                        <option value="0">--- Select ---</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col">
+                                    <label asp-for="DoctorId" class="control-label"></label>
+                                    <select asp-for="DoctorId" class="form-control" asp-items="ViewBag.DoctorId">
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label asp-for="DtInput" class="control-label"></label>
+                                    <input type="text" asp-for="DtInput" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label asp-for="Weight" class="control-label"></label>
+                                    <input asp-for="Weight" class="form-control" />
+                                    <span asp-validation-for="Weight" class="text-danger"></span>
+                                </div>
+                                <div class="col">
+                                    <label asp-for="BP" class="control-label"></label>
+                                    <input asp-for="BP" class="form-control" />
+                                    <span asp-validation-for="BP" class="text-danger"></span>
+                                </div>
+
+                                <div class="col">
+                                    <label asp-for="Pulse" class="control-label"></label>
+                                    <input asp-for="Pulse" class="form-control" />
+                                    <span asp-validation-for="Pulse" class="text-danger"></span>
+                                </div>
+                                @*<div class="col">
+                                    <label asp-for="DiagId" class="control-label"></label>
+                                    <select asp-for="DiagId" class="form-control" asp-items="ViewBag.DiagId"></select>
+                                </div>*@
+
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label asp-for="Advice" class="control-label"></label>
+                                    <textarea asp-for="Advice" class="form-control"></textarea>
+                                    <span asp-validation-for="Advice" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12 order-md-1 mb-2">
+                                <div class="card p-4">
+
+                                    <div class="table-responsive text-nowrap">
+                                        <table id="tblMedicalDetails" class="tbl display responsive nowrap table-striped table-hover text-center" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th style="display:none">Medical Detais Id</th>
+                                                    <th>Patient</th>
+                                                    <th style="display:none">ProductId</th>
+                                                    <th>Medicine Name</th>
+                                                    <th>UOM</th>
+                                                    <th>Quantity</th>
+                                                    <th>Remarks</th>
+                                                    <th></th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="display:none">Medical Detais Id</th>
+                                                    <th>
+                                                        <select asp-for="Patient" class="form-control" asp-items="ViewBag.Patient">
+                                                        </select>
+                                                    </th>
+                                                    <th style="display:none">Product Id</th>
+                                                    <th>
+                                                        <select id="ProductId" class="form-control" asp-items="ViewBag.ProductId">
+                                                            <option value="">--Select--</option>
+                                                        </select>
+                                                    </th>
+
+
+                                                    <th><input type="text" class="form-control" id="UOM" value="" readonly /></th>
+                                                    <th><input type="text" class="form-control" id="Quantity" value="" /></th>
+                                                    <th><input type="text" class="form-control" id="Remarks" value="" /></th>
+                                                    <th><div type="button" onclick="Add()" id="btnAdd" class="btn btn-primary"><i class="fa fa-plus fa-lg"></i></div></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+
+                                            <tfoot>
+
+                                            </tfoot>
+
+                                        </table>
+                                    </div>
+                                    <br />
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-center">
+                                <span>
+                                    <button type="button" id="btnSave" class="btn btn-lg btn-primary" onclick="Medical_Save()">Save</button>
+                                </span>
+                                <span>
+                                    <button type="button" id="btnUpdate" class="btn btn-lg btn-warning" onclick="Medical_Save()">Update</button>
+                                </span>
+                                <span>
+                                    <button type="button" id="btnDelete" class="btn btn-lg btn-danger" onclick="Medical_Delete()">Delete</button>
+                                </span>
+
+                            </div>                           
+                        </div>
+
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12 order-md-1 mb-2">
+                                <div class="card p-4">
+                                    <h2>Previous Treatment</h2>
+                                    <div class="table-responsive text-nowrap">
+                                        <table id="tblPreMedicalDetails" class="tbl display responsive nowrap table-striped table-hover text-center" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th style="display:none">Medical Master Id</th>
+                                                    
+                                                    <th>Doctor</th>
+                                                    <th>Date</th>
+                                                    <th>Advice</th>
+                                                    <th>Action</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+
+                                            <tfoot>
+
+                                            </tfoot>
+
+                                        </table>
+                                    </div>
+                                    <br />
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+
+@section Scripts
+    {
+    <script>
+        
+        function CurrentDate(da) {
+            var date = new Date(da);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+        $("#DtInput").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#DtInput").datepicker("option", "dateFormat");
+                //setter
+                $("#DtInput").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#DtInput").val(CurrentDate(new Date()));
+
+        var tblMedicalDetails;
+        var tblPreMedicalDetails;
+        var AddedProducts = [];
+
+        var products;// = @Html.Raw(Json.Serialize(ViewBag.ProductId));
+
+
+        //console.log(products);
+
+
+        $(document).ready(function () {
+
+            $('#EmpId').select2();
+            $('#DoctorId').select2();
+            $('#btnUpdate').hide();
+            $('#btnDelete').hide();
+
+            tblMedicalDetails = $('#tblMedicalDetails').DataTable({
+                "aoColumns": [
+                    { "name": "MedicalDetaisId", "sClass": "MedicalDetaisId", "visible": false },
+                    { "name": "Patient", "sClass": "Patient", "visible": true },
+                    { "name": "ProductId", "sClass": "Product", "visible": false },
+                    { "name": "ProductName", "sClass": "ProductName", "visible": true },                    
+                    { "name": "UOM", "sClass": "UOM", "visible": true },
+                    { "name": "Quantity", "sClass": "Quantity", "visible": true },
+                    { "name": "Remarks", "sClass": "Remarks", "visible": true },
+                    null
+
+                ],
+                columnDefs: [
+                    {
+                        targets: 5, "render": function (data) {
+                            return `<input type="text" class="form-control" value="${data}" />`;
+                        }
+                    },
+                    {
+                        targets: 6, "render": function (data) {
+                            return `<input type="text" class="form-control" value="${data}" />`;
+                        }
+                    }
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtProduct');
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+            });
+
+            tblPreMedicalDetails = $('#tblPreMedicalDetails').DataTable({
+                "aoColumns": [
+                    { "name": "MedicalMasterId", "sClass": "MedicalMasterId", "visible": false },
+                    //{ "name": "Patient", "sClass": "Patient", "visible": true },
+                    { "name": "Doctor", "sClass": "Doctor", "visible": true },
+                    { "name": "Date", "sClass": "Date", "visible": true },                   
+                    { "name": "Advice", "sClass": "Advice", "visible": true },
+                    null
+                ],
+                columnDefs: [
+                    {
+                        targets: 4, "render": function (data) {
+                            
+                                return `<input type="button" class="btn btn-info btnView" value="View" />
+                                        <input type="button" class="btn btn-success btnReport" value="Report" />`;
+                           
+                            
+                        }
+                    },
+                    {
+                        targets: 2, "render": function (data) {
+                            return `${CurrentDate(data)}`;
+                        }
+                    }
+                ],
+                rowCallback: function (row) {
+                    $(row).addClass('txtProduct');
+                },
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "paging": false,
+            });
+
+
+            $("#tblPreMedicalDetails").on("click", ".btnView", function () {
+                let medicalMasterId = tblPreMedicalDetails.row($(this).closest("tr")).data();
+
+                $('#btnSave').hide();
+                $('#btnUpdate').show();
+                $('#btnDelete').show();
+
+                $.ajax({
+                    url: '@Url.Action("GerPrescriptoin", "Medical")',
+                    data: { id: medicalMasterId[0] },
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (result) {
+                        $("#MedicalMasterId").val(result.Master.MedicalMasterId);
+                        $("#EmpId").val(result.Master.EmpId).change();
+                        $("#DoctorId").val(result.Master.DoctorId).change();
+                        $("#Patient").val(result.Master.Patient).change();
+                        $("#DtInput").val(CurrentDate(result.Master.DtInput));
+                        //$("#PrdUnitId").val(result.Master.PrdUnitId);
+                        //$("#DesigId").val(result.Master.DesigId);
+                        //$("#SectId").val(result.Master.SectId);
+                        //$("#UnitId").val(result.Master.UnitId);
+                        $("#Weight").val(result.Master.Weight);
+                        $("#Pulse").val(result.Master.Pulse);
+                        $("#BP").val(result.Master.BP);
+                        $("#DiagId").val(result.Master.DiagId).change();
+                        $("#Advice").val(result.Master.Advice);
+                        tblMedicalDetails.rows().remove().draw();
+                        AddtMedicalDetails(result.Details)
+
+                        $('#btnSave').hide();
+                        $('#btnUpdate').show();
+                        $('#btnDelete').show();
+                    },
+                    error: function () {
+                        toastr.error("Something wrong..");
+                    }
+                });
+            });
+
+            $("#tblPreMedicalDetails").on("click", ".btnReport", function () {
+                let medicalMasterId = tblPreMedicalDetails.row($(this).closest("tr")).data();
+
+                alert(medicalMasterId);
+
+                
+            });
+
+            function AddtMedicalDetails(data) {
+                let arrays = [];
+                AddedProducts = [];
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        AddedProducts.push(data[i].ProductId);
+                        arrays.push([
+                            data[i].MedicalDetaisId,
+                            data[i].Patient,
+                            data[i].ProductId,
+                            data[i].MedicineName,
+                            data[i].UOM,
+                            data[i].Quantity,
+                            data[i].Remarks,
+                            '<a data-itemId="0" href="#" class="dlttrash deleteItem"><i class="fa fa-trash"></i></a>'
+                        ]);
+                    }
+                    tblMedicalDetails.rows.add(arrays).draw(false);
+
+                }
+            }
+
+            var obj = {};
+
+            $('#ProductId option').each(function () {
+                var value = $(this).val(), text = $(this).text();
+                obj[value] = text;
+
+                //statuslistnotjson.push(a);
+                //statuslistnotjson.push(`"${$(this).val()}" : "${$(this).text()}"`);
+
+            });
+            //arr.push(obj);
+            products = obj;
+
+            $('#EmpId').change(function () {
+
+                $('#btnSave').show();
+                $('#btnUpdate').hide();
+                $('#btnDelete').hide();
+                //$('#Patient').empty();
+
+                //$("#MedicalMasterId").val("");
+                ///$("#EmpId").val(result.Master.EmpId);
+                //$("#DoctorId").val(result.Master.DoctorId);
+                //$("#Patient").val(result.Master.Patient);
+                $("#DtInput").val(CurrentDate(new Date()));
+                
+                $("#Weight").val("");
+                $("#Pulse").val("");
+                $("#BP").val("");
+                //$("#DiagId").val("");
+                $("#Advice").val("");
+
+
+
+                tblMedicalDetails.rows().remove().draw();
+                var empId = $('#EmpId option:selected').val();
+
+                if (empId=="0") {
+                    return false;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("GerEmpInfo", "Medical")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: empId },
+                    success: function (data) {
+                        //for (var i = 0; i < data.fMembers.length; i++) {
+                        //    $('#Patient').append(`<option value="${data.fMembers[i].Value}">${data.fMembers[i].Text}</opiton>`)
+                        //}
+                        tblPreMedicalDetails.rows().remove().draw();
+                        prescriptionAdd(data.Prescription)
+                    },
+                    error: function () {
+                        toastr.error("Some thing wrong..");
+                    }
+                });
+            });
+
+            $('#ProductId').select2();
+
+            $('#ProductId').change(function () {
+                var productid = $('#ProductId').val();
+                $.ajax({
+                    url: '@Url.Action("GerUOMInfo", "Medical")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: productid },
+                    success: function (data, status, xhr) {
+                        if (data != null) {
+                            //console.log(data);
+                            $('#UOM').val(data.UnitName);
+
+                        };
+                    },
+                            //error: alert(xhr)
+                });
+            });
+
+            function prescriptionAdd(data) {
+
+                let arrays = [];
+                if (data.length>0) {
+                    for (var i = 0; i < data.length; i++) {
+                        arrays.push([
+                            data[i].MedicalMasterId,
+                            data[i].Doctor,
+                            data[i].Date,
+                            data[i].Advice,
+                            null
+                        ]);
+                    }
+                    tblPreMedicalDetails.rows.add(arrays).draw(false);
+
+                }
+
+            }
+
+        });
+
+
+       function Medical_Save() {
+           if ($("#EmpId").val() == "0") {
+               toastr.warning("Plese select an employee");
+               return false;
+           }
+           if ($("#DoctorId").val() == "") {
+               toastr.warning("Plese select a doctor");
+               return false;
+           }
+
+           if (!confirm("Save this prescription?")) {
+               return false;
+           }
+
+            var detailsData = tblMedicalDetails.rows().data();
+            var rows = tblMedicalDetails.rows().nodes();
+
+            //tfcList[i].cells[10].children[0].value;
+
+
+            //if (oTablerequisitionSub.length == 0) {
+            //    alert('Please Fill Necessary Data.');
+            //    return false;
+            //};
+
+            var medicalDetailses = [];
+
+           for (var i = 0; i < detailsData.length; i++) {
+               var Medical_Details = {
+                    MedicalDetaisId: detailsData[i][0],
+                    Patient: detailsData[i][1],
+                    ProductId: detailsData[i][2],
+                    MedicineName: detailsData[i][3],
+                    UOM: detailsData[i][4],
+                   Quantity: rows[i].cells[3].children[0].value, //detailsData[i][4],
+                   Remarks: rows[i].cells[4].children[0].value // detailsData[i][5]
+               }
+              
+               medicalDetailses.push(Medical_Details);
+
+
+            };
+
+             var medicalMaster = {
+                    MedicalMasterId: $("#MedicalMasterId").val() || 0,
+                    EmpId: $("#EmpId").val(),
+                     DoctorId: $("#DoctorId").val(),
+                     Patient: $("#Patient").val(),
+                     DtInput: $("#DtInput").val(),
+                    ///DesigId: $("#DesigId").val(),
+                    //SectId: $("#SectId").val(),
+                    //UnitId: $("#UnitId").val(),
+                    Weight: $("#Weight").val() || 0,
+                    Pulse: $("#Pulse").val() || 0,
+                    BP: $("#BP").val() || 0,
+                    DiagId: $("#DiagId").val(),                    
+                    Advice: $("#Advice").val(),
+                    ComId:'@HttpContextAccessor.HttpContext.Session.GetString("comid")',
+                    UserId: '@HttpContextAccessor.HttpContext.Session.GetString("userid")',
+                 Medical_Detailses: medicalDetailses
+                }
+            //console.log(medicalMaster);
+            $.ajax({
+                url: '@Url.Action("Create", "Medical")',
+                type: 'POST',
+                dataType: 'json',
+                data: { medicalMaster: medicalMaster },
+                success: function (result) {
+                    if (result.Success == "1") {
+                        toastr.success(result.ex);
+                        window.location.href = '@Url.Action("Index", "Medical")';
+                    }
+                },
+                error: function () {
+                    toastr.error("Something wrong..");
+                }
+            });
+        };
+
+
+        function Medical_Delete() {
+
+              $.ajax({
+                url: '@Url.Action("Delete", "Medical")',
+                type: 'POST',
+                dataType: 'json',
+                data: { id: $("#MedicalMasterId").val() },
+                success: function (result) {
+                    if (result.Success == "1") {
+                        toastr.success(result.ex);
+                        window.location.href = '@Url.Action("Index", "Medical")';
+                    } else {
+                        toastr.warning(result.ex);
+                    }
+                },
+                error: function () {
+                    toastr.error("Something wrong..");
+                }
+            });
+        }
+
+       
+
+        function Add() {
+            let prd = $('#ProductId').val();
+
+            if (prd == "") {
+                toastr.warning("Select Medicine");
+                return false;
+            }
+            if ($('#Quantity').val() == "") {
+                toastr.warning("Please provide quantity");
+                return false;
+            }
+
+            //for none duplicate medicine
+            //if (AddedProducts.indexOf(prd) != -1) {
+            //    toastr.info("The Medicine already added");
+            //    return false;
+            //}
+
+            //AddedProducts.push(prd);
+            $('#tblMedicalDetails').dataTable().fnAddData([
+                0,
+                $('#Patient option:selected').text(),
+                $('#ProductId').val(),
+                $('#ProductId option:selected').text(),
+                $('#UOM').val(),
+                $('#Quantity').val(),
+                $('#Remarks').val(),
+                '<a data-itemId="0" href="#" class="dlttrash deleteItem"><i class="fa fa-trash"></i></a>'
+            ]);
+        };
+
+
+
+        $('#tblMedicalDetails tbody').on('click', '.dlttrash', function () {
+            var table = $('#tblMedicalDetails').DataTable();
+
+            let row = table.row($(this).parents('tr')).data();
+            let prd = row[1];
+            AddedProducts.pop(prd);
+
+            table.row($(this).parents('tr')).remove().draw();
+            var x = "500.00";
+            var y = $('#tblMedicalDetails').height();
+            var z = parseFloat(x) + parseFloat(y);
+            $('html, body').animate({ scrollTop: z }, 500);
+        })
+    </script>
+}

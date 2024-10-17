@@ -1,0 +1,807 @@
+﻿
+@{
+    ViewData["Title"] = "Employees List";
+    //Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+
+<link href="~/css/accountHeadListGearDropdown.css" rel="stylesheet" />
+<script src="https://kit.fontawesome.com/47bfbe2b1b.js" crossorigin="anonymous"></script>
+
+<!-- Start Page Content -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            @*main offcanvas*@
+            <div class="card-body">
+               
+              
+                <div class="row mb-1 pt-1">
+                    <div class="col-md-10  mb-3">
+                        <h3>Employees List</h3>
+                    <div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-sm border border-end-0" type="button" id="exportUl">
+                                <img src="~/assets/excel 1.png" alt="">
+                            </button>
+                            <button type="button" class="btn btn-sm border border-start-0 dropdown-toggle dropdown-toggle-split" id="exportBtn" data-bs-toggle="dropdown" data-target="#exportUll" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" id="exportPDF">
+                                <li><a class="dropdown-item" href="#"><img src="~/assets/pdf 1.png" alt="">PDF</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown1" style="display:inline-block;">
+                            <button class="btn btn-white border-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="bi bi-gear" me-1"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <div class="row row-cols-lg-3 p-4 main-dropdown-size" style="overflow:hidden;">
+                                    <div class="col" style="width: 188px; float:left;">
+                                <li class="fw-bold ms-3">Columns</li>
+                                <hr class="m-0 w-75 ms-3 w-sm-50 " />
+                                <li>
+                                    <div id="dropdown-titles">
+
+                                    </div>
+                                </li>
+                        </div>
+                        <div class="vertical-hr"></div>
+
+                        <div class="col right-dropdown" style="width: 188px;">
+                            <li class="fw-bold ms-3">Others</li>
+                            <hr class="m-0 w-75 w-sm-50  ms-3" />
+                            <li><a id="show-all" value="100" class="dropdown-item" href="#">Show all</a></li>
+                            <li><a id="hide-all" class="dropdown-item" href="#">Hide all</a></li>
+                            <li><a id="restore" class="dropdown-item" href="#">Restore</a></li>
+
+
+                            <li>
+                                <select name="rows" id="rows" class="border-0 cursor-pointer" style="margin-left: 13px;padding: 10px 0;width: 70px; ">
+                                    @*<option value="0" class="w-100">Rows</option>*@
+                                    <option value="0" disabled selected>Rows</option>
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input title-input" id="with-group" value="with-group">
+                                        <label class="custom-control-label cursor-pointer" id="with-group-label" for="with-group">With Group</label>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input title-input" id="with-inactive" value="with-inactive">
+                                        <label class="custom-control-label cursor-pointer" id="with-inactive-label" for="with-inactive">With Inactive</label>
+                                    </div>
+                                </a>
+                            </li>
+                        </div>
+                    </div>
+                        </ul>
+                        
+                    </div>
+                    
+            </div>
+        </div>
+
+      
+        <div class="row">
+            <div class="col-12 col-md-12">
+                <div id="jsFilterGrid" style="font-size:14px;"></div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+    </div>
+<!-- End PAge Content -->
+
+@section Scripts{
+    <script type="text/javascript">
+        const parentHeadBackButton = document.getElementById("parentHeadBackButton");
+        const categoryBackButton = document.getElementById("categoryBackButton");
+        const categoryOffcanvas = new bootstrap.Offcanvas(document.getElementById('CategoryOffcanvas'));
+        const parentHeadOffcanvas = new bootstrap.Offcanvas(document.getElementById('ParentHeadOffcanvas'));
+        const mainOffcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasRight'));
+
+        parentHeadBackButton.addEventListener("click", () => {
+            parentHeadOffcanvas.hide();
+            categoryOffcanvas.show();
+        });
+        categoryBackButton.addEventListener("click", () => {
+            categoryOffcanvas.hide();
+            mainOffcanvas.show();
+        });
+
+        var globalData = [];
+        var globalIds = [];
+        var Titles = [];
+        //Global fields for jsgrid table starts
+        var globalFields = [
+            {
+                name: "CheckBox", title: 'Check Box',headerTemplate: function () {
+                    return $("<button>").attr("type", "button").css({
+                        'border':'0'
+                    }).html("<i class='fas fa-trash'></i>") //text("Delete")
+                        .on("click", function () {
+                            deleteSelectedItems();
+                            initjsGrid();
+                        });
+                },
+                itemTemplate: function (_, item) {
+                    return $("<input>").attr("type", "checkbox").css({
+                        'width': '20px',
+                        'height': '20px'
+                    }).prop("checked", $.inArray(item, selectedItems) > -1)
+                        .on("change", function () {
+                            $(this).is(":checked") ? selectItem(item) : unselectItem(item);
+                        });
+                },
+
+                align: "center",
+                width: 50
+            },
+            { name: "AccType", title: 'Type', type: "text", width: 220, visible: false },
+            { name: "AccountCategory", title: 'Category', type: "text", width: 120,},
+            { name: "AccCode", title: 'Code', type: "text"},
+            { name: "AccName", title: 'Account Head', type: "text",width: 150,},
+            { name: "ParentName", title: 'Group Head', type: "text",},
+            { name: "AccountBalance", title: 'Balance', type: "text", align: "right" },
+           /* { name: "AccountType", title: 'Account Type', type: "text", visible: false},*/
+            {
+                name:"button", width: '80', title: 'Action', align: 'center', itemTemplate: function (value, data) {
+                    //var options = [
+                    //    { value: "Edit", text: "<i class='fa-solid fa-pen-to-square'></i> Edit"},
+                    //    { value: "Delete", text: "<i class='fa-sharp fa-solid fa-trash'></i> Delete" },
+                    //];
+                    //console.log(data);
+                    var myUrledit = '@Url.Action("EditAccountHead", "Admin")?AccountHeadId=' + data.Id;
+                    var myUrldelete = '@Url.Action("DeleteCOA", "Admin")?AccountHeadId=' + data.Id;
+                    var myUrlGet = `editAccountHead(${data.Id})`;
+                    var message = `return confirm('Are you sure you want to Remove the AccountHead Information ?')`;
+
+                    var $dropdown = $("<div class='dropdown'>").append(
+                        $("<button class='btn dropdown-toggle' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>")
+                    ).append(
+                        $("<ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>").css({
+                            'margin-left':'-105px'
+                        }).append(function () {
+                            return $("<li>").append(
+                                $(`<a onclick=${myUrlGet} class='text-decoration-none text-black ms-3 mt-1'>`).attr("href", "#").html("<i class='fa-solid fa-pen-to-square'></i> <span>Edit</span>  <br />"),
+                                $(`<a class='text-decoration-none text-black ms-3 mt-1'>`).attr("href", `#`)
+                                    .html("<i class='fa-sharp fa-solid fa-trash mt-2'></i><span class='ms-2 mt-2' >Delete</span>")
+                                    .click(function () {
+                                        setDeleteUrl(data.Id);
+                                    })
+                            );
+                        }));
+
+
+                    var $iconButton = $(`<a href='#' class="fw-bolder mt-2" >Run Report</a>`).click(function (e) {
+                        e.preventDefault();
+                        getReport(data.Id, data.type);
+                //alert('checjed');
+                });
+                    var $flex = $("<div class='d-flex justify-content-center'></div>").append($iconButton).append($dropdown)
+                var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
+                    return $result.add($flex);
+                }
+            }
+            
+            // { name: "Currency", title: 'Currency', type: "text" },
+        ]
+        //Global fields for jsgrid table ends
+
+        //console.log(globalFields[7].name);
+        var globalPageSize=5;
+        var showAllPageSize;
+        var accType = 'L';
+        var IncludingInactive = false;
+        var globalIdsForDelete = [];
+        var eachGlobalIdForDelete = [];
+
+        for (var i = 0; i < globalFields.length; i++) {
+            //console.log(globalFields[i].title);
+            Titles.push(globalFields[i].title);
+        }
+        let titles = '';
+        //console.log(data.BankBalance);
+
+        //restore dropwodn funstion starts
+        function restoreDropdown() {
+            $("#dropdown-titles").empty();
+            for (var i = 0; i < globalFields.length; i++) {
+                var title = globalFields[i].title;
+                var name = globalFields[i].name;
+                var visible = true;
+                if (globalFields[i].visible == false) {
+                    visible = false;
+                }
+                //console.log(visible);
+                titles = `<li>
+                        <a class="dropdown-item" href="#">
+                        <div class="custom-control custom-checkbox" >
+                        <input type="checkbox" class="custom-control-input title-input" id="${name}" value="${name}">
+                        <label class="custom-control-label w-100 cursor-pointer" id="${name}" for="${name}">${title}</label>
+                        </div>
+                        </a>
+                        </li>`;
+
+                $("#dropdown-titles").append(titles);
+
+                document.querySelector(`${'#' + name}`).addEventListener('click', function () {
+                    var checkbox = event.target;
+                    var isChecked = checkbox.checked;
+                    if (isChecked) {
+                        $("#jsFilterGrid").jsGrid("fieldOption", this.value, "visible", true);
+                    }
+                    else {
+                        $("#jsFilterGrid").jsGrid("fieldOption", this.value, "visible", false);
+                    }
+                });
+
+                $(`${'#' + name}`).prop('checked', visible);
+
+
+                $('.custom-control-label').on('click', function (e) {
+                    e.stopPropagation();
+                });
+                $('#dropdown-titles').on('click', function (e) {
+                    e.stopPropagation();
+                });
+
+                //console.log(data.BankBalance[i].AccName);
+            }
+
+            accType = 'L';
+            IncludingInactive = false;
+        }
+                //restore dropwodn funstion ends
+
+
+
+        // functions in gear button starts
+        document.getElementById("rows").addEventListener("change", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            //console.log(this.value);
+            globalPageSize = this.value;
+            initjsGrid();
+        });
+        document.getElementById("show-all").addEventListener("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            globalPageSize = 100;
+            //alert(showAllPageSize);
+            //filterSeacrhDbFunc();
+            initjsGrid();
+            $("#rows").prop('selectedIndex', 0);
+
+        });
+        document.getElementById("hide-all").addEventListener("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            globalPageSize = 5;
+           /* alert('hide');*/
+            initjsGrid();
+            $("#rows").prop('selectedIndex', 0);
+
+        });
+        document.getElementById("restore").addEventListener("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            globalPageSize = 5;
+            //alert(showAllPageSize);
+            //filterSeacrhDbFunc();
+            initjsGrid();
+            restoreDropdown();
+            $('#with-group').prop('checked', false);
+            $('#with-inactive').prop('checked', false);
+            //$('#rows').value(0);
+            $("#rows").prop('selectedIndex', 0);
+
+        });
+        document.getElementById("with-group").addEventListener("click", function (e) {
+            e.stopPropagation();
+            //e.preventDefault();
+            accType = "G";
+            initjsGrid();
+            restoreDropdown();
+            //filterSeacrhDbFunc();
+            //alert(AccType);
+            //alert('With group');
+
+        });
+        document.getElementById("with-inactive").addEventListener("click", function (e) {
+            e.stopPropagation();
+            //e.preventDefault();
+            IncludingInactive = true;
+            initjsGrid();
+            restoreDropdown();
+            alert(IncludingInactive);
+            //alert('SAS');
+        });
+                // functions in gear button ends
+
+
+        //console.log(showAllPageSize);
+        //console.log(globalPageSize);
+
+
+        //Search for jsgrid table starts
+        var filterSearchUrl = '@Url.Action("GetCOAList", "Admin")';
+        function initjsGrid() {
+            var filterSearchDb = {
+                loadData: function (filter) {
+
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "GET",
+                        async: false,
+                        url: filterSearchUrl,
+                        //headers: {
+                        //    contentType: "application/json; charset=utf-8",
+                        //    Authorization: token
+                        //},
+                        data: { AccType: accType, IncludingInactive: IncludingInactive, searchquery: JSON.stringify(filter) },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    })
+                        .done(function (result) {
+                            d.resolve(result);
+                            //console.log(result.AccountHeadList);
+                            globalData = [...result.AccountHeadList]
+                            //for (var i = 0; i < result.AccountHeadList.length; i++) {
+                            //    //console.log(result.AccountHeadList[i].Id);
+                            //    //globalIds.push(result.AccountHeadList[i].Id);
+                            //}
+                            for (var i = 0; i < globalData.length; i++) {
+                                //console.log(monthSales[i].MonthName);
+                                globalIds.push(globalData[i].Id);
+                            }
+                            //console.log('globalData',globalIds);
+                            //console.log('globalid', globalIds);
+                        });
+                        return d.promise().then(function (q) {
+
+                            //console.log(q);
+                            return {
+
+                                data: q.AccountHeadList,
+                                itemsCount: parseInt(q.PageInfo.TotalRecordCount)
+                            }
+                        });
+
+
+                }
+
+            }
+                    //Search for jsgrid table ends
+
+
+            //jsgrid table show functionalities starts
+            $("#jsFilterGrid").jsGrid({
+
+                width: "100%",
+                height: 'auto',
+                filtering: true,
+                autoload: true,
+                pageLoading: true,
+                pageSize: globalPageSize, //5,
+                pageIndex: 1,
+                paging: true,
+                controller: filterSearchDb,
+                pagerFormat: "{prev} {pages} {next}   Results: {pageIndex} - {pageCount} of {itemCount}",
+                    pagePrevText: "<",
+                    pageNextText: ">",
+                   // pageFirstText: "First",
+                    //pageLastText: "Last",
+                   // pageNavigatorNextText: "...",
+                    //pageNavigatorPrevText: "...",
+                fields: globalFields,
+                rowClick: function (args) {
+                    //$checkbox = $(args.event.currentTarget).find("input[type=checkbox]");
+                    //var checkState = $checkbox.prop("checked", !$checkbox.prop("checked"));
+                    //$checkbox.prop("checked", !$checkbox.prop("checked"));
+                    //var stateCheck = $checkbox.prop("checked");
+                    ////console.log($checkbox.prop("checked"));
+
+                    //// Update selected items array and selected class
+                    //setTimeout(function () {
+                    //    if (stateCheck == true) {
+                    //        $(args.event.currentTarget).addClass("selected");
+                    //    } else if (stateCheck == false) {
+                    //        $(args.event.currentTarget).removeClass("selected");
+                    //    }
+                    //}, 50);
+                    //if ($(args.event.currentTarget).closest('td').index() != 7) {
+                    //    $checkbox = $(args.event.currentTarget).find("input[type=checkbox]");
+                    //$checkbox.prop("checked", !$checkbox.prop("checked"));
+
+                    //// Update selected items array
+                    //if ($checkbox.prop("checked")) {
+                    //    selectItem(args.item);
+                    //} else {
+                    //    unselectItem(args.item);
+                    //}
+                    //}
+                    //$checkbox = $(args.event.currentTarget).find("input[type=checkbox]");
+                    //$checkbox.prop("checked", !$checkbox.prop("checked"));
+
+                    //// Update selected items array
+                    //if ($checkbox.prop("checked")) {
+                    //    selectItem(args.item);
+                    //} else {
+                    //    unselectItem(args.item);
+                    //}
+                    $checkbox = $(args.event.currentTarget).find("input[type=checkbox]");
+                    if ($(args.event.target).closest("td").index() !== 6) {
+                        $checkbox.prop("checked", !$checkbox.prop("checked"));
+
+                        // Update selected items array
+                        if ($checkbox.prop("checked")) {
+                            selectItem(args.item);
+                        } else {
+                            unselectItem(args.item);
+                        }
+                    }
+                },
+                //rowClick: function (args) {
+                //    $checkbox = $(args.event.currentTarget).find("input[type=checkbox]");
+                //    $checkbox.prop("checked", !$checkbox.prop("checked"));
+
+                //    // Update selected items array
+                //    if ($checkbox.prop("checked")) {
+                //        selectItem(args.item);
+                //    } else {
+                //        unselectItem(args.item);
+                //    }
+                //},
+
+            })
+
+        }
+                    //jsgrid table show functionalities ends
+
+        //functions to select/unselect and manage batch delete starts
+        var selectedItems = [];
+
+        var selectItem = function (item) {
+            selectedItems.push(item);
+        };
+
+        var unselectItem = function (item) {
+            selectedItems = $.grep(selectedItems, function (i) {
+                return i !== item;
+            });
+        };
+
+        var deleteSelectedItems = function () {
+            if (!selectedItems.length || !confirm("Are you sure?"))
+                return;
+
+            deleteClientsFromDb(selectedItems);
+
+            var $grid = $("#jsFilterGrid");
+            $grid.jsGrid("option", "pageIndex", 1);
+            $grid.jsGrid("loadData");
+
+            selectedItems = [];
+            eachGlobalIdForDelete=[];
+        };
+
+        var deleteClientsFromDb = function (deletingClients) {
+            globalIdsForDelete = [...deletingClients]
+            for (var i = 0; i < globalIdsForDelete.length; i++) {
+                eachGlobalIdForDelete.push(globalIdsForDelete[i].Id);
+            }
+
+            for (var i = 0; i < eachGlobalIdForDelete.length; i++) {
+                var myUrldelete = '@Url.Action("DeleteCOA", "Admin")?AccountHeadId=' + eachGlobalIdForDelete[i];
+                $.ajax({
+                    type: "get",
+                    url: myUrldelete, /*"/api/AccountHead/DeleteAccountHead?AccountHeadId=" + eachGlobalIdForDelete[i],*/
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success == "1") {
+                            toastr.success(response.msg, "", {
+                                "toastClass": "toast-green",
+                            });
+                        }
+                        else if (response.success == "0") {
+                            toastr.success(response.msg, "", {
+                                "toastClass": "toast-red",
+                            });
+                        }
+                        //initjsGrid();
+                        //console.log(response);
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+            }
+        };
+                //functions to select/unselect and manage batch delete starts
+
+
+        //var deleteClientsFromDb = function (deletingClients) {
+        //    globalIdsForDelete = [...deletingClients]
+        //    //console.log(globalIdsForDelete);
+        //    for (var i = 0; i < globalIdsForDelete.length; i++) {
+        //        //console.log(globalIdsForDelete[i].Id);
+        //        eachGlobalIdForDelete.push(globalIdsForDelete[i].Id);
+        //    }
+        //    console.log(eachGlobalIdForDelete);
+        //};
+
+        var selectedRow;
+
+        $("#jsFilterGrid").on("click", ".jsgrid-row", function () {
+            if (selectedRow) {
+                $(selectedRow).removeClass("selected");
+            }
+            selectedRow = this;
+            $(selectedRow).addClass("selected");
+        });
+
+        //for (var i = 0; i < globalIdsForDelete.length; i++) {
+        //    //console.log(globalIdsForDelete[i].Id);
+        //    eachGlobalIdForDelete.push(globalIdsForDelete[i].Id);
+        //}
+        //console.log(eachGlobalIdForDelete);
+
+        @* to save data from first modal *@
+        $(document).ready(function () {
+            //filterSeacrhDbFunc();
+            initjsGrid();
+            restoreDropdown();
+            $('#importBtn').click(function (e) {
+                e.stopPropagation();
+                $($(this).data('target')).toggle();
+            });
+
+            $('#exportBtn').click(function (e) {
+                e.stopPropagation();
+                $($(this).data('target')).toggle();
+            });
+        });
+
+        //$(document).click(function () {
+        //    $('.dropdown-menu').hide();
+        //});
+
+
+
+
+             
+
+
+        //To open one modal to another
+        $(document).ready(function () {
+            //$("#OpenCategoryListModal").click(function () {
+            //    //alert('aa');
+            //    $("#CategoryModal").modal("show");
+            //});
+            $("#OpenCategoryListModal").click(function () {
+                //alert('aa');
+               // GroupHeadConfiguration();
+                $("#CategoryOffcanvas").offcanvas("show");
+            });
+        });
+        //To open one modal to parent head
+        $(document).ready(function () {
+            //$("#OpenParentHeadListModal").click(function () {
+            //    //alert('aa');
+            //    $("#ParentHeadModal").modal("show");
+            //});
+            $("#OpenParentHeadListModal").click(function () {
+                //alert('aa');
+                /*$("#ParentHeadOffcanvas").offcanvas("show");*/
+                $("#CategoryOffcanvas").offcanvas("show");
+            });
+        });
+        //To open one modal to categorylist modal more
+        //$(document).ready(function () {
+        //    $("#categoryListItem").click(function () {
+        //        //alert('aa');
+        //        $("#CategoryModalMore").modal("show");
+        //    });
+        //});
+
+        //To show categorylist data in main modal
+        var categorySelectedOptionText = '';
+        var categorySelectedOptionValue = '';
+        document.getElementById("saveChanges").addEventListener("click", function () {
+            var selectedOption = document.querySelector('input[name="exampleRadios"]:checked');
+            categorySelectedOptionValue = document.querySelector('input[name="exampleRadios"]:checked').value;
+            categorySelectedOptionText = selectedOption.nextElementSibling.textContent;
+            //var selectedOptionValue = document.querySelector('input[name="exampleRadios"]:checked').value;
+            //var selectedOptionText = selectedOption.nextElementSibling.textContent;
+            //document.getElementById("OpenCategoryListModal").innerHTML = selectedOptionText;
+            //document.getElementById("OpenCategoryListModalValue").value = selectedOptionValue;
+            /*alert(selectedOptionValue);*/
+            $('#CategoryOffcanvas').offcanvas('hide');
+            $("#ParentHeadOffcanvas").offcanvas("show");
+            GroupHeadConfiguration();
+        });
+        //document.getElementById("saveChanges").addEventListener("click", function () {
+        //    var selectedOption = document.querySelector('input[name="exampleRadios"]:checked');
+        //    var selectedOptionValue = document.querySelector('input[name="exampleRadios"]:checked').value;
+        //    var selectedOptionText = selectedOption.nextElementSibling.textContent;
+        //    document.getElementById("OpenCategoryListModal").innerHTML = selectedOptionText;
+        //    document.getElementById("OpenCategoryListModalValue").value = selectedOptionValue;
+        //    $('#CategoryModal').modal('hide');
+        //});
+
+        var nameTaker = [];
+        var jsonKey = [];
+        $('#exportPDF').click(function () {
+            alert('PDF exportation is under construction!! \nthank you!!');
+
+        });
+        $('#exportUl').click(function () {
+
+
+
+            for (var i = 0; i < globalFields.length; i++) {
+
+                if (globalFields[i].name != 'button' && globalFields[i].visible != false) {
+                    nameTaker.push(globalFields[i]);
+
+                }
+            }
+
+            var parentJson = $('#jsFilterGrid').jsGrid('option', 'data');
+            if (parentJson == '')
+                return;
+
+
+
+
+                var csv = convertJsonToCsvWithoutchild(parentJson);
+
+
+            nameTaker = [];
+            jsonKey = [];
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "data.csv";
+            link.click();
+        });
+
+        function convertJsonToCsvWithoutchild(jsonData) {
+
+
+            var csv = '';
+            var keys = Object.keys(jsonData[0]);
+            for (var k = 0; k < keys.length; k++) {
+                for (var i = 0; i < nameTaker.length; i++) {
+
+                    if (nameTaker[i].name == keys[k]) {
+                        jsonKey[i] = keys[k];
+
+                    }
+                }
+            }
+
+
+            csv += jsonKey.join(',') + '\n';
+            jsonData.forEach(function (item) {
+                csv += jsonKey.map(function (key) {
+
+                    for (var i = 0; i < nameTaker.length; i++) {
+                        if (nameTaker[i].name == key) {
+                            return item[key];
+                        }
+                    }
+
+                }).join(',') + '\n';
+
+            });
+            return csv;
+        }
+        function setDeleteUrl(data) {
+            var myUrldelete = '@Url.Action("DeleteCOA", "Admin")';
+            alert('Are you sure want to delete?');
+            $.ajax({
+        type: "get",
+        data: { AccountHeadId:data},
+                url: myUrldelete,
+        success: function (response) {
+            if (response.success == "1") {
+                toastr.success(response.msg, "", {
+                    "toastClass": "toast-green",
+                });
+                initjsGrid();
+            }
+            else if (response.success == "0") {
+                //alert()
+                toastr.success(response.msg, "", {
+                    "toastClass": "toast-red",
+                });
+                initjsGrid();
+            }
+        }
+            });
+        };
+
+
+        function getReport(Id,type) {
+            var isViewPageReport = 1;
+            var btnvalue = "PrintLedger";
+            //var type = "Account";
+            var reporttype = 'pdf';
+            var FromDate = '1jan2020';
+            var ToDate ='31dec2022';
+                        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SubsidiaryLedger", "Admin")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, Id: Id, Type: type, FromDate: FromDate, ToDate: ToDate, isViewPageReport: isViewPageReport },
+                success: function (response) {
+                    window.open(response.Url, '_blank')
+
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+        }
+
+        function ReportPrint(btnvalue) {
+
+            var peopleList = $('#tbllist').DataTable();
+            var rows = peopleList.rows('.selected').data();
+
+            var reporttype = $("input[name=RptType]:checked").val();
+            var FromDate = $(".FromDate").val();
+            var ToDate = $(".ToDate").val();
+
+            // alert(FromDate);
+
+            var productidlist = [];
+            var pid = 0;
+            var type = "Account";
+
+
+            if (rows.length > 0) {
+                pid = rows[0]["Id"];
+                type = rows[0]["AccountCategory"];
+
+            }
+            //console.log(pid);
+            //alert(WarehouseId);
+            //alert(btnvalue);
+            var isViewPageReport = 1;
+
+            if (btnvalue == "PrintLedger") {
+                isViewPageReport = 0;
+
+                if ((pid == null) || (pid == "")) {
+                    toastr.error("Please Select Account Head from the List.");
+                    return true;
+                }
+                //alert('Wait');
+            }
+        }
+
+
+    </script>
+}

@@ -1,0 +1,194 @@
+﻿@model GTERP.Models.Cat_ITaxBank
+
+
+
+<style>
+
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "ITaxBank", FormMethod.Post))
+{
+    @*@Html.AntiForgeryToken()*@
+
+    <div class="container" style="max-width: 700px;">
+        <div class="py-7 text-center">
+
+            <h1 id="styletext">ITax Bank Entry</h1>
+            <p class="lead"></p>
+        </div>
+
+        @if (Model != null)
+        {
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="Id" value="0" />
+        }
+        <div id="modalbodyfahad" class="row card p-4">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">ITax Bank @ViewBag.Title</h4>
+
+                <form class="needs-validation card p-4" novalidate>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.BankId)
+                                        </span>
+                                    </div>
+                                    <select asp-for="BankId" asp-items="ViewBag.BankId" class="form-control"></select>
+                                    @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.BranchId)
+                                        </span>
+                                    </div>
+                                    <select asp-for="BranchId" asp-items="ViewBag.BranchId" class="form-control"></select>
+                                    @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                                        
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.MonthDate)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="MonthDate" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.MonthDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.ChqDate)
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="ChqDate" class="form-control" autocomplete="off" />
+                                    @Html.ValidationMessageFor(model => model.ChqDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="row">                           
+                             <div class="col-md-12 col-12">
+                                 <div class="input-group mb-2">
+                                     <div class="input-group-prepend">
+                                         <span class="input-group-text py-0">
+                                             @Html.LabelFor(model => model.ChqNo)
+                                         </span>
+                                     </div>
+                                     @Html.EditorFor(model => model.ChqNo, new { htmlAttributes = new { @class = "form-control" } })
+                                     @Html.ValidationMessageFor(model => model.ChqNo, "", new { @class = "text-danger" })
+                                 </div>
+                             </div>
+                        </div>
+
+
+
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="ITaxBank_delete()">Delete</button>
+                                }
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "Index", "ITaxBank", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts{
+    <script>
+
+         $("#BankId").select2();
+         $("#BranchId").select2();
+
+        $("#MonthDate, #ChqDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#MonthDate, #ChqDate").datepicker("option", "dateFormat");
+                //setter
+                $("#MonthDate, #ChqDate").datepicker("option", "dateFormat", "dd-M-yy");
+            }
+        });
+
+    function ITaxBank_delete() {
+
+        var id = $("#Id").val();
+         //   alert(Sectid);
+            $.ajax({
+
+                url: '@Url.Action("Delete", "ITaxBank")',
+                //url: '@Url.Action("Delete")',
+                data: JSON.stringify({ id: id }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    debugger;
+                if (result.Success == "1") {
+                    customFile('3', result.ex);
+                    window.setTimeout(function () {
+                        // Move to a new location or you can do something else
+                        window.location.href = '@Url.Action("Index", "ITaxBank")';
+                    }, 500);
+                }
+                else {
+                    toastr.error(result.ex);
+                }
+            }
+            });
+    }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,244 @@
+﻿@model GTERP.Models.Medical_Master
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    //ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var RequisitionResult = ViewBag.reqsub;
+}
+
+
+<div class="row my-2 text-center">
+
+    <div class="col-md-12 col-12 d-block mx-auto flot-right">
+        <h2 id="styletext">Medical Report</h2>
+    </div>
+</div>
+
+<form action="" method="post">
+    <div class="container">
+
+        <div class="card p-4 my-2 col-md-8 col-12 offset-md-2">
+            <div class="row" style="padding: 12px;padding-bottom: 0px;">
+
+
+                <div class="col-md-6 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">From Date </span>
+                        </div>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">To Date </span>
+                        </div>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-12 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">User</span>
+                        </div>
+                        @Html.DropDownList("UserList", ViewBag.UserList as List<SelectListItem>, "--All User--", new { id = "UserList", @class = "form-control" })
+
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-12">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Type</span>
+                        </div>
+                        @Html.DropDownList("ReportType", ViewBag.ReportType as List<SelectListItem>, new { id = "ReportType", @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-12 emp">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Employee</span>
+                        </div>
+                        @Html.DropDownList("EmpId", ViewBag.UserList as List<SelectListItem>, new { id = "EmpId", @class = "form-control" })
+
+                    </div>
+
+                </div>
+                <div class="col-md-12 col-12 prd">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Product</span>
+                        </div>
+                        @Html.DropDownList("ProductId", ViewBag.ProductId as List<SelectListItem>, "=ALL=", new { id = "ProductId", @class = "form-control product" })
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-12 col-12 prd">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Warehouse</span>
+                        </div>
+                        @Html.DropDownList("WarehouseId", ViewBag.WarehouseId as List<SelectListItem>, new { id = "WarehouseId", @class = "form-control warehouse" })
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <br />
+            <div class="row" style="padding: 12px;padding-bottom: 0px;">
+
+
+                <div class="col-md-4 col-12">
+                    <button type="button" id="btnReport" class="btn btn-success btn-block rounded-0">Report</button>
+                </div>
+
+
+                <div class="col-md-8 col-12 text-right">
+
+                    <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+
+                        <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                        <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+
+@section Scripts
+    {
+    <script>
+
+
+           $('#btnReport').click(function () {
+
+
+
+               let userId = $("#UserList").val();
+               let productId = $("#ProductId").val();
+               let product = $("#ProductId option:selected").text();
+               let reportType = $("#ReportType").val();
+               let empId = $("#EmpId").val();
+               let fromDate = $("#FromDate").val();
+               let toDate = $("#ToDate").val();
+               let WarehouseId = $('#WarehouseId').val();
+               let rptFormat = $("input[name='RptType']:checked").val();
+
+
+               //let url = `userId=${userId}&productId=${productId}&reportType=${reportType}&empId=${empId}&reportType=${reportType}&fromDate=${fromDate}&toDate=${toDate}&rptFormat=${rptFormat}`
+               //window.location.href = '@Html.ActionLink("Medical","GetReport")?'+ url; // userId + '&productId=' + productId + '&reportType=' + reportType + '&empId=' + empId;
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetReport", "Medical")',
+                    dataType: 'json',
+                    data: { userId: userId, productId: productId, reportType: reportType, empId: empId, reportType: reportType, fromDate: fromDate, toDate: toDate, rptFormat: rptFormat, product: product, WarehouseId: WarehouseId },
+                    success: function (response) {
+                        window.open(response.Url, '_blank')
+                    },
+                    error: function (ex) {
+                        alert('Failed.' + ex);
+                    }
+
+            });
+
+           });
+
+
+
+        function CurrentDate(da) {
+            var date = new Date(da);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+            return val;
+        }
+
+        $("#FromDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#FromDate").datepicker("option", "dateFormat");
+                //setter
+                $("#FromDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+        $("#ToDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#ToDate").datepicker("option", "dateFormat");
+                //setter
+                $("#ToDate").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#FromDate").val(CurrentDate(new Date()));
+        $("#ToDate").val(CurrentDate(new Date()));
+
+       $(document).ready(function () {
+
+           $('#UserList').select2();
+           $('#ProductId').select2();
+           $('#ReportType').select2();
+           $('#EmpId').select2();
+           $('#WarehouseId').select2();
+           $("select").select2({
+               theme: "bootstrap4",
+           });
+
+           function showhide() {
+               if ($('#ReportType').val() == "rptPrescription") {
+                   $('.prd').addClass("d-none");
+                   $('.emp').removeClass("d-none");
+               } else if ($('#ReportType').val() == "rptChikitsabebostapatra") {
+                   $('.prd').addClass("d-none");
+                   $('.emp').removeClass("d-none");
+               }else {
+                   $('.prd').removeClass("d-none");
+                   $('.emp').addClass("d-none");
+               }
+           }
+
+           showhide();
+
+           $('#ReportType').change(function () {
+               showhide();
+           })
+
+
+
+        });
+
+    </script>
+}

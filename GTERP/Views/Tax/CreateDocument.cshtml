@@ -1,0 +1,203 @@
+﻿@model GTERP.Models.Tax_DocumentInfo
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+
+@* @Html.AntiForgeryToken() *@
+
+<form asp-action="CreateDocument" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4 id="styletext" class="mb-3">Document Entry - @ViewBag.Title</h4>
+                </div>
+                <div class="card-body">
+                    <div id="modalbodyfahad" class="row">
+                        <div class="col-md-12 order-md-1">
+                            @*@if (Model != null)
+                            {
+                                <input type="hidden" asp-for="DocumentInfoId" name="ClientTaxInfoId" value="@Model.DocumentInfoId" />
+                            }
+                            else
+                            {
+                                <input type="hidden" asp-for="DocumentInfoId" value="0" />
+                            }*@
+                            <input type="hidden" asp-for="DocumentInfoId"/>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.FiscalYearId)
+                                                </span>
+                                            </div>
+                                            <select asp-for="FiscalYearId" asp-items="ViewBag.FiscalYearId" class="form-control">
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    @Html.LabelFor(model => model.ClientId)
+                                                </span>
+                                            </div>
+
+                                            <select asp-for="ClientId" asp-items="@ViewBag.ClientId">
+                                                <option>--Please Select--</option>
+                                            </select>
+                                            @Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+                                            @*    @Html.DropDownListFor(x => x.ClientId, new SelectList((IEnumerable<SelectListItem>
+                                            )ViewBag.ClientName, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "ClientId" })
+                                            @Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    <label asp-for="VarType" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            @Html.DropDownListFor(x => x.VarType, new SelectList((IEnumerable<SelectListItem>
+                                            )ViewBag.VarType, "Value", "Text"), "--Please Select--", htmlAttributes: new { @class = "form-control", id = "VarType" })
+
+                                            <span asp-validation-for="VarType" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    <label asp-for="Title" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input asp-for="Title" class="form-control" />
+                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-12">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text py-0">
+                                                    <label asp-for="FileToUpload" asp-items="ViewBag.file" class="control-label"></label>
+                                                </span>
+                                            </div>
+                                            <input class="form-control" type="file" id="FileToUpload" name="FileToUpload" multiple>
+
+                                            <span asp-validation-for="FileToUpload" class="text-danger"></span>
+                                            @*<input type="file" name="FileToUpload" />*@
+                                        </div>
+                                    </div>
+                                  
+                                </div>
+
+                                @*<input type="file" name="FileToUpload" />*@
+
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center m-2">
+                        <br />
+                        <div class="col-md-2"></div>
+                        <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                            @if (ViewBag.Title == "Create")
+                            {
+                                <input type="submit" value="Save" class="btn btn-primary btn-md btn-block rounded-0" />
+                            }
+                            else if (ViewBag.Title == "Edit")
+                            {
+                                <input type="submit" value="Update" class="btn btn-warning btn-block rounded-0" />
+                            }
+                            else if (ViewBag.Title == "Delete")
+                            {
+                                <button class="btn btn-danger btn-md btn-block rounded-0" type="button" onclick="Department_delete()">Delete</button>
+                            }
+                        </div>
+                        <div class="col-md-4 col-xs-12 d-block mx-auto">
+                            @Html.ActionLink("Back", "DocumentList", "Tax", null, new { @class = "btn btn-info btn-block rounded-0", @id = "btnBack" })
+
+                        </div>
+                        <div class="col-md-2"></div>
+
+                    </div>
+                </div>
+            </div>
+@*
+            @if (Model != null)
+            {
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            }
+            else
+            {
+                <input type="hidden" asp-for="Id" value="0" />
+            }*@
+
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <script>
+
+
+
+        function Department_delete() {
+
+            var docId = $("#Id").val();
+            //alert(SalesId);
+            $.ajax({
+
+                url: '@Url.Action("DeleteDocument", "Tax")',
+                data: JSON.stringify({ id: docId }), //use id here
+                //data: JSON.stringify(salesmain),
+                type: 'POST',
+                contentType: 'application/json;',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.Success == "1") {
+                        customFile('3', result.ex);
+                        window.setTimeout(function () {
+                            // Move to a new location or you can do something else
+                            window.location.href = '@Url.Action("DocumentList", "Tax")';
+                        }, 500);
+                    }
+                    else {
+                        toastr.error(result.ex);
+                    }
+                }
+            });
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+

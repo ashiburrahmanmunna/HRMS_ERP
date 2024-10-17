@@ -1,0 +1,131 @@
+﻿
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using GTERP.Models.Common
+
+<!-- sidebar menu area start -->
+<style>
+    a:hover {
+        text-decoration: none;
+    }
+</style>
+@{
+
+    var activemenuid = HttpContextAccessor.HttpContext.Session.GetInt32("activemenuid");
+    string menu = "ms";
+    string menutest = "ams";
+
+    var comid = @HttpContextAccessor.HttpContext.Session.GetString("comid");
+
+    if (comid != null && comid.Length > 5)
+    {
+            <div class="sidebar-header">
+
+
+                <div class="logo">
+                    <a href="index.html"><img src="~/Content/ProjectLibFile/css/customCssFile/images/icon/ERP-1.png"></a>
+                </div>
+
+                <div>
+                    @*<div class="input-group nav-search">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                            </div>
+                            <input type="text" id="tags" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
+                        </div>*@
+                </div>
+            </div>
+    }
+
+
+        <div class="main-menu">
+            @{
+                if (activemenuid != null)
+                {
+
+
+                    var AllMenu = HttpContextAccessor.HttpContext.Session.GetObject<List<UserMenuPermission>>("UserMenu");
+                    if (AllMenu != null)
+                    {
+                        var parentMenu = AllMenu.OrderBy(x => x.SLNo).Where(x => x.isParent == 1 && x.Visible == true).ToList();
+                        var SubMenu = new List<UserMenuPermission>();
+
+
+                        <div class="menu-inner">
+                            <nav>
+
+                                <ul class="metismenu" id="menu">
+
+                                    @if (parentMenu != null)
+                                    {
+                                        foreach (var item in parentMenu.OrderBy(x => x.SLNo))
+                                        {
+                                            if (item.isParent == 1)
+                                            {
+                                                if (item.Active == true)
+                                                {
+                                                    <li class="active">
+                                                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-dashboard"></i><span>@item.ModuleMenuCaption</span></a>
+                                                        <ul class="collapse">
+
+                                                            @{
+                                                                var newModuleMenus = AllMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                foreach (var item1 in newModuleMenus.OrderBy(x => x.SLNo))
+                                                                {
+                                                                    if (item1.Active)
+                                                                    {
+                                                                        <li class="active"><a href="~/@item1.ModuleMenuLink">@item1.ModuleMenuCaption</a></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li><a href="~/@item1.ModuleMenuLink">@item1.ModuleMenuCaption</a></li>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-dashboard"></i><span>@item.ModuleMenuCaption</span></a>
+                                                        <ul class="collapse">
+                                                            @{
+                                                                var newModuleMenus = AllMenu.Where(m => m.ParentId == item.ModuleMenuId && m.isParent == 0).ToList();
+                                                                foreach (var item1 in newModuleMenus.OrderBy(x => x.SLNo))
+                                                                {
+                                                                    if (item1.Active)
+                                                                    {
+                                                                        <li class="active"><a href="~/@item1.ModuleMenuLink">@item1.ModuleMenuCaption</a></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li><a href="~/@item1.ModuleMenuLink">@item1.ModuleMenuCaption</a></li>
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                        </ul>
+                                                    </li>
+                                                }
+
+
+                                            }
+                                        }
+                                    }
+
+
+                                </ul>
+
+                            </nav>
+                        </div>
+                    }
+                }
+
+            }
+        </div>
+    }
+
+    <!-- sidebar menu area end -->

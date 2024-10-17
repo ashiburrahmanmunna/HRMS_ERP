@@ -1,0 +1,1585 @@
+﻿@Html.AntiForgeryToken()
+@model GTERP.Models.Buffers.BufferGatePass
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Antiforgery
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IAntiforgery AntiForgery
+@*<h2>Create</h2>*@
+@{
+    var receiver = ViewBag.Receiver;
+}
+
+
+<style>
+    .input-validation-error {
+        border: 2px solid #f00;
+        background: #fee;
+    }
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+
+
+    th {
+        font-size: 14px;
+    }
+
+    td {
+        font-size: 12px;
+    }
+
+
+    div.dataTables_length {
+        float: right;
+    }
+
+    div.dataTables_filter {
+        float: left;
+        /*font-size: 17px;*/
+    }
+
+    div.dataTables_paginate {
+        float: right;
+    }
+
+    div.DTTT {
+        float: left;
+        margin-right: 50px;
+    }
+
+    div.buttons {
+        clear: both;
+    }
+
+    .fas, .far {
+        font-size: 10px !important;
+    }
+
+    .table-sm th {
+        padding: .8em;
+        background: rgb(192,196,196);
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+    }
+
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+    }
+
+    table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+        color: green;
+    }
+
+    .select-box {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        font-family: 'Open Sans', 'Helvetica Neue', 'Segoe UI', 'Calibri', 'Arial', sans-serif;
+        font-size: 18px;
+        color: #60666d;
+    }
+
+    #myInputSearch {
+        background-image: url('../../Content/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 100%;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+    .tblExportInvoice th:first-child, .tblExportInvoice tbody td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tfoot td:first-child {
+        position: sticky !important;
+        left: 0px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice th:nth-child(2) {
+        position: sticky !important;
+        left: 70px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tbody td:nth-child(2) {
+        position: sticky !important;
+        left: 70px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    .tblExportInvoice tbody td:nth-child(3), th:nth-child(3) {
+        position: sticky !important;
+        left: 140px;
+        background-color: #f2f2f2e6 !important;
+        z-index: 1;
+    }
+
+    table.dataTable.display tbody > tr.selected:hover, table.dataTable.display tbody > tr > .selected:hover {
+        background-color: transparent;
+    }
+</style>
+
+
+<body>
+
+    @using (Html.BeginForm("Create", "BufferGatePass", FormMethod.Post, new { id = "myform", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container-fluid">
+            <div class="py-7 text-center">
+                <h2 id="styletext" class="text-center">Gate Pass @ViewBag.Title</h2>
+            </div>
+            <input type="hidden" id="mode" name="mode" value="@ViewBag.Title" />
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @if (Model != null)
+            {
+
+                <input type="hidden" id="GatePassId" name="GatePassId" value="@Model.BufferGatePassId" />
+                <input type="hidden" id="userid" name="userid" value="@Model.UserId" />
+                <input type="hidden" id="comid" name="comid" value="@Model.ComId" />
+                <input type="hidden" id="useridUpdate" name="useridUpdate" value="@Model.UpdateByUserId" />
+                <input type="hidden" id="DateAdded" name="DateAdded" value="@Model.DateAdded" />
+                <input type="hidden" id="DateUpdated" name="DateUpdated" value="@Model.DateUpdated" />
+
+
+            }
+            else
+            {
+                <input type="hidden" id="comid" name="comid" value="0" />
+                <input type="hidden" id="GatePassId" name="GatePassId" value="" />
+                <input type="hidden" id="DateAdded" name="DateAdded" value="" />
+                <input type="hidden" id="DateUpdated" name="DateUpdated" value="" />
+
+
+            }
+
+            <input type="hidden" value="@receiver" id="receiver" />
+
+            <div id="modalbodyfahad" class="card p-2">
+                <div class="order-md-1">
+                    <form class="needs-validation card" novalidate>
+                        <div class="row">
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.FiscalYearId, "Fiscal Year")
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("FiscalYearId", null, "--Please Select--", htmlAttributes: new { id = "FiscalYearId", @class = "form-control" })
+
+                                    @*<select asp-for="FiscalYearId" class="form-control"></select>*@
+
+                                    @Html.ValidationMessageFor(model => model.FiscalYearId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.FiscalMonthId, "Fiscal Month")
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("FiscalMonthId", null, htmlAttributes: new { id = "FiscalMonthId", @class = "form-control" })
+
+                                    @*<select asp-for="FiscalMonthId" disabled class="form-control"></select>*@
+                                    @Html.ValidationMessageFor(model => model.FiscalMonthId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-2 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.BufferId, "Buffer")
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("BufferId", null, htmlAttributes: new { id = "DistrictId", @class = "form-control" })
+
+                                    @*<select asp-for="DistrictId" class="form-control"></select>*@
+                                    @Html.ValidationMessageFor(model => model.BufferId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                           
+                            <div class="col-md-1 col-12">
+                                <div type="button" class="btn btn-primary btn-block rounded-0 mb-2" id="plus" onclick="getChallan()">Load</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.GatePassNo, "Gate Pass No")
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.GatePassNo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.GatePassNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            @*<div class="col-md-2 mb-3">
+                                    @Html.LabelFor(model => model.GatePassDate, "Gate Pass Date")
+                                    @Html.EditorFor(model => model.GatePassDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.GatePassDate, "", new { @class = "text-danger" })
+
+                                </div>*@
+
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.GatePassDate, "Gate Pass Date")
+                                        </span>
+                                    </div>
+                                    <input asp-for="GatePassDate" class="form-control tg" type="date" />
+                                    <span asp-validation-for="GatePassDate" asp-f class="text-danger"></span>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.TruckNumber, "Truck Number")
+                                        </span>
+                                    </div>
+                                    @Html.EditorFor(model => model.TruckNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.TruckNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*<div class="col-md-3 col-12">
+                                    @Html.LabelFor(model => model.ReceiverName, "Receiver Name")
+                                    <input type="text" asp-for="ReceiverName" class="form-control" id="Receiver" />
+
+                                    @Html.ValidationMessageFor(model => model.ReceiverName, "", new { @class = "text-danger" })
+
+                                </div>*@
+                            @*@Html.DropDownList("DriverName", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })*@
+
+
+
+                            @*<div class="col-md-2 col-12">
+                                    @Html.LabelFor(model => model.ReceiverAddress, "Address")
+                                    <input type="text" asp-for="ReceiverAddress" class="form-control" />
+
+
+                                    @Html.ValidationMessageFor(model => model.ReceiverAddress, "", new { @class = "text-danger" })
+
+                                </div>*@
+                            @*@Html.DropDownList("DriverMobile", null, "--Select From List--", htmlAttributes: new { @class = "form-control" })*@
+
+
+
+                            <div class="col-md-3 col-12">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text py-0">
+                                            @Html.LabelFor(model => model.TotalQty, "Total Qty")
+                                        </span>
+                                    </div>
+                                    <input type="text" asp-for="TotalQty" class="form-control" />
+                                    @Html.ValidationMessageFor(model => model.TotalQty, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        @*<br />
+                            <div class="col-md-12 order-md-2 mb-2">*@
+                        <hr />
+
+                        <div class="table-responsive">
+                            <table id="tblgatepasslist" class="tblExportInvoice text-nowrap display table table-striped table-hover text-center" width="100%">
+                                <thead>
+                                    <tr>
+
+                                        <th>DeliveryChallanId</th>
+                                        <th>GatePassSubId</th>
+                                        <th>Fiscal Year</th>
+                                        <th>Fiscal Month</th>
+                                        <th>Dealer Code</th>
+                                        <th>Dealer Name</th>
+                                        <th>DO No</th>
+                                        <th>Delivery Challan No</th>
+                                        <th>Truck Load Qty</th>
+                                        <th>Buffer</th>
+                                        
+                                        <th>Balance Qty</th>
+                                        <th>Challan Qty</th>
+                                       
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        if (Model.BufferChallans != null)
+                                        {
+                                            foreach (var item in Model.BufferChallans)
+                                            {
+                                                <tr class="txtMultmasterlcdetails">
+
+                                                    <td>
+                                                        @item.BufferDelChallanId
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferGatePassSubId
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.RepresentativeBooking.YearName.FYName
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.RepresentativeBooking.MonthName.MonthName
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeCode
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.RepresentativeBooking.BufferRepresentative.RepresentativeName
+                                                    </td>
+
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.DONo
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.ChallanNo
+                                                    </td>
+
+                                                    <td>
+                                                        @item.TruckLoadQty
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.BufferDelOrder.RepresentativeBooking.BufferList.BufferName
+                                                    </td>
+                                                   
+                                                   
+                                                    <td>
+                                                        @item.BalanceQty
+                                                    </td>
+                                                    <td>
+                                                        @item.BufferDelChallan.DeliveryQty
+                                                    </td>
+                                                   
+                                                    <td>
+                                                        @*<a data-itemid="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash fa-2x"></i></a>*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+
+                                </tbody>
+
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div type="button" class="btn btn-primary rounded-0" data-toggle="modal" data-target="#exampleModal" id="mod"><i class="fa fa-plus fa-lg"></i></div>
+                                        </td>
+
+
+                                        <td class="text-right" colspan="3">
+                                            <h6>Total Load Qty</h6>
+                                        </td>
+                                        <td colspan="1">
+                                            <h6 class="ttlloadqty">0.00</h6>
+                                        </td>
+                                        <td colspan="1"></td>
+                                        <td colspan="1"></td>
+                                        <td colspan="1"></td>
+                                      
+                                        
+
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        @*</div>*@
+
+                        <table>
+
+                            <tr>
+
+                                <td>
+                                    @if (ViewBag.Title == "Create")
+                                    {
+                                        @*<input type="submit" value="Create" class="btn btn-primary btn-block" />*@
+
+                                        @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="SaveGatePass()">Save</button>*@
+                                        <button id="create" class="btn btn-primary rounded-0" onclick="ConfirmDialog('Do you want to save ?')" type="button">Save</button>
+
+                                    }
+                                    else if (ViewBag.Title == "Edit")
+                                    {
+                                        @*<input type="submit" value="Update" class="btn btn-warning btn-block" />*@
+
+                                        <button class="btn btn-warning btn-lg btn-block rounded-0" type="button" onclick="SaveGatePass()">Update</button>
+                                    }
+                                    else if (ViewBag.Title == "Delete")
+                                    {
+                                        <button class="btn btn-danger btn-lg btn-block rounded-0" type="button" onclick="GatePass_delete()">Delete</button>
+                                    }
+
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Back", "Index", "Buffergatepass", null, new { @class = "btn btn-info btn-block rounded-0" })
+
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Reset", "Create", "Buffergatepass", null, new { @class = "btn btn-warning btn-block rounded-0" })
+
+                                </td>
+
+
+                            </tr>
+
+                        </table>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div id="SubSectionList" class="">
+                            @*<div class="col-md-12 order-md-1">*@
+                                    <div class="table-responsive">
+                                        @*<table id="tblchallan" class="table-sm table-responsive table-striped table-hover text-center;" style="text-align: center; width:100%">*@
+                                        <table id="tblchallan" class="table-striped table table-sm table-hover text-center" width="100%">
+                                            <thead class="text-nowrap">
+                                                <tr>
+                                                    <th>DeliveryChallanId</th>
+                                                    <th>GatePassSubId</th>
+                                                    <th>Fiscal Year</th>
+                                                    <th class="text-nowrap">Month</th>
+                                                    <th>Representative Code</th>
+                                                    <th>Representative Name</th>
+                                                    <th>DO No</th>
+                                                    <th>Challan No</th>
+                                                    <th>Load Qty</th>
+                                                    <th>Buffer</th>
+                                                   
+                                                    <th>Balance Qty</th>
+                                                    <th>Challan Qty</th>
+                                                    
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (ViewBag.DeliveryChallans != null)
+                                                {
+                                                    foreach (var item in ViewBag.DeliveryChallans)
+                                                    {
+                                                        <tr class="txtMultmasterlcdetails">
+
+                                                            <td>
+                                                                @item.BufferDelChallanId
+                                                            </td>
+                                                            <td>
+                                                                @item.BufferGatePassSubId
+                                                            </td>
+                                                            <td class="text-nowrap">
+                                                                @item.FyName
+                                                            </td>
+                                                            <td class="text-nowrap">
+                                                                @item.MonthName
+                                                            </td>
+                                                            <td>
+                                                                @item.CustomerCode
+                                                            </td>
+                                                            <td>
+                                                                @item.CustomerName
+                                                            </td>
+                                                            <td>
+                                                                @item.DONo
+                                                            </td>
+                                                            <td>
+                                                                @item.ChallanNo
+                                                            </td>
+                                                            <td>
+                                                                @item.BalanceQty
+                                                            </td>
+                                                            <td>
+                                                                @item.BufferName
+                                                            </td>
+                                                         
+
+                                                            <td>
+                                                                @item.BalanceQty
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryQty
+                                                            </td>
+                                                           
+                                                            <td>
+                                                                <a data-itemid="0" href="#" class="dlttrash deleteItem"> <i class="fa fa-trash fa-2x"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="3">
+                                                    </td>
+                                                    <td class="text-right" colspan="3">
+                                                        <h6>Total Load Qty</h6>
+                                                    </td>
+                                                    <td colspan="1">
+                                                        <h6 class="ttlloadqtychallan">0.00</h6>
+                                                    </td>
+                                                    <td class="text-right" colspan="1"></td>
+                                                    <td colspan="1"></td>
+                                                    <td colspan="1"></td>
+                                                    
+
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+
+                                    @*<br />*@
+
+                        </div>  @*Datatable Initializer tblproductserialsearch*@
+                    </div>
+                    <div class="modal-footer">
+                        @*<div class="col-md-3">
+
+                                <h6 style="color:dodgerblue">Press CNTRL Button + Mouse Click for Multiple Selection: </h6>
+                            </div>*@
+                        <div class="col-md-12">
+
+
+                            <div class="row">
+                                <div class="col-md-2 col-12">
+                                    <button type="button" class="btn btn-block btn-danger rounded-0" data-dismiss="modal">Close</button>
+                                </div>
+
+                                <div class="col-md-3 col-12">
+                                    <h4>Remaining Qty : </h4>
+                                </div>
+
+                                <div class="col-md-2 col-12">
+                                    <input type="text" id="TotalRemainingQty" class="form-control disabled" />
+                                </div>
+
+
+                                <div class="col-md-3 col-12">
+                                    <h4>Total Selected Qty : </h4>
+                                </div>
+
+                                <div class="col-md-2 col-12">
+                                    <input type="text" id="TotalQtyChallan" class="form-control disabled" />
+                                </div>
+
+                            </div>
+
+
+
+
+                            @*<button type="button" class="btn btn-primary">Save changes</button>*@
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+
+
+    @section scripts{
+
+
+        <script>
+            function ConfirmDialog(message) {
+                $('<div></div>').appendTo('body')
+                    .html('<div><h6>' + message + '?</h6></div>')
+                    .dialog({
+                        modal: true,
+                        title: 'Save / Update message',
+                        zIndex: 10000,
+                        autoOpen: true,
+                        width: 'auto',
+                        resizable: false,
+                        buttons: {
+                            Yes: function () {
+
+                                $(this).dialog("close");
+                                $("#create").prop("disabled", true);
+                                //DeliveryChallan_Save();
+                                SaveGatePass();
+                            },
+                            No: function () {
+                                //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                                $(this).dialog("close");
+
+                            }
+                        },
+                        close: function (event, ui) {
+                            $(this).remove();
+                        }
+                    });
+            };
+
+            $('#exampleModal').on('shown.bs.modal', function (e) {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+            });
+
+
+            var antiForgeryToken;
+            antiForgeryToken = $("input[name=GTR_ANTIFORZERY]").val();
+
+
+
+            $('#TotalQty').attr("disabled", true);
+            $('#TotalRemainingQty').attr("disabled", true);
+            $('#TotalQtyChallan').attr("disabled", true);
+
+
+            function GatePass_delete() {
+
+                var GatePassId = $("#GatePassId").val();
+
+
+                $.ajax({
+
+                    url: '@Url.Action("Delete", "BufferGatePass")',
+                    //url: '@Url.Action("Delete")',
+                    data: JSON.stringify({ id: GatePassId }), //use id here
+                    //data: JSON.stringify(salesmain),
+                    type: 'POST',
+                    async: 'false',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.Success == "1") {
+                            customFile('3', result.ex);
+                            window.setTimeout(function () {
+                                // Move to a new location or you can do something else
+                                window.location.href = '@Url.Action("Index", "BufferGatePass")';
+                            }, 500);
+                        }
+                        else {
+                            toastr.error(result.ex);
+                        }
+                    }
+                });
+            }
+
+            var result =@Html.Raw(Json.Serialize(receiver));
+            var receiverList = [];
+            for (var i = 0; i < result.length; i++) {
+                receiverList.push(result[i].Text);
+            }
+
+            $(function () {
+                $("#Receiver").autocomplete({
+                    source: receiverList,
+                    autoFocus: true
+                });
+            });
+
+
+
+
+            var tblChallan;
+            var tblgatepasslist;
+
+
+            $("#FiscalYearId").select2();
+            $("#FiscalMonthId").select2();
+            $("#DistrictId").select2();
+            $("select").select2({
+                theme: "bootstrap4",
+            });
+
+
+
+           var mode = $("#mode").val();
+            if (mode == "Create" || mode == "Edit" || mode == "Delete") {
+                    $.ajax({
+                        url: '@Url.Action("ComboInitialize", "BufferGatePass")',
+                        type: 'GET',
+                        async: 'false',
+                        headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                        dataType: 'json',
+                        //data: { id: productid },
+                        success: function (data, status, xhr) {
+                            if (status == 'success') {
+
+                                var d1 = data.FYear;
+                                var d2 = data.Buffer;
+
+
+                             
+                                $('#DistrictId').append(new Option("Select Buffer", ""));
+                                for (var i = 0; i < d2.length; ++i) {
+                                    optionValue = d2[i].BufferListId;
+                                    optionText = d2[i].BufferName;
+                                    $('#DistrictId').append(new Option(optionText, optionValue));
+
+                                }
+
+                                $('#FiscalMonthId').append(new Option("Select Fiscal Month", "-1"));
+                            };
+                        },
+                    });
+                }
+
+
+
+
+            function getChallan() {
+                var FiscalYearId = $("#FiscalYearId option:selected").val();
+                var FiscalMonthId = $("#FiscalMonthId option:selected").val();
+                var BufferId = $("#DistrictId option:selected").val();
+
+
+
+                if (FiscalYearId=='-1') {
+                    alert('Please select Fiscal Year');
+                    return;
+                }
+                if (FiscalMonthId == '-1') {
+                    alert('Please select Fiscal Month');
+                    return;
+                }
+              
+
+
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetChallanDetails", "BufferGatePass")',
+                    dataType: 'json',
+                    async: 'false',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    async: 'false',
+                    data: { yearid: FiscalYearId, monthid: FiscalMonthId, bufferid: BufferId },
+                    success: function (result) {
+
+                        if (result.success == "1") {
+                            if ($.fn.DataTable.isDataTable('#tblchallan')) {
+                                tblChallan.clear().draw();
+                            }
+
+                            var d = result.data;
+                           
+                            for (var i = 0; i < d.length; i++) {
+                                $('#tblchallan').dataTable().fnAddData([
+                                    d[i].DeliveryChallanId,
+                                    d[i].GatePassSubId,
+                                    d[i].FyName,
+                                    d[i].MonthName,
+                                    d[i].RepresentativeCode,
+                                    d[i].RepresentativeName,
+
+                                    d[i].DONo,
+                                    d[i].ChallanNo,
+
+                                    d[i].BalanceQty,
+                                    d[i].BufferName,
+                                    
+                                    d[i].BalanceQty,
+
+                                    //"<input type='text' data-val='true'  data-val-required='Please Fill load Qty.' class='form-control form-control-sm loadqty' value='" + d[i].BalanceQty + "'/>",
+                                    d[i].DeliveryQty,
+                                   
+                                    ""
+                                ]);
+                            }
+
+                          
+
+                            toastr.success('Data loaded in memory');
+
+                            TotalLoadQtyChallan();
+                            TotalLoadQty();
+
+                                //$("#mod").trigger('click');
+                            }
+                            else {
+                                alert(result.ex);
+                            }
+                        }
+                    });
+
+            };
+
+
+
+
+        
+            function ClearData() {
+                $("#GatePassId").val('');
+                $("#GatePassNo").val('');
+                $("#TruckNumber").val('');
+             
+
+
+            }
+
+            function SaveGatePass() {
+
+                var d = parseFloat($("#TotalQty").val());
+                if (d > 8) {
+                    $("#TotalQty").removeClass(" yellow");
+                    $("#TotalQty").addClass("important red");
+                    $("#TotalQty").css({ 'color': 'yellow', 'font-size': '150%' });
+                    toastr.error('Load qty must not be greter than 8 metric ton');
+                    return true;
+                }
+                else {
+                    $("#TotalQty").removeClass("important red");
+                    $("#TotalQty").addClass(" yellow");
+                    $("#TotalQty").css({ 'color': 'green', 'font-size': '100%' });
+                }
+
+
+                $('select').removeAttr('disabled');
+
+
+                if (!$("#myform").valid()) {
+                    toastr.error('Please Fill Up All Necessary Information Correctly.');
+                    $("html, body").animate({ scrollTop: 0 }, 500);
+                    $("#create").prop("disabled", false);
+                    return true;
+                }
+
+
+                var Challan = {
+                    "Id": 0,
+                    "DeliveryChallanId": "",
+                    "GatePassSubId": "",
+                    "TruckLoadQty": 0.00,
+                    "BalanceQty": 0.00,
+
+                };
+
+                var GatePass = {
+                    GatePassFrom: "",
+                    GatePassNo: "",
+                    GatePassDate: "",
+                    TruckNumber: "",
+                    //DriverName: "",
+                    //DriverMobile: "",
+
+                    ReceiverName: "",
+                    ReceiverAddress: "",
+                    //ReceiverMobile: "",
+
+
+                    FiscalYearId: "",
+                    FiscalMonthId: "",
+                    DistrictId: "",
+                    FiscalMonthId: "",
+                    TotalQty: 0,
+                    Challans: []
+
+                };
+
+
+
+
+
+                GatePass.GatePassId = $("#GatePassId").val();
+                GatePass.userid = $("#userid").val();//'@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                GatePass.comid = $("#comid").val();//'@HttpContextAccessor.HttpContext.Session.GetString("comid")';
+                //GatePass.useridUpdate = '@HttpContextAccessor.HttpContext.Session.GetString("userid")';
+                GatePass.DateAdded = $("#DateAdded").val();
+                //GatePass.DateUpdated = $("#DateUpdated").val();
+
+
+                GatePass.GatePassFrom = $("#GatePassFrom").val();
+                GatePass.GatePassNo = $("#GatePassNo").val();
+
+                GatePass.TruckNumber = $("#TruckNumber").val();
+                //GatePass.DriverName = $("#DriverName").val();
+                //GatePass.DriverMobile = $("#DriverMobile").val();
+
+                GatePass.ReceiverName = "";//$("#ReceiverName").val();
+                GatePass.ReceiverAddress = "";//$("#ReceiverAddress").val();
+                //GatePass.ReceiverMobile = $("#ReceiverMobile").val();
+
+                GatePass.GatePassDate = $("#GatePassDate").val();
+
+
+                GatePass.FiscalYearId = $("#FiscalYearId option:selected").val();
+                GatePass.FiscalMonthId = $("#FiscalMonthId option:selected").val();
+                GatePass.DistrictId = $("#DistrictId option:selected").val();
+                GatePass.PoliceStationId = $("#PoliceStationId option:selected").val();
+
+                GatePass.TotalQty = $("#TotalQty").val();
+
+
+                var oTablesubdatacheck = $('#tblgatepasslist').dataTable().fnGetData();
+
+                if (oTablesubdatacheck.length == 0) {
+                    alert("Please Fill Necessary Data.");
+                    return;
+                }
+
+                if ($.fn.DataTable.isDataTable('#tblgatepasslist')) {
+                    var rows = $("#tblgatepasslist").dataTable().fnGetNodes();
+                    var DeliveryChallanIds = tblgatepasslist.column('DeliveryChallanId:name').data();
+                    //console.log(DeliveryChallanIds);
+                    //alert(DeliveryChallanIds.length)
+                    var GatePassSubIds = tblgatepasslist.column('GatePassSubId:name').data();
+                    //console.log(GatePassSubIds);
+
+                    var TruckLoadQtys = tblgatepasslist.column('TruckLoadQty:name').data();
+                    //var TruckLoadQtys = rows[i].cells[8].children[0].value | 0;
+
+                    for (var i = 0; i < DeliveryChallanIds.length; i++) {
+
+                        Challan.DeliveryChallanId = DeliveryChallanIds[i];
+                        Challan.GatePassSubId = GatePassSubIds[i];
+                        Challan.TruckLoadQty = rows[i].cells[6].children[0].value.replace(/[\$,]/g, '');
+                        //parseFloat(rows[i].cells[6].children[0].valueAsNumber) | 0.00;
+
+                        GatePass.Challans.push(Challan);
+
+                        Challan = {
+                            "Id": 0,
+                            "DeliveryChallanId": "",
+                            "GatePassSubId": "",
+                            "TruckLoadQty": 0.00,
+                            "BalanceQty": 0.00
+                        };
+
+                    }
+                    console.log(GatePass);
+
+                }
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create", "BufferGatePass")',
+                    dataType: 'json',
+                    async: 'false',
+                    headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                    data: { gatePass: GatePass },
+                    success: function (result) {
+                        if (result.Success == "1") {
+
+                            toastr.success('Gate Pass Created Successfully');
+                            tblChallan.clear();
+                            ClearData();
+                            tblgatepasslist.clear();
+                            tblgatepasslist.draw();
+                            //alert('found');
+
+                            //console.log(result.GatePassId);
+
+
+
+                             var gatepassidprint = result.GatePassId;
+
+
+
+                            //alert(gatepassidprint);
+
+                            //var url = '@Url.Action("Print", "BufferGatePass")';
+                            //window.open(url, '_blank')
+
+
+                            var urllink = '@Url.Action("Print", "BufferGatePass", new { id = "xxxx"})'.replace("xxxx", gatepassidprint);
+
+
+                            //var url = '@Url.Action("Print", "BufferGatePass")?id=' + gatepassidprint;
+                            //alert(urllink);
+
+                            window.open(urllink, '_blank');
+
+
+
+                            getChallan();
+
+                            TotalLoadQtyChallan();
+                            TotalLoadQty();
+
+                            $("#create").prop("disabled", false);
+
+
+
+                            $("#TotalQty").val(0);//---fahad
+                     
+                            '@Url.Action("Print", "BufferGatePass")';
+
+                           '@Url.Action("Index", "BufferGatePass")';
+
+                            //alert(result.GatePassNo);
+                            $("#GatePassNo").val(result.GatePassNo);
+                            $("#TruckNumber").val(result.TruckNumber);
+
+
+                        }
+                        else {
+                            alert(result.ex);
+                        }
+                    },
+                    error: function (ex) {
+                        alert('error');
+                    }
+                });
+
+                $('#TotalQty').attr("disabled", true);
+
+
+            };
+
+            $(document).on('keyup', '.loadqty', function () {
+                TotalLoadQty();
+            });
+     
+
+
+            function TotalLoadQty() {
+
+
+                var abcdef = $('#tblchallan').DataTable();
+
+                var $loadqty;
+
+                var totalloadqty = 0;
+
+                
+                var rows = $("#tblgatepasslist").dataTable().fnGetNodes();
+                
+
+                for (var i = 0; i < rows.length; i++) {
+                   
+
+                    var $loadqty = rows[i].cells[8].children[0].value.replace(/[\$,]/g, '');
+
+                    console.log(rows[i]);
+                   
+                    totalloadqty += parseFloat($loadqty);
+                }
+
+              
+
+
+                $(".ttlloadqty").val(totalloadqty.toLocaleString());
+                $(".ttlloadqty").text(totalloadqty.toLocaleString());
+
+                $("#TotalQty").val(totalloadqty.toLocaleString());//---fahad
+                $("#TotalQty").text(totalloadqty.toLocaleString());//---fahad
+
+                var d =parseFloat( totalloadqty.toLocaleString());
+                if (d > 8) {
+                    $("#TotalQty").removeClass(" yellow");
+                    $("#TotalQty").addClass("important red");
+                    $("#TotalQty").css({ 'color': 'yellow', 'font-size': '150%' });
+                    toastr.error('Load qty must not be greter than 8 metric ton');
+                }
+                else {
+                    $("#TotalQty").removeClass("important red");
+                    $("#TotalQty").addClass(" yellow");
+                    $("#TotalQty").css({ 'color': 'green', 'font-size': '100%' });
+                }
+
+
+            };
+
+            function TotalLoadQtyChallan() {
+
+
+                var totalloadqtychallan = 0;
+
+                
+                var rows = $("#tblchallan").dataTable().fnGetNodes();
+                console.log(rows);
+
+                var abcdef = $('#tblchallan').DataTable();
+
+                var $loadqty;
+                var xyz = $('#TotalQty').val();
+
+                for (var i = 0; i < rows.length; i++) {
+                    
+                    if ($(rows[i]).hasClass('selected')) {
+                       // aReturn.push(aTrs[i]);
+
+                        console.log(rows[i]);
+                        var x = document.getElementById("tblchallan").rows[i+1].cells[6].innerText;
+                        console.log(x);
+                        $loadqty = x;
+                        totalloadqtychallan += parseFloat($loadqty);
+                        
+
+
+
+
+
+
+                    }
+
+                  
+                }
+                totalloadqtychallan = totalloadqtychallan + parseFloat(xyz);
+               
+
+
+                $(".ttlloadqtychallan").val(totalloadqtychallan.toLocaleString());
+                $(".ttlloadqtychallan").text(totalloadqtychallan.toLocaleString());
+
+                $("#TotalQtyChallan").val(totalloadqtychallan.toLocaleString());//---fahad
+                $("#TotalQtyChallan").text(totalloadqtychallan.toLocaleString());//---fahad
+
+
+                var remainingqty = (8 - parseFloat(totalloadqtychallan ));
+                //alert(remainingqty);
+                $("#TotalRemainingQty").val(remainingqty.toLocaleString());//---fahad
+                $("#TotalRemainingQty").text(remainingqty.toLocaleString());//---fahad
+
+
+                var d = parseFloat(totalloadqtychallan.toLocaleString());
+                if (d > 8) {
+                    $("#TotalQtyChallan").removeClass(" yellow");
+                    $("#TotalQtyChallan").addClass("important red");
+                    $("#TotalQtyChallan").css({ 'color': 'yellow', 'font-size': '150%' });
+                    toastr.error('Load qty must not be greter than 8 metric ton');
+                }
+                else {
+                    $("#TotalQtyChallan").removeClass("important red");
+                    $("#TotalQtyChallan").addClass(" yellow");
+                    $("#TotalQtyChallan").css({ 'color': 'green', 'font-size': '100%' });
+                }
+
+                //tblchallan.draw();
+
+            };
+
+
+
+
+            $(document).ready(function () {
+
+
+
+                antiForgeryToken = $("input[name='GTR_ANTIFORZERY']").val();
+                
+
+                 
+
+                $('#FiscalYearId').change(function () {
+                    var fyid = $('#FiscalYearId option:selected').val();
+                    $.ajax({
+                        url: '@Url.Action("LoadFiscalMonth", "BufferGatePass")',
+                        type: 'GET',
+                        async: 'false',
+                        headers: { "X-CSRF-TOKEN-GTR_ANTIFORZERY": antiForgeryToken },
+                        dataType: 'json',
+                        data: { fyid: fyid },
+                        success: function (data, status, xhr) {
+                            var res = data.fmonth;
+                            if (status == 'success') {
+                                $('#FiscalMonthId').removeAttr('disabled');
+                                $('#FiscalMonthId').empty();
+                                $('#FiscalMonthId').append(new Option("Select Fiscal Month", "-1"));
+                                for (var i = 0; i < res.length; ++i) {
+                                    optionValue = res[i].FiscalMonthId;
+                                    optionText = res[i].MonthName;
+                                    $('#FiscalMonthId').append(new Option(optionText, optionValue));
+
+                                }
+                            };
+                        },
+                    });
+                });
+
+               
+
+                tblChallan = $("#tblchallan").DataTable({
+
+                    "aoColumns": [
+
+                        { "sClass": "DeliveryChallanId", "visible": false },
+                        { "sClass": "GatePassSubId", "visible": false },
+                        { "sClass": "FyName", "visible": true },
+                        { "sClass": "MonthName", "visible": true },
+                        { "sClass": "CustomerCode", "visible": true },
+                        { "sClass": "CustomerName", "visible": true },
+
+                        { "sClass": "DONo", "visible": true },
+                        { "sClass": "ChallanNo", "visible": true },
+
+
+                        { "sClass": "loadqtychallan", "visible": true },
+                        { "sClass": "BufferName", "visible": true },
+                       
+                        { "sClass": "BalanceQty", "visible": true },
+                        { "sClass": "DeliveryQty", "visible": true },
+
+                        { "sClass": "Action", "visible": false }],
+
+                    rowCallback: function (row) {
+                        $(row).addClass('txtMultmasterlcdetails');
+                    },
+                    select: {
+                        style: 'multi',
+                        selector: 'td:nth-child(2),td:nth-child(3),td:nth-child(4)'
+                    },
+
+                   
+                    buttons: [{
+                        extend: "selectRows",
+                        className: "rounded-0 btn-success",
+                        text: 'Attach To GatePass',
+                        action: function (e, sourceTable, button, config) {
+                            var total_attached_value = 0;//$("#TotalQty").val();
+                            var total_readyto_attached_value = $("#TotalQtyChallan").val();
+
+                            var abc = parseFloat(parseFloat(total_attached_value) + parseFloat(total_readyto_attached_value));
+                            //alert(abc);
+
+
+                            if (abc <= 8) {
+
+                                var selectedRows = sourceTable.rows(".selected");
+                                var mData = selectedRows.data();
+
+                                selectedRows.remove().draw();
+                                targetTable = $("#tblgatepasslist").DataTable(
+
+                                );
+
+
+                                var rowCount = targetTable
+                                    .column(0)
+                                    .data()
+                                    .length;
+
+                                $.each(mData, function (idx, item) {
+
+                                    //alert(idx);
+                                    //alert(rowCount);
+                                    item[24] = idx + 1 + rowCount;
+                                    //alert(item[24]);
+                                    targetTable.row.add(JSON.parse(JSON.stringify(
+
+                                        item
+                                    )));
+                                    //alert('data added');
+
+                                })
+
+                                targetTable.draw();
+                                TotalLoadQty();
+                                //multInputsProduct();
+                            }
+                        }
+                    }],
+                  initComplete: function () {
+
+                        $("#tblchallan button").on("click", function (evt) {
+
+                            var t1 = $("#tblchallan").DataTable();
+                            var t2 = $("#tblgatepasslist").DataTable();
+                            var tr = $(this).closest("tr");
+                            var row = t1.row(tr);
+                            var data = JSON.parse(JSON.stringify(row.data()));
+                            //alert(data[0]);
+                            row.remove().draw();
+                            t2.row.add(data).draw();
+
+                            //multInputsProduct();
+                        });
+                    },
+                    //"bFilter": true,
+                    "paging": false,
+                    //"order": false,
+                    "orderable":false,
+                    //"retrieve": true,
+                    "iDisplayLength": 10,
+                    "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                    "scrollX": true,
+                    "scrollY": 400,
+                    //"order": [2, 'asc'],
+                    //"oLanguage": { "sZeroRecords": "", "sEmptyTable": "" },
+                    //dom: 'tBlip' //fahad
+                    dom: 'rt<"row"<"col-sm-4"f><"col-sm-4"i><"col-sm-4"B>>'
+                });
+
+
+                tblChallan.MakeCellsEditable({
+                    "onUpdate": myCallbackFunction,
+                    "inputCss": 'my-input-class',
+                    "columns": [8],
+                    "inputTypes": [
+                        {
+                            "column": 8,
+                            "type": "text",
+                            "options": null
+                        }
+
+                    ]
+                });
+
+
+                tblChallan
+                    .on('select', function (e, dt, type, indexes) {
+                        TotalLoadQtyChallan();
+                        TotalLoadQty();
+                        //var rowData = table.rows(indexes).data().toArray();
+                        //events.prepend('<div><b>' + type + ' selection</b> - ' + JSON.stringify(rowData) + '</div>');
+                    })
+                    .on('deselect', function (e, dt, type, indexes) {
+                        TotalLoadQtyChallan();
+                        TotalLoadQty();
+                        //var rowData = table.rows(indexes).data().toArray();
+                        //events.prepend('<div><b>' + type + ' <i>de</i>selection</b> - ' + JSON.stringify(rowData) + '</div>');
+                    });
+
+
+                function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+                    var total = 0;
+                   
+
+                    multInputslcdetails();
+                    console.log(total);
+
+                    console.log("The new value for the cell is: " + updatedCell.data());
+                    console.log("The old value for that cell was: " + oldValue);
+                    console.log("The values for each cell in that row are: " + updatedRow.data());
+                    console.log(updatedRow.index());
+
+
+                    var cell_balanceqty = tblChallan.cell(updatedRow.index(), 8);
+                    alert(cell_balanceqty.data());
+
+
+                    if (updatedCell.data() > cell_balanceqty.data()) {
+                        alert('Wrong Input');
+                        console.log($(this).index());
+
+                        var cell = tblChallan.cell(updatedRow.index(), 8);
+                        cell.data(cell_balanceqty.data());
+
+
+                    }
+
+                    TotalLoadQtyChallan();
+                    TotalLoadQty();
+
+                }
+
+
+                function multInputslcdetails() {
+
+                    var totalloadqtychallan = 0;
+
+
+
+                    $("tr.selected").each(function () {
+
+
+                        {
+
+                            
+                            var $val1 = $('.loadqtychallan', this).text().replace(/[\$,]/g, '');
+                        
+                            console.log($val1);
+
+                            totalloadqtychallan += parseFloat($val1);
+
+                            
+
+
+                        }
+                        
+
+                    });
+
+                    
+
+                    $(".ttlloadqtychallan").val(totalloadqtychallan.toLocaleString());
+                    $(".ttlloadqtychallan").text(totalloadqtychallan.toLocaleString());
+
+                    $("#TotalQtyChallan").val(totalloadqtychallan.toLocaleString());//---fahad
+                    $("#TotalQtyChallan").text(totalloadqtychallan.toLocaleString());//---fahad
+
+                    var d = parseFloat(totalloadqtychallan.toLocaleString());
+                    if (d > 8) {
+                        $("#TotalQtyChallan").removeClass(" yellow");
+                        $("#TotalQtyChallan").addClass("important red");
+                        $("#TotalQtyChallan").css({ 'color': 'yellow', 'font-size': '150%' });
+                        toastr.error('Load qty must not be greter than 8 metric ton');
+                    }
+                    else {
+                        $("#TotalQtyChallan").removeClass("important red");
+                        $("#TotalQtyChallan").addClass(" yellow");
+                        $("#TotalQtyChallan").css({ 'color': 'green', 'font-size': '100%' });
+                    }
+
+
+
+                };
+
+
+
+                tblgatepasslist = $('#tblgatepasslist').DataTable({
+                    columns: [
+                        
+                        { name: "DeliveryChallanId", "sClass": "DeliveryChallanId", "visible": false },
+                        { name: "GatePassSubId", "sClass": "GatePassSubId", "visible": false },
+                        { name: "FyName", "sClass": "FyName", "visible": true },
+                        { name: "MonthName", "sClass": "MonthName", "visible": true },
+                        { name: "Customer Name", "sClass": "RepresentativeName", "visible": true },
+                        { name: "Custome Code", "sClass": "RepresentativeCode", "visible": true },
+
+                        { name: "DO No", "sClass": "DONo", "visible": true },
+                        { name: "Challan No", "sClass": "ChallanNo", "visible": true },
+
+                        { name: "TruckLoadQty", "sClass": "TruckLoadQty", "visible": true },
+                        { name: "BufferName", "sClass": "BufferName", "visible": true },
+                        { name: "BalanceQty", "sClass": "BalanceQty", "visible": true },
+                        { name: "DeliveryQty", "sClass": "DeliveryQty", "visible": true },
+                        { name: "IsDelete", "sClass": "Action", "visible": false }],
+
+                    "tableTools": {
+                        "sRowSelector": "td:not(:first-child)"
+                    },
+                    //dom: 'litpfB',
+                    dom: 'tBlip',//fahad
+                    select: "multi",
+                    columnDefs: [
+
+                      
+                        {
+
+                            render: function (data) {
+                                return "<input type='text' data-val='true'  data-val-required='Please Fill load Qty.' class='form-control form-control-sm loadqty' readonly=readonly  value='" + data + "'/>"
+                            },
+                            "targets": 8
+                        }
+                        //,                {
+
+                        //    render: function (data, type, full, meta) {
+                        //        //return "<input type='text' class='form-control form-control-sm' value='" + data + "'/>"
+                        //        return '<select><option>A</option><option>B</option>' ;
+                        //    },
+                        //    "targets": 3
+                        //}
+
+                        //}
+                    ],
+                    createdRow: function (row) {
+                        $(".datecell", row).datepicker(
+                            { dateFormat: 'dd-M-yy' }
+                            //$('#datepicker').datepicker({ dateFormat: 'dd-mm-yy' }).val();
+
+                        ).val();
+                    },
+                    buttons: [{
+                        extend: "selectRows",
+                        text: 'Detach From Gatepass',
+                        className:"rounded-0 btn-danger mb-1",
+
+                        action: function (e, sourceTable, button, config) {
+
+                            var selectedRows = sourceTable.rows(".selected");
+                            var mData = selectedRows.data();
+                            selectedRows.remove().draw();
+                            targetTable = $("#tblchallan").DataTable();
+                            $.each(mData, function (idx, item) {
+                                targetTable.row.add(JSON.parse(JSON.stringify(item)));
+                            })
+                            targetTable.draw();
+                            TotalLoadQty();
+                            //multInputsProduct();
+                        }
+
+                    }],
+
+                    initComplete: function () {
+                        $("#tblgatepasslist button").on("click", function (evt) {
+
+                            var t1 = $("#tblgatepasslist").DataTable();
+                            var t2 = $("#tblchallan").DataTable();
+                            var tr = $(this).closest("tr");
+                            var row = t1.row(tr);
+                            var data = JSON.parse(JSON.stringify(row.data()));
+
+
+
+                            //alert(data[0]);
+                            row.remove().draw();
+                            t2.row.add(data).draw();
+
+                            //multInputsProduct();
+                        });
+
+
+
+                    },
+
+                    "bFilter": false,
+                    //"bSort": true,
+                    ordering :false,
+                    "bInfo": false,
+                    "async": false,
+                    "paging": false,
+                    "retrieve": true,
+                    //"iDisplayLength": 10,
+                    //"lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                    "scrollX": false,
+                    "scrollCollapse": true,
+                    rowCallback: function (row) {
+                        $(row).addClass('txtMultInventorySub');
+                    }
+                    //,select: "multi"
+                });
+
+                TotalLoadQty();
+
+
+            });
+        </script>
+    }
+</body>
+
+

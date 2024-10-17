@@ -1,0 +1,199 @@
+﻿@model GTERP.Models.BuyerGroup
+
+<style>
+
+    #styletext {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-weight: 100;
+        font-size: 40px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateBuyerGroups", "Commercial", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @if (Model != null)
+        {
+
+            <input type="hidden" id="BuyerGroupId" name="BuyerGroupId" value="@Model.BuyerGroupId" />
+            <input type="hidden" id="comid" name="comid" value="@Model.ComId" />
+        }
+        else
+        {
+            @*<input type="hidden" id="BuyerGroupId" name="BuyerGroupId" value="0" />*@
+            @*<input type="hidden" id="comid" name="comid" value="0" />*@
+
+
+            @*<input asp-for="BuyerGroupId" type="hidden" />
+                <input asp-for="comid" />*@
+            <input type="hidden" asp-for="BuyerGroupId" value="0" />
+            <input type="hidden" asp-for="ComId" value="0" />
+        }
+
+        <div id="modalbodyfahad" class="row ">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div  class="card-header">
+                        <h4 id="styletext" class="mb-3">Buyer Group Entry - @ViewBag.Title</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="col mb-12 order-md-1">
+
+                            <form class="needs-validation card p-4" novalidate>
+                                <div class="row">
+
+                                    <br>
+
+                                    <div class="col mb-3">
+                                        @Html.LabelFor(model => model.BuyerGroupCode)
+                                        @Html.EditorFor(model => model.BuyerGroupCode, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.BuyerGroupCode, "", new { @class = "text-danger" })
+
+                                    </div>
+                                    <div class="col mb-3">
+                                        @Html.LabelFor(model => model.BuyerGroupShortName)
+                                        @Html.EditorFor(model => model.BuyerGroupShortName, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.BuyerGroupShortName, "", new { @class = "text-danger" })
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <br>
+                                    <div class="col mb-3">
+                                        @Html.LabelFor(model => model.BuyerGroupName, new { htmlAttributes = new { @class = "control-label" } })
+                                        @Html.EditorFor(model => model.BuyerGroupName, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.BuyerGroupName, "", new { @class = "text-danger" })
+
+                                    </div>
+
+                                </div>                       
+
+
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center m-2">
+                            <br />
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+
+                                @if (ViewBag.Title == "Create")
+                                {
+                                    <input type="submit" value="Save" class="btn btn-primary btn-block" />
+
+                                    @*<button class="btn btn-primary btn-lg btn-block" type="button" onclick="Products_save()">Save</button>*@
+                                }
+                                else if (ViewBag.Title == "Edit")
+                                {
+                                    <input type="submit" value="Update" class="btn btn-warning btn-block" />
+
+                                    @*<button class="btn btn-warning btn-lg btn-block" type="button" onclick="Products_save()">Update</button>*@
+                                }
+                                else if (ViewBag.Title == "Delete")
+                                {
+                                    <button class="btn btn-danger btn-block" type="button" onclick="ConfirmDialog('Are you sure');">Delete</button>
+                                }
+
+
+                            </div>
+                            <div class="col-md-4 col-xs-12 d-block mx-auto">
+                                @Html.ActionLink("Back", "BuyerGroupsList", null, null, new { @class = "btn btn-info btn-block", @id = "btnBack" })
+
+                            </div>
+                            <div class="col-md-2"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>         
+
+        </div>
+    </div>   
+}
+
+
+@section Scripts{
+    <script type="text/javascript">     
+
+
+        //ConfirmDialog('Are you sure');
+
+        function ConfirmDialog(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+
+                            // $(obj).removeAttr('onclick');
+                            // $(obj).parents('.Parent').remove();
+
+                            //$('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                            $(this).dialog("close");
+                            BuyerGroup_delete();
+
+                        },
+                        No: function () {
+                            //$('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+
+        function BuyerGroup_delete() {
+
+                var BuyerGroupId = $("#BuyerGroupId").val();
+               // alert(BuyerGroupId);
+
+                            //alert(SalesId);
+                            $.ajax({
+
+                                url: '@Url.Action("DeleteBuyerGroups", "Commercial")',
+                                //url: '@Url.Action("Delete")',
+                                data: JSON.stringify({ id: BuyerGroupId }), //use id here
+                                //data: JSON.stringify(salesmain),
+                                type: 'POST',
+                                contentType: 'application/json;',
+                                dataType: 'json',
+                               success: function (result) {
+                                    if (result.Success == "1") {
+                                        customFile('3', result.ex);
+                                        window.setTimeout(function () {
+                                            // Move to a new location or you can do something else
+                                            window.location.href = '@Url.Action("BuyerGroupsList", "Commercial")';
+                                        }, 500);
+                                    }
+                                    else {
+                                        toastr.error(result.ex);
+                                    }
+                                }
+                            });
+    };
+
+
+    </script>
+
+}

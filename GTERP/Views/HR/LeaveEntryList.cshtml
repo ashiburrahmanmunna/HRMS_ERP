@@ -1,0 +1,668 @@
+﻿@model GTERP.Models.HR_Leave_Avail
+
+@{
+    ViewBag.Title = "Leave Input";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<HR_Leave_Avail> LeaveEntries = ViewBag.LeaveEntries;
+    var Leavecount = 1;
+
+    string message = "";
+    message = ViewBag.message;
+
+    var approvaesetting = ViewBag.ApprovalSetting;
+    
+
+
+
+    <input type="hidden" value="@ViewBag.ApprovalSetting" id="ApprovalSetting" />
+}
+<link href="~/Content/ProjectLibFile/css/customCssFile/customFormStyle.css" rel="stylesheet" />
+<style>
+    .myMessage {
+        position: fixed;
+        top: 150px;
+        left: 35%;
+        z-index: 99999999999999999999999999999999999999999999;
+    }
+
+    .divforfull {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 99999999999999999999999999999999999;
+    }
+</style>
+
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+
+<div class="container-fluid card">
+<div class="my-2">
+    <form method="post" enctype="multipart/form-data" asp-action="LeaveUploadFile">
+        <div class="input-group input-group w-50" style="margin:0 auto;">
+            <span class="input-group-btn input-group-prepend">
+                <span class="btn btn-info rounded-0" onclick="$(this).parent().find('input[type=file]').click();">Browse</span>
+                <input name="file" onchange="$(this).parent().parent().find('.form-control').html($(this).val().split(/[\\|/]/).pop());" style="display: none;" type="file" id="FileUpload1">
+            </span>
+            <span class="form-control border border-info" style="background: #f2f2f2e6;"></span>
+            <button class="rounded-0 btn btn-info btn-sm" type="submit" id="btnUploads">Upload</button>
+            <div style="padding-left:5px;">
+                <a href="~/HR/DownloadShiftFile?file=SampleLeaveInput.xlsx" title="Download Sample Format"
+                   class="btn btn-success rounded-0" target="_blank"><i class="mdi mdi-file-excel"></i> Sample Format</a>
+            </div>
+        </div>
+            <div class="text-secondary" style="margin-left:20px auto; text-align:center">
+                <span style="font-weight:800;">Noted:</span> "GTR bears no liability for misuse or validation errors in Excel-based Leave uploads. <strong>Test before use, or rely on system input.</strong>"
+            </div>
+
+    </form>
+</div>
+
+
+@using (Html.BeginForm("CreateLeaveEntry", "HR", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @if (Model != null)
+    {
+
+
+        <input type="hidden" id="LvId" name="LvId" value="@Model.LvId" />
+        <input type="hidden" id="Dateadded" name="Dateadded" value="@Model.DateAdded" />
+
+    }
+    else
+    {
+        <input type="hidden" asp-for="ComId" value="0" />
+
+    }
+    //@Html.AntiForgeryToken()
+
+    
+        
+        <div class="divforfull" style="display: none;">&nbsp;</div>
+        <div class="myMessage" style="width: 30%; display: none;">
+            <br /><br /><br /><br />
+            <center>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Message</div>
+                    <div class="panel-body messageBody">@message</div>
+                </div>
+            </center>
+        </div>
+
+        <div class="row p-2">
+            <div id="myTable" class="col-md-9 col-12 mdl-data-table">
+                <div class="row pr-2">
+                    <div class="col-md-12 col-12 card mb-2 p-1">
+                        <div class="leaveEntryGrid table-responsive">
+                            <h4 class="text-center" id="styletext">Leave Balance</h4>
+                            <table id="empInfo" class="table-sm table-striped table-hover text-center;" style="text-align: center; width:100%">
+                                <thead>
+                                    <tr style="text-align:center">
+                                        <th>Emp. Code</th>
+                                        <th>Emp. Name</th>
+                                        <th>Year</th>
+                                        <th>CL(Total)</th>
+                                        <th>CL(Enjoyed)</th>
+                                        <th>SL(Total)</th>
+                                        <th>SL(Enjoyed)</th>
+                                        <th>EL(Total)</th>
+                                        <th>EL(Enjoyed)</th>
+                                        <th>ML(Total)</th>
+                                        <th>ML(Enjoyed)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-12 card p-1">
+                        <div class="empLeaveInfo table-responsive">
+                            <h4 class="text-center" id="styletext">Leave Avail</h4>
+                            <table id="datatableleave" class="table-sm table-striped table-hover" style="text-align: center; width:100%">
+                                <thead>
+                                    <tr style="text-align: center;">
+                                        @* <th style="display: none;">Leave Id</th>*@
+                                        <th>Leave Id</th>
+                                    @*    <th width="8%">Code</th>
+                                        <th width="25%">Name</th>*@
+                                        <th width="10%">Leave Type</th>
+                                        <th width="15%">From(Date)</th>
+                                        <th width="15%">To(Date)</th>
+                                        <th width="7%">Days</th>
+                                        <th width="7%">Status</th>
+                                        <th width="20%">Remarks</th>
+                                    </tr>
+                                </thead>
+                                @if (LeaveEntries != null)
+                                {
+
+                                    <tbody>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div asp-validation-summary="All">
+
+                </div>
+            </div>
+            <div id="modalbodyfahad" class="col-md-3 col-12 card">
+                <div class="row pt-2">
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @Html.HiddenFor(model => model.LvId)
+                                    @*@Html.LabelFor(model => model.DtLvInput)*@
+                                    Input Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="DtLvInput" class="form-control" autocomplete="off" />
+                            @Html.ValidationMessageFor(model => model.DtLvInput, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @Html.LabelFor(model => model.EmpId, "Employee")
+                                </span>
+                            </div>
+                            @Html.DropDownList("EmpId", ViewBag.EmpId ?? new List<SelectListItem>(), "--Please Select--", htmlAttributes: new { id = "EmpId", @class = "form-control" })        
+                            @Html.ValidationMessageFor(model => model.EmpId, "", new { @class = "text-danger" })
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @Html.LabelFor(model => model.LTypeId, "Leave Type")
+                                </span>
+                            </div>
+                            @Html.DropDownList("LTypeId", ViewBag.LTypeId ?? new List<SelectListItem>(), "--Please Select--", htmlAttributes: new { id = "LTypeId", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.LTypeId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @*@Html.LabelFor(model => model.TotalDay)*@
+                                    Total Day
+                                </span>
+                            </div>
+                            @Html.EditorFor(model => model.TotalDay, new { htmlAttributes = new { @class = "form-control", type = "Text", id = "TotalDay" } })
+                            @Html.ValidationMessageFor(model => model.TotalDay, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @*@Html.LabelFor(model => model.DtFrom)*@
+                                    From Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="DtFrom" class="form-control DtFrom" autocomplete="off" id="DtFrom" />
+                            @Html.ValidationMessageFor(model => model.DtFrom, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @*@Html.LabelFor(model => model.DtTo)*@
+                                    To Date
+                                </span>
+                            </div>
+                            <input type="text" asp-for="DtTo" class="form-control" autocomplete="off" id="DtTo" />
+                            @Html.ValidationMessageFor(model => model.DtTo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-md-12 col-12">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    @Html.LabelFor(model => model.Remark)
+                                </span>
+                            </div>
+                            @*@<input type="text" asp-for="Remark" class="form-control" autocomplete="off" id="Remark" />*@
+                            @Html.EditorFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <input type="hidden" asp-for="Status" />
+
+                    <input type="hidden" asp-for="IsApprove"  />
+
+                    <div class="col-md-12">
+                        <div class=" row p-1">
+                            <div class="col-md-3 col-12 px-1">
+                                <button id="create" class="btn btn-success btn-block rounded-0 mb-2" type="button" onclick="Leave_save()">Save</button>
+                            </div>
+                            <div class="col-md-3 col-12 px-1">
+                                <button id="update" class="btn btn-warning btn-block rounded-0 mb-2" type="button" onclick="ConfirmDialogUpdate('Are you sure');" disabled>Update</button>
+                            </div>
+                            <div class="col-md-3 col-12 px-1">
+                                <button id="delete" class="btn btn-danger btn-block rounded-0 mb-2" type="button" onclick="ConfirmDialogDelete('Are you sure');" disabled>Delete</button>
+                            </div>
+                            <div class="col-md-3 col-12 px-1">
+                                <button id="clear" class="btn btn-primary btn-block rounded-0 mb-2" type="button" onclick="Leave_clear()">Refresh</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+}
+
+@section Scripts {
+
+
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    <script>
+        $('#EmpId').select2();
+
+        if ($('#LvId').val() > 0) {
+            LoadLeaveConsumedInfo();
+
+        } else {
+        }
+        $(document).ready(function () {
+            $("#saveBtn").prop("disabled", false);
+            $("#updateBtn").prop("disabled", true);
+            $("#DTTo").prop("disabled", true);
+            $('#DtLvInput').val(CurrentDate());
+            $('#DtFrom').val(CurrentDate());
+            $("#LTypeId").select2();
+
+            $("#DtLvInput").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtLvInput").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtLvInput").datepicker("option", "dateFormat", 'dd-M-yy');
+
+                }
+            });
+            $("#DtFrom").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtFrom").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+
+                }
+            });
+            $('#EmpId').on('select2:select', function (e) {
+                 LoadLeaveConsumedInfo()
+            });
+            $("#DtTo").datepicker({
+                onSelect: function (date) {
+                    // Your CSS changes, just in case you still need them
+                    $('a.ui-state-default').removeClass('ui-state-highlight');
+                    $(this).addClass('ui-state-highlight');
+                    var dateFormat = $("#DtTo").datepicker("option", "dateFormat");
+                    //setter
+                    $("#DtTo").datepicker("option", "dateFormat", 'dd-MM-yy');
+                }
+            });
+            function CurrentDate() {
+                var date = new Date();
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                    "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+                return val;
+            }
+
+        });
+        function LoadLeaveConsumedInfo() {
+
+            var empId = $('#EmpId').val()
+            var date = $('#DtLvInput').val()
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("LoadLeaveEntryPartial", "HR")',
+                dataType: 'json',
+                data: { empId: empId, date: date },
+                success: function (data) {
+                    datatableleave.clear().draw();
+                    for (var i = 0; i < data.length; i++) {
+                        $('#datatableleave').dataTable().fnAddData([
+                            data[i].LvId,
+                            data[i].LTypeNameShort,
+                            data[i].DtFrom, data[i].DtTo, data[i].TotalDay, data[i].Status, data[i].Remark]);
+                    }
+                },
+                error: function (ex) {
+                    toastr.error("Sorry, an error occured");
+                }
+            })
+            LoadLeaveAvailableInfo(empId, date);
+        }
+
+
+    function LoadLeaveAvailableInfo(empId, date) {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LoadEmployeeLeaveData", "HR")',
+            dataType: "json",
+            data: { empId: empId, date: date },
+            success: function (data) {
+                console.log(data);
+                $('#empInfo>tbody').empty();
+                for (item of data) {
+                    $('#empInfo tbody').append(
+                    `<tr>
+                        <td>${item.Code}</td>
+                        <td>${item.EmployeeName}</td>
+                        <td>${item.Year}</td>
+                        <td>${item.CLTotal}</td>
+                        <td>${item.CLEnjoyed}</td>
+                        <td>${item.SLTotal}</td>
+                        <td>${item.SLEnjoyed}</td>
+                        <td>${item.ELTotal}</td>
+                        <td>${item.ELEnjoyed}</td>
+                        <td>${item.MLTotal}</td>
+                        <td>${item.MLEnjoyed}</td>
+                    </tr>`);
+                };
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+      
+
+
+
+        function Leave_save() {
+            $('#DtFrom').removeAttr("style");// css('border-color', 'red');
+            $('#DtTo').removeAttr("style");//.css('border-color', 'red');
+            $('#TotalDay').removeAttr("style");//.css('border-color', 'red');
+            $('#Remark').removeAttr("style");//.css('border-color', 'red');
+            $('#LTypeId').removeAttr("style");//.css('border-color', 'red');
+            $('#EmpId').removeAttr("style");//.css('border-color', 'red');
+
+            var LeaveData = {
+                EmpId: $('#EmpId').val(),
+                LTypeId: $('#LTypeId').val(),
+                DtFrom: $('#DtFrom').val(),
+                DtTo: $('#DtTo').val(),
+                TotalDay: $('#TotalDay').val(),
+                DtLvInput: $('#DtLvInput').val(),
+                Remark: $('#Remark').val()
+            };
+            console.log(LeaveData);
+            var empId = $('#EmpId').val();
+            var inputDate = $('#DtLvInput').val();
+
+            if (LeaveData.EmpId !== "" && LeaveData.LTypeId !== null && LeaveData.TotalDay !== 0 && LeaveData.DtFrom !== "" && LeaveData.DtTo !== "") {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("CreateLeaveEntry", "HR")',
+                    dataType: "json",
+                            data: { hR_Leave_Avail: LeaveData },
+                    success: function (data) {
+                        console.log(data);
+                        customFile(data.Success, data.ex);
+                        Leave_clear();
+                        LoadLeaveConsumedInfo();
+                    },
+                    error: function () {
+                        customFile('3',"Something is wrong! Please Contact Your Admin!");
+                    }
+                });
+            } else {
+                if (LeaveData.EmpId === "" || LeaveData.EmpId ==="-1") {
+                    $('#EmpId').css('border-color', 'red');
+                    alert('Please Select Employee First');
+
+                }
+                if (LeaveData.DtFrom === "") {
+                    $('#DtFrom').css('border-color', 'red');
+                    alert('Please Input From Date');
+                }
+                if (LeaveData.DtTo === "") {
+                    $('#DtTo').css('border-color', 'red');
+                    alert('Please Input To Date');
+                }
+                if (LeaveData.TotalDay === "") {
+                    $('#TotalDay').css('border-color', 'red');
+                    alert('Please Input Leave Day');
+                }
+                if (LeaveData.LTypeId === "") {
+                    alert('Please Select Leave Type');
+                    $('#LTypeId').css('border-color', 'red');
+                }
+                if (LeaveData.Remark === "") {
+                    $('#Remark').css('border-color', 'red');
+                }
+                setTimeout(function () {
+                    $('.myMessage').fadeOut(500);
+                    $('.divforfull').fadeOut(500);
+                }, 500);
+            };
+        };
+        var datatableleave = $('#datatableleave').DataTable({
+        select: true,
+        select: 'single',
+        'columnDefs': [
+            {
+                'targets': 0,
+                'visible': false,
+                'className': 'lvid'
+            }
+        ],
+        'paging': false,
+        'searching': false,
+        'info': false
+         });
+        $(document).on('click', '#datatableleave tr', function () {
+            var approvalsetting = $('#ApprovalSetting').val();
+
+           
+            var rowsdata = datatableleave.rows('.selected').data();
+            if (rowsdata.length > 0) {
+                var lvid = rowsdata[0][0];
+                var empid = rowsdata[0][1];
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LoadGridData", "HR")',
+                    dataType: "json",
+                    data: { empid: empid, lvid: lvid },
+                    success: function (data) {
+                        $('#LvId').val(data.LvId);
+                        $('#DtLvInput').val(data.DtInput);
+                        $('#LTypeId').val(data.LTypeId).change();
+                        $('#TotalDay').val(data.TotalDay);
+                        $('#DtFrom').val(data.DtFrom);
+                        $('#DtTo').val(data.DtTo);
+                        $('#Remark').val(data.Remark);
+                        $('#Status').val(data.Status);
+                        $('#create').prop('disabled', true);
+                        if (data.Status == 1 && approvalsetting == 1)
+                        {
+                            $('#update').prop('disabled', true);
+                        }
+                        else
+                        {
+                          $('#update').prop('disabled', false);
+                        }
+                        //$('#update').prop('disabled', false);
+                        $('#delete').prop('disabled', false);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            }
+        });
+    $('#DtTo').click(function () {
+        var totalday = $('#TotalDay').val();
+        var dtfrom = $('#DtFrom').val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetToDate", "HR")',
+            dataType: "json",
+            data: { TotalDay: totalday, DtFrom: dtfrom },
+            success: function (data) {
+                $('#DtTo').val(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+        function Leave_Update() {
+            var LeaveData = {
+                LvId: $('#LvId').val(),
+                EmpId: $('#EmpId').val(),
+                LTypeId: $('#LTypeId').val(),
+                DtFrom: $('#DtFrom').val(),
+                DtTo: $('#DtTo').val(),
+                TotalDay: $('#TotalDay').val(),
+                DtLvInput: $('#DtLvInput').val(),
+                Remark: $('#Remark').val(),
+                Status: $('#Status').val(),
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpdateLeaveEntry", "HR")',
+                dataType: "json",
+                data: { LeaveAvail: LeaveData },
+                success: function (data) {
+                    customFile(data.Success, data.ex);
+                    Leave_clear();
+                    LoadLeaveConsumedInfo();
+                },
+                error: function () {
+                    alert("Error! Please, Contact your admin!");
+                }
+            });
+        };
+        function Leave_Delete() {
+            var LeaveData = {
+                LvId: $('#LvId').val(),
+                EmpId: $('#EmpId').val(),
+                LTypeId: $('#LTypeId').val(),
+                DtFrom: $('#DtFrom').val(),
+                DtTo: $('#DtTo').val(),
+                TotalDay: $('#TotalDay').val(),
+                DtLvInput: $('#DtLvInput').val(),
+                Remark: $('#Remark').val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteLeaveEntry", "HR")',
+                dataType: "json",
+                data: { LeaveAvail: LeaveData },
+                success: function (data) {
+                    customFile('3', 'Data Delete Successfully');
+                    Leave_clear();
+                    LoadLeaveConsumedInfo();
+                },
+                error: function () {
+                    alert("Error! Please, Contact your admin!");
+                }
+            });
+        };
+        $('#clear').click(function () {
+            Leave_clear();
+            datatableleave.$('tr.selected').removeClass('selected');
+            toastr.success("Refresh Successfully");
+        });
+        function Leave_clear() {
+            $('#DtFrom').removeAttr("style");// css('border-color', 'red');
+            $('#DtTo').removeAttr("style");//.css('border-color', 'red');
+            $('#TotalDay').removeAttr("style");//.css('border-color', 'red');
+            $('#Remark').removeAttr("style");//.css('border-color', 'red');
+            $('#lvid').text("");
+            //$('#LTypeId').val("");
+            $('#DtFrom').val("");
+            $('#DtTo').val("");
+            $('#TotalDay').val(0);
+            $('#Remark').val("");
+            $('#create').prop('disabled', false);
+            $('#update').prop('disabled', true);
+            $('#delete').prop('disabled', true);
+            //$('#LTypeId').prop('disabled', false);
+        };
+         function ConfirmDialogDelete(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Delete message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+                            $(this).dialog("close");
+                            Leave_Delete();
+                        },
+                        No: function () {
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+         function ConfirmDialogUpdate(message) {
+            $('<div></div>').appendTo('body')
+                .html('<div><h6>' + message + '?</h6></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Update message',
+                    zIndex: 10000,
+                    autoOpen: true,
+                    width: 'auto',
+                    resizable: false,
+                    buttons: {
+                        Yes: function () {
+                            $(this).dialog("close");
+                            Leave_Update();
+                        },
+                        No: function () {
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function (event, ui) {
+                        $(this).remove();
+                    }
+                });
+        };
+    </script>
+}
+

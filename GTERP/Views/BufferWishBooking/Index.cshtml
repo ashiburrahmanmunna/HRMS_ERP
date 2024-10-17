@@ -1,0 +1,321 @@
+﻿@model IEnumerable<GTERP.Models.Buffers.BuffertWiseBooking>
+
+<div class="container-fluid">
+
+    <div class="row text-center py-2">
+        <div class="col-md-3 col-12">
+            @Html.ActionLink("Buffer Wise Booking Create", "Create", null, null, new { @class = "btn btn-outline-info btn-block", @id = "btnBack" })
+
+        </div>
+
+        <div class="col-md-4 col-12">
+            <h2 id="styletext">Buffer Wise Booking Allotment List</h2>
+        </div>
+        <div class="col-md-5"></div>
+    </div>
+
+
+    <div class="row my-2">
+       
+        <div class="col-md-3 col-12">
+            <div class="input-group mb-2">
+                <select id="FiscalYearId" class="form-control" asp-items="ViewBag.FiscalYearId" , name="FiscalYearId">
+                    <option>Please Select Year</option>
+                </select>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 col-12">
+            <div class="input-group mb-2">
+                <select id="FiscalMonthId" class="form-control" asp-items="ViewBag.FiscalMonthId" , name="FiscalMonthId">
+                    <option>Please Select Month</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="col-md-3 col-12">
+            <div class="input-group mb-2">
+                <select id="BufferId" class="form-control" asp-items="ViewBag.BufferId">
+                    <option>=All=</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-1 col-12">
+            <button class="btn btn-success mb-2 btn-block rounded-0" type="button" onclick="ReportPrint('PrintDistWiseAllotment')">Report</button>
+
+        </div>
+        <div class="col-md-2 col-12">
+            <fieldset class="pull-right" style="height: auto;margin-bottom: 0px">
+                <label class="pr-2"><input type="radio" name="RptType" value="PDF" checked="checked" /> PDF  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="EXCEL" /> EXCEL  </label>
+                <label class="pr-2"><input type="radio" name="RptType" value="WORD" /> WORD  </label>
+
+            </fieldset>
+        </div>
+    </div>
+
+
+
+
+
+    <div id="finalpanel" class="card p-2">
+
+        <div class="table-responsive text-nowrap">
+            <table id="tbllist" class="table tbllist table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.YearName.YearEng)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MonthName.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cat_District.DistName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cat_PoliceStation.PStationName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Customer.CustomerCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Customer.CustomerName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AllotmentQty)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.YearName.YearEng)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MonthName.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cat_District.DistName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cat_PoliceStation.PStationName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Customer.CustomerCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Customer.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AllotmentQty)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+@section Scripts{
+    <script>
+
+
+        GetMonthByYears();
+
+        $('#FiscalYearId').change(function () {
+
+            GetMonthByYears();
+        })
+
+        function GetMonthByYears() {
+
+            var Year = $('#FiscalYearId option:selected').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetMonthByYear", "Booking")',
+                dataType: 'json',
+                data: { FYId: Year },
+                success: function (data) {
+                    //console.log(data)
+                    //alert(data);
+                    var html = '<option value="0">Select Month</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<option value="' + data[i].Value + '">' + data[i].Text + '</option>';
+                    }
+                    $('#FiscalMonthId').html(html);
+                    $('#FiscalMonthId').attr('disabled', false);
+                },
+                error: function (ex) {
+                    toastr.error('Faild' + ex);
+                }
+            });
+            return false;
+        }
+
+
+
+
+
+        $('#FiscalYearId').select2();
+        $('#FiscalMonthId').select2();
+
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+
+
+
+         @*function ReportPrint(btnvalue) {
+
+
+             var FiscalYearId = $('#FiscalYearId').val();
+             var FiscalMonthId = $('#FiscalMonthId').val();
+             var BufferId = $('#BufferId').val();
+             
+             //alert(DistId);
+
+              var reporttype = $("input[name=RptType]:checked").val();
+
+            ///alert('Hit');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SetSessionBufferWiseBookingReport", "BufferWiseBookings")',
+                dataType: 'json',
+                async: true,
+                data: { rptFormat: reporttype, action: btnvalue, BufferId: BufferId, FiscalYearId: FiscalYearId, FiscalMonthId: FiscalMonthId },
+                success: function (response) {
+
+                    window.open(response.Url, '_blank')
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+
+                }*@
+
+
+        //$('.table').DataTable();
+
+                var peopleList = $('#tbllist').DataTable({
+                serverSide: true,
+                processing: true,
+
+                ajax: {
+                    url: '@Url.Action("Get", "BufferWishBooking")',
+                    type: "POST"
+                },
+                success: function (data) {
+                    //console.log(data);
+                    //alert(data);
+                },
+
+                dom: '<"dom_wrapper fh-fixedHeader"flB>tip',
+                columns: [
+
+                    { "title": "BufferWiseBookingId", "data": "BufferWiseBookingId" , "visible" : false },
+                    { "title": "Buffer", "data": "Buffer", "searchable": true },
+                    { "title": "Fiscal Year", "data": "Year", "searchable": true },
+                    { "title": "Fiscal Month", "data": "Month", "searchable": true },
+                   
+                    { "title": "Allotment Qty", "data": "AllotmentQty", "searchable": false },
+                    //{ "title": "Remaining Qty", "data": "RemainingQty", "searchable": true },
+                    {
+                        "title": "Action",
+                        "data": "BufferWiseBookingId",
+                        "render": function (data, type, row) {
+                            var myUrledit = '@Url.Action("Edit", "BufferWishBooking")/' + data;
+                            var myUrldelete = '@Url.Action("Delete", "BufferWishBooking")/' + data;
+                            return '<span data-toggle="tooltip" title="Edit"> <a href=\"' + myUrledit + '\" class=\"fas fa-edit btn btn-warning btn-xs\" target=\"_blank\"></a></span>' +
+                                '<span data-toggle="tooltip" title="Delete"> <a href=\"' + myUrldelete + '\" class=\"far fa-trash-alt btn btn-danger btn-xs\" target=\"_blank\"></a></span>';
+                        }
+
+                    }
+
+                ],
+
+                buttons: {
+                    dom: {
+                        button: {
+                            className: 'btn rounded-0'
+                        }
+                    },
+                    buttons: [
+                        //'copy', 'csv', 'excel', 'pdf'
+                        //$(this).addClass("btn-group dt-buttons justify-content-center mb-3")
+                        {
+                            extend: 'colvis',
+                            "columns": ':not(:last-child)',
+                            text: '<i class="mdi mdi-view-column"></i>',
+                            className: 'btn-info',
+                            titleAttr: 'Show / hide columns',
+                            //collectionLayout: 'fixed two-column'
+
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="mdi mdi-file-excel"></i>',
+                            className: 'btn-success',
+                            titleAttr: 'Export to excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            text: '<i class="mdi mdi-file-pdf"></i>',
+                            className: 'btn-danger',
+                            titleAttr: 'Export to PDF',
+                            //exportOptions: {
+                            //    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            //}
+
+                        }
+
+                    ]
+                },
+                "lengthMenu": [[5, 10, 20, 50, 10000], [5, 10, 20, 50, "All"]],
+                    "language": {
+                        "processing": "processing... please wait",
+                        sLengthMenu: " _MENU_",
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                });
+
+
+
+
+
+
+
+    </script>
+}

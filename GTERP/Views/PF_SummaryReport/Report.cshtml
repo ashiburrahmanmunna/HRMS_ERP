@@ -1,0 +1,1018 @@
+﻿@model GTERP.Models.PFShowVoucherViewModel
+@{
+    ViewBag.Title = "Summary Report";
+}
+<link href="~/css/customFormStyle.css" rel="stylesheet" />
+<style type="">
+
+    .disabledbutton {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .well {
+        /*        min-height: 20px;*/
+        padding: 10px;
+        /* padding-bottom: 19px;*/
+        margin-bottom: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #e3e3e3;
+        /*border-radius: 4px;*/
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    /*.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+            background: linear-gradient(0deg, rgba(192,196,196,0.6224556717218137) 1%, rgba(255,255,255,0.6224556717218137) 65%, rgba(151,149,162,0.2527077725621498) 100%);
+        }
+
+        table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+            color: green;
+        }*/
+</style>
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken()
+    <div class="container-fluid">
+
+        <div class="card hideAll" id="tabs">
+            <div class="card-header bg-success text-white">
+                <div class="row">
+                    <div class="col-md-6 col-12">Summary Reports</div>
+                    <div class="col-md-6 col-12 text-right clsRptFormat">
+                        @Html.RadioButton("rptFormat", "PDF", true) PDF
+                        @Html.RadioButton("rptFormat", "EXCEL", false) Excel
+                        @Html.RadioButton("rptFormat", "WORD", false) Word
+                    </div>
+                </div>
+            </div>
+            <div class="card-body py-2">
+                <div class="row">
+                    <div id="divRadiobutton" class="col-md-7 col-12 px-1">
+                        <div class="well">
+                            <div class="row">
+                                <div class="col-md-9 col-12">
+                                    <label><input type="radio" name="criteria" checked="checked" value="Year" style="margin-left: 10px" /> Yearly</label>
+                                    @*<label><input type="radio" name="criteria" value="HYear" style="margin-left: 20px" /> Half Yearly</label>
+                                    <label><input type="radio" name="criteria" value="Quarter" style="margin-left: 20px" /> Quarterly</label>
+                                    <label><input type="radio" name="criteria" value="Month" style="margin-left: 20px" /> Monthly</label>
+                                    <label><input type="radio" name="criteria" value="Date" style="margin-left: 20px" /> Date Wise</label>*@
+
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    <input type="button" id="btnSave" class="btn btn-sm btn-success btn-block rounded-0" value="Show" onclick="ReportPrint() " />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divCurrencyPrdUnit" class="col-md-5 col-12 px-1">
+                        <div class="well" id="divCurrency">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                @Html.LabelFor(model => model.CountryId)
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("CountryId", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CountryId)
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                Unit
+                                            </span>
+                                        </div>
+                                        @Html.DropDownList("PrdUnitId", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PrdUnitId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-2 col-12 px-1">
+                        <div class="well">
+                            <p><input type="radio" name="RptType" checked="checked" value="TB" /> Trial Balance</p>
+                            @*<p><input type="radio" name="RptType" value="MC" /> Material Consumed</p>
+                            <p><input type="radio" name="RptType" value="COGS" /> Cost of Goods Sold</p>*@
+                            @*                            <p><input type="radio" name="RptType" value="COB" /> Cost Breakup</p>*@
+                            <p><input type="radio" name="RptType" value="IS" /> Income Statement</p>
+                            @*<p><input type="radio" name="RptType" value="OE" /> Owners Equity</p>*@
+                            <p><input type="radio" name="RptType" value="BS" /> Balance Sheet</p>
+                            @*<p><input type="radio" name="RptType" value="FA" /> Fixed Assets Schedule</p>*@
+                            @*                            <p><input type="radio" name="RptType" value="CF" /> Cash Flow </p>
+                        <p><input type="radio" name="RptType" value="FF" /> Fund Flow </p>
+                        <p><input type="radio" name="RptType" value="MR" /> Management Ratio </p>*@
+                            <p><input type="radio" name="RptType" value="NR" /> Notes Report </p>
+                            @*                            <p><input type="radio" name="RptType" value="NISR" /> Notes [IS/COGS]</p>
+                        <p><input type="radio" name="RptType" value="NBSR" /> Notes [BS]</p>
+                        <p><input type="radio" name="RptType" value="NBCIC" /> Notes [BCIC]</p>*@
+                            @*<p><input type="radio" name="RptType" value="NFA" /> Notes [Fixed Asset]</p>*@
+                            @*<p><input type="radio" name="RptType" value="LSN" /> Ledger Summary [Notes]</p>*@
+
+
+
+                        </div>
+                       @* <div class="clearfix mt-1 well">
+                            <div class="row">
+                                <div class="col-md-12 col-12" id="isCompa">
+                                    <p>@Html.CheckBoxFor(model => model.isCompare)&nbsp;Compare Report</p>
+                                </div>
+                                <div class="col-md-12 col-12" id="isCumulat">
+                                    <p>@Html.CheckBoxFor(model => model.isCumulative)&nbsp;Cumulative Report</p>
+                                </div>
+                                <div class="col-md-12 col-12" id="isGroupa">
+                                    <p>@Html.CheckBoxFor(model => model.isGroup)&nbsp;Show With Group</p>
+                                </div>
+
+                                <div class="col-md-12 col-12" id="isZeroa">
+                                    <p>@Html.CheckBoxFor(model => model.isShowZero)&nbsp;Show Zero Balance</p>
+                                </div>
+
+                            </div>
+
+                        </div>*@
+
+
+                    </div>
+
+                    <div class="col-md-10 col-12 px-1">
+                        <div class="well" id="divDateFromTo">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                @Html.LabelFor(model => model.dtFrom, new { @class = "btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.dtFrom, new { @Value = ViewBag.date, @name = "dtFrom", @id = "dtFrom", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                @Html.LabelFor(model => model.dtTo, new { @class = "btn-block" })
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(model => model.dtTo, new { @Value = ViewBag.date1, @name = "dtTo", @id = "dtTo", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.dtTo)
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-2 well">
+                            <div id="divGroup">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            @Html.LabelFor(model => model.AccIdGroup, new { @class = "control-label btn-block" })
+                                        </span>
+                                    </div>
+                                    @Html.DropDownList("AccIdGroup", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AccIdGroup)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 table-responsive well">
+                            <table class="table table-bordered table-hover table-striped" id="tblFY" width="100%">
+                                <thead>
+                                    <tr style="background: gainsboro">
+                                        <th>
+                                            Fiscal Id
+                                        </th>
+                                        <th>
+                                            Fiscal Year
+                                        </th>
+                                        <th>
+                                            Opening Date
+                                        </th>
+                                        <th>
+                                            Close Date
+                                        </th>
+                                        <th>
+                                            Is Running
+                                        </th>
+                                        <th>
+                                            Is Working
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.FiscalYs != null)
+                                    {
+                                        if (Model.FiscalYs.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.FiscalYs.Count; i++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.FiscalYs[i].FYId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.FiscalYs[i].FYName)
+                                                    </td>
+                                                    <td>
+
+                                                        @Html.DisplayFor(model => model.FiscalYs[i].OpDate)
+
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.FiscalYs[i].ClDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.CheckBoxFor(model => model.FiscalYs[i].isRunning)
+                                                    </td>
+                                                    <td>
+                                                        @Html.CheckBoxFor(model => model.FiscalYs[i].isWorking)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pr-3">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div class="table-responsive mb-2">
+                                        <table class="table table-bordered table-hover table-striped" id="tblHY" width="100%">
+                                            <thead>
+                                                <tr style="background: gainsboro">
+                                                    <th>
+                                                        Half Year Id
+                                                    </th>
+                                                    <th>
+                                                        Half Year
+                                                    </th>
+                                                    <th>
+                                                        From Date
+                                                    </th>
+                                                    <th>
+                                                        To Date
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.ProcessHalfYear != null)
+                                                {
+                                                    for (int i = 0; i < Model.ProcessHalfYear.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessHalfYear[i].HYearId)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessHalfYear[i].HyearName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessHalfYear[i].dtFrom)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessHalfYear[i].dtTo)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+
+                                    <div class="table-responsive mb-2">
+                                        <table class="table table-bordered table-hover table-striped" id="tblQuarter" width="100%">
+                                            <thead>
+                                                <tr style="background: gainsboro">
+                                                    <th>
+                                                        Quarter Id
+                                                    </th>
+                                                    <th>
+                                                        Quarter
+                                                    </th>
+                                                    <th>
+                                                        From Date
+                                                    </th>
+                                                    <th>
+                                                        To Date
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.ProcessQtr != null)
+                                                {
+                                                    for (int i = 0; i < Model.ProcessQtr.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessQtr[i].QtrId)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessQtr[i].QtrName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessQtr[i].dtFrom)
+
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => model.ProcessQtr[i].dtTo)
+
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover table-striped" id="tblMonth" width="100%">
+                                                <thead>
+                                                    <tr style="background: gainsboro">
+                                                        <th>
+                                                            Mark
+                                                        </th>
+                                                        <th>
+                                                            Month
+                                                        </th>
+                                                        <th>
+                                                            From Date
+                                                        </th>
+                                                        <th>
+                                                            To Date
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (Model.ProcessMonths != null)
+                                                    {
+                                                        for (int i = 0; i < Model.ProcessMonths.Count; i++)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    @Html.DisplayFor(model => model.ProcessMonths[i].MonthId)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayFor(model => model.ProcessMonths[i].MonthName)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayFor(model => model.ProcessMonths[i].dtFrom)
+
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayFor(model => model.ProcessMonths[i].dtTo)
+
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+            @*<div class="card-footer clearfix">
+        <div class="form-group row">
+        <div class="col-md-3 col-12" id="isComp">
+        <label>@Html.CheckBoxFor(model => model.isCompare)&nbsp;Compare Report</label>
+        </div>
+        <div class="col-md-3 col-12" id="isGroup">
+        <label>@Html.CheckBoxFor(model => model.isGroup)&nbsp;Show With Group</label>
+        </div>
+
+        <div class="col-md-4 col-12" id="isZero" style="display: none;">
+        <label>@Html.CheckBoxFor(model => model.isShowZero)&nbsp;Show Zero Balance</label>
+        </div>
+        <div class="col-md-2 col-12 text-right">
+
+        <input type="button" id="btnSave" class="btn btn-success btn-block" value="Show" onclick="ReportPrint() " />
+
+        </div>
+        </div>
+        </div>*@
+        </div>
+    </div>
+
+    // Bootstrap Modal
+
+    @*<div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="popupModalLable" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="popupModalBody">
+
+                </div>
+            </div>
+        </div>*@
+
+    // Report Viewer Frame
+
+    <div id="ReportView" hidden>
+        <div class="text-center">
+            <div class="card-header"><h6><b>Report : </b>@TempData["FileName"]</h6></div>
+            <div class="card-body">
+                <iframe id="reportFrame" src="" frameborder="0" scrolling="no" width="900px" height="500px" allowfullscreen></iframe>
+            </div>
+
+        </div>
+    </div>
+}
+
+@section Scripts{
+
+    <script language="javascript" type="text/javascript">
+
+        $('#CountryId').select2(
+            {
+                //width: "inherit"
+            }
+        );
+        $('#PrdUnitId').select2();
+        $('#AccIdGroup').select2();
+        $("select").select2({
+            theme: "bootstrap4",
+        });
+
+
+        var tblMonth = $('#tblMonth').DataTable({
+            select: true,
+            select: 'single',
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPost'
+
+                }
+            ],
+            'paging': false,
+            'searching': false,
+            'info': false
+
+        });
+
+        var tblQuarter = $('#tblQuarter').DataTable({
+            select: true,
+            select: 'single',
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPost'
+
+                }
+            ],
+            'paging': false,
+            'searching': false,
+            'info': false
+
+        });
+
+        var tblHY = $('#tblHY').DataTable({
+            select: true,
+            select: 'single',
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPost'
+
+                }
+            ],
+            'paging': false,
+            'searching': false,
+            'info': false
+
+        });
+
+        var tblFY = $('#tblFY').DataTable({
+            select: true,
+            select: 'single',
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'visible': false,
+                    'className': 'chkAllPostFY'
+
+                }
+            ],
+            'paging': false, 'info': false,
+            'searching': false
+
+        });
+
+        var tableFY = $('#tblFY').DataTable();
+        var tableHY = $('#tblHY').DataTable();
+        var tableQY = $('#tblQuarter').DataTable();
+        var tableMY = $('#tblMonth').DataTable();
+
+
+
+
+        $(document).ready(function () {
+
+            $("#datepicker").datepicker({ dateFormat: 'dd-MM-yy' });
+            $("#datepicker1").datepicker({ dateFormat: 'dd-MM-yy' });
+
+            $("#tblHY").find("*").attr("disabled", "disabled");
+            $("#tblQuarter").find("*").attr("disabled", "disabled");
+            $("#tblMonth").find("*").attr("disabled", "disabled");
+            $("#divDateFromTo").find("*").removeAttr("disabled");
+
+
+            $("#tblHY").addClass("disabledbutton");
+            $("#tblQuarter").addClass("disabledbutton");
+            $("#tblMonth").addClass("disabledbutton");
+            $("#divDateFromTo").addClass("disabledbutton");
+
+
+
+
+            $('#tblFY tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    tableFY.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+
+
+
+            });
+
+
+            var tablefy = $('#tblFY').DataTable();
+            var oTableFY = $('#tblFY').dataTable();
+            tablefy.$('tr').click(function () {
+                var selectedRow = oTableFY.fnGetData(this);
+                $(this).toggleClass('row_selected');
+                console.log(selectedRow[0]);
+                //alert('tblfy');
+                fncFilterdata(selectedRow[0]);
+
+            });
+
+        });
+
+        function fncFilterdata(FYId) {
+            //var FYId = 0;
+            var rowCount = $('#tblFY tbody tr').length;
+            if (rowCount > 0) {
+
+                tblMonth.clear().draw();
+                tblHY.clear().draw();
+                tblQuarter.clear().draw();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMonthList", "Acc_SummaryReport")',
+                    dataType: 'json',
+                    async: true,
+                    data: { id: FYId },
+                    success: function (data) {
+
+                        for (var i = 0; i < data.datam.length; i++) {
+                            $('#tblMonth').dataTable().fnAddData([data.datam[i].MonthId, data.datam[i].MonthName, data.datam[i].dtFrom, data.datam[i].dtTo]);
+                        }
+                        for (var i = 0; i < data.datah.length; i++) {
+                            $('#tblHY').dataTable().fnAddData([data.datah[i].FiscalHalfYearId, data.datah[i].HyearName, data.datah[i].dtFrom, data.datah[i].dtTo]);
+                        }
+                        for (var i = 0; i < data.dataq.length; i++) {
+                            $('#tblQuarter').dataTable().fnAddData([data.dataq[i].QtrId, data.dataq[i].QtrName, data.dataq[i].dtFrom, data.dataq[i].dtTo]);
+                        }
+
+                    },
+                    error: function (ex) {
+
+                        alert('Failed.' + ex);
+                    }
+                });
+            }
+
+        }
+
+
+
+        $('input[name=criteria]').click(function () {
+            fncCriteria();
+        });
+        function fncCriteria() {
+
+            $("#tblHY").find("*").removeAttr("disabled");
+            $("#tblQuarter").find("*").removeAttr("disabled");
+            $("#tblMonth").find("*").removeAttr("disabled");
+            $("#tblFY").find("*").removeAttr("disabled");
+            $("#divDateFromTo").find("*").removeAttr("disabled");
+
+
+
+            //$("#tblHY").addClass("disabledbutton");
+            //$("#tblQuarter").addClass("disabledbutton");
+            //$("#tblMonth").addClass("disabledbutton");
+            //$("#divDateFromTo").addClass("disabledbutton");
+
+
+
+            var a = $("input[name=criteria]:checked").val();
+            if (a == "HYear") {
+                $("#tblQuarter").find("*").attr("disabled", "disabled");
+                $("#tblMonth").find("*").attr("disabled", "disabled");
+
+
+                $("#tblQuarter").addClass("disabledbutton");
+                $("#tblMonth").addClass("disabledbutton");
+                $("#tblHY").removeClass("disabledbutton");
+
+
+                $("#divDateFromTo").find("*").attr("disabled", "disabled");
+                $("#divDateFromTo").addClass("disabledbutton");
+
+
+
+            }
+            else if (a == "Quarter") {
+
+                $("#tblHY").find("*").attr("disabled", "disabled");
+                $("#tblMonth").find("*").attr("disabled", "disabled");
+
+
+                $("#tblQuarter").removeClass("disabledbutton");
+                $("#tblMonth").addClass("disabledbutton");
+                $("#tblHY").addClass("disabledbutton");
+
+
+                $("#divDateFromTo").find("*").attr("disabled", "disabled");
+                $("#divDateFromTo").addClass("disabledbutton");
+            }
+            else if (a == "Month") {
+                $("#tblHY").find("*").attr("disabled", "disabled");
+                $("#tblQuarter").find("*").attr("disabled", "disabled");
+
+
+                $("#tblQuarter").addClass("disabledbutton");
+                $("#tblMonth").removeClass("disabledbutton");
+                $("#tblHY").addClass("disabledbutton");
+
+                $("#divDateFromTo").find("*").attr("disabled", "disabled");
+                $("#divDateFromTo").addClass("disabledbutton");
+
+            }
+            else if (a == "Date") {
+
+
+                $("#tblHY").find("*").attr("disabled", "disabled");
+                $("#tblQuarter").find("*").attr("disabled", "disabled");
+                $("#tblFY").find("*").attr("disabled", "disabled");
+                $("#tblMonth").find("*").attr("disabled", "disabled");
+
+                $("#divDateFromTo").removeClass("disabledbutton");
+
+                $("#tblQuarter").addClass("disabledbutton");
+                $("#tblMonth").addClass("disabledbutton");
+                $("#tblHY").addClass("disabledbutton");
+                $("#tblFY").addClass("disabledbutton");
+
+
+            }
+            else {
+                $("#tblHY").find("*").attr("disabled", "disabled");
+                $("#tblQuarter").find("*").attr("disabled", "disabled");
+                $("#tblMonth").find("*").attr("disabled", "disabled");
+
+                $("#tblFY").removeClass("disabledbutton");
+                $("#tblQuarter").addClass("disabledbutton");
+                $("#tblMonth").addClass("disabledbutton");
+                $("#tblHY").addClass("disabledbutton");
+
+                $("#divDateFromTo").find("*").attr("disabled", "disabled");
+                $("#divDateFromTo").addClass("disabledbutton");
+            }
+        }
+
+
+        function ReportPrint(btnvalue) {
+
+            var rptFormat = $("input[name='rptFormat']:checked").val();
+            var criteria = $("input[name='criteria']:checked").val();
+            var rpttype = $("input[name='RptType']:checked").val();
+            var Currency = $('#CountryId').val();
+            var PrdUnitId = $('#PrdUnitId').val();
+            var AccIdGroup = $('#AccIdGroup').val();
+
+            var dtFrom = $('#dtFrom').val();
+            var dtTo = $('#dtTo').val();
+
+
+
+            var isShowZero = 0;
+            var isCompare = 0;
+            var isGroup = 0;
+            var isCumulative = 0;
+
+            if ($("#isShowZero").prop('checked') == true) {
+                isShowZero = 1;
+
+            }
+            if ($("#isCompare").prop('checked') == true) {
+                isCompare = 1;
+
+
+            }
+            if ($("#isCumulative").prop('checked') == true) {
+                isCumulative = 1;
+
+            }
+
+
+
+
+
+
+            if ($("#isGroup").prop('checked') == true) {
+                //alert('Group found');
+                isGroup = 1;
+
+            }
+
+            //alert(rpttype);
+
+
+
+            //alert('ok');
+
+            //alert(table.rows('.selected').data().length + ' row(s) selected');
+            var FYId = 0;
+            var rowsFY = tableFY.rows('.selected').data();
+            if (rowsFY.length > 0) {
+                console.log(rowsFY[0][0]);
+                var FYId = rowsFY[0][0];
+            }
+
+
+            var FYHId = 0;
+            var rowsHY = tableHY.rows('.selected').data();
+            if (rowsHY.length > 0) {
+                console.log(rowsHY[0][0]);
+                var FYHId = rowsHY[0][0];
+            }
+
+            var FYQId = 0;
+            var rowsQY = tableQY.rows('.selected').data();
+            if (rowsQY.length > 0) {
+                console.log(rowsQY[0][0]);
+                var FYQId = rowsQY[0][0];
+            }
+
+
+            var FYMId = 0;
+            var rowsMY = tableMY.rows('.selected').data();
+            if (rowsMY.length > 0) {
+                console.log(rowsMY[0][0]);
+                var FYMId = rowsMY[0][0];
+            }
+
+
+            if (criteria == "fy") {
+                if (rowsFY.length == 0) {
+                    toastr.error('Please Select Fiscal Year');
+                    return;
+                }
+            };
+
+
+
+            //function GetReport() {
+            //    $.get("/HRVariables/CreateDepartmentPartial", function (res) {
+            //        $("#popupModalBody").html(res);
+            //        $("#popupModal").modal('show');
+            //    })
+            //}
+
+            //alert('ready for post');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SetSession", "PF_SummaryReport")',
+                dataType: 'json',
+                async: true,
+                data: {
+                    criteria: criteria, rptFormat: rptFormat, rpttype: rpttype, Currency: Currency, isCompare: isCompare, isCumulative: isCumulative, isShowZero: isShowZero, isGroup: isGroup, FYId: FYId, FYHId: FYHId, FYQId: FYQId, FYMId: FYMId, FromDate: dtFrom, ToDate: dtTo, AccIdGroup: AccIdGroup, PrdUnitId: PrdUnitId
+                },
+
+
+                success: function (response) {
+                    //alert(response.Url);
+                    var page = response.Url;
+                    window.open(page, '_blank')
+
+                    // Bootstarp Modal
+
+                    //$("#popupModalBody").html('<iframe style="border: 0px; " src="' + page + '" width="100%" height="100%"></iframe>')
+                    //$("#popupModal").modal('show');
+
+                    // Dialog
+
+                    //var $dialog = $('<div></div>')
+                    //    .html('<iframe style="border: 0px; " src="' + page + '" width="100%" height="100%"></iframe>')
+                    //    .dialog({
+                    //        autoOpen: false,
+                    //        modal: true,
+                    //        height: 625,
+                    //        width: 500,
+                    //        title: "Print Report"
+
+                    //    });
+                    //$dialog.dialog('open');
+
+                    // In Page IFrame
+
+                    //document.getElementById("ReportView").hidden = false;
+                    //document.getElementById("reportFrame").src = page;
+
+
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+
+            });
+
+        }
+
+
+        $('input[name=RptType]').click(function () {
+            $('#isCompa').show();
+            $('#isZeroa').show();
+            $('#isGroupa').show();
+            $('#divGroup').show();
+            $('#divDateFromTo').show();
+
+
+
+
+            var a = $("input[name=RptType]:checked").val();
+            if (a == "TB") {
+                //$('#isZeroa').hide();
+
+            }
+            else if (a == "MC") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#isCompa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+
+
+            }
+            else if (a == "COGS") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "COB") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "IS" || a == "ISPF") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "OE") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "BS" || a == "BSPF") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "FA") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#isCompa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "CF") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#isCompa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "FF") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#isCompa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "MR") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#isCompa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+            else if (a == "NR") {
+                $('#isGroupa').hide();
+                $('#isZeroa').hide();
+                $('#divGroup').hide();
+                $('#divDateFromTo').hide();
+            }
+
+
+
+        });
+
+
+        $("#dtFrom").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtFrom").datepicker("option", "dateFormat");
+                //setter
+                $("#dtFrom").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+        $("#dtTo").datepicker({
+            onSelect: function (date) {
+                // Your CSS changes, just in case you still need them
+                $('a.ui-state-default').removeClass('ui-state-highlight');
+                $(this).addClass('ui-state-highlight');
+                var dateFormat = $("#dtTo").datepicker("option", "dateFormat");
+                //setter
+                $("#dtTo").datepicker("option", "dateFormat", 'dd-M-yy');
+            }
+        });
+
+
+        CurrentDate();
+
+        $("#dtFrom").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+        $("#dtTo").datepicker({
+
+            dateFormat: "dd-M-y",
+            changeMonth: true,
+            changeYear: true
+
+        });
+
+        function CurrentDate() {
+            var date = new Date();
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+
+            if ($("#dtFrom").val() == '') {
+                $("#dtFrom").val(val);
+            }
+            if ($("#dtTo").val() == '') {
+                $("#dtTo").val(val);
+            }
+
+        }
+
+
+    </script>
+}
